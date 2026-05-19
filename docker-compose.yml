@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cantine360
+      POSTGRES_PASSWORD: cantine360
+      POSTGRES_DB: cantine360
+    ports:
+      - "5432:5432"
+    volumes:
+      - cantine360_db:/var/lib/postgresql/data
+
+volumes:
+  cantine360_db:

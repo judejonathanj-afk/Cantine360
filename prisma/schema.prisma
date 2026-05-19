@@ -1,0 +1,143 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MealType {
+  LUNCH
+  DINNER
+}
+
+enum MenuCategory {
+  STARTER
+  MAIN
+  DESSERT
+  OTHER
+}
+
+enum EcoObjectivePeriod {
+  CALENDAR_YEAR
+  ISO_WEEK
+  CALENDAR_QUARTER
+  SCHOOL_YEAR
+}
+
+model Establishment {
+  id         String   @id @default(cuid())
+  name       String
+  slug       String   @unique
+  adminPin   String
+  kitchenPin String
+  /** Incrémenté à chaque changement de code admin/cuisine : invalide les sessions JWT existantes. */
+  accessCredentialRevision Int @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  /** Plafond ratio restes/servis (%) pour la commission (ex. 8 = 8 %). */
+  ecoRestesServisTargetPct Float?
+  /** Objectif de baisse des restes vs la même période N-1 (%, ex. 10 = −10 %). */
+  ecoReductionTargetPct Float?
+
+  /** Période de référence pour les objectifs affichés sur le dashboard. */
+  ecoPeriodKind EcoObjectivePeriod @default(CALENDAR_YEAR)
+  /** Début d’année scolaire (mois 1–12) si `ecoPeriodKind` = SCHOOL_YEAR. */
+  ecoSchoolYearStartMonth Int @default(9)
+  /** Jour du mois (1–31) pour la rentrée scolaire. */
+  ecoSchoolYearStartDay   Int @default(1)
+
+  groups            Group[]
+  services          Service[]
+  attendanceImports AttendanceImport[]
+}
+
+model Group {
+  id              String   @id @default(cuid())
+  name            String
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  establishmentId String
+
+  /** Surcharge plafond restes/100 assiettes (%) pour cette classe ; null = valeur établissement. */
+  ecoRestesServisTargetPct Float?
+  /** Surcharge objectif baisse restes vs période d’avant (%) ; null = valeur établissement. */
+  ecoReductionTargetPct Float?
+
+  establishment Establishment         @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  metrics       ServiceGroupMetrics[]
+
+  @@unique([establishmentId, name])
+}
+
+model Service {
+  id              String   @id @default(cuid())
+  date            DateTime
+  mealType        MealType
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  establishmentId String
+
+  establishment Establishment         @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  metrics       ServiceGroupMetrics[]
+  menu          Menu?
+
+  @@unique([establishmentId, date, mealType])
+}
+
+model ServiceGroupMetrics {
+  id             String   @id @default(cuid())
+  serviceId      String
+  groupId        String
+  presentCount   Int      @default(0)
+  servedCount    Int      @default(0)
+  refusedCount   Int      @default(0)
+  leftoversCount Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, groupId])
+}
+
+model Menu {
+  id        String   @id @default(cuid())
+  serviceId String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  service Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  items   MenuItem[]
+}
+
+model MenuItem {
+  id        String       @id @default(cuid())
+  menuId    String
+  category  MenuCategory @default(OTHER)
+  label     String
+  allergens String[]     @default([])
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+}
+
+model AttendanceImport {
+  id              String    @id @default(cuid())
+  serviceDate     DateTime
+  mealType        MealType
+  rawFileName     String
+  processedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  establishmentId String
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+}
