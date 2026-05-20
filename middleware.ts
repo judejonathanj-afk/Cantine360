@@ -32,12 +32,16 @@ async function readSessionKind(req: NextRequest): Promise<SessionKind> {
   }
 }
 
+const PUBLIC_FILE = /\.(png|jpe?g|gif|webp|svg|ico|csv|woff2?)$/i;
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
+    pathname.startsWith("/images/") ||
+    PUBLIC_FILE.test(pathname) ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/establishments") ||
     pathname === "/login" ||
