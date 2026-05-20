@@ -33,6 +33,7 @@ export function PlatformEstablishmentsClient() {
   const [kitchenPin, setKitchenPin] = useState(() => randomEstablishmentPin());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [listError, setListError] = useState<string | null>(null);
   const [created, setCreated] = useState<CreatedPayload | null>(null);
 
   const slugPreview = useMemo(() => {
@@ -41,20 +42,54 @@ export function PlatformEstablishmentsClient() {
     return slugFromEstablishmentName(name);
   }, [name, slug]);
 
-  const load = useCallback(async () => {
-    try {
-      const res = await fetch("/api/platform/establishments");
-      if (!res.ok) return;
-      const data = (await res.json()) as { establishments: EstablishmentRow[] };
-      setList(data.establishments);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const applyListResponse = useCallback(
+    (
+      res: Response,
+      data: { establishments?: EstablishmentRow[]; error?: string } | null,
+    ): EstablishmentRow[] => {
+      if (!res.ok) {
+        setList([]);
+        setListError(
+          data?.error ??
+            (res.status === 401
+              ? "Session plateforme expirée — reconnectez-vous sur /platform/login."
+              : "Impossible de charger la liste (vérifiez DATABASE_URL sur Vercel)."),
+        );
+        return [];
+      }
+      const rows = data?.establishments ?? [];
+      setList(rows);
+      setListError(null);
+      return rows;
+    },
+    [],
+  );
+
+  const load = useCallback(async (): Promise<EstablishmentRow[]> => {
+    const res = await fetch("/api/platform/establishments");
+    const data = (await res.json().catch(() => null)) as
+      | { establishments: EstablishmentRow[]; error?: string }
+      | null;
+    return applyListResponse(res, data);
+  }, [applyListResponse]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    fetch("/api/platform/establishments")
+      .then(async (res) => {
+        if (cancelled) return [] as EstablishmentRow[];
+        const data = (await res.json().catch(() => null)) as
+          | { establishments: EstablishmentRow[]; error?: string }
+          | null;
+        return applyListResponse(res, data);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [applyListResponse]);
 
   async function onCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -78,7 +113,15 @@ export function PlatformEstablishmentsClient() {
         | { establishment: CreatedPayload["establishment"]; error?: string }
         | null;
       if (!res.ok) {
-        setError(data?.error ?? "Création impossible.");
+        const refreshed = await load();
+        const base = data?.error ?? "Création impossible.";
+        if (res.status === 409 && refreshed.length === 0) {
+          setError(
+            `${base} Si la liste reste vide, Vercel n’utilise peut‑être pas la même base que Supabase — vérifiez DATABASE_URL puis redéployez.`,
+          );
+        } else {
+          setError(base);
+        }
         return;
       }
       if (!data?.establishment) return;
@@ -233,11 +276,16 @@ export function PlatformEstablishmentsClient() {
         <h2 className="text-lg font-semibold text-white md:text-xl">
           Déjà créés ({loading ? "…" : list.length})
         </h2>
+        {listError ? (
+          <p className="rounded-xl border border-rose-500/40 bg-rose-950/40 px-3 py-2 text-sm text-rose-100">
+            {listError}
+          </p>
+        ) : null}
         {loading ? (
           <p className="text-sm text-zinc-400">Chargement…</p>
-        ) : list.length === 0 ? (
+        ) : list.length === 0 && !listError ? (
           <p className="text-sm text-zinc-400">Aucun établissement pour l’instant.</p>
-        ) : (
+        ) : list.length === 0 ? null : (
           <ul className="space-y-2">
             {list.map((e) => (
               <li
