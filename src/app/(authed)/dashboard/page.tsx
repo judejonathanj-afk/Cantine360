@@ -154,6 +154,7 @@ export default async function DashboardPage({
         where: {
           date: { gte: start },
           establishmentId: session.establishmentId,
+          mealType: MealType.LUNCH,
         },
         orderBy: [{ date: "asc" }, { mealType: "asc" }],
         include: {
@@ -165,6 +166,7 @@ export default async function DashboardPage({
         where: {
           date: { gte: wideLower, lt: ecoBounds.currentEndExclusive },
           establishmentId: session.establishmentId,
+          mealType: MealType.LUNCH,
         },
         orderBy: [{ date: "asc" }, { mealType: "asc" }],
         include: {
@@ -216,7 +218,7 @@ export default async function DashboardPage({
     { present: number; served: number; refused: number; leftovers: number }
   >();
   for (const s of services) {
-    const key = `${s.date.toISOString().slice(0, 10)}|${s.mealType}`;
+    const key = s.date.toISOString().slice(0, 10);
     const bucket = perDay.get(key) ?? {
       present: 0,
       served: 0,
@@ -255,23 +257,20 @@ export default async function DashboardPage({
     .sort((a, b) => b.leftovers - a.leftovers)
     .slice(0, 6);
 
-  const perDayRows = Array.from(perDay.entries()).map(([key, v]) => {
-    const [date, mealType] = key.split("|");
-    return {
-      date,
-      mealLabel: mealType === "DINNER" ? "Dîner" : "Déjeuner",
-      ...v,
-    };
-  });
+  const perDayRows = Array.from(perDay.entries()).map(([date, v]) => ({
+    date,
+    mealLabel: "Déjeuner",
+    ...v,
+  }));
 
-  function ecoSlice(meal: MealType) {
+  function ecoSlice() {
     const y = sumServiceMetrics(wideServices, {
-      mealType: meal,
+      mealType: MealType.LUNCH,
       fromInclusive: ecoBounds.currentStart,
       toExclusive: ecoBounds.currentEndExclusive,
     });
     const p = sumServiceMetrics(wideServices, {
-      mealType: meal,
+      mealType: MealType.LUNCH,
       fromInclusive: ecoBounds.priorStart,
       toExclusive: ecoBounds.priorEndExclusive,
     });
@@ -294,10 +293,10 @@ export default async function DashboardPage({
     })),
   }));
 
-  function ecoRowsForMeal(meal: MealType): DashboardEcoGroupRow[] {
+  function ecoRowsForMeal(): DashboardEcoGroupRow[] {
     const est = establishment;
     if (activeGroupsList.length === 0) {
-      const slice = ecoSlice(meal);
+      const slice = ecoSlice();
       const r = est?.ecoRestesServisTargetPct ?? null;
       const rd = est?.ecoReductionTargetPct ?? null;
       if (r == null && rd == null) return [];
@@ -314,13 +313,13 @@ export default async function DashboardPage({
     return activeGroupsList
       .map((g) => {
       const y = sumServiceMetricsForGroup(wideForEco, {
-        mealType: meal,
+        mealType: MealType.LUNCH,
         groupId: g.id,
         fromInclusive: ecoBounds.currentStart,
         toExclusive: ecoBounds.currentEndExclusive,
       });
       const p = sumServiceMetricsForGroup(wideForEco, {
-        mealType: meal,
+        mealType: MealType.LUNCH,
         groupId: g.id,
         fromInclusive: ecoBounds.priorStart,
         toExclusive: ecoBounds.priorEndExclusive,
@@ -338,16 +337,14 @@ export default async function DashboardPage({
       .filter((row) => row.restesServisTargetPct != null || row.reductionTargetPct != null);
   }
 
-  const groupsLunch = ecoRowsForMeal(MealType.LUNCH);
-  const groupsDinner = ecoRowsForMeal(MealType.DINNER);
-  const hasEcoTargets =
-    groupsLunch.some((row) => row.restesServisTargetPct != null || row.reductionTargetPct != null) ||
-    groupsDinner.some((row) => row.restesServisTargetPct != null || row.reductionTargetPct != null);
+  const groups = ecoRowsForMeal();
+  const hasEcoTargets = groups.some(
+    (row) => row.restesServisTargetPct != null || row.reductionTargetPct != null,
+  );
 
   const eco = hasEcoTargets
     ? {
-        groupsLunch,
-        groupsDinner,
+        groups,
         periodTitle: ecoPeriodTitleFr(
           establishment?.ecoPeriodKind ?? "CALENDAR_YEAR",
           establishment?.ecoSchoolYearStartMonth ?? 9,

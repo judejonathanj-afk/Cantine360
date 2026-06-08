@@ -30,10 +30,9 @@ export function ServiceWorkflowHint() {
       <CollapsibleContent className="border-t border-zinc-100 px-4 pb-4 pt-3">
         <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-zinc-700">
           <li>
-            <strong className="font-semibold text-zinc-900">Ce jour, ce repas.</strong> Les chiffres
-            ci-dessous concernent uniquement la date et le repas affichés en titre (déjeuner ou dîner).
-            Pour un autre jour ou l&apos;autre repas, retournez à « Service » pour ouvrir le bon
-            créneau.
+            <strong className="font-semibold text-zinc-900">Ce jour, ce déjeuner.</strong> Les chiffres
+            ci-dessous concernent uniquement la date affichée en titre. Pour un autre jour, retournez
+            à « Service » pour ouvrir le bon créneau.
           </li>
           <li>
             <strong className="font-semibold text-zinc-900">Menu et allergènes</strong> — à jour si

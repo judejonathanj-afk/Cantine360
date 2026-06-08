@@ -8,7 +8,6 @@ import {
   Sparkles,
   Calendar,
   Sun,
-  Moon,
   Utensils,
   Check,
   ArrowRight,
@@ -23,7 +22,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CantineHero } from "@/components/service/CantineHero";
-import { cn } from "@/lib/utils";
+import { SCHOOL_MEAL_TYPE } from "@/lib/mealType";
+
 function todayYyyyMmDd() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -31,12 +31,9 @@ function todayYyyyMmDd() {
 
 export default function ServiceHomeClient() {
   const [date, setDate] = useState(todayYyyyMmDd());
-  const [busy, setBusy] = useState<"LUNCH" | "DINNER" | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [selectedMeal, setSelectedMeal] = useState<"LUNCH" | "DINNER" | null>(
-    null,
-  );
 
   const selectedDateObj = useMemo(
     () => new Date(date + "T12:00:00"),
@@ -52,14 +49,13 @@ export default function ServiceHomeClient() {
   }, [selectedDateObj, date]);
 
   async function startService() {
-    if (!selectedMeal) return;
-    setBusy(selectedMeal);
+    setBusy(true);
     setError(null);
     try {
       const res = await fetch("/api/services/resolve", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ date, mealType: selectedMeal }),
+        body: JSON.stringify({ date, mealType: SCHOOL_MEAL_TYPE }),
       });
       if (!res.ok) {
         setError("Impossible de créer/ouvrir le service (base ou réseau).");
@@ -71,7 +67,7 @@ export default function ServiceHomeClient() {
         window.location.assign(`/service/${data.serviceId}`);
       }, 600);
     } finally {
-      setBusy(null);
+      setBusy(false);
     }
   }
 
@@ -79,10 +75,10 @@ export default function ServiceHomeClient() {
     <div className="relative min-h-[calc(100dvh-5rem)] space-y-8 pb-12">
       <CantineHero />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="mx-auto grid max-w-2xl gap-6">
         <motion.div
-          initial={{ opacity: 0, x: -12 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
         >
           <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm">
             <CardHeader>
@@ -91,7 +87,7 @@ export default function ServiceHomeClient() {
                 Date du service
               </CardTitle>
               <CardDescription>
-                Sélectionnez la date pour ce créneau
+                Sélectionnez la date du déjeuner à suivre
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -112,66 +108,29 @@ export default function ServiceHomeClient() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 12 }}
-          animate={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
         >
-          <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm">
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Utensils className="h-5 w-5 text-primary" />
-                Type de repas
+                Repas
               </CardTitle>
               <CardDescription>
-                Choisissez <strong className="font-semibold text-foreground">déjeuner ou dîner</strong>{" "}
-                pour cette date — obligatoire avant de lancer le service.
+                Maternelle et primaire : suivi du <strong className="font-semibold text-foreground">déjeuner</strong> (midi) uniquement.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  {
-                    id: "LUNCH" as const,
-                    label: "Déjeuner",
-                    icon: Sun,
-                    time: "midi",
-                  },
-                  {
-                    id: "DINNER" as const,
-                    label: "Dîner",
-                    icon: Moon,
-                    time: "soir",
-                  },
-                ].map((meal) => (
-                  <button
-                    key={meal.id}
-                    type="button"
-                    onClick={() => setSelectedMeal(meal.id)}
-                    className={cn(
-                      "relative flex flex-col items-center justify-center gap-2 rounded-2xl border-2 p-6 transition-all",
-                      selectedMeal === meal.id
-                        ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                        : "border-border bg-background hover:border-primary/50 hover:bg-secondary/50",
-                    )}
-                  >
-                    <meal.icon className="h-8 w-8" />
-                    <span className="text-lg font-semibold">{meal.label}</span>
-                    <span
-                      className={cn(
-                        "text-xs",
-                        selectedMeal === meal.id
-                          ? "text-primary-foreground/80"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {meal.time}
-                    </span>
-                    {selectedMeal === meal.id ? (
-                      <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                        <Check className="h-4 w-4" />
-                      </span>
-                    ) : null}
-                  </button>
-                ))}
+              <div className="flex items-center gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-6">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-600">
+                  <Sun className="h-8 w-8" />
+                </div>
+                <div>
+                  <p className="text-lg font-semibold text-foreground">Déjeuner</p>
+                  <p className="text-sm text-muted-foreground">Service de midi — seul créneau suivi</p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -181,7 +140,7 @@ export default function ServiceHomeClient() {
       <div className="flex flex-col items-center gap-3">
         <Button
           size="lg"
-          disabled={!selectedMeal || busy !== null}
+          disabled={busy}
           className="h-auto rounded-2xl px-8 py-4 text-lg shadow-xl shadow-primary/25"
           onClick={() => void startService()}
         >

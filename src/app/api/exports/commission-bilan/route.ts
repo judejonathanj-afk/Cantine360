@@ -77,6 +77,7 @@ export async function GET(req: Request) {
     where: {
       establishmentId: session.establishmentId,
       date: { gte: rangeStart, lt: rangeEndExclusive },
+      mealType: MealType.LUNCH,
     },
     orderBy: [{ date: "asc" }, { mealType: "asc" }],
     include: {
@@ -126,76 +127,67 @@ export async function GET(req: Request) {
   const monthly: Array<Record<string, string | number>> = [];
   for (let m = 0; m <= lastMonthIdx; m++) {
     const { fromInclusive, toExclusive } = monthRange(year, m);
-    for (const mealType of [MealType.LUNCH, MealType.DINNER] as const) {
-      const t = sumServiceMetrics(servicesInYear, {
-        mealType,
-        fromInclusive,
-        toExclusive,
-      });
-      const ratio = ratioRestesServisPct(t.leftovers, t.served);
-      monthly.push({
-        Mois: String(m + 1).padStart(2, "0"),
-        Repas: mealType === "DINNER" ? "Dîner" : "Déjeuner",
-        Présents: t.present,
-        Servis: t.served,
-        Refus: t.refused,
-        Restes: t.leftovers,
-        "Ratio restes/servis %": ratio != null ? Math.round(ratio * 100) / 100 : "",
-      });
-    }
+    const t = sumServiceMetrics(servicesInYear, {
+      mealType: MealType.LUNCH,
+      fromInclusive,
+      toExclusive,
+    });
+    const ratio = ratioRestesServisPct(t.leftovers, t.served);
+    monthly.push({
+      Mois: String(m + 1).padStart(2, "0"),
+      Présents: t.present,
+      Servis: t.served,
+      Refus: t.refused,
+      Restes: t.leftovers,
+      "Ratio restes/servis %": ratio != null ? Math.round(ratio * 100) / 100 : "",
+    });
   }
 
   const ytdRows: Array<Record<string, string | number>> = [];
   if (isCurrentYear) {
-    for (const mealType of [MealType.LUNCH, MealType.DINNER] as const) {
-      const y = sumServiceMetrics(allServices, {
-        mealType,
-        fromInclusive: ecoBound.currentStart,
-        toExclusive: ecoBound.currentEndExclusive,
-      });
-      const p = sumServiceMetrics(allServices, {
-        mealType,
-        fromInclusive: ecoBound.priorStart,
-        toExclusive: ecoBound.priorEndExclusive,
-      });
-      const ratioY = ratioRestesServisPct(y.leftovers, y.served);
-      const reduc = leftoversReductionVsPriorPct(y.leftovers, p.leftovers);
-      ytdRows.push({
-        Repas: mealType === "DINNER" ? "Dîner" : "Déjeuner",
-        "YTD présents": y.present,
-        "YTD servis": y.served,
-        "YTD refus": y.refused,
-        "YTD restes": y.leftovers,
-        "YTD ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
-        "N-1 même période (restes)": p.leftovers,
-        "Baisse restes % vs N-1": reduc != null ? Math.round(reduc * 100) / 100 : "",
-      });
-    }
+    const y = sumServiceMetrics(allServices, {
+      mealType: MealType.LUNCH,
+      fromInclusive: ecoBound.currentStart,
+      toExclusive: ecoBound.currentEndExclusive,
+    });
+    const p = sumServiceMetrics(allServices, {
+      mealType: MealType.LUNCH,
+      fromInclusive: ecoBound.priorStart,
+      toExclusive: ecoBound.priorEndExclusive,
+    });
+    const ratioY = ratioRestesServisPct(y.leftovers, y.served);
+    const reduc = leftoversReductionVsPriorPct(y.leftovers, p.leftovers);
+    ytdRows.push({
+      "YTD présents": y.present,
+      "YTD servis": y.served,
+      "YTD refus": y.refused,
+      "YTD restes": y.leftovers,
+      "YTD ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
+      "N-1 même période (restes)": p.leftovers,
+      "Baisse restes % vs N-1": reduc != null ? Math.round(reduc * 100) / 100 : "",
+    });
   } else {
-    for (const mealType of [MealType.LUNCH, MealType.DINNER] as const) {
-      const y = sumServiceMetrics(allServices, {
-        mealType,
-        fromInclusive: yearStart,
-        toExclusive: calendarYearEndExclusive,
-      });
-      const p = sumServiceMetrics(allServices, {
-        mealType,
-        fromInclusive: priorCalendarStart,
-        toExclusive: priorCalendarEndExclusive,
-      });
-      const ratioY = ratioRestesServisPct(y.leftovers, y.served);
-      const reduc = leftoversReductionVsPriorPct(y.leftovers, p.leftovers);
-      ytdRows.push({
-        Repas: mealType === "DINNER" ? "Dîner" : "Déjeuner",
-        "Année présents": y.present,
-        "Année servis": y.served,
-        "Année refus": y.refused,
-        "Année restes": y.leftovers,
-        "Année ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
-        "N-1 année complète (restes)": p.leftovers,
-        "Baisse restes % vs N-1": reduc != null ? Math.round(reduc * 100) / 100 : "",
-      });
-    }
+    const y = sumServiceMetrics(allServices, {
+      mealType: MealType.LUNCH,
+      fromInclusive: yearStart,
+      toExclusive: calendarYearEndExclusive,
+    });
+    const p = sumServiceMetrics(allServices, {
+      mealType: MealType.LUNCH,
+      fromInclusive: priorCalendarStart,
+      toExclusive: priorCalendarEndExclusive,
+    });
+    const ratioY = ratioRestesServisPct(y.leftovers, y.served);
+    const reduc = leftoversReductionVsPriorPct(y.leftovers, p.leftovers);
+    ytdRows.push({
+      "Année présents": y.present,
+      "Année servis": y.served,
+      "Année refus": y.refused,
+      "Année restes": y.leftovers,
+      "Année ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
+      "N-1 année complète (restes)": p.leftovers,
+      "Baisse restes % vs N-1": reduc != null ? Math.round(reduc * 100) / 100 : "",
+    });
   }
 
   const pulseStart = new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000);
@@ -207,18 +199,15 @@ export async function GET(req: Request) {
   const pulseMeta: Array<Record<string, string | number>> = [];
   if (isCurrentYear && pulseServices.length > 0) {
     const pulseRows = servicesToCantinePulseRows(pulseServices);
-    for (const mealType of [MealType.LUNCH, MealType.DINNER] as const) {
-      const pulse = computeCantinePulse(pulseRows, mealType);
-      const wr = (pulse.meta.curr.wasteRate * 100).toFixed(1);
-      pulseMeta.push({
-        Repas: mealType === "DINNER" ? "Dîner" : "Déjeuner",
-        "CantinePulse score /100": pulse.score,
-        Humeur: pulse.mood,
-        "Restes cumul 7j": pulse.meta.curr.leftovers,
-        "Servis cumul 7j": pulse.meta.curr.served,
-        "Ratio restes/servis 7j %": wr,
-      });
-    }
+    const pulse = computeCantinePulse(pulseRows, MealType.LUNCH);
+    const wr = (pulse.meta.curr.wasteRate * 100).toFixed(1);
+    pulseMeta.push({
+      "CantinePulse score /100": pulse.score,
+      Humeur: pulse.mood,
+      "Restes cumul 7j": pulse.meta.curr.leftovers,
+      "Servis cumul 7j": pulse.meta.curr.served,
+      "Ratio restes/servis 7j %": wr,
+    });
   }
 
   const sections: string[] = [];

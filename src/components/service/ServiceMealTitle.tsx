@@ -1,8 +1,9 @@
-import { Moon, Sun } from "lucide-react";
+import { Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { mealTypeLabelFr } from "@/lib/mealType";
 
 export function mealTypeLabel(mealType: string) {
-  return mealType === "DINNER" ? "Dîner" : "Déjeuner";
+  return mealTypeLabelFr(mealType);
 }
 
 type Props = {
@@ -18,18 +19,12 @@ export function ServiceMealTitle({
   className,
   size = "lg",
 }: Props) {
-  const isDinner = mealType === "DINNER";
-  const Icon = isDinner ? Moon : Sun;
   const meal = mealTypeLabel(mealType);
 
   const iconBox =
     size === "lg"
       ? "h-11 w-11 rounded-2xl [&_svg]:h-6 [&_svg]:w-6"
       : "h-8 w-8 rounded-xl [&_svg]:h-4 [&_svg]:w-4";
-
-  const iconColors = isDinner
-    ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-    : "border-amber-200 bg-amber-50 text-amber-600";
 
   const textClass =
     size === "lg"
@@ -45,13 +40,12 @@ export function ServiceMealTitle({
     >
       <span
         className={cn(
-          "inline-flex shrink-0 items-center justify-center border shadow-sm",
+          "inline-flex shrink-0 items-center justify-center border border-amber-200 bg-amber-50 text-amber-600 shadow-sm",
           iconBox,
-          iconColors,
         )}
         aria-hidden
       >
-        <Icon />
+        <Sun />
       </span>
       <span className={textClass}>
         {meal} — {dateLabel}

@@ -55,11 +55,10 @@ export function CantineHero() {
             />
           </div>
           <p className="max-w-2xl text-sm leading-snug text-zinc-900 md:text-base lg:text-lg">
-            Pour ouvrir un service : choisissez d&apos;abord la{" "}
-            <strong className="font-semibold text-zinc-900">date</strong>, puis touchez{" "}
-            <strong className="font-semibold text-zinc-900">Déjeuner</strong> ou{" "}
-            <strong className="font-semibold text-zinc-900">Dîner</strong> selon le repas que vous
-            allez suivre — ensuite seulement « Démarrer le service » pour saisir les groupes.
+            Pour ouvrir un service : choisissez la{" "}
+            <strong className="font-semibold text-zinc-900">date</strong> du{" "}
+            <strong className="font-semibold text-zinc-900">déjeuner</strong>, puis « Démarrer le
+            service » pour saisir les groupes.
           </p>
         </div>
       </div>

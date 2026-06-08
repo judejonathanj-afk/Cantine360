@@ -4,7 +4,6 @@ import { useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
   ChevronDown,
-  Moon,
   Percent,
   Sun,
   Target,
@@ -12,6 +11,7 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { computeCantinePulse, type CantineServiceRow } from "@/lib/cantinePulse";
+import { mealTypeLabelFr } from "@/lib/mealType";
 import {
   leftoversReductionVsPriorPct,
   ratioRestesServisPct,
@@ -64,20 +64,17 @@ const MOOD_STYLES = {
 } as const;
 
 function mealLabel(mealType: string) {
-  if (mealType === "DINNER") return "Dîner";
-  if (mealType === "LUNCH") return "Déjeuner";
-  return mealType;
+  return mealTypeLabelFr(mealType);
 }
 
-function MealIcon({ mealType }: { mealType: "LUNCH" | "DINNER" }) {
-  const Icon = mealType === "DINNER" ? Moon : Sun;
+function MealIcon() {
   return (
     <div
       className={cn(
         "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border/60 bg-card shadow-sm",
       )}
     >
-      <Icon className="h-5 w-5 text-primary" aria-hidden />
+      <Sun className="h-5 w-5 text-primary" aria-hidden />
     </div>
   );
 }
@@ -133,7 +130,7 @@ export function CantinePulseCard({
   eco = null,
 }: {
   rows: CantineServiceRow[];
-  mealType: "LUNCH" | "DINNER";
+  mealType: "LUNCH";
   eco?: CantinePulseEco | null;
 }) {
   const [ecoPanelOpen, setEcoPanelOpen] = useState(false);
@@ -179,7 +176,7 @@ export function CantinePulseCard({
       <CardContent className="space-y-5 p-6 pt-5">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 flex-1 gap-3">
-            <MealIcon mealType={mealType} />
+            <MealIcon />
             <div className="min-w-0">
               <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
                 <Activity className="h-3.5 w-3.5 text-primary" aria-hidden />

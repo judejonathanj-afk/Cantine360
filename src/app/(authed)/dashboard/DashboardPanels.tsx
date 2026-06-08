@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { LeftoversEvolutionChart } from "@/components/dashboard/LeftoversEvolutionChart";
+import type { PerDayRowInput } from "@/lib/buildLeftoversEvolutionSeries";
 import type { CantineServiceRow } from "@/lib/cantinePulse";
 
 type Totals = {
@@ -17,13 +18,9 @@ type Totals = {
 };
 
 type TopRow = { group: string; leftovers: number };
-type DayRow = {
-  date: string;
-  mealLabel: string;
+
+type DashboardDayRow = PerDayRowInput & {
   present: number;
-  served: number;
-  refused: number;
-  leftovers: number;
 };
 
 export type DashboardEcoGroupRow = {
@@ -35,8 +32,7 @@ export type DashboardEcoGroupRow = {
 };
 
 export type DashboardEcoPayload = {
-  groupsLunch: DashboardEcoGroupRow[];
-  groupsDinner: DashboardEcoGroupRow[];
+  groups: DashboardEcoGroupRow[];
   periodTitle: string;
   restesParen: string;
   priorPhrase: string;
@@ -65,7 +61,7 @@ export default function DashboardPanels({
   refusalRatePct: string;
   servedVsPresentPct: string;
   top: TopRow[];
-  perDayRows: DayRow[];
+  perDayRows: DashboardDayRow[];
 }) {
   const kpis = [
     {
@@ -152,36 +148,20 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <CantinePulseCard
-          rows={pulseRows}
-          mealType="LUNCH"
-          eco={
-            eco
-              ? {
-                  groups: eco.groupsLunch,
-                  periodTitle: eco.periodTitle,
-                  restesParen: eco.restesParen,
-                  priorPhrase: eco.priorPhrase,
-                }
-              : null
-          }
-        />
-        <CantinePulseCard
-          rows={pulseRows}
-          mealType="DINNER"
-          eco={
-            eco
-              ? {
-                  groups: eco.groupsDinner,
-                  periodTitle: eco.periodTitle,
-                  restesParen: eco.restesParen,
-                  priorPhrase: eco.priorPhrase,
-                }
-              : null
-          }
-        />
-      </div>
+      <CantinePulseCard
+        rows={pulseRows}
+        mealType="LUNCH"
+        eco={
+          eco
+            ? {
+                groups: eco.groups,
+                periodTitle: eco.periodTitle,
+                restesParen: eco.restesParen,
+                priorPhrase: eco.priorPhrase,
+              }
+            : null
+        }
+      />
 
       <LeftoversEvolutionChart days={days} perDayRows={perDayRows} />
 
@@ -227,7 +207,6 @@ export default function DashboardPanels({
                   <thead className="text-left text-xs font-semibold text-muted-foreground">
                     <tr>
                       <th className="py-2 pr-3">Date</th>
-                      <th className="py-2 pr-3">Repas</th>
                       <th className="py-2 pr-3">Présents</th>
                       <th className="py-2 pr-3">Servis</th>
                       <th className="py-2 pr-3">Refus</th>
@@ -236,9 +215,8 @@ export default function DashboardPanels({
                   </thead>
                   <tbody className="text-foreground">
                     {perDayRows.map((row) => (
-                      <tr key={`${row.date}-${row.mealLabel}`} className="border-t border-border/60">
+                      <tr key={row.date} className="border-t border-border/60">
                         <td className="py-2 pr-3 font-medium">{row.date}</td>
-                        <td className="py-2 pr-3">{row.mealLabel}</td>
                         <td className="py-2 pr-3">
                           {row.present.toLocaleString("fr-FR")}
                         </td>
@@ -246,7 +224,7 @@ export default function DashboardPanels({
                           {row.served.toLocaleString("fr-FR")}
                         </td>
                         <td className="py-2 pr-3">
-                          {row.refused.toLocaleString("fr-FR")}
+                          {(row.refused ?? 0).toLocaleString("fr-FR")}
                         </td>
                         <td className="py-2">
                           {row.leftovers.toLocaleString("fr-FR")}

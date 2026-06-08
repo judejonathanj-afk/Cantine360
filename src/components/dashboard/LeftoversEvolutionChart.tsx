@@ -24,21 +24,13 @@ import {
 } from "@/lib/buildLeftoversEvolutionSeries";
 
 const chartConfig = {
-  lunchLeftovers: {
-    label: "Restes déjeuner",
+  leftovers: {
+    label: "Restes (déjeuner)",
     color: "#f59e0b",
   },
-  dinnerLeftovers: {
-    label: "Restes dîner",
-    color: "#f43f5e",
-  },
-  lunchRatioPct: {
-    label: "% déjeuner / 100 assiettes",
+  ratioPct: {
+    label: "% / 100 assiettes",
     color: "#d97706",
-  },
-  dinnerRatioPct: {
-    label: "% dîner / 100 assiettes",
-    color: "#e11d48",
   },
 } satisfies ChartConfig;
 
@@ -63,9 +55,9 @@ export function LeftoversEvolutionChart({ days, perDayRows }: Props) {
             Évolution des restes
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Déjeuner et dîner sur les {days} derniers jours — restes par jour
+            Déjeuner sur les {days} derniers jours — restes par jour
             (barres sur 7 jours, courbes sur 30) et taux pour 100 assiettes
-            servies en pointillés, comme sur les cartes Cantine Pulse.
+            servies en pointillés, comme sur la carte Cantine Pulse.
           </p>
         </div>
         {series.length === 0 ? (
@@ -119,59 +111,29 @@ export function LeftoversEvolutionChart({ days, perDayRows }: Props) {
               />
               <ChartLegend content={<ChartLegendContent />} />
               {useBars ? (
-                <>
-                  <Bar
-                    yAxisId="count"
-                    dataKey="lunchLeftovers"
-                    fill="var(--color-lunchLeftovers)"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={28}
-                  />
-                  <Bar
-                    yAxisId="count"
-                    dataKey="dinnerLeftovers"
-                    fill="var(--color-dinnerLeftovers)"
-                    radius={[4, 4, 0, 0]}
-                    maxBarSize={28}
-                  />
-                </>
+                <Bar
+                  yAxisId="count"
+                  dataKey="leftovers"
+                  fill="var(--color-leftovers)"
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={36}
+                />
               ) : (
-                <>
-                  <Line
-                    yAxisId="count"
-                    type="monotone"
-                    dataKey="lunchLeftovers"
-                    stroke="var(--color-lunchLeftovers)"
-                    strokeWidth={2}
-                    dot={{ r: 3, fill: "var(--color-lunchLeftovers)" }}
-                    activeDot={{ r: 5 }}
-                  />
-                  <Line
-                    yAxisId="count"
-                    type="monotone"
-                    dataKey="dinnerLeftovers"
-                    stroke="var(--color-dinnerLeftovers)"
-                    strokeWidth={2}
-                    dot={{ r: 3, fill: "var(--color-dinnerLeftovers)" }}
-                    activeDot={{ r: 5 }}
-                  />
-                </>
+                <Line
+                  yAxisId="count"
+                  type="monotone"
+                  dataKey="leftovers"
+                  stroke="var(--color-leftovers)"
+                  strokeWidth={2}
+                  dot={{ r: 3, fill: "var(--color-leftovers)" }}
+                  activeDot={{ r: 5 }}
+                />
               )}
               <Line
                 yAxisId="pct"
                 type="monotone"
-                dataKey="lunchRatioPct"
-                stroke="var(--color-lunchRatioPct)"
-                strokeWidth={1.5}
-                strokeDasharray="5 5"
-                dot={false}
-                connectNulls
-              />
-              <Line
-                yAxisId="pct"
-                type="monotone"
-                dataKey="dinnerRatioPct"
-                stroke="var(--color-dinnerRatioPct)"
+                dataKey="ratioPct"
+                stroke="var(--color-ratioPct)"
                 strokeWidth={1.5}
                 strokeDasharray="5 5"
                 dot={false}
