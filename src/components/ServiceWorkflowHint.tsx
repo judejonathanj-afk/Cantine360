@@ -6,50 +6,75 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
+import { cn } from "@/lib/utils";
 
-export function ServiceWorkflowHint() {
+const t = SERVICE_INSIGHT_TONES.emerald;
+
+export function ServiceWorkflowHint({ className }: { className?: string }) {
   return (
-    <Collapsible className="group rounded-2xl border border-zinc-200 bg-white shadow-sm">
-      <CollapsibleTrigger className="flex w-full items-center gap-3 px-4 py-3 text-left outline-none hover:bg-zinc-50/80 rounded-2xl [&[data-state=open]]:rounded-b-none [&[data-state=open]]:border-b [&[data-state=open]]:border-zinc-100">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-          <Info className="h-4 w-4" aria-hidden />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold text-zinc-900">
-            Aide — flux de saisie en cuisine
-          </span>
-          <span className="mt-0.5 block text-xs text-zinc-500">
-            Ordre conseillé pour les nouveaux : ouvrir pour voir les étapes.
-          </span>
-        </span>
-        <ChevronDown
-          className="h-5 w-5 shrink-0 text-zinc-400 transition-transform duration-200 group-data-[state=open]:rotate-180"
-          aria-hidden
-        />
-      </CollapsibleTrigger>
-      <CollapsibleContent className="border-t border-zinc-100 px-4 pb-4 pt-3">
-        <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-zinc-700">
-          <li>
-            <strong className="font-semibold text-zinc-900">Ce jour, ce déjeuner.</strong> Les chiffres
-            ci-dessous concernent uniquement la date affichée en titre. Pour un autre jour, retournez
-            à « Service » pour ouvrir le bon créneau.
-          </li>
-          <li>
-            <strong className="font-semibold text-zinc-900">Menu et allergènes</strong> — à jour si
-            possible <strong className="font-semibold text-zinc-900">avant</strong> le service (bouton en
-            haut à droite).
-          </li>
-          <li>
-            <strong className="font-semibold text-zinc-900">Présents</strong> — souvent en premier :
-            saisie dans chaque groupe au début du service.
-          </li>
-          <li>
-            <strong className="font-semibold text-zinc-900">Servis, refus, restes</strong> — en général{" "}
-            <strong className="font-semibold text-zinc-900">après</strong> le repas, quand vous avez les
-            chiffres réels (touchez chaque groupe pour modifier).
-          </li>
-        </ol>
-      </CollapsibleContent>
+    <Collapsible className={cn("group h-full", className)}>
+      <div
+        className={cn(
+          "flex h-full min-h-[10.5rem] flex-col overflow-hidden rounded-2xl border shadow-md",
+          t.shell,
+        )}
+      >
+        <CollapsibleTrigger
+          className={cn(
+            "flex flex-1 flex-col px-4 py-4 text-left outline-none [&[data-state=open]]:flex-none",
+            t.hover,
+          )}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              className={cn(
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                t.icon,
+              )}
+            >
+              <Info className="h-5 w-5" aria-hidden />
+            </span>
+            <span className={cn("min-w-0 flex-1", t.text)}>
+              <span className="block text-base font-semibold">Aide — flux de saisie</span>
+              <span className={cn("mt-1 block text-sm leading-relaxed", t.muted)}>
+                Ordre conseillé pour les nouveaux — ouvrir pour voir les étapes.
+              </span>
+            </span>
+            <ChevronDown
+              className={cn(
+                "h-5 w-5 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180",
+                t.chevron,
+              )}
+              aria-hidden
+            />
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent
+          className={cn("border-t px-4 pb-4 pt-3", t.expandBorder, t.expand, t.text)}
+        >
+          <ol className={cn("list-decimal space-y-2 pl-5 text-base leading-relaxed", t.muted)}>
+            <li>
+              <strong className={cn("font-semibold", t.text)}>Ce jour, ce déjeuner.</strong> Les
+              chiffres concernent uniquement la date en titre.
+            </li>
+            <li>
+              <strong className={cn("font-semibold", t.text)}>Menu & allergènes</strong> —
+              renseignez le menu et le{" "}
+              <strong className={cn("font-semibold", t.text)}>grammage (g / assiette)</strong> avant
+              le service.
+            </li>
+            <li>
+              <strong className={cn("font-semibold", t.text)}>Présents</strong> — saisie manuelle ou{" "}
+              <strong className={cn("font-semibold", t.text)}>import CSV</strong> depuis cette page.
+            </li>
+            <li>
+              <strong className={cn("font-semibold", t.text)}>Servis, RAB, refus, restes</strong> —
+              en général après le repas.
+            </li>
+          </ol>
+        </CollapsibleContent>
+      </div>
     </Collapsible>
   );
 }

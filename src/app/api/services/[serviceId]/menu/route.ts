@@ -9,6 +9,7 @@ const ItemSchema = z.object({
   category: z.enum(["STARTER", "MAIN", "DESSERT", "OTHER"]),
   label: z.string().trim().min(1).max(160),
   allergens: z.array(z.string().trim().min(1)).max(30).default([]),
+  grammageG: z.number().int().min(1).max(5000).nullable().optional(),
 });
 
 const PutSchema = z.object({
@@ -65,6 +66,7 @@ export async function PUT(
         category: i.category as MenuCategory,
         label: i.label,
         allergens: i.allergens,
+        grammageG: i.grammageG ?? null,
       })),
     });
   }

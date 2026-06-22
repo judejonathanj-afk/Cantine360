@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
+import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { MenuEditor } from "./ui";
 
 export default async function ServiceMenuPage({
@@ -33,7 +34,18 @@ export default async function ServiceMenuPage({
         category: i.category,
         label: i.label,
         allergens: i.allergens,
+        grammageG: i.grammageG,
       }));
+
+  const allergenSummary = await getServiceAllergenSummary(
+    db,
+    session.establishmentId,
+    serviceId,
+  );
+
+  const dishImpact = new Map(
+    allergenSummary?.dishes.map((d) => [`${d.category}:${d.label}`, d.affectedStudents]) ?? [],
+  );
 
   return (
     <div className="-mt-3 space-y-5 md:-mt-5">
@@ -60,7 +72,11 @@ export default async function ServiceMenuPage({
         </div>
       </div>
 
-      <MenuEditor serviceId={serviceId} initialItems={initialItems} />
+      <MenuEditor
+        serviceId={serviceId}
+        initialItems={initialItems}
+        dishImpact={Object.fromEntries(dishImpact)}
+      />
     </div>
   );
 }

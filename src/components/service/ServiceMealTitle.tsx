@@ -1,5 +1,5 @@
-import { Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
 import { mealTypeLabelFr } from "@/lib/mealType";
 
 export function mealTypeLabel(mealType: string) {
@@ -21,34 +21,29 @@ export function ServiceMealTitle({
 }: Props) {
   const meal = mealTypeLabel(mealType);
 
-  const iconBox =
-    size === "lg"
-      ? "h-11 w-11 rounded-2xl [&_svg]:h-6 [&_svg]:w-6"
-      : "h-8 w-8 rounded-xl [&_svg]:h-4 [&_svg]:w-4";
+  const sunClass = size === "lg" ? "h-12 w-12 sm:h-14 sm:w-14" : "h-7 w-7";
 
   const textClass =
     size === "lg"
-      ? "text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl"
-      : "text-sm font-medium md:text-base";
+      ? "min-w-0 max-w-full text-2xl font-bold leading-tight tracking-tight text-balance sm:text-3xl md:text-4xl lg:text-5xl"
+      : "min-w-0 max-w-full text-sm font-medium md:text-base";
 
   return (
     <span
       className={cn(
-        "inline-flex flex-wrap items-center justify-center gap-2.5 text-zinc-900",
+        "inline-flex max-w-full min-w-0 flex-wrap items-center gap-2.5 text-zinc-900",
         className,
       )}
     >
-      <span
-        className={cn(
-          "inline-flex shrink-0 items-center justify-center border border-amber-200 bg-amber-50 text-amber-600 shadow-sm",
-          iconBox,
-        )}
-        aria-hidden
-      >
-        <Sun />
-      </span>
-      <span className={textClass}>
-        {meal} — {dateLabel}
+      <span className={cn(textClass, "inline-flex flex-wrap items-center gap-x-2.5 gap-y-1")}>
+        <span className="inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap">
+          <ChildDrawnSun className={cn("shrink-0", sunClass)} aria-hidden />
+          {meal}
+        </span>
+        <span aria-hidden className="shrink-0">
+          —
+        </span>
+        <span className="min-w-0">{dateLabel}</span>
       </span>
     </span>
   );

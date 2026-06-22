@@ -6,6 +6,7 @@ import { getGroupsForAdmin } from "@/server/groupsForAdmin";
 
 const CreateSchema = z.object({
   name: z.string().trim().min(1).max(80),
+  schoolId: z.string().trim().min(1),
 });
 
 export async function GET() {
@@ -28,17 +29,37 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
+  const school = await db.school.findFirst({
+    where: { id: parsed.data.schoolId, establishmentId: session.establishmentId },
+    select: { id: true },
+  });
+  if (!school) {
+    return NextResponse.json({ error: "École introuvable" }, { status: 404 });
+  }
+
   const group = await db.group.create({
     data: {
       name: parsed.data.name,
+      schoolId: school.id,
       establishmentId: session.establishmentId,
     },
-    select: { id: true, name: true, active: true },
+    select: {
+      id: true,
+      name: true,
+      active: true,
+      schoolId: true,
+      school: { select: { name: true } },
+    },
   });
+
   return NextResponse.json(
     {
       group: {
-        ...group,
+        id: group.id,
+        name: group.name,
+        active: group.active,
+        schoolId: group.schoolId,
+        schoolName: group.school.name,
         ecoRestesServisTargetPct: null as number | null,
         ecoReductionTargetPct: null as number | null,
       },
@@ -46,4 +67,3 @@ export async function POST(req: Request) {
     { status: 201 },
   );
 }
-

@@ -1,0 +1,35 @@
+ecole;classe;prenom;nom;allergenes
+École Anne Frank;CP;Adam;Leroy;
+École Anne Frank;CP;Inès;Moreau;Lait
+École Anne Frank;CE1 A;Léa;Martin;Lait
+École Anne Frank;CE1 A;Noah;Dupont;Gluten,Lait
+École Anne Frank;CE1 A;Chloé;Garcia;
+École Anne Frank;CE1 B;Emma;Bernard;Œufs
+École Anne Frank;CE1 B;Hugo;Petit;Arachides
+École Anne Frank;CE1 B;Jade;Roux;
+École Anne Frank;CE2 A;Louis;Simon;Poissons
+École Anne Frank;CE2 A;Zoé;Michel;Soja
+École Anne Frank;CE2 B;Gabriel;Lefebvre;
+École Anne Frank;CE2 B;Manon;Fournier;Gluten
+École Anne Frank;CM1;Arthur;Girard;Lait,Œufs
+École Anne Frank;CM1;Lina;Bonnet;
+École Anne Frank;CM2;Tom;Dupuis;Fruits à coque
+École Anne Frank;CM2;Sarah;Lambert;
+École Voltaire;CP;Lucas;Petit;Arachides
+École Voltaire;CP;Alice;Renard;
+École Voltaire;CE1;Nathan;Blanc;Gluten
+École Voltaire;CE1;Camille;Garnier;Lait
+École Voltaire;CE2;Ethan;Faure;
+École Voltaire;CE2;Julia;Perrin;Œufs,Soja
+École Voltaire;CM1;Théo;Rousseau;Céleri
+École Voltaire;CM1;Eva;Vincent;
+École Jean Moulin;CP;Mila;André;
+École Jean Moulin;CP;Raphaël;Mercier;Lait
+École Jean Moulin;CE1 A;Liam;Henry;Gluten
+École Jean Moulin;CE1 A;Rose;Masson;
+École Jean Moulin;CE1 B;Noé;Clement;Arachides,Lait
+École Jean Moulin;CE1 B;Anna;Robin;
+École Jean Moulin;CE2;Enzo;Nicolas;Poissons
+École Jean Moulin;CE2;Lola;Marchand;
+École Jean Moulin;ULIS;Maxime;Dubois;Gluten,Lait,Œufs
+École Jean Moulin;ULIS;Léna;Fontaine;Soja

@@ -48,26 +48,54 @@ export function LeftoversEvolutionChart({ days, perDayRows }: Props) {
   const useBars = days === 7;
 
   return (
-    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-      <CardContent className="p-6">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">
-            Évolution des restes
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Déjeuner sur les {days} derniers jours — restes par jour
-            (barres sur 7 jours, courbes sur 30) et taux pour 100 assiettes
-            servies en pointillés, comme sur la carte Cantine Pulse.
-          </p>
-        </div>
+    <Card className="overflow-hidden border-2 border-amber-400 bg-card/50 pb-6 pt-0 shadow-sm shadow-amber-400/10 backdrop-blur-sm">
+      <CardContent className="p-0">
+        <header className="border-b-2 border-amber-400">
+          <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
+            <div className="flex shrink-0 items-center self-stretch bg-pink-200 px-6 py-5 md:w-[11rem] md:px-5 lg:w-[13rem]">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
+                Évolution des restes
+              </h2>
+            </div>
+
+            <div
+              className="hidden w-px shrink-0 self-stretch bg-amber-400/70 md:block"
+              aria-hidden
+            />
+            <div className="h-px w-full shrink-0 bg-amber-400/70 md:hidden" aria-hidden />
+
+            <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Déjeuner sur les {days} derniers jours — restes par jour
+                (barres sur 7 jours, courbes sur 30) et taux pour 100 assiettes
+                servies en pointillés, comme sur la carte Cantine +.
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <strong className="font-semibold text-foreground">Barres</strong> = nombre de
+                restes ·{" "}
+                <strong className="font-semibold text-foreground">courbe en %</strong> = restes pour
+                100 assiettes servies (pas le nombre d&apos;assiettes).
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <strong className="font-semibold text-foreground">En résumé :</strong>{" "}
+                c&apos;est la courbe dans le temps — utile pour repérer{" "}
+                <strong className="font-semibold text-foreground">
+                  « quel jour ça a augmenté ? »
+                </strong>{" "}
+                (menu, affluence, classe, etc.).
+              </p>
+            </div>
+          </div>
+        </header>
+
         {series.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">
+          <p className="mt-5 px-6 text-sm text-muted-foreground">
             Pas assez de données sur la période pour afficher l&apos;évolution.
           </p>
         ) : (
           <ChartContainer
             config={chartConfig}
-            className="mt-6 h-[min(22rem,50vw)] w-full min-h-[240px] aspect-auto"
+            className="mt-5 h-[min(22rem,50vw)] w-full min-h-[240px] aspect-auto px-6"
           >
             <ComposedChart
               data={series}

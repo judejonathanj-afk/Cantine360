@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function PlatformShell({ children }: { children: React.ReactNode }) {
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/platform-logout", { method: "POST" });
     window.location.assign("/platform/login");
   }
 

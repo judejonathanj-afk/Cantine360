@@ -7,12 +7,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { LeftoversEvolutionChart } from "@/components/dashboard/LeftoversEvolutionChart";
+import { LeftoversByGroupTop } from "@/components/dashboard/LeftoversByGroupTop";
 import type { PerDayRowInput } from "@/lib/buildLeftoversEvolutionSeries";
 import type { CantineServiceRow } from "@/lib/cantinePulse";
+import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 
 type Totals = {
   present: number;
   served: number;
+  rab: number;
   refused: number;
   leftovers: number;
 };
@@ -21,6 +24,7 @@ type TopRow = { group: string; leftovers: number };
 
 type DashboardDayRow = PerDayRowInput & {
   present: number;
+  rab: number;
 };
 
 export type DashboardEcoGroupRow = {
@@ -40,6 +44,7 @@ export type DashboardEcoPayload = {
 
 export default function DashboardPanels({
   days,
+  schoolNames,
   role,
   exportYear,
   pulseRows,
@@ -47,11 +52,13 @@ export default function DashboardPanels({
   totals,
   leftoversRatePct,
   refusalRatePct,
+  rabRatePct,
   servedVsPresentPct,
   top,
   perDayRows,
 }: {
   days: 7 | 30;
+  schoolNames: string[];
   role: "ADMIN" | "KITCHEN";
   exportYear: number;
   pulseRows: CantineServiceRow[];
@@ -59,6 +66,7 @@ export default function DashboardPanels({
   totals: Totals;
   leftoversRatePct: string;
   refusalRatePct: string;
+  rabRatePct: string;
   servedVsPresentPct: string;
   top: TopRow[];
   perDayRows: DashboardDayRow[];
@@ -72,6 +80,11 @@ export default function DashboardPanels({
       label: "Servis",
       value: totals.served.toLocaleString("fr-FR"),
       sub: `vs présents : ${servedVsPresentPct}`,
+    },
+    {
+      label: "RAB",
+      value: totals.rab.toLocaleString("fr-FR"),
+      sub: `vs servis : ${rabRatePct}`,
     },
     {
       label: "Refus",
@@ -89,8 +102,32 @@ export default function DashboardPanels({
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Bienvenue sur votre tableau de bord
+            {schoolNames.length === 1 ? (
+              <>
+                <span aria-hidden> — </span>
+                <span className="text-emerald-700">{schoolNames[0]}</span>
+              </>
+            ) : null}
+          </h1>
+          {schoolNames.length > 1 ? (
+            <p className="mt-1 text-sm text-zinc-700 sm:text-base">
+              <span className="font-medium text-zinc-600">Écoles suivies : </span>
+              {schoolNames.map((name, index) => (
+                <span key={name}>
+                  {index > 0 ? (
+                    <span aria-hidden className="text-zinc-400">
+                      {" "}
+                      ·{" "}
+                    </span>
+                  ) : null}
+                  <span className="font-semibold text-emerald-700">{name}</span>
+                </span>
+              ))}
+            </p>
+          ) : null}
+          <p className="mt-1 text-muted-foreground">
             Indicateurs sur les {days} derniers jours
           </p>
         </div>
@@ -116,21 +153,27 @@ export default function DashboardPanels({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-4 sm:gap-2">
+      <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
+        Aperçu de la page — chiffres clés du déjeuner, note{" "}
+        <span className="whitespace-nowrap">Cantine +</span>, évolution des restes, top des
+        classes et détail jour par jour sur les {days} derniers jours.
+      </p>
+
+      <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5">
         {kpis.map((item, i) => (
           <motion.div
             key={item.label}
-            className="h-full"
+            className="flex h-full flex-col"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * i }}
           >
-            <Card className="h-full w-full gap-0 rounded-xl border-2 border-emerald-600 bg-card/50 py-0 shadow-none backdrop-blur-sm dark:border-emerald-500">
-              <CardContent className="flex h-full flex-col p-1.5 sm:p-2.5 sm:px-3">
-                <p className="text-xs leading-tight text-muted-foreground">
-                  <span className="!font-bold">{item.label}</span>
-                </p>
-                <p className="mt-0.5 text-xl font-bold tabular-nums leading-none tracking-tight text-foreground sm:text-2xl">
+            <p className="mb-1.5 text-center text-sm font-bold leading-tight text-zinc-900 sm:mb-2 sm:text-base">
+              {item.label}
+            </p>
+            <Card className="h-full w-full flex-1 gap-0 rounded-xl border-2 border-emerald-600 bg-card/50 py-0 shadow-none backdrop-blur-sm dark:border-emerald-500">
+              <CardContent className="flex h-full flex-col justify-center p-1.5 sm:p-2.5 sm:px-3">
+                <p className="text-xl font-bold tabular-nums leading-none tracking-tight text-foreground sm:text-2xl">
                   {item.value}
                 </p>
                 <p className="mt-0.5 min-h-[2rem] line-clamp-2 text-[11px] leading-snug text-muted-foreground sm:min-h-[2.25rem] sm:text-xs">
@@ -166,35 +209,12 @@ export default function DashboardPanels({
       <LeftoversEvolutionChart days={days} perDayRows={perDayRows} />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              Restes par groupe (top)
-            </h2>
-            {top.length === 0 ? (
-              <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
-            ) : (
-              <ul className="mt-4 space-y-2">
-                {top.map((g) => (
-                  <li
-                    key={g.group}
-                    className="flex items-center justify-between rounded-xl bg-secondary/40 px-3 py-2 text-sm"
-                  >
-                    <span className="font-medium">{g.group}</span>
-                    <span className="text-muted-foreground">
-                      <strong className="text-foreground">
-                        {g.leftovers.toLocaleString("fr-FR")}
-                      </strong>{" "}
-                      restes
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
+        <LeftoversByGroupTop top={top} />
 
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card
+          className="border-border/50 backdrop-blur-sm"
+          style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
+        >
           <CardContent className="p-6">
             <h2 className="text-lg font-semibold text-foreground">
               Détails par service
@@ -202,13 +222,14 @@ export default function DashboardPanels({
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
-              <div className="mt-4 overflow-auto">
+              <div className="mt-4 max-h-80 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable]">
                 <table className="min-w-full text-sm">
-                  <thead className="text-left text-xs font-semibold text-muted-foreground">
+                  <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
                     <tr>
                       <th className="py-2 pr-3">Date</th>
                       <th className="py-2 pr-3">Présents</th>
                       <th className="py-2 pr-3">Servis</th>
+                      <th className="py-2 pr-3">RAB</th>
                       <th className="py-2 pr-3">Refus</th>
                       <th className="py-2">Restes</th>
                     </tr>
@@ -222,6 +243,9 @@ export default function DashboardPanels({
                         </td>
                         <td className="py-2 pr-3">
                           {row.served.toLocaleString("fr-FR")}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.rab.toLocaleString("fr-FR")}
                         </td>
                         <td className="py-2 pr-3">
                           {(row.refused ?? 0).toLocaleString("fr-FR")}

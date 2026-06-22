@@ -18,6 +18,9 @@ import {
 } from "@/lib/ecoObjectivePeriod";
 import { getEstablishmentEcoSettings } from "@/server/establishmentEco";
 import { getGroupsForAdmin } from "@/server/groupsForAdmin";
+import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
+import { formatGroupLabel } from "@/lib/groupLabel";
+import { formatServiceDateKey } from "@/lib/serviceDate";
 
 function pct(num: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -127,17 +130,21 @@ export default async function DashboardPage({
   let activeGroupsList: Array<{
     id: string;
     name: string;
+    schoolName: string;
     ecoRestesServisTargetPct: number | null;
     ecoReductionTargetPct: number | null;
   }> = [];
+  let schoolNames: string[] = [];
 
   try {
-    const [est, agList] = await Promise.all([
+    const [est, agList, schoolsList] = await Promise.all([
       getEstablishmentEcoSettings(db, session.establishmentId),
       getGroupsForAdmin(db, session.establishmentId, { activeOnly: true }),
+      getSchoolsForAdmin(db, session.establishmentId),
     ]);
     establishment = est;
     activeGroupsList = agList;
+    schoolNames = schoolsList.filter((s) => s.active).map((s) => s.name);
 
     ecoBounds = ecoObjectiveBounds(
       now,
@@ -158,7 +165,7 @@ export default async function DashboardPage({
         },
         orderBy: [{ date: "asc" }, { mealType: "asc" }],
         include: {
-          metrics: { include: { group: true } },
+          metrics: { include: { group: { include: { school: true } } } },
           menu: { include: { items: { select: { category: true } } } },
         },
       }),
@@ -170,7 +177,7 @@ export default async function DashboardPage({
         },
         orderBy: [{ date: "asc" }, { mealType: "asc" }],
         include: {
-          metrics: { include: { group: true } },
+          metrics: { include: { group: { include: { school: true } } } },
         },
       }),
     ]);
@@ -201,33 +208,37 @@ export default async function DashboardPage({
       for (const m of s.metrics) {
         acc.present += m.presentCount;
         acc.served += m.servedCount;
+        acc.rab += m.rabCount;
         acc.refused += m.refusedCount;
         acc.leftovers += m.leftoversCount;
       }
       return acc;
     },
-    { present: 0, served: 0, refused: 0, leftovers: 0 },
+    { present: 0, served: 0, rab: 0, refused: 0, leftovers: 0 },
   );
 
   const leftoversRate = totals.served > 0 ? totals.leftovers / totals.served : 0;
   const refusalRate = totals.served > 0 ? totals.refused / totals.served : 0;
+  const rabRate = totals.served > 0 ? totals.rab / totals.served : 0;
   const servedVsPresent = totals.present > 0 ? totals.served / totals.present : 0;
 
   const perDay = new Map<
     string,
-    { present: number; served: number; refused: number; leftovers: number }
+    { present: number; served: number; rab: number; refused: number; leftovers: number }
   >();
   for (const s of services) {
-    const key = s.date.toISOString().slice(0, 10);
+    const key = formatServiceDateKey(s.date);
     const bucket = perDay.get(key) ?? {
       present: 0,
       served: 0,
+      rab: 0,
       refused: 0,
       leftovers: 0,
     };
     for (const m of s.metrics) {
       bucket.present += m.presentCount;
       bucket.served += m.servedCount;
+      bucket.rab += m.rabCount;
       bucket.refused += m.refusedCount;
       bucket.leftovers += m.leftoversCount;
     }
@@ -240,9 +251,10 @@ export default async function DashboardPage({
   >();
   for (const s of services) {
     for (const m of s.metrics) {
-      const key = m.group.name;
+      const label = formatGroupLabel(m.group.school.name, m.group.name);
+      const key = label;
       const b = topGroups.get(key) ?? {
-        group: m.group.name,
+        group: label,
         leftovers: 0,
         refused: 0,
         served: 0,
@@ -288,6 +300,7 @@ export default async function DashboardPage({
       groupId: m.group.id,
       presentCount: m.presentCount,
       servedCount: m.servedCount,
+      rabCount: m.rabCount,
       refusedCount: m.refusedCount,
       leftoversCount: m.leftoversCount,
     })),
@@ -327,7 +340,7 @@ export default async function DashboardPage({
       const restesEff = g.ecoRestesServisTargetPct ?? est?.ecoRestesServisTargetPct ?? null;
       const redEff = g.ecoReductionTargetPct ?? est?.ecoReductionTargetPct ?? null;
       return {
-        groupName: g.name,
+        groupName: formatGroupLabel(g.schoolName, g.name),
         restesServisTargetPct: restesEff,
         reductionTargetPct: redEff,
         ytd: { leftovers: y.leftovers, served: y.served },
@@ -358,6 +371,7 @@ export default async function DashboardPage({
   return (
     <DashboardPanels
       days={days === 30 ? 30 : 7}
+      schoolNames={schoolNames}
       role={session.role}
       exportYear={now.getFullYear()}
       pulseRows={pulseRows}
@@ -365,6 +379,7 @@ export default async function DashboardPage({
       totals={totals}
       leftoversRatePct={pct(leftoversRate)}
       refusalRatePct={pct(refusalRate)}
+      rabRatePct={pct(rabRate)}
       servedVsPresentPct={pct(servedVsPresent)}
       top={top.map(({ group, leftovers }) => ({ group, leftovers }))}
       perDayRows={perDayRows}

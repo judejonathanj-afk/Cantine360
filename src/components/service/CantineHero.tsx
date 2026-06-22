@@ -48,10 +48,10 @@ export function CantineHero() {
           </span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-          <div className="inline-flex shrink-0 rounded-xl bg-zinc-900 px-4 py-2 shadow-lg md:rounded-2xl md:px-5 md:py-2.5">
+          <div className="inline-flex shrink-0 rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3.5 lg:px-8 lg:py-4">
             <MenusCantineColorTitle
               text="SERVICE CANTINE"
-              className="whitespace-nowrap text-2xl md:text-3xl lg:text-4xl"
+              className="whitespace-nowrap text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
             />
           </div>
           <p className="max-w-2xl text-sm leading-snug text-zinc-900 md:text-base lg:text-lg">

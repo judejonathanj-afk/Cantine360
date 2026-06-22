@@ -119,7 +119,7 @@ function EstablishmentEcoObjectivesFormFields({
   }
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border-2 border-zinc-900 bg-white p-5 shadow-sm">
       <h2 className="text-lg font-semibold text-zinc-900">Défauts objectifs (établissement)</h2>
       <p className="mt-1 text-sm leading-relaxed text-zinc-600">
         La <strong className="text-zinc-900">période</strong> et les pourcentages ci-dessous servent de{" "}

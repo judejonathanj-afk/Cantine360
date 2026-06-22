@@ -1,12 +1,18 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { EndServiceButton } from "@/components/service/EndServiceButton";
+import {
+  ServiceAllergenOverview,
+} from "@/components/service/ServiceAllergenPanel";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { ServiceWorkflowHint } from "@/components/ServiceWorkflowHint";
-import { groupCardColorForIndex } from "@/lib/groupCardColors";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
+import { ServiceConcernedStudentsPanel } from "@/components/service/ServiceConcernedStudentsPanel";
+import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
+import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
+import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
+import { ServiceInfoGrid } from "@/components/service/ServiceInfoGrid";
+import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 
 export default async function ServicePage({
   params,
@@ -20,34 +26,85 @@ export default async function ServicePage({
   const service = await db.service.findFirst({
     where: { id: serviceId, establishmentId: session.establishmentId },
     include: {
+      menu: { include: { items: true } },
       metrics: {
-        include: { group: true },
-        orderBy: [{ group: { name: "asc" } }],
+        include: { group: { include: { school: true } } },
+        orderBy: [{ group: { school: { name: "asc" } } }, { group: { name: "asc" } }],
       },
     },
   });
   if (!service) notFound();
 
+  const allergenSummary = await getServiceAllergenSummary(
+    db,
+    session.establishmentId,
+    serviceId,
+  );
+  const summaryByGroup = new Map(
+    allergenSummary?.groups.map((g) => [g.groupId, g]) ?? [],
+  );
+
+  const menuItems = (service.menu?.items ?? []).map((i) => ({
+    label: i.label,
+    category: i.category,
+    grammageG: i.grammageG,
+  }));
+  const metricsGrammage = service.metrics.map((m) => ({
+    presentCount: m.presentCount,
+    servedCount: m.servedCount,
+    rabCount: m.rabCount,
+  }));
+
   const dateLabel = new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "full",
   }).format(service.date);
 
+  const classCards: ServiceClassCard[] = service.metrics.map((m) => ({
+    groupId: m.groupId,
+    groupName: m.group.name,
+    schoolName: m.group.school.name,
+    presentCount: m.presentCount,
+    servedCount: m.servedCount,
+    rabCount: m.rabCount,
+    refusedCount: m.refusedCount,
+    leftoversCount: m.leftoversCount,
+    groupSummary: summaryByGroup.get(m.groupId),
+  }));
+
   return (
     <div className="space-y-6">
-      <div className="relative px-2">
-        <EndServiceButton className="absolute left-0 top-0 z-10 hidden sm:inline-flex" />
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1>
-            <ServiceMealTitle mealType={service.mealType} dateLabel={dateLabel} />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <h1 className="w-full">
+            <ServiceMealTitle
+              mealType={service.mealType}
+              dateLabel={dateLabel}
+              className="w-full justify-start"
+            />
           </h1>
-          <p className="text-sm text-zinc-600 md:text-base">
-            Touchez un groupe pour saisir les compteurs.
+          <p className="w-full text-pretty text-base leading-relaxed text-zinc-600 sm:text-lg md:text-xl">
+            Avant le repas : consultez le menu, les allergènes et le grammage, puis
+            renseignez les présents par groupe (saisie ou import CSV). Après le
+            repas : complétez servis, RAB, refus et restes pour chaque classe.
+            Clôturez avec « Fin de service » lorsque tout est à jour.
           </p>
         </div>
-        <EndServiceButton className="mt-4 sm:hidden" />
+        <EndServiceButton className="inline-flex shrink-0 self-start sm:ml-4" />
       </div>
 
-      <ServiceWorkflowHint />
+      <ServiceInfoGrid>
+        <ServiceWorkflowHint />
+        {allergenSummary && session.role === "ADMIN" ? (
+          <ServiceAllergenOverview summary={allergenSummary} />
+        ) : null}
+        <ServiceGrammagePanel menuItems={menuItems} metrics={metricsGrammage} />
+        {allergenSummary ? (
+          <ServiceConcernedStudentsPanel
+            groups={allergenSummary.groups}
+            hasMenu={allergenSummary.hasMenu}
+          />
+        ) : null}
+      </ServiceInfoGrid>
 
       {service.metrics.length === 0 ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-4">
@@ -59,60 +116,13 @@ export default async function ServicePage({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-          {service.metrics.map((m, index) => {
-            const done =
-              m.presentCount > 0 ||
-              m.servedCount > 0 ||
-              m.refusedCount > 0 ||
-              m.leftoversCount > 0;
-            const cardColor = groupCardColorForIndex(index);
-            return (
-              <Link
-                key={m.groupId}
-                href={`/service/${serviceId}/group/${m.groupId}`}
-                className="relative rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-xl active:scale-[0.98]"
-                style={{
-                  backgroundColor: cardColor,
-                  borderColor: cardColor,
-                }}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <GroupNameBadge name={m.group.name} />
-                  <span
-                    className={[
-                      "rounded-full px-2 py-1 text-xs font-semibold",
-                      done
-                        ? "bg-emerald-50 text-emerald-800"
-                        : "bg-white/70 text-zinc-800",
-                    ].join(" ")}
-                  >
-                    {done ? "Saisi" : "À faire"}
-                  </span>
-                </div>
-
-                <div className="mt-3 grid grid-cols-2 gap-2.5 text-zinc-800">
-                  <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                    <div className="text-sm font-medium text-zinc-600">Présents</div>
-                    <div className="text-xl font-bold tabular-nums">{m.presentCount}</div>
-                  </div>
-                  <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                    <div className="text-sm font-medium text-zinc-600">Servis</div>
-                    <div className="text-xl font-bold tabular-nums">{m.servedCount}</div>
-                  </div>
-                  <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                    <div className="text-sm font-medium text-zinc-600">Refus</div>
-                    <div className="text-xl font-bold tabular-nums">{m.refusedCount}</div>
-                  </div>
-                  <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                    <div className="text-sm font-medium text-zinc-600">Restes</div>
-                    <div className="text-xl font-bold tabular-nums">{m.leftoversCount}</div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <ServiceMetricsSection
+          serviceId={serviceId}
+          kitchenMode={session.role === "KITCHEN"}
+          presentTotal={service.metrics.reduce((sum, m) => sum + m.presentCount, 0)}
+          cards={classCards}
+          hasMenu={allergenSummary?.hasMenu ?? false}
+        />
       )}
     </div>
   );

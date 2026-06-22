@@ -52,9 +52,25 @@ model Establishment {
   /** Jour du mois (1–31) pour la rentrée scolaire. */
   ecoSchoolYearStartDay   Int @default(1)
 
+  schools           School[]
   groups            Group[]
+  students          Student[]
   services          Service[]
   attendanceImports AttendanceImport[]
+}
+
+model School {
+  id              String   @id @default(cuid())
+  name            String
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  establishmentId String
+
+  establishment Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  groups        Group[]
+
+  @@unique([establishmentId, name])
 }
 
 model Group {
@@ -64,6 +80,7 @@ model Group {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   establishmentId String
+  schoolId        String
 
   /** Surcharge plafond restes/100 assiettes (%) pour cette classe ; null = valeur établissement. */
   ecoRestesServisTargetPct Float?
@@ -71,9 +88,28 @@ model Group {
   ecoReductionTargetPct Float?
 
   establishment Establishment         @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  school        School                @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   metrics       ServiceGroupMetrics[]
+  students      Student[]
 
-  @@unique([establishmentId, name])
+  @@unique([schoolId, name])
+}
+
+model Student {
+  id              String   @id @default(cuid())
+  firstName       String
+  lastName        String
+  allergens       String[] @default([])
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  groupId         String
+  establishmentId String
+
+  group         Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  establishment Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, firstName, lastName])
 }
 
 model Service {
@@ -97,6 +133,8 @@ model ServiceGroupMetrics {
   groupId        String
   presentCount   Int      @default(0)
   servedCount    Int      @default(0)
+  /** Assiettes adaptées ou resservies (RAB), en plus du service standard. */
+  rabCount       Int      @default(0)
   refusedCount   Int      @default(0)
   leftoversCount Int      @default(0)
   updatedAt      DateTime @updatedAt
@@ -123,6 +161,8 @@ model MenuItem {
   menuId    String
   category  MenuCategory @default(OTHER)
   label     String
+  /** Grammage par assiette (grammes) pour ce plat. */
+  grammageG Int?
   allergens String[]     @default([])
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt

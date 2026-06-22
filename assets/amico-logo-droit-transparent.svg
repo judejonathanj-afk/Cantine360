@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 560" width="360" height="560">
+  <defs>
+    <style>
+      .line { fill: none; stroke: #ffffff; stroke-linecap: round; stroke-linejoin: round; }
+      .logo-text {
+        fill: #ffffff;
+        font-family: "Bodoni MT", "Didot", Georgia, "Times New Roman", serif;
+        font-weight: 700;
+        font-size: 36px;
+        letter-spacing: 0.22em;
+      }
+    </style>
+    <g id="sprig">
+      <path class="line" stroke-width="1.3" d="M0 0 v6"/>
+      <path class="line" stroke-width="1.2" d="M0 2 C-3 1 -6 3 -7 6"/>
+      <path class="line" stroke-width="1.2" d="M0 2 C3 1 6 3 7 6"/>
+      <path class="line" stroke-width="1.1" d="M-7 6 C-9 9 -8 12 -5 13"/>
+      <path class="line" stroke-width="1.1" d="M7 6 C9 9 8 12 5 13"/>
+      <path class="line" stroke-width="1" d="M-5 13 C-3 14 -1 13 0 12"/>
+      <path class="line" stroke-width="1" d="M5 13 C3 14 1 13 0 12"/>
+    </g>
+  </defs>
+
+  <g transform="translate(180 118)">
+    <use href="#sprig" transform="translate(0 -46)"/>
+    <ellipse cx="0" cy="0" rx="118" ry="46" class="line" stroke-width="1.8"/>
+    <ellipse cx="0" cy="0" rx="108" ry="38" class="line" stroke-width="1.2"/>
+    <use href="#sprig" transform="translate(0 46) scale(1 -1)"/>
+    <text x="0" y="13" text-anchor="middle" class="logo-text">AMICO</text>
+  </g>
+
+  <g transform="translate(180 365)" class="line">
+    <path stroke-width="2.2" d="M-88 72 A 88 88 0 0 1 88 72"/>
+    <path stroke-width="1.3" d="M-70 56 A 70 70 0 0 1 70 56"/>
+    <path stroke-width="1.1" d="M-52 40 A 52 52 0 0 1 52 40"/>
+    <rect x="-24" y="-4" width="48" height="76" stroke-width="2"/>
+    <line x1="-12" y1="6" x2="-12" y2="66" stroke-width="1.6"/>
+    <line x1="0" y1="6" x2="0" y2="66" stroke-width="1.6"/>
+    <line x1="12" y1="6" x2="12" y2="66" stroke-width="1.6"/>
+    <path stroke-width="2.2" d="M-30 -4 L0 -88 L30 -4"/>
+    <line x1="0" y1="-88" x2="0" y2="-108" stroke-width="2"/>
+    <path stroke-width="1.5" d="M-9 -102 L0 -108 L9 -102"/>
+  </g>
+</svg>

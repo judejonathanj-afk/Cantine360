@@ -17,6 +17,7 @@ import type { EstablishmentEcoSettings } from "@/server/establishmentEco";
 type GroupEco = {
   id: string;
   name: string;
+  schoolName?: string;
   ecoRestesServisTargetPct: number | null;
   ecoReductionTargetPct: number | null;
 };
@@ -86,7 +87,7 @@ function GroupEcoObjectivesFields({
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" aria-hidden />
-          Objectifs — {group.name}
+          Objectifs — {group.schoolName ? `${group.schoolName} — ${group.name}` : group.name}
         </DialogTitle>
         <DialogDescription asChild>
           <div className="space-y-2 text-left text-sm text-muted-foreground">

@@ -14,8 +14,8 @@ export async function GET(
     where: { id: serviceId, establishmentId: session.establishmentId },
     include: {
       metrics: {
-        include: { group: true },
-        orderBy: [{ group: { name: "asc" } }],
+        include: { group: { include: { school: true } } },
+        orderBy: [{ group: { school: { name: "asc" } } }, { group: { name: "asc" } }],
       },
     },
   });

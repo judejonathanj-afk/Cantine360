@@ -1,5 +1,7 @@
 import type { MealType } from "@/generated/prisma/client";
 import type { CantineServiceRow } from "@/lib/cantinePulse";
+import { formatGroupLabel } from "@/lib/groupLabel";
+import { formatServiceDateKey } from "@/lib/serviceDate";
 
 export type ServiceWithGroupMetrics = {
   date: Date;
@@ -7,9 +9,10 @@ export type ServiceWithGroupMetrics = {
   metrics: Array<{
     presentCount: number;
     servedCount: number;
+    rabCount: number;
     refusedCount: number;
     leftoversCount: number;
-    group: { id: string; name: string };
+    group: { id: string; name: string; school: { name: string } };
   }>;
 };
 
@@ -19,14 +22,15 @@ export function servicesToCantinePulseRows(
 ): CantineServiceRow[] {
   const rows: CantineServiceRow[] = [];
   for (const s of services) {
-    const date = s.date.toISOString().slice(0, 10);
+    const date = formatServiceDateKey(s.date);
     for (const m of s.metrics) {
       rows.push({
         date,
         mealType: s.mealType,
-        group: m.group.name,
+        group: formatGroupLabel(m.group.school.name, m.group.name),
         presentCount: m.presentCount,
         servedCount: m.servedCount,
+        rabCount: m.rabCount,
         refusedCount: m.refusedCount,
         leftoversCount: m.leftoversCount,
       });
@@ -34,3 +38,4 @@ export function servicesToCantinePulseRows(
   }
   return rows;
 }
+

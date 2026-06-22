@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Leaf, ArrowRight } from "lucide-react";
+import { groupCardColorForIndex } from "@/lib/groupCardColors";
 import { Button } from "@/components/ui/button";
 
 function LandscapeTree({
@@ -90,6 +91,24 @@ function LandingMountains() {
   );
 }
 
+function LandingHeroWatermark() {
+  const text = "Cantine360";
+  let colorIndex = 0;
+
+  return (
+    <p className="w-full text-center font-extrabold leading-[0.95] tracking-[-0.03em] text-[clamp(2.75rem,13vw,9rem)]">
+      {[...text].map((char, i) => {
+        const color = groupCardColorForIndex(colorIndex++);
+        return (
+          <span key={`${char}-${i}`} style={{ color }} className="inline-block opacity-40">
+            {char}
+          </span>
+        );
+      })}
+    </p>
+  );
+}
+
 export function LandingPage() {
   return (
     <div className="flex min-h-full w-full flex-col bg-background">
@@ -116,9 +135,7 @@ export function LandingPage() {
             aria-hidden
             className="pointer-events-none absolute inset-x-0 top-0 z-0 flex justify-center px-4 pt-1 select-none sm:pt-2"
           >
-            <p className="w-full bg-gradient-to-r from-primary/24 via-primary/12 to-primary/6 bg-clip-text text-center font-extrabold leading-[0.95] tracking-[-0.03em] text-transparent text-[clamp(2.75rem,13vw,9rem)]">
-              Cantine360
-            </p>
+            <LandingHeroWatermark />
           </div>
           <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-10 pt-24 sm:px-6 sm:pb-12 sm:pt-28 lg:px-8 lg:pb-14 lg:pt-32">
             <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
@@ -149,13 +166,13 @@ export function LandingPage() {
                     className="gap-2 shadow-lg shadow-primary/20 sm:w-auto"
                   >
                     <Link href="/login">
-                      Accéder à mon établissement
+                      Se connecter
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
                   <p className="text-sm text-muted-foreground sm:max-w-[14rem]">
-                    Code établissement + code accès fournis par votre
-                    administration.
+                    Code établissement et code accès (cuisine ou admin), fournis
+                    par votre administration.
                   </p>
                 </div>
               </div>
@@ -187,7 +204,9 @@ export function LandingPage() {
       </main>
 
       <footer className="border-t border-border/50 py-8 text-center text-sm text-muted-foreground">
-        <p>Cantine360 — suivi de cantine scolaire</p>
+        <p>
+          Cantine360 — pilotage de cantine scolaire et réduction du gaspillage
+        </p>
       </footer>
     </div>
   );

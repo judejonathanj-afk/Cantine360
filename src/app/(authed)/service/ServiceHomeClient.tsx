@@ -7,7 +7,6 @@ import { fr } from "date-fns/locale";
 import {
   Sparkles,
   Calendar,
-  Sun,
   Utensils,
   Check,
   ArrowRight,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CantineHero } from "@/components/service/CantineHero";
+import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
 import { SCHOOL_MEAL_TYPE } from "@/lib/mealType";
 
 function todayYyyyMmDd() {
@@ -73,14 +73,18 @@ export default function ServiceHomeClient() {
 
   return (
     <div className="relative min-h-[calc(100dvh-5rem)] space-y-8 pb-12">
-      <CantineHero />
+      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
+        <CantineHero />
+      </div>
 
-      <div className="mx-auto grid max-w-2xl gap-6">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <div className="grid gap-6 sm:grid-cols-2 sm:items-stretch">
         <motion.div
+          className="h-full"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="h-full border-border/50 bg-card/50 backdrop-blur-sm">
+          <Card className="h-full border-zinc-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
@@ -108,11 +112,12 @@ export default function ServiceHomeClient() {
         </motion.div>
 
         <motion.div
+          className="h-full"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
         >
-          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <Card className="h-full border-zinc-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Utensils className="h-5 w-5 text-primary" />
@@ -124,8 +129,8 @@ export default function ServiceHomeClient() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-6">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-amber-600">
-                  <Sun className="h-8 w-8" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white">
+                  <ChildDrawnSun className="h-10 w-10" />
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-foreground">Déjeuner</p>
@@ -135,13 +140,14 @@ export default function ServiceHomeClient() {
             </CardContent>
           </Card>
         </motion.div>
+        </div>
       </div>
 
       <div className="flex flex-col items-center gap-3">
         <Button
           size="lg"
           disabled={busy}
-          className="h-auto rounded-2xl px-8 py-4 text-lg shadow-xl shadow-primary/25"
+          className="h-auto rounded-2xl border-2 border-amber-400 px-8 py-4 text-lg shadow-xl shadow-primary/25"
           onClick={() => void startService()}
         >
           <Sparkles className="h-5 w-5" />

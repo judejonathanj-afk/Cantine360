@@ -12,10 +12,12 @@ import {
   ChefHat,
   Users,
   ClipboardList,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { OfflineSyncBanner } from "@/components/service/OfflineSyncBanner";
 
 type Props = {
   role: "ADMIN" | "KITCHEN";
@@ -131,8 +133,13 @@ export function AppShell({ role, establishmentLabel, children }: Props) {
     ...(role === "ADMIN"
       ? [
           NAV[1],
+          { href: "/admin/groups", label: "Écoles & classes", icon: Users } satisfies NavItem,
+          {
+            href: "/admin/students",
+            label: "Élèves & allergènes",
+            icon: GraduationCap,
+          } satisfies NavItem,
           { href: "/exports", label: "Exports", icon: FileDown } satisfies NavItem,
-          { href: "/admin/groups", label: "Groupes", icon: Users } satisfies NavItem,
         ]
       : []),
   ];
@@ -147,39 +154,46 @@ export function AppShell({ role, establishmentLabel, children }: Props) {
       {isServiceHome ? (
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 top-16 bg-[linear-gradient(135deg,#ffffff_50%,#d1fae5_55%,#6ee7b7_72%,#10b981_88%,#059669_100%)]"
+          className="pointer-events-none fixed inset-0 top-16 bg-[linear-gradient(135deg,#000000_50%,#064e3b_58%,#6ee7b7_72%,#10b981_88%,#059669_100%)]"
         />
       ) : null}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/service" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
+          <Link
+            href="/service"
+            className="flex min-w-0 max-w-[45%] shrink items-center gap-2 sm:max-w-[14rem] sm:gap-3 md:max-w-[16rem]"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
               <Leaf className="h-5 w-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-foreground">Cantine360</span>
-              <div className="mt-0.5 flex flex-wrap items-center gap-1">
-                <Badge variant="secondary" className="w-fit text-xs">
+            <div className="min-w-0 flex flex-col">
+              <span className="truncate text-lg font-bold text-foreground">Cantine360</span>
+              <div className="mt-0.5 flex min-w-0 items-center gap-1">
+                <Badge variant="secondary" className="shrink-0 text-xs">
                   <ChefHat className="mr-1 h-3 w-3" />
                   {role === "ADMIN" ? "Admin" : "Cuisine"}
                 </Badge>
                 {establishmentLabel ? (
-                  <Badge variant="outline" className="max-w-[200px] truncate text-xs">
-                    {establishmentLabel}
+                  <Badge
+                    variant="outline"
+                    className="min-w-0 max-w-[5.5rem] shrink text-xs sm:max-w-[8rem] md:max-w-[10rem]"
+                    title={establishmentLabel}
+                  >
+                    <span className="block truncate">{establishmentLabel}</span>
                   </Badge>
                 ) : null}
               </div>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-1 rounded-full bg-secondary/50 p-1 md:flex">
+          <nav className="hidden shrink-0 items-center gap-1 rounded-full bg-secondary/50 p-1 md:flex">
             {renderNavItems("desktop", navItems, pathname)}
           </nav>
 
           <Button
             variant="ghost"
             size="sm"
-            className="gap-2"
+            className="shrink-0 gap-2"
             onClick={logout}
             disabled={busy}
           >
@@ -190,6 +204,8 @@ export function AppShell({ role, establishmentLabel, children }: Props) {
           </Button>
         </div>
       </header>
+
+      <OfflineSyncBanner />
 
       <main
         className={cn(

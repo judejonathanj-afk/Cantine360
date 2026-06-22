@@ -10,6 +10,7 @@ import { servicesToCantinePulseRows } from "@/lib/cantinePulseRows";
 import {
   leftoversReductionVsPriorPct,
   monthRange,
+  ratioRabServisPct,
   ratioRestesServisPct,
   sumServiceMetrics,
 } from "@/lib/commissionBilan";
@@ -83,7 +84,7 @@ export async function GET(req: Request) {
     include: {
       metrics: {
         orderBy: [{ group: { name: "asc" } }],
-        include: { group: true },
+        include: { group: { include: { school: true } } },
       },
     },
   });
@@ -133,10 +134,13 @@ export async function GET(req: Request) {
       toExclusive,
     });
     const ratio = ratioRestesServisPct(t.leftovers, t.served);
+    const rabRatio = ratioRabServisPct(t.rab, t.served);
     monthly.push({
       Mois: String(m + 1).padStart(2, "0"),
       Présents: t.present,
       Servis: t.served,
+      RAB: t.rab,
+      "RAB / servis %": rabRatio != null ? Math.round(rabRatio * 100) / 100 : "",
       Refus: t.refused,
       Restes: t.leftovers,
       "Ratio restes/servis %": ratio != null ? Math.round(ratio * 100) / 100 : "",
@@ -156,10 +160,13 @@ export async function GET(req: Request) {
       toExclusive: ecoBound.priorEndExclusive,
     });
     const ratioY = ratioRestesServisPct(y.leftovers, y.served);
+    const rabRatioY = ratioRabServisPct(y.rab, y.served);
     const reduc = leftoversReductionVsPriorPct(y.leftovers, p.leftovers);
     ytdRows.push({
       "YTD présents": y.present,
       "YTD servis": y.served,
+      "YTD RAB": y.rab,
+      "YTD RAB / servis %": rabRatioY != null ? Math.round(rabRatioY * 100) / 100 : "",
       "YTD refus": y.refused,
       "YTD restes": y.leftovers,
       "YTD ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
@@ -178,10 +185,13 @@ export async function GET(req: Request) {
       toExclusive: priorCalendarEndExclusive,
     });
     const ratioY = ratioRestesServisPct(y.leftovers, y.served);
+    const rabRatioY = ratioRabServisPct(y.rab, y.served);
     const reduc = leftoversReductionVsPriorPct(y.leftovers, p.leftovers);
     ytdRows.push({
       "Année présents": y.present,
       "Année servis": y.served,
+      "Année RAB": y.rab,
+      "Année RAB / servis %": rabRatioY != null ? Math.round(rabRatioY * 100) / 100 : "",
       "Année refus": y.refused,
       "Année restes": y.leftovers,
       "Année ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
@@ -201,12 +211,15 @@ export async function GET(req: Request) {
     const pulseRows = servicesToCantinePulseRows(pulseServices);
     const pulse = computeCantinePulse(pulseRows, MealType.LUNCH);
     const wr = (pulse.meta.curr.wasteRate * 100).toFixed(1);
+    const rabWr = (pulse.meta.curr.rabRate * 100).toFixed(1);
     pulseMeta.push({
-      "CantinePulse score /100": pulse.score,
+      "CantinePulse score /100": pulse.score ?? "",
       Humeur: pulse.mood,
       "Restes cumul 7j": pulse.meta.curr.leftovers,
       "Servis cumul 7j": pulse.meta.curr.served,
+      "RAB cumul 7j": pulse.meta.curr.rab,
       "Ratio restes/servis 7j %": wr,
+      "Ratio RAB/servis 7j %": rabWr,
     });
   }
 

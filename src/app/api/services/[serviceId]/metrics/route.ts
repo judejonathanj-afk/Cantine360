@@ -7,6 +7,7 @@ const BodySchema = z.object({
   groupId: z.string().min(1),
   presentCount: z.number().int().min(0).max(500).optional(),
   servedCount: z.number().int().min(0).max(500).optional(),
+  rabCount: z.number().int().min(0).max(500).optional(),
   refusedCount: z.number().int().min(0).max(500).optional(),
   leftoversCount: z.number().int().min(0).max(500).optional(),
 });
@@ -51,12 +52,14 @@ export async function PUT(
       groupId: parsed.data.groupId,
       presentCount: parsed.data.presentCount ?? 0,
       servedCount: parsed.data.servedCount ?? 0,
+      rabCount: parsed.data.rabCount ?? 0,
       refusedCount: parsed.data.refusedCount ?? 0,
       leftoversCount: parsed.data.leftoversCount ?? 0,
     },
     update: {
       presentCount: parsed.data.presentCount,
       servedCount: parsed.data.servedCount,
+      rabCount: parsed.data.rabCount,
       refusedCount: parsed.data.refusedCount,
       leftoversCount: parsed.data.leftoversCount,
     },

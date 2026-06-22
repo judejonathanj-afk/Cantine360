@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import Papa from "papaparse";
+import { unparseCsvSemicolon } from "@/lib/csvExport";
+import { formatServiceDateKey } from "@/lib/serviceDate";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 
@@ -44,15 +45,16 @@ export async function GET(req: Request) {
 
   const rows = services.flatMap((s) =>
     (s.menu?.items ?? []).map((i) => ({
-      date: s.date.toISOString().slice(0, 10),
+      date: formatServiceDateKey(s.date),
       mealType: s.mealType,
       category: i.category,
       label: i.label,
       allergens: i.allergens.join(", "),
+      grammageG: i.grammageG ?? "",
     })),
   );
 
-  const csv = Papa.unparse(rows, { delimiter: ";", quotes: false });
+  const csv = unparseCsvSemicolon(rows);
   return new Response(csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",

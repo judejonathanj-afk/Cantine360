@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import Papa from "papaparse";
+import { unparseCsvSemicolon } from "@/lib/csvExport";
+import { formatGroupLabel } from "@/lib/groupLabel";
+import { formatServiceDateKey } from "@/lib/serviceDate";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 
@@ -42,25 +44,28 @@ export async function GET(req: Request) {
     orderBy: [{ date: "asc" }, { mealType: "asc" }],
     include: {
       metrics: {
-        include: { group: true },
-        orderBy: [{ group: { name: "asc" } }],
+        include: { group: { include: { school: true } } },
+        orderBy: [{ group: { school: { name: "asc" } } }, { group: { name: "asc" } }],
       },
     },
   });
 
   const rows = services.flatMap((s) =>
     s.metrics.map((m) => ({
-      date: s.date.toISOString().slice(0, 10),
+      date: formatServiceDateKey(s.date),
       mealType: s.mealType,
+      school: m.group.school.name,
       group: m.group.name,
+      groupLabel: formatGroupLabel(m.group.school.name, m.group.name),
       presentCount: m.presentCount,
       servedCount: m.servedCount,
+      rabCount: m.rabCount,
       refusedCount: m.refusedCount,
       leftoversCount: m.leftoversCount,
     })),
   );
 
-  const csv = Papa.unparse(rows, { delimiter: ";", quotes: false });
+  const csv = unparseCsvSemicolon(rows);
   return new Response(csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",

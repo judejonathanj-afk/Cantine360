@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Leaf } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,7 @@ function LoginDecorPanel({
 export function LoginClient() {
   const [slug, setSlug] = useState("demo");
   const [pin, setPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const sp = useSearchParams();
@@ -155,15 +156,30 @@ export function LoginClient() {
                 <Label htmlFor="pin" className="text-base">
                   Code accès
                 </Label>
-                <Input
-                  id="pin"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  className="h-12 text-xl tracking-widest"
-                  placeholder="••••"
-                />
+                <div className="relative">
+                  <Input
+                    id="pin"
+                    type={showPin ? "text" : "password"}
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    className="h-12 pr-12 text-xl tracking-widest"
+                    placeholder="••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPin((v) => !v)}
+                    className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground"
+                    aria-label={showPin ? "Masquer le code accès" : "Afficher le code accès"}
+                  >
+                    {showPin ? (
+                      <EyeOff className="h-5 w-5" aria-hidden />
+                    ) : (
+                      <Eye className="h-5 w-5" aria-hidden />
+                    )}
+                  </button>
+                </div>
               </div>
 
               {error ? (

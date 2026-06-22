@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import {
-  SESSION_COOKIE_NAME,
-  signPlatformSession,
-} from "@/server/auth";
+import { signPlatformSession } from "@/server/auth";
+import { applyPlatformLoginCookies } from "@/server/auth-cookies";
 
 const BodySchema = z.object({
   pin: z.string().min(1),
@@ -38,12 +36,6 @@ export async function POST(req: Request) {
 
   const token = await signPlatformSession();
   const res = NextResponse.json({ redirectTo: "/platform/establishments" });
-  res.cookies.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 12,
-  });
+  applyPlatformLoginCookies(res, token);
   return res;
 }

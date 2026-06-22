@@ -6,6 +6,7 @@ export type ServiceWithMetrics = {
   metrics: Array<{
     presentCount: number;
     servedCount: number;
+    rabCount: number;
     refusedCount: number;
     leftoversCount: number;
   }>;
@@ -43,6 +44,7 @@ export function sumServiceMetrics(
   const t1 = opts.toExclusive.getTime();
   let present = 0;
   let served = 0;
+  let rab = 0;
   let refused = 0;
   let leftovers = 0;
   for (const s of services) {
@@ -52,11 +54,12 @@ export function sumServiceMetrics(
     for (const m of s.metrics) {
       present += m.presentCount;
       served += m.servedCount;
+      rab += m.rabCount;
       refused += m.refusedCount;
       leftovers += m.leftoversCount;
     }
   }
-  return { present, served, refused, leftovers };
+  return { present, served, rab, refused, leftovers };
 }
 
 export function monthRange(year: number, monthIndex0: number) {
@@ -70,6 +73,11 @@ export function monthRange(year: number, monthIndex0: number) {
 export function ratioRestesServisPct(leftovers: number, served: number) {
   if (served <= 0) return null;
   return (leftovers / served) * 100;
+}
+
+export function ratioRabServisPct(rab: number, served: number) {
+  if (served <= 0) return null;
+  return (rab / served) * 100;
 }
 
 export function leftoversReductionVsPriorPct(
@@ -87,6 +95,7 @@ export type ServiceWithPerGroupMetrics = {
     groupId: string;
     presentCount: number;
     servedCount: number;
+    rabCount: number;
     refusedCount: number;
     leftoversCount: number;
   }>;
@@ -106,6 +115,7 @@ export function sumServiceMetricsForGroup(
   const t1 = opts.toExclusive.getTime();
   let present = 0;
   let served = 0;
+  let rab = 0;
   let refused = 0;
   let leftovers = 0;
   for (const s of services) {
@@ -116,9 +126,10 @@ export function sumServiceMetricsForGroup(
       if (m.groupId !== opts.groupId) continue;
       present += m.presentCount;
       served += m.servedCount;
+      rab += m.rabCount;
       refused += m.refusedCount;
       leftovers += m.leftoversCount;
     }
   }
-  return { present, served, refused, leftovers };
+  return { present, served, rab, refused, leftovers };
 }

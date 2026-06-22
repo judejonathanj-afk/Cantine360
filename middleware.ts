@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-
-const COOKIE_NAME = "c360_session";
+import {
+  applyLegacyMigrationCookies,
+  clearLegacySessionCookie,
+  ESTABLISHMENT_SESSIONS_COOKIE_NAME,
+  LEGACY_SESSION_COOKIE_NAME,
+  PLATFORM_SESSION_COOKIE_NAME,
+  readActiveEstablishmentToken,
+  readPlatformTokenFromCookies,
+} from "@/server/auth-cookies";
 
 function getSecret() {
   const secret = process.env.SESSION_SECRET;
@@ -11,9 +18,7 @@ function getSecret() {
 
 type SessionKind = "establishment" | "platform" | null;
 
-async function readSessionKind(req: NextRequest): Promise<SessionKind> {
-  const token = req.cookies.get(COOKIE_NAME)?.value;
-  if (!token) return null;
+async function verifyTokenKind(token: string): Promise<SessionKind> {
   try {
     const { payload } = await jwtVerify(token, getSecret());
     if (payload.kind === "platform") return "platform";
@@ -30,6 +35,67 @@ async function readSessionKind(req: NextRequest): Promise<SessionKind> {
   } catch {
     return null;
   }
+}
+
+async function readSessionKind(req: NextRequest): Promise<SessionKind> {
+  const getCookie = (name: string) => req.cookies.get(name)?.value;
+
+  const platformToken = readPlatformTokenFromCookies(getCookie);
+  if (platformToken) {
+    const kind = await verifyTokenKind(platformToken);
+    if (kind === "platform") return "platform";
+  }
+
+  const active = readActiveEstablishmentToken(getCookie);
+  if (active) {
+    const kind = await verifyTokenKind(active.token);
+    if (kind === "establishment") return "establishment";
+  }
+
+  const legacy = getCookie(LEGACY_SESSION_COOKIE_NAME);
+  if (legacy) return verifyTokenKind(legacy);
+
+  return null;
+}
+
+async function migrateLegacySessionCookie(
+  req: NextRequest,
+  res: NextResponse,
+): Promise<NextResponse> {
+  const legacy = req.cookies.get(LEGACY_SESSION_COOKIE_NAME)?.value;
+  if (!legacy) return res;
+
+  const hasNewSessions =
+    req.cookies.get(ESTABLISHMENT_SESSIONS_COOKIE_NAME)?.value ||
+    req.cookies.get(PLATFORM_SESSION_COOKIE_NAME)?.value;
+
+  if (hasNewSessions) {
+    clearLegacySessionCookie(res);
+    return res;
+  }
+
+  try {
+    const { payload } = await jwtVerify(legacy, getSecret());
+    if (payload.kind === "platform") {
+      applyLegacyMigrationCookies(res, "platform", legacy);
+      return res;
+    }
+
+    const role = payload.role;
+    const establishmentId = payload.establishmentId;
+    if (
+      (role === "ADMIN" || role === "KITCHEN") &&
+      typeof establishmentId === "string" &&
+      establishmentId.length > 0
+    ) {
+      applyLegacyMigrationCookies(res, "establishment", legacy, establishmentId);
+      return res;
+    }
+  } catch {
+    clearLegacySessionCookie(res);
+  }
+
+  return res;
 }
 
 const PUBLIC_FILE = /\.(png|jpe?g|gif|webp|svg|ico|csv|woff2?)$/i;
@@ -57,31 +123,40 @@ export async function middleware(req: NextRequest) {
       if (kind === "platform") {
         const url = req.nextUrl.clone();
         url.pathname = "/platform/establishments";
-        return NextResponse.redirect(url);
+        const res = NextResponse.redirect(url);
+        return migrateLegacySessionCookie(req, res);
       }
-      return NextResponse.next();
+      const res = NextResponse.next();
+      return migrateLegacySessionCookie(req, res);
     }
     if (kind !== "platform") {
       const url = req.nextUrl.clone();
       url.pathname = "/platform/login";
-      return NextResponse.redirect(url);
+      const res = NextResponse.redirect(url);
+      return migrateLegacySessionCookie(req, res);
     }
-    return NextResponse.next();
+    const res = NextResponse.next();
+    return migrateLegacySessionCookie(req, res);
   }
 
   if (pathname.startsWith("/api/platform")) {
     if (kind !== "platform") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    return NextResponse.next();
+    const res = NextResponse.next();
+    return migrateLegacySessionCookie(req, res);
   }
 
-  if (kind === "establishment") return NextResponse.next();
+  if (kind === "establishment") {
+    const res = NextResponse.next();
+    return migrateLegacySessionCookie(req, res);
+  }
 
   const url = req.nextUrl.clone();
   url.pathname = "/login";
   url.searchParams.set("next", pathname);
-  return NextResponse.redirect(url);
+  const res = NextResponse.redirect(url);
+  return migrateLegacySessionCookie(req, res);
 }
 
 export const config = {

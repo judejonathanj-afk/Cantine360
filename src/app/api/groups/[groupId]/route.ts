@@ -7,6 +7,7 @@ import { isMissingEcoPeriodColumns } from "@/server/establishmentEco";
 
 const PatchSchema = z.object({
   name: z.string().trim().min(1).max(80).optional(),
+  schoolId: z.string().trim().min(1).optional(),
   active: z.boolean().optional(),
   ecoRestesServisTargetPct: z.number().min(0).max(100).nullable().optional(),
   ecoReductionTargetPct: z.number().min(0).max(100).nullable().optional(),
@@ -39,11 +40,22 @@ export async function PATCH(
   const p = parsed.data;
   const data: {
     name?: string;
+    schoolId?: string;
     active?: boolean;
     ecoRestesServisTargetPct?: number | null;
     ecoReductionTargetPct?: number | null;
   } = {};
   if (p.name !== undefined) data.name = p.name;
+  if (p.schoolId !== undefined) {
+    const school = await db.school.findFirst({
+      where: { id: p.schoolId, establishmentId: session.establishmentId },
+      select: { id: true },
+    });
+    if (!school) {
+      return NextResponse.json({ error: "École introuvable" }, { status: 404 });
+    }
+    data.schoolId = school.id;
+  }
   if (p.active !== undefined) data.active = p.active;
   if (p.ecoRestesServisTargetPct !== undefined) data.ecoRestesServisTargetPct = p.ecoRestesServisTargetPct;
   if (p.ecoReductionTargetPct !== undefined) data.ecoReductionTargetPct = p.ecoReductionTargetPct;

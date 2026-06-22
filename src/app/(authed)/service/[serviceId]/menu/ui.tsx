@@ -2,10 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { EU14_ALLERGENS } from "@/lib/allergens";
+import { EU14_ALLERGENS, allergenButtonLabel } from "@/lib/allergens";
 
 type Category = "STARTER" | "MAIN" | "DESSERT" | "OTHER";
-type Item = { category: Category; label: string; allergens: string[] };
+type Item = {
+  category: Category;
+  label: string;
+  allergens: string[];
+  grammageG: number | null;
+};
 
 const CATEGORY_LABEL: Record<Category, string> = {
   STARTER: "🥬 Entrées",
@@ -15,20 +20,37 @@ const CATEGORY_LABEL: Record<Category, string> = {
 };
 
 function emptyItem(category: Category): Item {
-  return { category, label: "", allergens: [] };
+  return { category, label: "", allergens: [], grammageG: null };
+}
+
+const DEFAULT_CATEGORIES: Category[] = ["STARTER", "MAIN", "DESSERT"];
+
+/** Une fiche vierge par rubrique principale si le menu est neuf ou incomplet. */
+function initializeMenuItems(initialItems: Item[]): Item[] {
+  if (initialItems.length === 0) {
+    return DEFAULT_CATEGORIES.map((category) => emptyItem(category));
+  }
+
+  const items = [...initialItems];
+  for (const category of DEFAULT_CATEGORIES) {
+    if (!items.some((i) => i.category === category)) {
+      items.push(emptyItem(category));
+    }
+  }
+  return items;
 }
 
 export function MenuEditor({
   serviceId,
   initialItems,
+  dishImpact = {},
 }: {
   serviceId: string;
   initialItems: Item[];
+  dishImpact?: Record<string, number>;
 }) {
   const router = useRouter();
-  const [items, setItems] = useState<Item[]>(
-    initialItems.length > 0 ? initialItems : [emptyItem("MAIN")],
-  );
+  const [items, setItems] = useState<Item[]>(() => initializeMenuItems(initialItems));
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
 
@@ -52,6 +74,7 @@ export function MenuEditor({
           ...i,
           label: i.label.trim(),
           allergens: i.allergens.filter(Boolean),
+          grammageG: i.grammageG,
         }))
         .filter((i) => i.label.length > 0);
 
@@ -93,8 +116,10 @@ export function MenuEditor({
         <strong className="font-medium text-zinc-900">🥘 plats</strong>,{" "}
         <strong className="font-medium text-zinc-900">🧁 desserts</strong> et la rubrique{" "}
         <strong className="font-medium text-zinc-900">autres</strong> si besoin, puis les
-        allergènes. <strong className="font-medium text-zinc-900">Enregistrez tout en bas</strong>{" "}
-        une fois le menu complet.
+        allergènes (<em>Gluten</em> = « Céréales contenant du gluten ») et le{" "}
+        <strong className="font-medium text-zinc-900">grammage (g/assiette)</strong>.{" "}
+        <strong className="font-medium text-zinc-900">Enregistrez tout en bas</strong> une fois le
+        menu complet.
       </p>
 
       {(Object.keys(CATEGORY_LABEL) as Category[]).map((cat) => (
@@ -147,10 +172,37 @@ export function MenuEditor({
                     </button>
                   </div>
 
+                  <label className="mt-4 block max-w-xs">
+                    <span className="text-sm font-medium text-zinc-900">
+                      Grammage (g / assiette)
+                    </span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={5000}
+                      value={it.grammageG ?? ""}
+                      onChange={(e) => {
+                        const raw = e.target.value.trim();
+                        update(idx, {
+                          grammageG: raw === "" ? null : Number(raw),
+                        });
+                      }}
+                      className="mt-2 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+                      placeholder="Ex: 120"
+                    />
+                  </label>
+
                   <div className="mt-4">
-                    <div className="text-sm font-medium text-zinc-900">
-                      Allergènes
-                    </div>
+                    <div className="text-sm font-medium text-zinc-900">Allergènes</div>
+                    {it.label.trim() && dishImpact[`${it.category}:${it.label.trim()}`] ? (
+                      <p className="mt-1 text-xs font-semibold text-amber-800">
+                        {dishImpact[`${it.category}:${it.label.trim()}`]} élève
+                        {dishImpact[`${it.category}:${it.label.trim()}`]! > 1 ? "s" : ""}{" "}
+                        concerné
+                        {dishImpact[`${it.category}:${it.label.trim()}`]! > 1 ? "s" : ""} (liste
+                        importée)
+                      </p>
+                    ) : null}
                     <div className="mt-2 flex flex-wrap gap-2">
                       {EU14_ALLERGENS.map((a) => {
                         const selected = it.allergens.includes(a);
@@ -158,6 +210,7 @@ export function MenuEditor({
                           <button
                             key={a}
                             type="button"
+                            title={a}
                             onClick={() => {
                               update(idx, {
                                 allergens: selected
@@ -172,7 +225,7 @@ export function MenuEditor({
                                 : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
                             ].join(" ")}
                           >
-                            {a}
+                            {allergenButtonLabel(a)}
                           </button>
                         );
                       })}
