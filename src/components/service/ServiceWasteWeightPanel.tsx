@@ -103,26 +103,20 @@ export function ServiceWasteWeightPanel({
 
   return (
     <div
-      className={cn(
-        "overflow-hidden rounded-2xl border p-5 shadow-md sm:p-6",
-        t.shell,
-        className,
-      )}
+      className={cn("overflow-hidden rounded-2xl border shadow-md", t.shell, className)}
     >
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8 md:gap-10">
+      <div className="flex min-h-[18rem] flex-row sm:min-h-[20rem]">
         <div
-          className="flex shrink-0 items-center justify-center self-center sm:self-stretch sm:py-2"
+          className="relative w-24 shrink-0 overflow-hidden sm:w-32 md:w-40 lg:w-48"
           aria-hidden
         >
-          <div className="flex h-32 w-32 items-center justify-center rounded-[2rem] bg-white/15 ring-1 ring-white/30 sm:h-40 sm:w-40 md:h-48 md:w-48">
-            <Trash2
-              className="h-20 w-20 text-white sm:h-24 sm:w-24 md:h-28 md:w-28"
-              strokeWidth={1.25}
-            />
-          </div>
+          <Trash2
+            className="pointer-events-none absolute top-1/2 -left-[58%] h-56 w-56 -translate-y-1/2 text-white/30 sm:-left-[55%] sm:h-72 sm:w-72 md:-left-[52%] md:h-96 md:w-96 lg:h-[28rem] lg:w-[28rem]"
+            strokeWidth={1}
+          />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-5 sm:px-6 sm:py-6">
           <div className="flex flex-col items-center gap-2 text-center">
             <div className="flex items-center justify-center gap-3">
               <span
@@ -147,53 +141,53 @@ export function ServiceWasteWeightPanel({
           </div>
 
           <div className="mt-4 flex flex-col items-center gap-3 text-center">
-        <Label
-          htmlFor={`waste-weight-${serviceId}`}
-          className="text-base font-medium text-white sm:text-lg"
-        >
-          Poids total des déchets (g)
-        </Label>
-        <Input
-          id={`waste-weight-${serviceId}`}
-          type="text"
-          inputMode="numeric"
-          placeholder="ex. 8500"
-          value={weightInput}
-          onChange={(e) => setWeightInput(e.target.value)}
-          className="h-14 w-full max-w-[14rem] border-white/30 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl"
-        />
-        <span className="max-w-md text-base text-white/90 sm:text-lg">{conversionHint}</span>
-        <Button
-          type="button"
-          size="lg"
-          disabled={!canSave}
-          onClick={() => void save(parsedGrams)}
-          className="h-12 min-w-[11rem] rounded-xl border border-white/40 bg-white font-semibold text-emerald-800 shadow-sm hover:bg-white/95 disabled:border-white/20 disabled:bg-white/50 disabled:text-emerald-800/50"
-        >
-          <Save className="h-4 w-4 shrink-0" aria-hidden />
-          {status === "saving" ? "Enregistrement…" : "Enregistrer"}
-        </Button>
-        <p className="flex items-center justify-center gap-1.5 text-sm text-white/80 sm:text-base">
-          {invalidInput ? (
-            "Saisissez un nombre de grammes valide"
-          ) : status === "saved" ? (
-            <>
-              <Check className="h-3.5 w-3.5" aria-hidden />
-              Enregistré
-            </>
-          ) : status === "offline" ? (
-            <>
-              <CloudOff className="h-3.5 w-3.5" aria-hidden />
-              Hors ligne — réessayez quand la connexion revient
-            </>
-          ) : status === "error" ? (
-            "Erreur à l’enregistrement — réessayez"
-          ) : dirty ? (
-            "Modifications non enregistrées"
-          ) : (
-            "Appuyez sur Enregistrer après la pesée"
-          )}
-        </p>
+            <Label
+              htmlFor={`waste-weight-${serviceId}`}
+              className="text-base font-medium text-white sm:text-lg"
+            >
+              Poids total des déchets (g)
+            </Label>
+            <Input
+              id={`waste-weight-${serviceId}`}
+              type="text"
+              inputMode="numeric"
+              placeholder="ex. 8500"
+              value={weightInput}
+              onChange={(e) => setWeightInput(e.target.value)}
+              className="h-14 w-full max-w-[14rem] border-white/30 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl"
+            />
+            <span className="max-w-md text-base text-white/90 sm:text-lg">{conversionHint}</span>
+            <Button
+              type="button"
+              size="lg"
+              disabled={!canSave}
+              onClick={() => void save(parsedGrams)}
+              className="h-12 min-w-[11rem] rounded-xl border border-white/40 bg-white font-semibold text-emerald-800 shadow-sm hover:bg-white/95 disabled:border-white/20 disabled:bg-white/50 disabled:text-emerald-800/50"
+            >
+              <Save className="h-4 w-4 shrink-0" aria-hidden />
+              {status === "saving" ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+            <p className="flex items-center justify-center gap-1.5 text-sm text-white/80 sm:text-base">
+              {invalidInput ? (
+                "Saisissez un nombre de grammes valide"
+              ) : status === "saved" ? (
+                <>
+                  <Check className="h-3.5 w-3.5" aria-hidden />
+                  Enregistré
+                </>
+              ) : status === "offline" ? (
+                <>
+                  <CloudOff className="h-3.5 w-3.5" aria-hidden />
+                  Hors ligne — réessayez quand la connexion revient
+                </>
+              ) : status === "error" ? (
+                "Erreur à l’enregistrement — réessayez"
+              ) : dirty ? (
+                "Modifications non enregistrées"
+              ) : (
+                "Appuyez sur Enregistrer après la pesée"
+              )}
+            </p>
           </div>
         </div>
       </div>
