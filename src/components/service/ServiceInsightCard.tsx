@@ -44,22 +44,24 @@ export function ServiceInsightCard({
     >
       {centeredHeader ? (
         <div className="flex flex-col items-center gap-2 text-center">
-          <span
-            className={cn(
-              "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
-              t.icon,
-            )}
-          >
-            <Icon className="h-6 w-6" aria-hidden />
-          </span>
-          <div className={cn("min-w-0", t.text)}>
-            <h2 className="text-lg font-semibold leading-snug sm:text-xl">{title}</h2>
-            {subtitle ? (
-              <p className={cn("mt-1 text-sm leading-relaxed sm:text-base", t.muted)}>
-                {subtitle}
-              </p>
-            ) : null}
+          <div className="flex items-center justify-center gap-3">
+            <span
+              className={cn(
+                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                t.icon,
+              )}
+            >
+              <Icon className="h-6 w-6" aria-hidden />
+            </span>
+            <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
+              {title}
+            </h2>
           </div>
+          {subtitle ? (
+            <p className={cn("max-w-xl text-sm leading-relaxed sm:text-base", t.muted)}>
+              {subtitle}
+            </p>
+          ) : null}
         </div>
       ) : (
         <div className="flex items-start gap-3">
