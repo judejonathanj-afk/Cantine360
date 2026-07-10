@@ -107,12 +107,12 @@ export function ServiceWasteWeightPanel({
     >
       <div className="flex min-h-[18rem] flex-row sm:min-h-[20rem]">
         <div
-          className="relative w-24 shrink-0 overflow-hidden sm:w-32 md:w-40 lg:w-48"
+          className="relative shrink-0 overflow-hidden self-stretch w-[4.5rem] sm:w-28 md:w-36 lg:w-44"
           aria-hidden
         >
           <Trash2
-            className="pointer-events-none absolute top-1/2 -left-[58%] h-56 w-56 -translate-y-1/2 text-white/30 sm:-left-[55%] sm:h-72 sm:w-72 md:-left-[52%] md:h-96 md:w-96 lg:h-[28rem] lg:w-[28rem]"
-            strokeWidth={1}
+            className="pointer-events-none absolute right-0 top-1/2 h-52 w-52 -translate-y-1/2 text-white/25 sm:h-64 sm:w-64 md:h-80 md:w-80 lg:h-96 lg:w-96"
+            strokeWidth={1.25}
           />
         </div>
 
