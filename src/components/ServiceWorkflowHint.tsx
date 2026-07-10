@@ -74,7 +74,8 @@ export function ServiceWorkflowHint({ className }: { className?: string }) {
             </li>
             <li>
               <strong className={cn("font-semibold", t.text)}>Grammage des déchets</strong> —
-              poids total des déchets (kg) après le service, en bas de page.
+              poids total après le service, en <strong className={cn("font-semibold", t.text)}>g</strong> ou{" "}
+              <strong className={cn("font-semibold", t.text)}>kg</strong>.
             </li>
           </ol>
         </CollapsibleContent>
