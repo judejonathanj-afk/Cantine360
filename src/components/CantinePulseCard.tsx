@@ -7,9 +7,10 @@ import {
   Percent,
   Target,
   TrendingDown,
+  Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { computeCantinePulse, buildCantinePulseDailySeries, type CantinePulseWindowDays, type CantineServiceRow } from "@/lib/cantinePulse";
+import { computeCantinePulse, buildCantinePulseDailySeries, type CantinePulseWindowDays, type CantineServiceRow, type CantineWasteDayRow } from "@/lib/cantinePulse";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import {
   leftoversReductionVsPriorPct,
@@ -82,6 +83,7 @@ const globalChartConfig = {
   leftovers: { label: "Restes", color: "#3b82f6" },
   served: { label: "Servis", color: "#2dd4bf" },
   ratioPct: { label: "% / 100 assiettes", color: "#fafafa" },
+  wasteWeightG: { label: "Déchets (g)", color: "#eab308" },
 } satisfies ChartConfig;
 
 function ChartLegendItem({
@@ -110,12 +112,14 @@ function ChartLegendItem({
 
 function CantinePlusGlobalChart({
   rows,
+  wasteRows,
   mealType,
   score,
   mood,
   days,
 }: {
   rows: CantineServiceRow[];
+  wasteRows: CantineWasteDayRow[];
   mealType: string;
   score: number;
   mood: keyof typeof MOOD_STYLES;
@@ -124,10 +128,17 @@ function CantinePlusGlobalChart({
   const periodLabel = days === 30 ? "30 jours" : "7 jours";
   const priorLabel = days === 30 ? "les 30 jours d’avant" : "la semaine d’avant";
   const series = useMemo(
-    () => buildCantinePulseDailySeries(rows, mealType, { windowDays: days }),
-    [rows, mealType, days],
+    () =>
+      buildCantinePulseDailySeries(rows, mealType, {
+        windowDays: days,
+        wasteRows,
+      }),
+    [rows, wasteRows, mealType, days],
   );
-  const hasActivity = series.some((p) => p.leftovers > 0 || p.served > 0);
+  const hasActivity = series.some(
+    (p) => p.leftovers > 0 || p.served > 0 || p.wasteWeightG > 0,
+  );
+  const hasWasteSeries = series.some((p) => p.wasteWeightG > 0);
   const rest = Math.max(0, 100 - score);
   const moodColor = MOOD_CHART_COLOR[mood];
 
@@ -166,7 +177,7 @@ function CantinePlusGlobalChart({
               config={globalChartConfig}
               className="h-[min(16rem,45vw)] w-full min-h-[200px] aspect-auto"
             >
-              <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <ComposedChart data={series} margin={{ top: 8, right: hasWasteSeries ? 48 : 8, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
                 <XAxis
                   dataKey="label"
@@ -194,6 +205,18 @@ function CantinePlusGlobalChart({
                   domain={[0, "auto"]}
                   tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 11 }}
                 />
+                {hasWasteSeries ? (
+                  <YAxis
+                    yAxisId="grams"
+                    orientation="right"
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(v) => `${v} g`}
+                    width={40}
+                    domain={[0, "auto"]}
+                    tick={{ fill: "rgba(234,179,8,0.9)", fontSize: 11 }}
+                  />
+                ) : null}
                 <ChartTooltip
                   content={(tooltipProps) => (
                     <ChartTooltipContent
@@ -231,6 +254,18 @@ function CantinePlusGlobalChart({
                   dot={false}
                   connectNulls
                 />
+                {hasWasteSeries ? (
+                  <Line
+                    yAxisId="grams"
+                    type="monotone"
+                    dataKey="wasteWeightG"
+                    stroke="var(--color-wasteWeightG)"
+                    strokeWidth={2.5}
+                    dot={{ r: 3, fill: "var(--color-wasteWeightG)" }}
+                    activeDot={{ r: 5 }}
+                    connectNulls
+                  />
+                ) : null}
               </ComposedChart>
             </ChartContainer>
           )}
@@ -249,6 +284,12 @@ function CantinePlusGlobalChart({
               La <strong className="text-white">courbe pointillée</strong> = taux restes pour{" "}
               <strong className="text-white">100 assiettes servies</strong> (axe de droite).
             </li>
+            {hasWasteSeries ? (
+              <li>
+                La <strong className="text-yellow-300">courbe jaune</strong> = grammage des
+                déchets (g) jour par jour.
+              </li>
+            ) : null}
             <li>
               La <strong className="text-white">note sur 100</strong> ({score}/100) résume la
               période : plus elle est haute, mieux c&apos;est —{" "}
@@ -256,7 +297,7 @@ function CantinePlusGlobalChart({
             </li>
             <li>
               Le calcul repose surtout sur le taux restes ÷ servis, avec une petite pénalité si
-              le RAB est élevé, et l&apos;évolution vs {priorLabel} dès qu&apos;il y a
+              le RAB ou les déchets sont élevés, et l&apos;évolution vs {priorLabel} dès qu&apos;il y a
               assez d&apos;historique.
             </li>
           </ul>
@@ -319,11 +360,13 @@ export type CantinePulseEco = {
 
 export function CantinePulseCard({
   rows,
+  wasteRows = [],
   mealType,
   days = 7,
   eco = null,
 }: {
   rows: CantineServiceRow[];
+  wasteRows?: CantineWasteDayRow[];
   mealType: "LUNCH";
   days?: CantinePulseWindowDays;
   eco?: CantinePulseEco | null;
@@ -333,8 +376,8 @@ export function CantinePulseCard({
   const priorLabel = days === 30 ? "les 30 jours d’avant" : "la semaine d’avant";
 
   const pulse = useMemo(
-    () => computeCantinePulse(rows, mealType, { windowDays: days }),
-    [rows, mealType, days],
+    () => computeCantinePulse(rows, mealType, { windowDays: days, wasteRows }),
+    [rows, wasteRows, mealType, days],
   );
   const s = MOOD_STYLES[pulse.mood];
   const wrCurr = (pulse.meta.curr.wasteRate * 100).toFixed(1);
@@ -402,6 +445,7 @@ export function CantinePulseCard({
         {scorePending ? null : (
           <CantinePlusGlobalChart
             rows={rows}
+            wasteRows={wasteRows}
             mealType={mealType}
             score={pulse.score!}
             mood={pulse.mood}
@@ -436,7 +480,7 @@ export function CantinePulseCard({
 
         <div>
           <p className="mb-3 text-xs font-semibold text-white/70">Les chiffres</p>
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
+          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 sm:gap-3">
             <StatTile
               icon={<TrendingDown className="h-3.5 w-3.5" />}
               label="Restes cumulés"
@@ -467,6 +511,23 @@ export function CantinePulseCard({
               label="Pour 100 assiettes"
               value={curr.served > 0 ? `${wrCurr} %` : "—"}
               hint={curr.served > 0 ? "restes pour 100 servies" : "pas encore de servis"}
+              tileClass={STAT_TILE}
+            />
+            <StatTile
+              icon={<Trash2 className="h-3.5 w-3.5" />}
+              label="Déchets (grammage)"
+              value={
+                curr.wasteWeightG > 0
+                  ? `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g`
+                  : "—"
+              }
+              hint={
+                curr.wasteWeightG > 0 && curr.served > 0
+                  ? `${curr.wasteGramsPer100Served.toFixed(1)} g / 100 assiettes`
+                  : curr.wasteWeightG > 0
+                    ? periodLabel
+                    : "saisir en fin de service"
+              }
               tileClass={STAT_TILE}
             />
             <StatTile
@@ -613,8 +674,8 @@ export function CantinePulseCard({
           <span className="font-medium text-white/85">{pulse.actionLabel}</span>
           {" — "}
           Note /100 dès les <strong className="font-semibold text-white/90">premières portions servies</strong> ;
-          basée surtout sur le taux restes / servis, et sur l’évolution vs {priorLabel} dès
-          qu’il y a assez d’historique.
+          basée surtout sur le taux restes / servis, avec une pénalité si le RAB ou les déchets
+          sont élevés, et sur l’évolution vs {priorLabel} dès qu’il y a assez d’historique.
         </p>
       </CardContent>
     </Card>

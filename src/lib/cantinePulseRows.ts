@@ -1,11 +1,12 @@
 import type { MealType } from "@/generated/prisma/client";
-import type { CantineServiceRow } from "@/lib/cantinePulse";
+import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { formatServiceDateKey } from "@/lib/serviceDate";
 
 export type ServiceWithGroupMetrics = {
   date: Date;
   mealType: MealType;
+  wasteWeightG?: number | null;
   metrics: Array<{
     presentCount: number;
     servedCount: number;
@@ -37,5 +38,18 @@ export function servicesToCantinePulseRows(
     }
   }
   return rows;
+}
+
+/** Une ligne par service avec grammage déchets renseigné. */
+export function servicesToCantinePulseWasteRows(
+  services: ServiceWithGroupMetrics[],
+): CantineWasteDayRow[] {
+  return services
+    .filter((s) => s.wasteWeightG != null && s.wasteWeightG > 0)
+    .map((s) => ({
+      date: formatServiceDateKey(s.date),
+      mealType: s.mealType,
+      wasteWeightG: s.wasteWeightG!,
+    }));
 }
 

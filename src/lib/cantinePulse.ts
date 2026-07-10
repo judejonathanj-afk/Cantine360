@@ -13,6 +13,12 @@ export interface CantineServiceRow {
   leftoversCount: number;
 }
 
+export type CantineWasteDayRow = {
+  date: string;
+  mealType: string;
+  wasteWeightG: number;
+};
+
 export interface CantinePulseResult {
   /** Null tant qu’il n’y a pas de portions servies sur la période. */
   score: number | null;
@@ -28,6 +34,7 @@ export interface CantinePulseResult {
       wasteRatePct: number;
       leftoversPct: number;
       servedPct: number;
+      wasteGramsPct: number;
     };
     /** Semaines avec des portions servies (courante / précédente). */
     weeksWithServed: { current: boolean; previous: boolean };
@@ -40,6 +47,9 @@ interface WindowAgg {
   present: number;
   rab: number;
   refused: number;
+  wasteWeightG: number;
+  wasteGramsPer100Served: number;
+  servicesWithWaste: number;
   wasteRate: number;
   rabRate: number;
   rows: number;
@@ -128,10 +138,48 @@ function aggregateWindow(
   const base = { leftovers, served, present, rab, refused };
   return {
     ...base,
+    wasteWeightG: 0,
+    wasteGramsPer100Served: 0,
+    servicesWithWaste: 0,
     wasteRate: wasteRate(base),
     rabRate: rabRate(base),
     rows: n,
     activeDays: activeDays.size,
+  };
+}
+
+function aggregateWasteWindow(
+  wasteRows: CantineWasteDayRow[],
+  mealType: string,
+  startInclusive: Date,
+  endExclusive: Date,
+) {
+  let wasteWeightG = 0;
+  let servicesWithWaste = 0;
+
+  for (const r of wasteRows) {
+    if (r.mealType !== mealType) continue;
+    const day = parseDay(r.date);
+    if (!day || day < startInclusive || day >= endExclusive) continue;
+    if (r.wasteWeightG <= 0) continue;
+    wasteWeightG += r.wasteWeightG;
+    servicesWithWaste += 1;
+  }
+
+  return { wasteWeightG, servicesWithWaste };
+}
+
+function withWasteMetrics(
+  agg: WindowAgg,
+  waste: { wasteWeightG: number; servicesWithWaste: number },
+): WindowAgg {
+  const wasteGramsPer100Served =
+    agg.served > 0 ? (waste.wasteWeightG / agg.served) * 100 : 0;
+  return {
+    ...agg,
+    wasteWeightG: waste.wasteWeightG,
+    servicesWithWaste: waste.servicesWithWaste,
+    wasteGramsPer100Served,
   };
 }
 
@@ -172,26 +220,39 @@ function pendingResult(
 export function computeCantinePulse(
   rows: CantineServiceRow[],
   mealType: string,
-  opts?: { now?: Date; windowDays?: CantinePulseWindowDays },
+  opts?: {
+    now?: Date;
+    windowDays?: CantinePulseWindowDays;
+    wasteRows?: CantineWasteDayRow[];
+  },
 ): CantinePulseResult {
   const list = Array.isArray(rows) ? rows : [];
+  const wasteList = Array.isArray(opts?.wasteRows) ? opts.wasteRows : [];
   const now = opts?.now ?? new Date();
   const windowDays = opts?.windowDays ?? 7;
   const { tomorrow, currentStart, prevStart, prevEnd } = windowBounds(now, windowDays);
   const period = periodLabelFr(windowDays);
   const priorPhrase = priorPeriodPhraseFr(windowDays);
 
-  const curr = aggregateWindow(list, mealType, currentStart, tomorrow);
-  const prev = aggregateWindow(list, mealType, prevStart, prevEnd);
+  const curr = withWasteMetrics(
+    aggregateWindow(list, mealType, currentStart, tomorrow),
+    aggregateWasteWindow(wasteList, mealType, currentStart, tomorrow),
+  );
+  const prev = withWasteMetrics(
+    aggregateWindow(list, mealType, prevStart, prevEnd),
+    aggregateWasteWindow(wasteList, mealType, prevStart, prevEnd),
+  );
 
   const dLeftovers = pctDelta(prev.leftovers, curr.leftovers);
   const dServed = pctDelta(prev.served, curr.served);
   const dWasteRate = (curr.wasteRate - prev.wasteRate) * 100;
+  const dWasteGrams = pctDelta(prev.wasteWeightG, curr.wasteWeightG);
 
   const deltas = {
     wasteRatePct: dWasteRate,
     leftoversPct: dLeftovers,
     servedPct: dServed,
+    wasteGramsPct: dWasteGrams,
   };
 
   const weeksWithServed = {
@@ -229,6 +290,14 @@ export function computeCantinePulse(
     curr.rab > 0
       ? ` RAB : ${curr.rab} assiette${curr.rab > 1 ? "s" : ""} (${(curr.rabRate * 100).toFixed(1)} % des servis).`
       : "";
+  const wasteLine =
+    curr.wasteWeightG > 0
+      ? ` Déchets : ${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g${
+          curr.served > 0
+            ? ` (${curr.wasteGramsPer100Served.toFixed(1)} g / 100 assiettes).`
+            : "."
+        }`
+      : "";
 
   let score = scoreFromWasteRate(curr.wasteRate);
   if (hasPreviousWeek) {
@@ -236,6 +305,12 @@ export function computeCantinePulse(
     score += clamp(-dLeftovers * 0.15, -8, 8);
   }
   score -= clamp(curr.rabRate * 100 * 0.35, 0, 10);
+  if (curr.wasteWeightG > 0 && curr.served > 0) {
+    score -= clamp(curr.wasteGramsPer100Served * 0.015, 0, 10);
+  }
+  if (hasPreviousWeek && prev.wasteWeightG > 0 && dWasteGrams > 10) {
+    score -= clamp(dWasteGrams * 0.04, 0, 6);
+  }
   score = Math.round(clamp(score, 22, 98));
 
   let mood: CantineMood = "ok";
@@ -249,15 +324,15 @@ export function computeCantinePulse(
   if (!hasPreviousWeek) {
     if (curr.wasteRate === 0) {
       headline = "Aucun reste sur la période.";
-      subline = `${Math.round(curr.served)} assiettes servies sur ${period}, 0 reste enregistré.${rabLine}`;
+      subline = `${Math.round(curr.served)} assiettes servies sur ${period}, 0 reste enregistré.${rabLine}${wasteLine}`;
       actionLabel = "Voir les groupes";
     } else if (curr.wasteRate <= 0.06) {
       headline = "Peu de restes par rapport aux servis.";
-      subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.${rabLine}`;
+      subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.${rabLine}${wasteLine}`;
       actionLabel = "Voir les portions";
     } else {
       headline = `Suivi des ${period}.`;
-      subline = `${Math.round(curr.leftovers)} restes sur ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).${rabLine}`;
+      subline = `${Math.round(curr.leftovers)} restes sur ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).${rabLine}${wasteLine}`;
       actionLabel = "Voir le tableau";
     }
   } else if (curr.wasteRate === 0 && curr.served > 0) {
@@ -266,22 +341,23 @@ export function computeCantinePulse(
     if (curr.rab > 0) {
       subline += ` RAB : ${curr.rab} (${(curr.rabRate * 100).toFixed(1)} % des servis).`;
     }
+    subline += wasteLine;
     actionLabel = "Voir les groupes";
   } else if (dLeftovers <= -12 && curr.leftovers < prev.leftovers) {
     headline = "Moins de restes qu’avant : bien joué.";
-    subline = `Environ ${Math.round(Math.abs(dLeftovers))}% de restes en moins qu’${priorPhrase} — taux actuel ${wrPct} % pour 100 servies.`;
+    subline = `Environ ${Math.round(Math.abs(dLeftovers))}% de restes en moins qu’${priorPhrase} — taux actuel ${wrPct} % pour 100 servies.${wasteLine}`;
     actionLabel = "Voir les groupes";
   } else if (dLeftovers >= 15 || dWasteRate >= 4) {
     headline = "Il reste plus sur les assiettes qu’avant.";
-    subline = `Taux actuel ${wrPct} % pour 100 servies. Refus sur la période : ${curr.refused}.`;
+    subline = `Taux actuel ${wrPct} % pour 100 servies. Refus sur la période : ${curr.refused}.${wasteLine}`;
     actionLabel = "Voir par jour";
   } else if (curr.wasteRate <= 0.06) {
     headline = "Peu de restes par rapport aux servis.";
-    subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.`;
+    subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.${wasteLine}`;
     actionLabel = "Voir les portions";
   } else {
     headline = windowDays === 30 ? "À peu près comme la période d’avant." : "À peu près comme la semaine d’avant.";
-    subline = `${Math.round(curr.leftovers)} restes sur ${period} pour ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).`;
+    subline = `${Math.round(curr.leftovers)} restes sur ${period} pour ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).${wasteLine}`;
     actionLabel = "Voir le tableau";
   }
 
@@ -307,6 +383,7 @@ export type CantinePulseDailyPoint = {
   leftovers: number;
   served: number;
   rab: number;
+  wasteWeightG: number;
   ratioPct: number | null;
 };
 
@@ -322,9 +399,14 @@ function formatPulseDayLabel(isoDate: string) {
 export function buildCantinePulseDailySeries(
   rows: CantineServiceRow[],
   mealType: string,
-  opts?: { now?: Date; windowDays?: CantinePulseWindowDays },
+  opts?: {
+    now?: Date;
+    windowDays?: CantinePulseWindowDays;
+    wasteRows?: CantineWasteDayRow[];
+  },
 ): CantinePulseDailyPoint[] {
   const list = Array.isArray(rows) ? rows : [];
+  const wasteList = Array.isArray(opts?.wasteRows) ? opts.wasteRows : [];
   const now = opts?.now ?? new Date();
   const windowDays = opts?.windowDays ?? 7;
   const { tomorrow, currentStart } = windowBounds(now, windowDays);
@@ -339,6 +421,7 @@ export function buildCantinePulseDailySeries(
       leftovers: 0,
       served: 0,
       rab: 0,
+      wasteWeightG: 0,
       ratioPct: null,
     });
   }
@@ -354,6 +437,15 @@ export function buildCantinePulseDailySeries(
     point.leftovers += Number(r.leftoversCount) || 0;
     point.served += Number(r.servedCount) || 0;
     point.rab += Number(r.rabCount) || 0;
+  }
+
+  for (const r of wasteList) {
+    if (r.mealType !== mealType) continue;
+    const day = parseDay(r.date);
+    if (!day || day < currentStart || day >= tomorrow) continue;
+    const point = byDate.get(r.date);
+    if (!point) continue;
+    point.wasteWeightG += Number(r.wasteWeightG) || 0;
   }
 
   for (const point of points) {

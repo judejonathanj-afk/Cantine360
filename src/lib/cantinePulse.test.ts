@@ -82,6 +82,27 @@ describe("computeCantinePulse", () => {
     expect(a.score!).toBeGreaterThan(b.score!);
   });
 
+  it("pénalise un grammage déchets élevé", () => {
+    const lowWaste = computeCantinePulse(
+      [row("2026-06-18", { servedCount: 100, leftoversCount: 2 })],
+      "LUNCH",
+      {
+        now: NOW,
+        wasteRows: [{ date: "2026-06-18", mealType: "LUNCH", wasteWeightG: 200 }],
+      },
+    );
+    const highWaste = computeCantinePulse(
+      [row("2026-06-18", { servedCount: 100, leftoversCount: 2 })],
+      "LUNCH",
+      {
+        now: NOW,
+        wasteRows: [{ date: "2026-06-18", mealType: "LUNCH", wasteWeightG: 5000 }],
+      },
+    );
+    expect(lowWaste.score!).toBeGreaterThan(highWaste.score!);
+    expect(highWaste.meta.curr.wasteWeightG).toBe(5000);
+  });
+
   it("ignore les lignes d’un autre type de repas", () => {
     const pulse = computeCantinePulse(
       [

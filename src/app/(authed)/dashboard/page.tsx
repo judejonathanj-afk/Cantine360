@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 import DashboardPanels, { type DashboardEcoGroupRow } from "./DashboardPanels";
 import {
   servicesToCantinePulseRows,
+  servicesToCantinePulseWasteRows,
   type ServiceWithGroupMetrics,
 } from "@/lib/cantinePulseRows";
-import type { CantineServiceRow } from "@/lib/cantinePulse";
+import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { EcoObjectivePeriod, MealType } from "@/generated/prisma/client";
 import { sumServiceMetrics, sumServiceMetricsForGroup } from "@/lib/commissionBilan";
 import {
@@ -114,6 +115,7 @@ export default async function DashboardPage({
 
   let services;
   let pulseRows: CantineServiceRow[] = [];
+  let pulseWasteRows: CantineWasteDayRow[] = [];
   let wideServices: ServiceWithGroupMetrics[] = [];
   let establishment: {
     ecoRestesServisTargetPct: number | null;
@@ -187,6 +189,9 @@ export default async function DashboardPage({
     services = servicesResult;
     wideServices = wide;
     pulseRows = servicesToCantinePulseRows(
+      wide.filter((s) => s.date.getTime() >= pulseRangeStart.getTime()),
+    );
+    pulseWasteRows = servicesToCantinePulseWasteRows(
       wide.filter((s) => s.date.getTime() >= pulseRangeStart.getTime()),
     );
   } catch (e) {
@@ -395,6 +400,7 @@ export default async function DashboardPage({
       role={session.role}
       exportYear={now.getFullYear()}
       pulseRows={pulseRows}
+      pulseWasteRows={pulseWasteRows}
       eco={eco}
       totals={totals}
       leftoversRatePct={pct(leftoversRate)}

@@ -11,7 +11,7 @@ import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart"
 import { LeftoversByGroupTop } from "@/components/dashboard/LeftoversByGroupTop";
 import type { PerDayRowInput } from "@/lib/buildLeftoversEvolutionSeries";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
-import type { CantineServiceRow } from "@/lib/cantinePulse";
+import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 
 type Totals = {
@@ -50,6 +50,7 @@ export default function DashboardPanels({
   role,
   exportYear,
   pulseRows,
+  pulseWasteRows,
   eco,
   totals,
   leftoversRatePct,
@@ -65,6 +66,7 @@ export default function DashboardPanels({
   role: "ADMIN" | "KITCHEN";
   exportYear: number;
   pulseRows: CantineServiceRow[];
+  pulseWasteRows: CantineWasteDayRow[];
   eco: DashboardEcoPayload | null;
   totals: Totals;
   leftoversRatePct: string;
@@ -197,6 +199,7 @@ export default function DashboardPanels({
 
       <CantinePulseCard
         rows={pulseRows}
+        wasteRows={pulseWasteRows}
         mealType="LUNCH"
         days={days}
         eco={
