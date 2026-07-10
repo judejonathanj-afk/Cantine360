@@ -194,6 +194,7 @@ export default function DashboardPanels({
       <CantinePulseCard
         rows={pulseRows}
         mealType="LUNCH"
+        days={days}
         eco={
           eco
             ? {

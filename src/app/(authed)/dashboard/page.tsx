@@ -124,7 +124,10 @@ export default async function DashboardPage({
   } | null = null;
   let ecoBounds = ecoObjectiveBounds(now, "CALENDAR_YEAR", 9, 1);
   /** 14 jours calendaires (incluant aujourd’hui) pour comparaison 7j vs 7j du CantinePulse */
-  const pulseRangeStart = new Date(now.getTime() - 13 * 24 * 60 * 60 * 1000);
+  const pulseWindowDays = days === 30 ? 30 : 7;
+  const pulseRangeStart = new Date(
+    now.getTime() - (pulseWindowDays * 2 - 1) * 24 * 60 * 60 * 1000,
+  );
   pulseRangeStart.setHours(0, 0, 0, 0);
 
   let activeGroupsList: Array<{

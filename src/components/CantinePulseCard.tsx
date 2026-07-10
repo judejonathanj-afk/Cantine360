@@ -9,7 +9,7 @@ import {
   TrendingDown,
   UtensilsCrossed,
 } from "lucide-react";
-import { computeCantinePulse, buildCantinePulseDailySeries, type CantineServiceRow } from "@/lib/cantinePulse";
+import { computeCantinePulse, buildCantinePulseDailySeries, type CantinePulseWindowDays, type CantineServiceRow } from "@/lib/cantinePulse";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import {
   leftoversReductionVsPriorPct,
@@ -113,15 +113,19 @@ function CantinePlusGlobalChart({
   mealType,
   score,
   mood,
+  days,
 }: {
   rows: CantineServiceRow[];
   mealType: string;
   score: number;
   mood: keyof typeof MOOD_STYLES;
+  days: CantinePulseWindowDays;
 }) {
+  const periodLabel = days === 30 ? "30 jours" : "7 jours";
+  const priorLabel = days === 30 ? "les 30 jours d’avant" : "la semaine d’avant";
   const series = useMemo(
-    () => buildCantinePulseDailySeries(rows, mealType),
-    [rows, mealType],
+    () => buildCantinePulseDailySeries(rows, mealType, { windowDays: days }),
+    [rows, mealType, days],
   );
   const hasActivity = series.some((p) => p.leftovers > 0 || p.served > 0);
   const rest = Math.max(0, 100 - score);
@@ -155,7 +159,7 @@ function CantinePlusGlobalChart({
 
           {!hasActivity ? (
             <p className="rounded-xl border border-white/15 bg-black/20 px-3 py-2.5 text-sm text-white/75">
-              Pas encore de données sur les 7 derniers jours pour tracer le graphique.
+              Pas encore de données sur les {periodLabel} pour tracer le graphique.
             </p>
           ) : (
             <ChartContainer
@@ -239,7 +243,7 @@ function CantinePlusGlobalChart({
               Les <strong className="text-white">barres bleues</strong> = restes dans
               l&apos;assiette, les <strong className="text-white">barres vert d&apos;eau</strong>{" "}
               = portions servies, jour par jour sur{" "}
-              <strong className="text-white">7 jours</strong>.
+              <strong className="text-white">{periodLabel}</strong>.
             </li>
             <li>
               La <strong className="text-white">courbe pointillée</strong> = taux restes pour{" "}
@@ -247,12 +251,12 @@ function CantinePlusGlobalChart({
             </li>
             <li>
               La <strong className="text-white">note sur 100</strong> ({score}/100) résume la
-              semaine : plus elle est haute, mieux c&apos;est —{" "}
+              période : plus elle est haute, mieux c&apos;est —{" "}
               <strong className="text-white">100 = objectif idéal</strong>.
             </li>
             <li>
               Le calcul repose surtout sur le taux restes ÷ servis, avec une petite pénalité si
-              le RAB est élevé, et l&apos;évolution vs la semaine d&apos;avant dès qu&apos;il y a
+              le RAB est élevé, et l&apos;évolution vs {priorLabel} dès qu&apos;il y a
               assez d&apos;historique.
             </li>
           </ul>
@@ -316,17 +320,21 @@ export type CantinePulseEco = {
 export function CantinePulseCard({
   rows,
   mealType,
+  days = 7,
   eco = null,
 }: {
   rows: CantineServiceRow[];
   mealType: "LUNCH";
+  days?: CantinePulseWindowDays;
   eco?: CantinePulseEco | null;
 }) {
   const [ecoPanelOpen, setEcoPanelOpen] = useState(false);
+  const periodLabel = days === 30 ? "30 jours" : "7 jours";
+  const priorLabel = days === 30 ? "les 30 jours d’avant" : "la semaine d’avant";
 
   const pulse = useMemo(
-    () => computeCantinePulse(rows, mealType),
-    [rows, mealType],
+    () => computeCantinePulse(rows, mealType, { windowDays: days }),
+    [rows, mealType, days],
   );
   const s = MOOD_STYLES[pulse.mood];
   const wrCurr = (pulse.meta.curr.wasteRate * 100).toFixed(1);
@@ -342,7 +350,7 @@ export function CantinePulseCard({
     : "—";
   const evolHint =
     prev.leftovers > 0 || curr.leftovers > 0
-      ? "par rapport aux 7 jours d’avant"
+      ? `par rapport à ${priorLabel}`
       : "rien à comparer encore";
 
   const ecoGroups =
@@ -362,16 +370,16 @@ export function CantinePulseCard({
       <CardContent className="space-y-5 p-6 pt-4">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="inline-flex rounded-xl bg-black px-5 py-2 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-6 sm:py-2.5">
+            <div className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-black px-10 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-3">
               <MenusCantineColorTitle
                 text="CANTINE +"
-                className="text-2xl sm:text-3xl lg:text-4xl"
+                className="text-2xl tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] lg:text-4xl"
               />
             </div>
           </div>
           <p className="mx-auto mt-2 max-w-2xl text-balance text-sm text-white/75 sm:text-base">
             Restes dans l&apos;assiette et RAB{" "}
-            <span className="text-white/90">(assiettes adaptées ou resservies)</span> — 7 jours
+            <span className="text-white/90">(assiettes adaptées ou resservies)</span> — {periodLabel}
           </p>
         </div>
 
@@ -397,6 +405,7 @@ export function CantinePulseCard({
             mealType={mealType}
             score={pulse.score!}
             mood={pulse.mood}
+            days={days}
           />
         )}
 
@@ -432,14 +441,14 @@ export function CantinePulseCard({
               icon={<TrendingDown className="h-3.5 w-3.5" />}
               label="Restes cumulés"
               value={String(curr.leftovers)}
-              hint="7 derniers jours"
+              hint={periodLabel}
               tileClass={STAT_TILE}
             />
             <StatTile
               icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
               label="Assiettes servies"
               value={String(curr.served)}
-              hint="7 derniers jours"
+              hint={periodLabel}
               tileClass={STAT_TILE}
             />
             <StatTile
@@ -449,7 +458,7 @@ export function CantinePulseCard({
               hint={
                 curr.served > 0
                   ? `${(curr.rabRate * 100).toFixed(1)} % des servis`
-                  : "7 derniers jours"
+                  : periodLabel
               }
               tileClass={STAT_TILE}
             />
@@ -462,7 +471,7 @@ export function CantinePulseCard({
             />
             <StatTile
               icon={<Activity className="h-3.5 w-3.5" />}
-              label="Vs semaine d’avant"
+              label={days === 30 ? "Vs période d’avant" : "Vs semaine d’avant"}
               value={evolLabel}
               hint={evolHint}
               tileClass={STAT_TILE}
@@ -604,7 +613,7 @@ export function CantinePulseCard({
           <span className="font-medium text-white/85">{pulse.actionLabel}</span>
           {" — "}
           Note /100 dès les <strong className="font-semibold text-white/90">premières portions servies</strong> ;
-          basée surtout sur le taux restes / servis, et sur l’évolution vs la semaine d’avant dès
+          basée surtout sur le taux restes / servis, et sur l’évolution vs {priorLabel} dès
           qu’il y a assez d’historique.
         </p>
       </CardContent>

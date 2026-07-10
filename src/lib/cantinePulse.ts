@@ -46,6 +46,25 @@ interface WindowAgg {
   activeDays: number;
 }
 
+export type CantinePulseWindowDays = 7 | 30;
+
+function windowBounds(now: Date, windowDays: CantinePulseWindowDays) {
+  const tomorrow = startOfDay(new Date(now.getTime() + 86400000));
+  const todayStart = startOfDay(now);
+  const currentStart = new Date(todayStart.getTime() - (windowDays - 1) * 86400000);
+  const prevEnd = currentStart;
+  const prevStart = new Date(currentStart.getTime() - windowDays * 86400000);
+  return { tomorrow, currentStart, prevStart, prevEnd };
+}
+
+function periodLabelFr(windowDays: CantinePulseWindowDays) {
+  return windowDays === 30 ? "30 jours" : "7 jours";
+}
+
+function priorPeriodPhraseFr(windowDays: CantinePulseWindowDays) {
+  return windowDays === 30 ? "les 30 jours d’avant" : "la semaine d’avant";
+}
+
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
 }
@@ -149,19 +168,18 @@ function pendingResult(
   };
 }
 
-/** 7 derniers jours comparés aux 7 jours d’avant (restes / assiettes servies). */
+/** Fenêtre glissante comparée à la période précédente (7 ou 30 jours). */
 export function computeCantinePulse(
   rows: CantineServiceRow[],
   mealType: string,
-  opts?: { now?: Date },
+  opts?: { now?: Date; windowDays?: CantinePulseWindowDays },
 ): CantinePulseResult {
   const list = Array.isArray(rows) ? rows : [];
   const now = opts?.now ?? new Date();
-  const tomorrow = startOfDay(new Date(now.getTime() + 86400000));
-  const todayStart = startOfDay(now);
-  const currentStart = new Date(todayStart.getTime() - 6 * 86400000);
-  const prevEnd = currentStart;
-  const prevStart = new Date(currentStart.getTime() - 7 * 86400000);
+  const windowDays = opts?.windowDays ?? 7;
+  const { tomorrow, currentStart, prevStart, prevEnd } = windowBounds(now, windowDays);
+  const period = periodLabelFr(windowDays);
+  const priorPhrase = priorPeriodPhraseFr(windowDays);
 
   const curr = aggregateWindow(list, mealType, currentStart, tomorrow);
   const prev = aggregateWindow(list, mealType, prevStart, prevEnd);
@@ -231,27 +249,27 @@ export function computeCantinePulse(
   if (!hasPreviousWeek) {
     if (curr.wasteRate === 0) {
       headline = "Aucun reste sur la période.";
-      subline = `${Math.round(curr.served)} assiettes servies sur 7 jours, 0 reste enregistré.${rabLine}`;
+      subline = `${Math.round(curr.served)} assiettes servies sur ${period}, 0 reste enregistré.${rabLine}`;
       actionLabel = "Voir les groupes";
     } else if (curr.wasteRate <= 0.06) {
       headline = "Peu de restes par rapport aux servis.";
-      subline = `${wrPct} % de restes pour 100 assiettes servies sur 7 jours.${rabLine}`;
+      subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.${rabLine}`;
       actionLabel = "Voir les portions";
     } else {
-      headline = "Suivi des 7 derniers jours.";
+      headline = `Suivi des ${period}.`;
       subline = `${Math.round(curr.leftovers)} restes sur ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).${rabLine}`;
       actionLabel = "Voir le tableau";
     }
   } else if (curr.wasteRate === 0 && curr.served > 0) {
     headline = "Aucun reste sur la période.";
-    subline = `${Math.round(curr.served)} assiettes servies sur 7 jours, 0 reste enregistré.`;
+    subline = `${Math.round(curr.served)} assiettes servies sur ${period}, 0 reste enregistré.`;
     if (curr.rab > 0) {
       subline += ` RAB : ${curr.rab} (${(curr.rabRate * 100).toFixed(1)} % des servis).`;
     }
     actionLabel = "Voir les groupes";
   } else if (dLeftovers <= -12 && curr.leftovers < prev.leftovers) {
     headline = "Moins de restes qu’avant : bien joué.";
-    subline = `Environ ${Math.round(Math.abs(dLeftovers))}% de restes en moins qu’il y a une semaine — taux actuel ${wrPct} % pour 100 servies.`;
+    subline = `Environ ${Math.round(Math.abs(dLeftovers))}% de restes en moins qu’${priorPhrase} — taux actuel ${wrPct} % pour 100 servies.`;
     actionLabel = "Voir les groupes";
   } else if (dLeftovers >= 15 || dWasteRate >= 4) {
     headline = "Il reste plus sur les assiettes qu’avant.";
@@ -259,11 +277,11 @@ export function computeCantinePulse(
     actionLabel = "Voir par jour";
   } else if (curr.wasteRate <= 0.06) {
     headline = "Peu de restes par rapport aux servis.";
-    subline = `${wrPct} % de restes pour 100 assiettes servies sur 7 jours.`;
+    subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.`;
     actionLabel = "Voir les portions";
   } else {
-    headline = "À peu près comme la semaine d’avant.";
-    subline = `${Math.round(curr.leftovers)} restes sur 7 jours pour ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).`;
+    headline = windowDays === 30 ? "À peu près comme la période d’avant." : "À peu près comme la semaine d’avant.";
+    subline = `${Math.round(curr.leftovers)} restes sur ${period} pour ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).`;
     actionLabel = "Voir le tableau";
   }
 
@@ -300,20 +318,19 @@ function formatPulseDayLabel(isoDate: string) {
   }).format(d);
 }
 
-/** Série journalière sur les 7 derniers jours (même fenêtre que `computeCantinePulse`). */
+/** Série journalière sur la fenêtre courante (même durée que `computeCantinePulse`). */
 export function buildCantinePulseDailySeries(
   rows: CantineServiceRow[],
   mealType: string,
-  opts?: { now?: Date },
+  opts?: { now?: Date; windowDays?: CantinePulseWindowDays },
 ): CantinePulseDailyPoint[] {
   const list = Array.isArray(rows) ? rows : [];
   const now = opts?.now ?? new Date();
-  const tomorrow = startOfDay(new Date(now.getTime() + 86400000));
-  const todayStart = startOfDay(now);
-  const currentStart = new Date(todayStart.getTime() - 6 * 86400000);
+  const windowDays = opts?.windowDays ?? 7;
+  const { tomorrow, currentStart } = windowBounds(now, windowDays);
 
   const points: CantinePulseDailyPoint[] = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < windowDays; i++) {
     const day = new Date(currentStart.getTime() + i * 86400000);
     const date = formatServiceDateKey(day);
     points.push({
