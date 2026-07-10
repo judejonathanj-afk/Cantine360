@@ -103,44 +103,41 @@ export function ServiceWasteWeightPanel({
 
   return (
     <div
-      className={cn("overflow-hidden rounded-2xl border shadow-md", t.shell, className)}
+      className={cn("relative overflow-hidden rounded-2xl border shadow-md", t.shell, className)}
     >
-      <div className="flex min-h-[18rem] flex-row sm:min-h-[20rem]">
-        <div
-          className="relative shrink-0 overflow-hidden self-stretch w-[4.5rem] sm:w-28 md:w-36 lg:w-44"
-          aria-hidden
-        >
-          <Trash2
-            className="pointer-events-none absolute right-0 top-1/2 h-52 w-52 -translate-y-1/2 text-white/25 sm:h-64 sm:w-64 md:h-80 md:w-80 lg:h-96 lg:w-96"
-            strokeWidth={1.25}
-          />
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 w-[4.5rem] overflow-hidden sm:w-28 md:w-36 lg:w-44"
+        aria-hidden
+      >
+        <Trash2
+          className="absolute right-0 top-1/2 h-52 w-52 -translate-y-1/2 text-white/25 sm:h-64 sm:w-64 md:h-80 md:w-80 lg:h-96 lg:w-96"
+          strokeWidth={1.25}
+        />
+      </div>
+
+      <div className="relative z-10 flex min-h-[18rem] flex-col items-center justify-center px-4 py-5 text-center sm:min-h-[20rem] sm:px-6 sm:py-6">
+        <div className="flex w-full max-w-lg flex-col items-center gap-2">
+          <div className="flex items-center justify-center gap-3">
+            <span
+              className={cn(
+                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                t.icon,
+              )}
+            >
+              <Trash2 className="h-6 w-6" aria-hidden />
+            </span>
+            <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
+              Grammage des déchets
+            </h2>
+          </div>
+          <p className={cn("max-w-xl text-sm leading-relaxed sm:text-base", t.muted)}>
+            Après le service — enregistré pour ce déjeuner uniquement
+          </p>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col justify-center px-4 py-5 sm:px-6 sm:py-6">
-          <div className="flex flex-col items-center gap-2 text-center">
-            <div className="flex items-center justify-center gap-3">
-              <span
-                className={cn(
-                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
-                  t.icon,
-                )}
-              >
-                <Trash2 className="h-6 w-6" aria-hidden />
-              </span>
-              <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
-                Grammage des déchets
-              </h2>
-            </div>
-            <p className={cn("max-w-xl text-sm leading-relaxed sm:text-base", t.muted)}>
-              Après le service — enregistré pour ce déjeuner uniquement
-            </p>
-          </div>
+        <div className={cn("mt-3 text-3xl font-bold tracking-tight", t.text)}>{metric}</div>
 
-          <div className={cn("mt-3 text-center text-3xl font-bold tracking-tight", t.text)}>
-            {metric}
-          </div>
-
-          <div className="mt-4 flex flex-col items-center gap-3 text-center">
+        <div className="mt-4 flex w-full max-w-lg flex-col items-center gap-3">
             <Label
               htmlFor={`waste-weight-${serviceId}`}
               className="text-base font-medium text-white sm:text-lg"
@@ -188,7 +185,6 @@ export function ServiceWasteWeightPanel({
                 "Appuyez sur Enregistrer après la pesée"
               )}
             </p>
-          </div>
         </div>
       </div>
     </div>
