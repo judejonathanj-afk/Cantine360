@@ -167,7 +167,7 @@ export function ServiceWasteWeightPanel({
               size="lg"
               disabled={!canSave}
               onClick={() => void save(parsedGrams)}
-              className="h-12 min-w-[11rem] rounded-xl border border-white/40 bg-white font-semibold text-emerald-800 shadow-sm hover:bg-white/95 disabled:border-white/20 disabled:bg-white/50 disabled:text-emerald-800/50"
+              className="h-12 min-w-[11rem] rounded-xl border-2 border-yellow-400 bg-white font-semibold text-emerald-800 shadow-sm ring-2 ring-yellow-300/80 hover:bg-white/95 disabled:border-yellow-400/40 disabled:bg-white/50 disabled:text-emerald-800/50 disabled:ring-yellow-300/30"
             >
               <Save className="h-4 w-4 shrink-0" aria-hidden />
               {status === "saving" ? "Enregistrement…" : "Enregistrer"}
