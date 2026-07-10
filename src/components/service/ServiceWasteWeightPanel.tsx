@@ -4,39 +4,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Check, CloudOff, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { formatKgFromGrams } from "@/lib/serviceGrammage";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { cn } from "@/lib/utils";
 
-type WasteUnit = "g" | "kg";
-
-function defaultUnitForGrams(grams: number | null): WasteUnit {
-  if (grams != null && grams > 0 && grams < 1000) return "g";
-  return "kg";
-}
-
-function gramsToInput(grams: number | null, unit: WasteUnit): string {
+function gramsToInput(grams: number | null): string {
   if (grams == null || grams <= 0) return "";
-  if (unit === "kg") {
-    const kg = grams / 1000;
-    return Number.isInteger(kg) ? String(kg) : kg.toFixed(2).replace(/\.?0+$/, "");
-  }
   return String(grams);
 }
 
-function parseInputToGrams(raw: string, unit: WasteUnit): number | null {
+function parseGramsInput(raw: string): number | null {
   const trimmed = raw.trim().replace(",", ".");
   if (!trimmed) return null;
   const value = Number(trimmed);
   if (!Number.isFinite(value) || value < 0) return null;
-  if (unit === "kg") return Math.round(value * 1000);
   return Math.round(value);
-}
-
-function formatGramsPreview(grams: number): string {
-  return `${grams.toLocaleString("fr-FR")} g`;
 }
 
 export function ServiceWasteWeightPanel({
@@ -50,18 +33,13 @@ export function ServiceWasteWeightPanel({
 }) {
   const online = useOnlineStatus();
   const [savedGrams, setSavedGrams] = useState<number | null>(initialWasteWeightG);
-  const [unit, setUnit] = useState<WasteUnit>(() =>
-    defaultUnitForGrams(initialWasteWeightG),
-  );
-  const [weightInput, setWeightInput] = useState(() =>
-    gramsToInput(initialWasteWeightG, defaultUnitForGrams(initialWasteWeightG)),
-  );
+  const [weightInput, setWeightInput] = useState(() => gramsToInput(initialWasteWeightG));
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error" | "offline">(
     "idle",
   );
   const saveTimer = useRef<number | null>(null);
 
-  const parsedGrams = parseInputToGrams(weightInput, unit);
+  const parsedGrams = parseGramsInput(weightInput);
   const dirty = parsedGrams !== savedGrams;
 
   const save = useCallback(
@@ -85,7 +63,7 @@ export function ServiceWasteWeightPanel({
         const data = (await res.json()) as { service: { wasteWeightG: number | null } };
         const nextGrams = data.service.wasteWeightG;
         setSavedGrams(nextGrams);
-        setWeightInput(gramsToInput(nextGrams, unit));
+        setWeightInput(gramsToInput(nextGrams));
         setStatus("saved");
         window.setTimeout(() => setStatus("idle"), 800);
         return true;
@@ -94,7 +72,7 @@ export function ServiceWasteWeightPanel({
         return false;
       }
     },
-    [online, serviceId, unit],
+    [online, serviceId],
   );
 
   useEffect(() => {
@@ -108,19 +86,12 @@ export function ServiceWasteWeightPanel({
     };
   }, [dirty, parsedGrams, save]);
 
-  function onUnitChange(nextUnit: WasteUnit) {
-    if (nextUnit === unit) return;
-    const grams = parseInputToGrams(weightInput, unit);
-    setUnit(nextUnit);
-    setWeightInput(gramsToInput(grams, nextUnit));
-  }
-
   const metric =
     savedGrams != null && savedGrams > 0 ? (
       <>
-        {formatKgFromGrams(savedGrams)}
+        {savedGrams.toLocaleString("fr-FR")} g
         <span className="ml-1 text-sm font-medium text-white/80">
-          ({formatGramsPreview(savedGrams)})
+          ({formatKgFromGrams(savedGrams)})
         </span>
       </>
     ) : (
@@ -129,9 +100,7 @@ export function ServiceWasteWeightPanel({
 
   const conversionHint =
     parsedGrams != null && parsedGrams > 0
-      ? unit === "kg"
-        ? `= ${formatGramsPreview(parsedGrams)}`
-        : `= ${formatKgFromGrams(parsedGrams)}`
+      ? `= ${formatKgFromGrams(parsedGrams)}`
       : "Pesée globale (bac, compost, table…)";
 
   return (
@@ -141,48 +110,29 @@ export function ServiceWasteWeightPanel({
       title="Grammage des déchets"
       subtitle="Après le service"
       metric={metric}
+      centeredHeader
       className={cn(className)}
     >
-      <div className="mt-2 space-y-2">
-        <Label htmlFor={`waste-weight-${serviceId}`} className="text-sm text-white/90">
-          Poids total des déchets
+      <div className="mt-3 space-y-3">
+        <Label
+          htmlFor={`waste-weight-${serviceId}`}
+          className="block text-base font-medium text-white sm:text-lg"
+        >
+          Poids total des déchets (g)
         </Label>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
           <Input
             id={`waste-weight-${serviceId}`}
             type="text"
-            inputMode="decimal"
-            placeholder={unit === "kg" ? "ex. 8,5" : "ex. 8500"}
+            inputMode="numeric"
+            placeholder="ex. 8500"
             value={weightInput}
             onChange={(e) => setWeightInput(e.target.value)}
-            className="max-w-[8rem] border-white/30 bg-white/95 text-zinc-900 placeholder:text-zinc-500"
+            className="h-14 w-full max-w-[12rem] border-white/30 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl"
           />
-          <ToggleGroup
-            type="single"
-            value={unit}
-            onValueChange={(v) => {
-              if (v === "g" || v === "kg") onUnitChange(v);
-            }}
-            className="rounded-lg border border-white/30 bg-white/15 p-0.5"
-          >
-            <ToggleGroupItem
-              value="g"
-              aria-label="Grammes"
-              className="min-w-10 border-0 bg-transparent px-3 text-white data-[state=on]:bg-white data-[state=on]:text-emerald-700"
-            >
-              g
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="kg"
-              aria-label="Kilogrammes"
-              className="min-w-10 border-0 bg-transparent px-3 text-white data-[state=on]:bg-white data-[state=on]:text-emerald-700"
-            >
-              kg
-            </ToggleGroupItem>
-          </ToggleGroup>
-          <span className="text-sm text-white/85">{conversionHint}</span>
+          <span className="text-base text-white/90 sm:text-lg">{conversionHint}</span>
         </div>
-        <p className="flex items-center gap-1.5 text-xs text-white/80">
+        <p className="flex items-center justify-center gap-1.5 text-sm text-white/80 sm:justify-start sm:text-base">
           {status === "saving" ? (
             "Enregistrement…"
           ) : status === "saved" ? (
