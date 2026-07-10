@@ -33,13 +33,13 @@ export function ServiceMetricsSection({
 
   return (
     <div className="space-y-4">
-      <ServiceSchoolFilter cards={cards} value={schoolFilter} onChange={setSchoolFilter} />
       <ServiceAttendanceImport
         serviceId={serviceId}
         kitchenMode={kitchenMode}
         presentTotal={presentTotal}
         className="w-full"
       />
+      <ServiceSchoolFilter cards={cards} value={schoolFilter} onChange={setSchoolFilter} />
       <ServiceClassGrid serviceId={serviceId} cards={filtered} hasMenu={hasMenu} />
     </div>
   );
