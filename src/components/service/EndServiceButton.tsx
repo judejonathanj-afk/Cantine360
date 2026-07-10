@@ -18,9 +18,10 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   className?: string;
+  compact?: boolean;
 };
 
-export function EndServiceButton({ className }: Props) {
+export function EndServiceButton({ className, compact = false }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -28,14 +29,16 @@ export function EndServiceButton({ className }: Props) {
     <>
       <Button
         type="button"
+        size={compact ? "sm" : "default"}
         className={cn(
           "rounded-xl border border-red-700 bg-red-600 font-semibold text-white shadow-sm hover:bg-red-700 active:bg-red-800",
+          compact && "gap-2",
           className,
         )}
         onClick={() => setOpen(true)}
       >
-        <CheckCircle2 className="h-4 w-4" />
-        Fin de service
+        <CheckCircle2 className="h-4 w-4 shrink-0" />
+        <span className={cn(compact && "hidden sm:inline")}>Fin de service</span>
       </Button>
 
       <AlertDialog open={open} onOpenChange={setOpen}>

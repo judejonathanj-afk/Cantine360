@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { OfflineSyncBanner } from "@/components/service/OfflineSyncBanner";
+import { EndServiceButton } from "@/components/service/EndServiceButton";
 
 type Props = {
   role: "ADMIN" | "KITCHEN";
@@ -190,18 +191,22 @@ export function AppShell({ role, establishmentLabel, children }: Props) {
             {renderNavItems("desktop", navItems, pathname)}
           </nav>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="shrink-0 gap-2"
-            onClick={logout}
-            disabled={busy}
-          >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {busy ? "..." : "Déconnexion"}
-            </span>
-          </Button>
+          {serviceId ? (
+            <EndServiceButton compact className="shrink-0" />
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="shrink-0 gap-2"
+              onClick={logout}
+              disabled={busy}
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">
+                {busy ? "..." : "Déconnexion"}
+              </span>
+            </Button>
+          )}
         </div>
       </header>
 
