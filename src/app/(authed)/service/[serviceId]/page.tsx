@@ -11,6 +11,7 @@ import { ServiceConcernedStudentsPanel } from "@/components/service/ServiceConce
 import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
+import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
 import { ServiceInfoGrid } from "@/components/service/ServiceInfoGrid";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 
@@ -85,7 +86,8 @@ export default async function ServicePage({
           <p className="w-full text-pretty text-base leading-relaxed text-zinc-600 sm:text-lg md:text-xl">
             Avant le repas : consultez le menu, les allergènes et le grammage, puis
             renseignez les présents par groupe (saisie ou import CSV). Après le
-            repas : complétez servis, RAB, refus et restes pour chaque classe.
+            repas : complétez servis, RAB, refus et restes pour chaque classe, puis
+            notez le <strong className="font-semibold text-zinc-800">poids total des déchets</strong>.
             Clôturez avec « Fin de service » lorsque tout est à jour.
           </p>
         </div>
@@ -124,6 +126,11 @@ export default async function ServicePage({
           hasMenu={allergenSummary?.hasMenu ?? false}
         />
       )}
+
+      <ServiceWasteWeightPanel
+        serviceId={serviceId}
+        initialWasteWeightG={service.wasteWeightG}
+      />
     </div>
   );
 }

@@ -72,6 +72,10 @@ export function ServiceWorkflowHint({ className }: { className?: string }) {
               <strong className={cn("font-semibold", t.text)}>Servis, RAB, refus, restes</strong> —
               en général après le repas.
             </li>
+            <li>
+              <strong className={cn("font-semibold", t.text)}>Grammage des déchets</strong> —
+              poids total des déchets (kg) après le service, en bas de page.
+            </li>
           </ol>
         </CollapsibleContent>
       </div>

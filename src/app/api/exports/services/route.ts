@@ -62,6 +62,7 @@ export async function GET(req: Request) {
       rabCount: m.rabCount,
       refusedCount: m.refusedCount,
       leftoversCount: m.leftoversCount,
+      wasteWeightG: s.wasteWeightG ?? "",
     })),
   );
 
