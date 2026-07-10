@@ -278,6 +278,23 @@ export default async function DashboardPage({
     ...v,
   }));
 
+  const wastePerDay = new Map<string, { wasteWeightG: number; served: number }>();
+  for (const s of services) {
+    const key = formatServiceDateKey(s.date);
+    const bucket = wastePerDay.get(key) ?? { wasteWeightG: 0, served: 0 };
+    for (const m of s.metrics) {
+      bucket.served += m.servedCount;
+    }
+    if (s.wasteWeightG != null && s.wasteWeightG > 0) {
+      bucket.wasteWeightG += s.wasteWeightG;
+    }
+    wastePerDay.set(key, bucket);
+  }
+  const wastePerDayRows = Array.from(wastePerDay.entries()).map(([date, v]) => ({
+    date,
+    ...v,
+  }));
+
   function ecoSlice() {
     const y = sumServiceMetrics(wideServices, {
       mealType: MealType.LUNCH,
@@ -386,6 +403,7 @@ export default async function DashboardPage({
       servedVsPresentPct={pct(servedVsPresent)}
       top={top.map(({ group, leftovers }) => ({ group, leftovers }))}
       perDayRows={perDayRows}
+      wastePerDayRows={wastePerDayRows}
     />
   );
 }

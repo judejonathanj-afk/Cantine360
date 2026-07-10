@@ -7,8 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { LeftoversEvolutionChart } from "@/components/dashboard/LeftoversEvolutionChart";
+import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { LeftoversByGroupTop } from "@/components/dashboard/LeftoversByGroupTop";
 import type { PerDayRowInput } from "@/lib/buildLeftoversEvolutionSeries";
+import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { CantineServiceRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 
@@ -56,6 +58,7 @@ export default function DashboardPanels({
   servedVsPresentPct,
   top,
   perDayRows,
+  wastePerDayRows,
 }: {
   days: 7 | 30;
   schoolNames: string[];
@@ -70,6 +73,7 @@ export default function DashboardPanels({
   servedVsPresentPct: string;
   top: TopRow[];
   perDayRows: DashboardDayRow[];
+  wastePerDayRows: WastePerDayRowInput[];
 }) {
   const kpis = [
     {
@@ -155,8 +159,8 @@ export default function DashboardPanels({
 
       <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
         Aperçu de la page — chiffres clés du déjeuner, note{" "}
-        <span className="whitespace-nowrap">Cantine +</span>, évolution des restes, top des
-        classes et détail jour par jour sur les {days} derniers jours.
+        <span className="whitespace-nowrap">Cantine +</span>, évolution des restes et des déchets,
+        top des classes et détail jour par jour sur les {days} derniers jours.
       </p>
 
       <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5">
@@ -208,6 +212,8 @@ export default function DashboardPanels({
       />
 
       <LeftoversEvolutionChart days={days} perDayRows={perDayRows} />
+
+      <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <LeftoversByGroupTop top={top} />
