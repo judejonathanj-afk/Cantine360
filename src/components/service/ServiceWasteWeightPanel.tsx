@@ -86,12 +86,12 @@ export function ServiceWasteWeightPanel({
   const savedDisplay = savedGrams ?? 0;
 
   const metric = (
-    <>
-      {savedDisplay.toLocaleString("fr-FR")} g
-      <span className="ml-1 text-sm font-medium text-white/80">
+    <span className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-0">
+      <span>{savedDisplay.toLocaleString("fr-FR")} g</span>
+      <span className="text-base font-medium text-white/80 sm:text-lg">
         ({formatKgFromGrams(savedDisplay)})
       </span>
-    </>
+    </span>
   );
 
   const conversionHint =
@@ -115,29 +115,37 @@ export function ServiceWasteWeightPanel({
         />
       </div>
 
-      <div className="relative z-10 flex min-h-[18rem] flex-col items-center justify-center px-4 py-5 text-center sm:min-h-[20rem] sm:px-6 sm:py-6">
-        <div className="flex w-full max-w-lg flex-col items-center gap-2">
-          <div className="flex items-center justify-center gap-3">
-            <span
-              className={cn(
-                "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
-                t.icon,
-              )}
-            >
-              <Trash2 className="h-6 w-6" aria-hidden />
-            </span>
-            <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
-              Grammage des déchets
-            </h2>
+      <div className="relative z-10 flex min-h-[18rem] flex-col items-center justify-center px-4 py-5 sm:min-h-[20rem] sm:px-6 sm:py-6">
+        <div className="mx-auto flex w-full max-w-md flex-col items-center gap-4 text-center">
+          <div className="w-full rounded-2xl border border-white/35 bg-white/10 px-4 py-3.5 shadow-inner sm:px-5 sm:py-4">
+            <div className="flex items-center justify-center gap-3">
+              <span
+                className={cn(
+                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                  t.icon,
+                )}
+              >
+                <Trash2 className="h-6 w-6" aria-hidden />
+              </span>
+              <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
+                Grammage des déchets
+              </h2>
+            </div>
+            <p className={cn("mt-2 text-sm leading-relaxed sm:text-base", t.muted)}>
+              Après le service — enregistré pour ce déjeuner uniquement
+            </p>
           </div>
-          <p className={cn("max-w-xl text-sm leading-relaxed sm:text-base", t.muted)}>
-            Après le service — enregistré pour ce déjeuner uniquement
-          </p>
-        </div>
 
-        <div className={cn("mt-3 text-3xl font-bold tracking-tight", t.text)}>{metric}</div>
+          <div
+            className={cn(
+              "inline-flex min-w-[12rem] items-center justify-center rounded-full border-2 border-white/40 bg-white/10 px-8 py-3 text-3xl font-bold tracking-tight shadow-inner sm:min-w-[14rem] sm:px-10 sm:py-3.5 sm:text-4xl",
+              t.text,
+            )}
+          >
+            {metric}
+          </div>
 
-        <div className="mt-4 flex w-full max-w-lg flex-col items-center gap-3">
+          <div className="flex w-full flex-col items-center gap-3 pt-1">
             <Label
               htmlFor={`waste-weight-${serviceId}`}
               className="text-base font-medium text-white sm:text-lg"
@@ -185,6 +193,7 @@ export function ServiceWasteWeightPanel({
                 "Appuyez sur Enregistrer après la pesée"
               )}
             </p>
+          </div>
         </div>
       </div>
     </div>
