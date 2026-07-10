@@ -124,6 +124,7 @@ export default async function ServicePage({
       )}
 
       <ServiceWasteWeightPanel
+        key={serviceId}
         serviceId={serviceId}
         initialWasteWeightG={service.wasteWeightG}
       />

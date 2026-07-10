@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Check, CloudOff, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
+import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
 import { formatKgFromGrams } from "@/lib/serviceGrammage";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,12 @@ export function ServiceWasteWeightPanel({
   const invalidInput = weightInput.trim() !== "" && parsedGrams === null;
   const canSave = dirty && !invalidInput && online && status !== "saving";
 
+  useEffect(() => {
+    setSavedGrams(initialWasteWeightG);
+    setWeightInput(gramsToInput(initialWasteWeightG));
+    setStatus("idle");
+  }, [serviceId, initialWasteWeightG]);
+
   const save = useCallback(
     async (grams: number | null) => {
       if (!online) {
@@ -77,34 +83,70 @@ export function ServiceWasteWeightPanel({
     [online, serviceId],
   );
 
-  const metric =
-    savedGrams != null && savedGrams > 0 ? (
-      <>
-        {savedGrams.toLocaleString("fr-FR")} g
-        <span className="ml-1 text-sm font-medium text-white/80">
-          ({formatKgFromGrams(savedGrams)})
-        </span>
-      </>
-    ) : (
-      <span className="text-lg font-semibold">—</span>
-    );
+  const savedDisplay = savedGrams ?? 0;
+
+  const metric = (
+    <>
+      {savedDisplay.toLocaleString("fr-FR")} g
+      <span className="ml-1 text-sm font-medium text-white/80">
+        ({formatKgFromGrams(savedDisplay)})
+      </span>
+    </>
+  );
 
   const conversionHint =
     parsedGrams != null && parsedGrams > 0
       ? `= ${formatKgFromGrams(parsedGrams)}`
       : "Pesée globale (bac, compost, table…)";
 
+  const t = SERVICE_INSIGHT_TONES.emerald;
+
   return (
-    <ServiceInsightCard
-      tone="emerald"
-      icon={Trash2}
-      title="Grammage des déchets"
-      subtitle="Après le service — enregistré pour ce déjeuner uniquement"
-      metric={metric}
-      centeredHeader
-      className={cn(className)}
+    <div
+      className={cn(
+        "overflow-hidden rounded-2xl border p-5 shadow-md sm:p-6",
+        t.shell,
+        className,
+      )}
     >
-      <div className="mt-4 flex flex-col items-center gap-3 text-center">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:gap-8 md:gap-10">
+        <div
+          className="flex shrink-0 items-center justify-center self-center sm:self-stretch sm:py-2"
+          aria-hidden
+        >
+          <div className="flex h-32 w-32 items-center justify-center rounded-[2rem] bg-white/15 ring-1 ring-white/30 sm:h-40 sm:w-40 md:h-48 md:w-48">
+            <Trash2
+              className="h-20 w-20 text-white sm:h-24 sm:w-24 md:h-28 md:w-28"
+              strokeWidth={1.25}
+            />
+          </div>
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex items-center justify-center gap-3">
+              <span
+                className={cn(
+                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                  t.icon,
+                )}
+              >
+                <Trash2 className="h-6 w-6" aria-hidden />
+              </span>
+              <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
+                Grammage des déchets
+              </h2>
+            </div>
+            <p className={cn("max-w-xl text-sm leading-relaxed sm:text-base", t.muted)}>
+              Après le service — enregistré pour ce déjeuner uniquement
+            </p>
+          </div>
+
+          <div className={cn("mt-3 text-center text-3xl font-bold tracking-tight", t.text)}>
+            {metric}
+          </div>
+
+          <div className="mt-4 flex flex-col items-center gap-3 text-center">
         <Label
           htmlFor={`waste-weight-${serviceId}`}
           className="text-base font-medium text-white sm:text-lg"
@@ -152,7 +194,9 @@ export function ServiceWasteWeightPanel({
             "Appuyez sur Enregistrer après la pesée"
           )}
         </p>
+          </div>
+        </div>
       </div>
-    </ServiceInsightCard>
+    </div>
   );
 }
