@@ -96,7 +96,7 @@ export function ServiceInsightCard({
         <div
           className={cn(
             "mt-3 flex-1 text-base leading-relaxed",
-            centeredHeader && "text-center sm:text-left",
+            centeredHeader && "text-center",
             t.muted,
           )}
         >

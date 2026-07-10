@@ -113,26 +113,24 @@ export function ServiceWasteWeightPanel({
       centeredHeader
       className={cn(className)}
     >
-      <div className="mt-3 space-y-3">
+      <div className="mt-4 flex flex-col items-center gap-3 text-center">
         <Label
           htmlFor={`waste-weight-${serviceId}`}
-          className="block text-base font-medium text-white sm:text-lg"
+          className="text-base font-medium text-white sm:text-lg"
         >
           Poids total des déchets (g)
         </Label>
-        <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center">
-          <Input
-            id={`waste-weight-${serviceId}`}
-            type="text"
-            inputMode="numeric"
-            placeholder="ex. 8500"
-            value={weightInput}
-            onChange={(e) => setWeightInput(e.target.value)}
-            className="h-14 w-full max-w-[12rem] border-white/30 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl"
-          />
-          <span className="text-base text-white/90 sm:text-lg">{conversionHint}</span>
-        </div>
-        <p className="flex items-center justify-center gap-1.5 text-sm text-white/80 sm:justify-start sm:text-base">
+        <Input
+          id={`waste-weight-${serviceId}`}
+          type="text"
+          inputMode="numeric"
+          placeholder="ex. 8500"
+          value={weightInput}
+          onChange={(e) => setWeightInput(e.target.value)}
+          className="h-14 w-full max-w-[14rem] border-white/30 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl"
+        />
+        <span className="max-w-md text-base text-white/90 sm:text-lg">{conversionHint}</span>
+        <p className="flex items-center justify-center gap-1.5 text-sm text-white/80 sm:text-base">
           {status === "saving" ? (
             "Enregistrement…"
           ) : status === "saved" ? (
