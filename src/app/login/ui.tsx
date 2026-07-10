@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { normalizeEstablishmentSlug } from "@/lib/establishmentSlug";
 
 function LoginDecorPanel({
   src,
@@ -69,7 +70,7 @@ export function LoginClient() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          slug: slug.trim().toLowerCase(),
+          slug: normalizeEstablishmentSlug(slug),
           pin: pin.replace(/\D/g, ""),
           next: nextPath,
         }),
@@ -148,8 +149,10 @@ export function LoginClient() {
                   onChange={(e) => setSlug(e.target.value)}
                   autoComplete="organization"
                   spellCheck={false}
-                  className="h-12 font-mono text-base lowercase"
-                  placeholder="ex. demo"
+                  className="h-12 font-mono text-base normal-case"
+                  style={{ textTransform: "none" }}
+                  autoCapitalize="words"
+                  placeholder="ex. Anne Frank"
                 />
               </div>
               <div className="space-y-2.5">
