@@ -17,46 +17,58 @@ export type ServiceExportSource = {
   }>;
 };
 
-export function buildServiceMetricExportRows(services: ServiceExportSource[]) {
-  return services.flatMap((service) => {
+export type ServiceMetricExportRow = Record<string, string | number>;
+export type ServiceWasteSummaryRow = Record<string, string | number | null>;
+
+export function buildServiceMetricExportRows(
+  services: ServiceExportSource[],
+): ServiceMetricExportRow[] {
+  const rows: ServiceMetricExportRow[] = [];
+
+  for (const service of services) {
     const wasteWeightG = service.wasteWeightG ?? "";
 
     if (service.metrics.length === 0) {
-      return [
-        {
-          date: formatServiceDateKey(service.date),
-          mealType: service.mealType,
-          school: "",
-          group: "",
-          groupLabel: "",
-          presentCount: "",
-          servedCount: "",
-          rabCount: "",
-          refusedCount: "",
-          leftoversCount: "",
-          wasteWeightG,
-        },
-      ];
+      rows.push({
+        date: formatServiceDateKey(service.date),
+        mealType: service.mealType,
+        school: "",
+        group: "",
+        groupLabel: "",
+        presentCount: "",
+        servedCount: "",
+        rabCount: "",
+        refusedCount: "",
+        leftoversCount: "",
+        wasteWeightG,
+      });
+      continue;
     }
 
-    return service.metrics.map((metric) => ({
-      date: formatServiceDateKey(service.date),
-      mealType: service.mealType,
-      school: metric.group.school.name,
-      group: metric.group.name,
-      groupLabel: formatGroupLabel(metric.group.school.name, metric.group.name),
-      presentCount: metric.presentCount,
-      servedCount: metric.servedCount,
-      rabCount: metric.rabCount,
-      refusedCount: metric.refusedCount,
-      leftoversCount: metric.leftoversCount,
-      wasteWeightG,
-    }));
-  });
+    for (const metric of service.metrics) {
+      rows.push({
+        date: formatServiceDateKey(service.date),
+        mealType: service.mealType,
+        school: metric.group.school.name,
+        group: metric.group.name,
+        groupLabel: formatGroupLabel(metric.group.school.name, metric.group.name),
+        presentCount: metric.presentCount,
+        servedCount: metric.servedCount,
+        rabCount: metric.rabCount,
+        refusedCount: metric.refusedCount,
+        leftoversCount: metric.leftoversCount,
+        wasteWeightG,
+      });
+    }
+  }
+
+  return rows;
 }
 
 /** Une ligne par service ayant un grammage déchets renseigné. */
-export function buildServiceWasteSummaryRows(services: ServiceExportSource[]) {
+export function buildServiceWasteSummaryRows(
+  services: ServiceExportSource[],
+): ServiceWasteSummaryRow[] {
   return services
     .filter((service) => service.wasteWeightG != null && service.wasteWeightG > 0)
     .map((service) => ({
