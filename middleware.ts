@@ -148,7 +148,9 @@ export async function middleware(req: NextRequest) {
   }
 
   if (kind === "establishment") {
-    const res = NextResponse.next();
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-pathname", pathname);
+    const res = NextResponse.next({ request: { headers: requestHeaders } });
     return migrateLegacySessionCookie(req, res);
   }
 

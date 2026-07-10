@@ -19,10 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { OfflineSyncBanner } from "@/components/service/OfflineSyncBanner";
 import { EndServiceButton } from "@/components/service/EndServiceButton";
+import { activeServiceIdFromPathname } from "@/lib/activeService";
 
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
+  initialServiceId?: string | null;
   children: React.ReactNode;
 };
 
@@ -97,7 +99,12 @@ function renderNavItems(
   });
 }
 
-export function AppShell({ role, establishmentLabel, children }: Props) {
+export function AppShell({
+  role,
+  establishmentLabel,
+  initialServiceId = null,
+  children,
+}: Props) {
   const pathname = usePathname();
   const [busy, setBusy] = useState(false);
 
@@ -111,7 +118,8 @@ export function AppShell({ role, establishmentLabel, children }: Props) {
     }
   }
 
-  const serviceId = pathname.match(/^\/service\/([^/]+)/)?.[1] ?? null;
+  const serviceId =
+    activeServiceIdFromPathname(pathname) ?? initialServiceId ?? null;
   const isServiceHome = pathname === "/service";
 
   const navItems: NavItem[] = [
@@ -192,7 +200,7 @@ export function AppShell({ role, establishmentLabel, children }: Props) {
           </nav>
 
           {serviceId ? (
-            <EndServiceButton compact className="shrink-0" />
+            <EndServiceButton compact className="max-w-[9.5rem] shrink-0 sm:max-w-none" />
           ) : (
             <Button
               variant="ghost"

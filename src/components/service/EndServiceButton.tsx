@@ -38,7 +38,7 @@ export function EndServiceButton({ className, compact = false }: Props) {
         onClick={() => setOpen(true)}
       >
         <CheckCircle2 className="h-4 w-4 shrink-0" />
-        <span className={cn(compact && "hidden sm:inline")}>Fin de service</span>
+        <span className={cn(compact && "truncate text-xs sm:text-sm")}>Fin de service</span>
       </Button>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
