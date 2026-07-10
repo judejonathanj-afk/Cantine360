@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import Papa from "papaparse";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
-import { formatGroupLabel } from "@/lib/groupLabel";
-import { formatServiceDateKey } from "@/lib/serviceDate";
+import {
+  buildServiceMetricExportRows,
+  buildServiceWasteSummaryRows,
+} from "@/lib/servicesExport";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 
@@ -33,7 +36,6 @@ export async function GET(req: Request) {
 
   const from = parseLocalDate(parsed.data.from);
   const to = parseLocalDate(parsed.data.to);
-  // inclusive end (add 1 day)
   const toExclusive = new Date(to.getTime() + 24 * 60 * 60 * 1000);
 
   const services = await db.service.findMany({
@@ -50,23 +52,23 @@ export async function GET(req: Request) {
     },
   });
 
-  const rows = services.flatMap((s) =>
-    s.metrics.map((m) => ({
-      date: formatServiceDateKey(s.date),
-      mealType: s.mealType,
-      school: m.group.school.name,
-      group: m.group.name,
-      groupLabel: formatGroupLabel(m.group.school.name, m.group.name),
-      presentCount: m.presentCount,
-      servedCount: m.servedCount,
-      rabCount: m.rabCount,
-      refusedCount: m.refusedCount,
-      leftoversCount: m.leftoversCount,
-      wasteWeightG: s.wasteWeightG ?? "",
-    })),
-  );
+  const metricRows = buildServiceMetricExportRows(services);
+  const wasteSummaryRows = buildServiceWasteSummaryRows(services);
 
-  const csv = unparseCsvSemicolon(rows);
+  const sections = [unparseCsvSemicolon(metricRows)];
+
+  if (wasteSummaryRows.length > 0) {
+    sections.push("");
+    sections.push(
+      Papa.unparse(wasteSummaryRows, {
+        delimiter: ";",
+        quotes: true,
+        quoteChar: '"',
+      }),
+    );
+  }
+
+  const csv = "\uFEFF" + sections.join("\n");
   return new Response(csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
@@ -74,4 +76,3 @@ export async function GET(req: Request) {
     },
   });
 }
-

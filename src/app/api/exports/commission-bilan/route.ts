@@ -13,6 +13,7 @@ import {
   ratioRabServisPct,
   ratioRestesServisPct,
   sumServiceMetrics,
+  sumServiceWasteWeightG,
 } from "@/lib/commissionBilan";
 import { ecoObjectiveBounds, ecoPeriodTitleFr } from "@/lib/ecoObjectivePeriod";
 
@@ -133,6 +134,11 @@ export async function GET(req: Request) {
       fromInclusive,
       toExclusive,
     });
+    const waste = sumServiceWasteWeightG(servicesInYear, {
+      mealType: MealType.LUNCH,
+      fromInclusive,
+      toExclusive,
+    });
     const ratio = ratioRestesServisPct(t.leftovers, t.served);
     const rabRatio = ratioRabServisPct(t.rab, t.served);
     monthly.push({
@@ -144,12 +150,19 @@ export async function GET(req: Request) {
       Refus: t.refused,
       Restes: t.leftovers,
       "Ratio restes/servis %": ratio != null ? Math.round(ratio * 100) / 100 : "",
+      "Déchets (g)": waste.wasteWeightG || "",
+      "Services avec déchets saisis": waste.servicesWithWaste || "",
     });
   }
 
   const ytdRows: Array<Record<string, string | number>> = [];
   if (isCurrentYear) {
     const y = sumServiceMetrics(allServices, {
+      mealType: MealType.LUNCH,
+      fromInclusive: ecoBound.currentStart,
+      toExclusive: ecoBound.currentEndExclusive,
+    });
+    const yWaste = sumServiceWasteWeightG(allServices, {
       mealType: MealType.LUNCH,
       fromInclusive: ecoBound.currentStart,
       toExclusive: ecoBound.currentEndExclusive,
@@ -170,11 +183,18 @@ export async function GET(req: Request) {
       "YTD refus": y.refused,
       "YTD restes": y.leftovers,
       "YTD ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
+      "YTD déchets (g)": yWaste.wasteWeightG || "",
+      "YTD services avec déchets saisis": yWaste.servicesWithWaste || "",
       "N-1 même période (restes)": p.leftovers,
       "Baisse restes % vs N-1": reduc != null ? Math.round(reduc * 100) / 100 : "",
     });
   } else {
     const y = sumServiceMetrics(allServices, {
+      mealType: MealType.LUNCH,
+      fromInclusive: yearStart,
+      toExclusive: calendarYearEndExclusive,
+    });
+    const yWaste = sumServiceWasteWeightG(allServices, {
       mealType: MealType.LUNCH,
       fromInclusive: yearStart,
       toExclusive: calendarYearEndExclusive,
@@ -195,6 +215,8 @@ export async function GET(req: Request) {
       "Année refus": y.refused,
       "Année restes": y.leftovers,
       "Année ratio restes/servis %": ratioY != null ? Math.round(ratioY * 100) / 100 : "",
+      "Année déchets (g)": yWaste.wasteWeightG || "",
+      "Année services avec déchets saisis": yWaste.servicesWithWaste || "",
       "N-1 année complète (restes)": p.leftovers,
       "Baisse restes % vs N-1": reduc != null ? Math.round(reduc * 100) / 100 : "",
     });

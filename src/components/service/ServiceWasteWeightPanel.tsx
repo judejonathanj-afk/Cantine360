@@ -108,7 +108,7 @@ export function ServiceWasteWeightPanel({
       tone="emerald"
       icon={Trash2}
       title="Grammage des déchets"
-      subtitle="Après le service"
+      subtitle="Après le service — enregistré pour ce déjeuner uniquement"
       metric={metric}
       centeredHeader
       className={cn(className)}

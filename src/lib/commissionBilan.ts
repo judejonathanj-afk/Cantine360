@@ -3,6 +3,7 @@ import type { MealType } from "@/generated/prisma/client";
 export type ServiceWithMetrics = {
   date: Date;
   mealType: MealType;
+  wasteWeightG?: number | null;
   metrics: Array<{
     presentCount: number;
     servedCount: number;
@@ -60,6 +61,33 @@ export function sumServiceMetrics(
     }
   }
   return { present, served, rab, refused, leftovers };
+}
+
+/** Somme les grammages déchets (un par service) sur une fenêtre de dates. */
+export function sumServiceWasteWeightG(
+  services: ServiceWithMetrics[],
+  opts: {
+    mealType?: MealType;
+    fromInclusive: Date;
+    toExclusive: Date;
+  },
+) {
+  const t0 = opts.fromInclusive.getTime();
+  const t1 = opts.toExclusive.getTime();
+  let wasteWeightG = 0;
+  let servicesWithWaste = 0;
+
+  for (const service of services) {
+    const t = service.date.getTime();
+    if (t < t0 || t >= t1) continue;
+    if (opts.mealType && service.mealType !== opts.mealType) continue;
+    const grams = service.wasteWeightG;
+    if (grams == null || grams <= 0) continue;
+    wasteWeightG += grams;
+    servicesWithWaste += 1;
+  }
+
+  return { wasteWeightG, servicesWithWaste };
 }
 
 export function monthRange(year: number, monthIndex0: number) {
