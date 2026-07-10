@@ -118,9 +118,12 @@ export function AppShell({
     }
   }
 
-  const serviceId =
-    activeServiceIdFromPathname(pathname) ?? initialServiceId ?? null;
   const isServiceHome = pathname === "/service";
+  const pathnameServiceId = activeServiceIdFromPathname(pathname);
+  // Sur /service (accueil), ne pas réutiliser initialServiceId après « Fin de service ».
+  const serviceId =
+    pathnameServiceId ?? (isServiceHome ? null : initialServiceId) ?? null;
+  const showEndServiceButton = pathnameServiceId != null;
 
   const navItems: NavItem[] = [
     {
@@ -199,7 +202,7 @@ export function AppShell({
             {renderNavItems("desktop", navItems, pathname)}
           </nav>
 
-          {serviceId ? (
+          {showEndServiceButton ? (
             <EndServiceButton compact className="max-w-[9.5rem] shrink-0 sm:max-w-none" />
           ) : (
             <Button
