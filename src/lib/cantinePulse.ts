@@ -58,9 +58,21 @@ interface WindowAgg {
 
 export type CantinePulseWindowDays = 7 | 30;
 
+function startOfDay(d: Date) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+/** Début du jour calendaire (Paris) pour ancrer les fenêtres 7j / 30j. */
+function calendarDayStart(now: Date) {
+  const key = formatServiceDateKey(now);
+  return parseDay(key) ?? startOfDay(now);
+}
+
 function windowBounds(now: Date, windowDays: CantinePulseWindowDays) {
-  const tomorrow = startOfDay(new Date(now.getTime() + 86400000));
-  const todayStart = startOfDay(now);
+  const todayStart = calendarDayStart(now);
+  const tomorrow = new Date(todayStart.getTime() + 86400000);
   const currentStart = new Date(todayStart.getTime() - (windowDays - 1) * 86400000);
   const prevEnd = currentStart;
   const prevStart = new Date(currentStart.getTime() - windowDays * 86400000);
@@ -82,12 +94,6 @@ function clamp(n: number, a: number, b: number) {
 function parseDay(d: string): Date | null {
   const x = new Date(`${d.trim()}T12:00:00`);
   return Number.isNaN(x.getTime()) ? null : x;
-}
-
-function startOfDay(d: Date) {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
 }
 
 function pctDelta(prev: number, curr: number) {
@@ -385,6 +391,8 @@ export type CantinePulseDailyPoint = {
   rab: number;
   wasteWeightG: number;
   ratioPct: number | null;
+  /** Grammes de déchets pour 100 assiettes servies ce jour-là. */
+  gramsPer100Waste: number | null;
 };
 
 function formatPulseDayLabel(isoDate: string) {
@@ -423,6 +431,7 @@ export function buildCantinePulseDailySeries(
       rab: 0,
       wasteWeightG: 0,
       ratioPct: null,
+      gramsPer100Waste: null,
     });
   }
 
@@ -452,6 +461,10 @@ export function buildCantinePulseDailySeries(
     point.ratioPct =
       point.served > 0
         ? Math.round((point.leftovers / point.served) * 1000) / 10
+        : null;
+    point.gramsPer100Waste =
+      point.served > 0 && point.wasteWeightG > 0
+        ? Math.round((point.wasteWeightG / point.served) * 100 * 10) / 10
         : null;
   }
 
