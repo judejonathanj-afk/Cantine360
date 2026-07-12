@@ -125,57 +125,35 @@ export default function DashboardPanels({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Bienvenue sur votre tableau de bord
-            {schoolNames.length === 1 ? (
-              <>
-                <span aria-hidden> — </span>
-                <span className="text-emerald-700">{schoolNames[0]}</span>
-              </>
-            ) : null}
-          </h1>
-          {schoolNames.length > 1 ? (
-            <p className="mt-1 text-sm text-zinc-700 sm:text-base">
-              <span className="font-medium text-zinc-600">Écoles suivies : </span>
-              {schoolNames.map((name, index) => (
-                <span key={name}>
-                  {index > 0 ? (
-                    <span aria-hidden className="text-zinc-400">
-                      {" "}
-                      ·{" "}
-                    </span>
-                  ) : null}
-                  <span className="font-semibold text-emerald-700">{name}</span>
-                </span>
-              ))}
-            </p>
+      <div>
+        <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          Bienvenue sur votre tableau de bord
+          {schoolNames.length === 1 ? (
+            <>
+              <span aria-hidden> — </span>
+              <span className="text-emerald-700">{schoolNames[0]}</span>
+            </>
           ) : null}
-          <p className="mt-1 text-muted-foreground">
-            Indicateurs sur les {days} derniers jours
+        </h1>
+        {schoolNames.length > 1 ? (
+          <p className="mt-1 text-sm text-zinc-700 sm:text-base">
+            <span className="font-medium text-zinc-600">Écoles suivies : </span>
+            {schoolNames.map((name, index) => (
+              <span key={name}>
+                {index > 0 ? (
+                  <span aria-hidden className="text-zinc-400">
+                    {" "}
+                    ·{" "}
+                  </span>
+                ) : null}
+                <span className="font-semibold text-emerald-700">{name}</span>
+              </span>
+            ))}
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant={days === 7 ? "default" : "outline"} asChild>
-            <Link href="/dashboard?days=7">7 jours</Link>
-          </Button>
-          <Button variant={days === 30 ? "default" : "outline"} asChild>
-            <Link href="/dashboard?days=30">30 jours</Link>
-          </Button>
-          {role === "ADMIN" ? (
-            <Button variant="outline" asChild>
-              <a
-                href={`/api/exports/commission-bilan?year=${exportYear}`}
-                download
-                className="inline-flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" aria-hidden />
-                Bilan commission (CSV)
-              </a>
-            </Button>
-          ) : null}
-        </div>
+        ) : null}
+        <p className="mt-1 text-muted-foreground">
+          Indicateurs sur les {days} derniers jours
+        </p>
       </div>
 
       <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
@@ -183,6 +161,27 @@ export default function DashboardPanels({
         <span className="whitespace-nowrap">Cantine +</span>, évolution des restes et des déchets,
         top des classes et détail jour par jour sur les {days} derniers jours.
       </p>
+
+      <div className="flex flex-wrap gap-2">
+        <Button variant={days === 7 ? "default" : "outline"} asChild>
+          <Link href="/dashboard?days=7">7 jours</Link>
+        </Button>
+        <Button variant={days === 30 ? "default" : "outline"} asChild>
+          <Link href="/dashboard?days=30">30 jours</Link>
+        </Button>
+        {role === "ADMIN" ? (
+          <Button variant="outline" asChild>
+            <a
+              href={`/api/exports/commission-bilan?year=${exportYear}`}
+              download
+              className="inline-flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              Bilan commission (CSV)
+            </a>
+          </Button>
+        ) : null}
+      </div>
 
       <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-6">
         {kpis.map((item, i) => (
