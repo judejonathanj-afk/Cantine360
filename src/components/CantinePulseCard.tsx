@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, type ChartConfig } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 import {
   Bar,
@@ -111,6 +111,33 @@ function ChartLegendItem({
   );
 }
 
+function CantineChartLegend() {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-xs text-white/75">
+      <span className="flex items-center gap-1.5">
+        <span className="h-2 w-2 rounded-[2px] bg-[#3b82f6]" aria-hidden />
+        Restes
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-2 w-2 rounded-[2px] bg-[#2dd4bf]" aria-hidden />
+        Servis
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-0.5 w-4 border-t-2 border-dashed border-white/90" aria-hidden />
+        % / 100 assiettes
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-0.5 w-4 border-t-[3px] border-[#eab308]" aria-hidden />
+        Déchets (g)
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="h-0.5 w-4 border-t-2 border-dashed border-[#a3e635]" aria-hidden />
+        g déchets / 100 assiettes
+      </span>
+    </div>
+  );
+}
+
 function CantinePlusGlobalChart({
   rows,
   wasteRows,
@@ -139,7 +166,6 @@ function CantinePlusGlobalChart({
   const hasActivity = series.some(
     (p) => p.leftovers > 0 || p.served > 0 || p.wasteWeightG > 0,
   );
-  const hasWasteSeries = series.some((p) => p.wasteWeightG > 0);
   const totalWasteG = series.reduce((sum, p) => sum + p.wasteWeightG, 0);
   const rest = Math.max(0, 100 - score);
   const moodColor = MOOD_CHART_COLOR[mood];
@@ -174,7 +200,9 @@ function CantinePlusGlobalChart({
                 label="Déchets cumulés"
                 value={`${Math.round(totalWasteG).toLocaleString("fr-FR")} g`}
               />
-            ) : null}
+            ) : (
+              <ChartLegendItem color="#eab308" label="Déchets cumulés" value="—" />
+            )}
           </div>
 
           {!hasActivity ? (
@@ -186,7 +214,7 @@ function CantinePlusGlobalChart({
               config={globalChartConfig}
               className="h-[min(16rem,45vw)] w-full min-h-[200px] aspect-auto"
             >
-              <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <ComposedChart data={series} margin={{ top: 8, right: 44, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
                 <XAxis
                   dataKey="label"
@@ -214,6 +242,16 @@ function CantinePlusGlobalChart({
                   domain={[0, "auto"]}
                   tick={{ fill: "rgba(255,255,255,0.65)", fontSize: 11 }}
                 />
+                <YAxis
+                  yAxisId="waste"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => `${v} g`}
+                  width={40}
+                  domain={[0, "auto"]}
+                  tick={{ fill: "rgba(234,179,8,0.95)", fontSize: 11 }}
+                />
                 <ChartTooltip
                   content={(tooltipProps) => (
                     <ChartTooltipContent
@@ -226,13 +264,13 @@ function CantinePlusGlobalChart({
                     />
                   )}
                 />
-                <ChartLegend content={<ChartLegendContent />} />
                 <Bar
                   yAxisId="count"
                   dataKey="leftovers"
                   fill="var(--color-leftovers)"
                   radius={[2, 2, 0, 0]}
                   maxBarSize={18}
+                  legendType="none"
                 />
                 <Bar
                   yAxisId="count"
@@ -240,38 +278,47 @@ function CantinePlusGlobalChart({
                   fill="var(--color-served)"
                   radius={[2, 2, 0, 0]}
                   maxBarSize={18}
-                />
-                <Bar
-                  yAxisId="count"
-                  dataKey="wasteWeightG"
-                  fill="var(--color-wasteWeightG)"
-                  radius={[2, 2, 0, 0]}
-                  maxBarSize={14}
+                  legendType="none"
                 />
                 <Line
                   yAxisId="pct"
                   type="monotone"
                   dataKey="ratioPct"
+                  name="% / 100 assiettes"
                   stroke="var(--color-ratioPct)"
                   strokeWidth={2}
                   strokeDasharray="6 4"
                   dot={false}
                   connectNulls
+                  legendType="none"
                 />
-                {hasWasteSeries ? (
-                  <Line
-                    yAxisId="pct"
-                    type="monotone"
-                    dataKey="gramsPer100Waste"
-                    stroke="var(--color-gramsPer100Waste)"
-                    strokeWidth={2}
-                    strokeDasharray="4 3"
-                    dot={false}
-                    connectNulls
-                  />
-                ) : null}
+                <Line
+                  yAxisId="waste"
+                  type="monotone"
+                  dataKey="wasteWeightG"
+                  name="Déchets (g)"
+                  stroke="var(--color-wasteWeightG)"
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: "var(--color-wasteWeightG)" }}
+                  activeDot={{ r: 6 }}
+                  connectNulls
+                  legendType="none"
+                />
+                <Line
+                  yAxisId="pct"
+                  type="monotone"
+                  dataKey="gramsPer100Waste"
+                  name="g déchets / 100 assiettes"
+                  stroke="var(--color-gramsPer100Waste)"
+                  strokeWidth={2}
+                  strokeDasharray="4 3"
+                  dot={false}
+                  connectNulls
+                  legendType="none"
+                />
               </ComposedChart>
             </ChartContainer>
+            <CantineChartLegend />
           )}
         </div>
 
@@ -279,22 +326,16 @@ function CantinePlusGlobalChart({
           <p className="text-sm font-semibold text-white">Comment lire ce graphique ?</p>
           <ul className="mt-2.5 space-y-2 text-xs leading-relaxed text-white/75 sm:text-sm">
             <li>
-              Les <strong className="text-white">barres bleues</strong> = restes dans
-              l&apos;assiette, les <strong className="text-white">barres vert d&apos;eau</strong>{" "}
-              = portions servies, les <strong className="text-yellow-300">barres jaunes</strong>{" "}
-              = grammage des déchets (g), jour par jour sur{" "}
-              <strong className="text-white">{periodLabel}</strong>.
+              Les <strong className="text-white">barres bleues</strong> = restes, les{" "}
+              <strong className="text-white">barres vert d&apos;eau</strong> = portions servies
+              sur <strong className="text-white">{periodLabel}</strong>.
             </li>
             <li>
-              La <strong className="text-white">courbe pointillée blanche</strong> = taux restes
-              pour <strong className="text-white">100 assiettes servies</strong>.
-              {hasWasteSeries ? (
-                <>
-                  {" "}
-                  La <strong className="text-lime-300">courbe verte</strong> = g de déchets pour
-                  100 assiettes.
-                </>
-              ) : null}
+              La <strong className="text-yellow-300">courbe jaune</strong> = grammage des déchets
+              (g, axe de droite). La <strong className="text-white">courbe blanche pointillée</strong>{" "}
+              = taux restes pour 100 assiettes. La{" "}
+              <strong className="text-lime-300">courbe verte pointillée</strong> = g de déchets pour
+              100 assiettes.
             </li>
             <li>
               La <strong className="text-white">note sur 100</strong> ({score}/100) résume la
@@ -487,7 +528,7 @@ export function CantinePulseCard({
 
         <div>
           <p className="mb-3 text-xs font-semibold text-white/70">Les chiffres</p>
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6 sm:gap-3">
+          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 sm:gap-3">
             <StatTile
               icon={<TrendingDown className="h-3.5 w-3.5" />}
               label="Restes cumulés"

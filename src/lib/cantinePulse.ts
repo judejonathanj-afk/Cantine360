@@ -79,6 +79,15 @@ function windowBounds(now: Date, windowDays: CantinePulseWindowDays) {
   return { tomorrow, currentStart, prevStart, prevEnd };
 }
 
+/** Clés YYYY-MM-DD (Paris) pour une fenêtre [début, fin[. */
+function windowDateKeys(startInclusive: Date, endExclusive: Date): Set<string> {
+  const keys = new Set<string>();
+  for (let t = startInclusive.getTime(); t < endExclusive.getTime(); t += 86400000) {
+    keys.add(formatServiceDateKey(new Date(t)));
+  }
+  return keys;
+}
+
 function periodLabelFr(windowDays: CantinePulseWindowDays) {
   return windowDays === 30 ? "30 jours" : "7 jours";
 }
@@ -157,16 +166,14 @@ function aggregateWindow(
 function aggregateWasteWindow(
   wasteRows: CantineWasteDayRow[],
   mealType: string,
-  startInclusive: Date,
-  endExclusive: Date,
+  dateKeys: Set<string>,
 ) {
   let wasteWeightG = 0;
   let servicesWithWaste = 0;
 
   for (const r of wasteRows) {
-    if (r.mealType !== mealType) continue;
-    const day = parseDay(r.date);
-    if (!day || day < startInclusive || day >= endExclusive) continue;
+    if (String(r.mealType) !== mealType) continue;
+    if (!dateKeys.has(r.date)) continue;
     if (r.wasteWeightG <= 0) continue;
     wasteWeightG += r.wasteWeightG;
     servicesWithWaste += 1;
@@ -239,14 +246,16 @@ export function computeCantinePulse(
   const { tomorrow, currentStart, prevStart, prevEnd } = windowBounds(now, windowDays);
   const period = periodLabelFr(windowDays);
   const priorPhrase = priorPeriodPhraseFr(windowDays);
+  const currDateKeys = windowDateKeys(currentStart, tomorrow);
+  const prevDateKeys = windowDateKeys(prevStart, prevEnd);
 
   const curr = withWasteMetrics(
     aggregateWindow(list, mealType, currentStart, tomorrow),
-    aggregateWasteWindow(wasteList, mealType, currentStart, tomorrow),
+    aggregateWasteWindow(wasteList, mealType, currDateKeys),
   );
   const prev = withWasteMetrics(
     aggregateWindow(list, mealType, prevStart, prevEnd),
-    aggregateWasteWindow(wasteList, mealType, prevStart, prevEnd),
+    aggregateWasteWindow(wasteList, mealType, prevDateKeys),
   );
 
   const dLeftovers = pctDelta(prev.leftovers, curr.leftovers);
@@ -449,9 +458,7 @@ export function buildCantinePulseDailySeries(
   }
 
   for (const r of wasteList) {
-    if (r.mealType !== mealType) continue;
-    const day = parseDay(r.date);
-    if (!day || day < currentStart || day >= tomorrow) continue;
+    if (String(r.mealType) !== mealType) continue;
     const point = byDate.get(r.date);
     if (!point) continue;
     point.wasteWeightG += Number(r.wasteWeightG) || 0;

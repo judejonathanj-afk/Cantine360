@@ -48,7 +48,7 @@ export function servicesToCantinePulseWasteRows(
     .filter((s) => s.wasteWeightG != null && s.wasteWeightG > 0)
     .map((s) => ({
       date: formatServiceDateKey(s.date),
-      mealType: s.mealType,
+      mealType: String(s.mealType),
       wasteWeightG: s.wasteWeightG!,
     }));
 }

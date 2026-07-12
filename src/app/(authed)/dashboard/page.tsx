@@ -191,18 +191,6 @@ export default async function DashboardPage({
     pulseRows = servicesToCantinePulseRows(
       wide.filter((s) => s.date.getTime() >= pulseRangeStart.getTime()),
     );
-    pulseWasteRows = servicesToCantinePulseWasteRows(services);
-    const priorWasteRows = servicesToCantinePulseWasteRows(
-      wide.filter((s) => {
-        const t = s.date.getTime();
-        return t >= pulseRangeStart.getTime() && t < start.getTime();
-      }),
-    );
-    const wasteByDate = new Map<string, CantineWasteDayRow>();
-    for (const row of [...priorWasteRows, ...pulseWasteRows]) {
-      wasteByDate.set(row.date, row);
-    }
-    pulseWasteRows = Array.from(wasteByDate.values());
   } catch (e) {
     if (e instanceof Prisma.PrismaClientInitializationError) {
       return <DbSetupHint code="INIT" />;
@@ -308,6 +296,25 @@ export default async function DashboardPage({
     date,
     ...v,
   }));
+
+  pulseWasteRows = wastePerDayRows
+    .filter((r) => r.wasteWeightG > 0)
+    .map((r) => ({
+      date: r.date,
+      mealType: "LUNCH",
+      wasteWeightG: r.wasteWeightG,
+    }));
+  const priorWasteRows = servicesToCantinePulseWasteRows(
+    wideServices.filter((s) => {
+      const t = s.date.getTime();
+      return t >= pulseRangeStart.getTime() && t < start.getTime();
+    }),
+  );
+  const wasteByDate = new Map<string, CantineWasteDayRow>();
+  for (const row of [...priorWasteRows, ...pulseWasteRows]) {
+    wasteByDate.set(row.date, row);
+  }
+  pulseWasteRows = Array.from(wasteByDate.values());
 
   function ecoSlice() {
     const y = sumServiceMetrics(wideServices, {
