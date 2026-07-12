@@ -210,6 +210,7 @@ function CantinePlusGlobalChart({
               Pas encore de données sur les {periodLabel} pour tracer le graphique.
             </p>
           ) : (
+            <>
             <ChartContainer
               config={globalChartConfig}
               className="h-[min(16rem,45vw)] w-full min-h-[200px] aspect-auto"
@@ -319,6 +320,7 @@ function CantinePlusGlobalChart({
               </ComposedChart>
             </ChartContainer>
             <CantineChartLegend />
+            </>
           )}
         </div>
 

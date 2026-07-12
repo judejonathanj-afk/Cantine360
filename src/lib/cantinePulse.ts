@@ -111,12 +111,12 @@ function pctDelta(prev: number, curr: number) {
   return ((curr - prev) / prev) * 100;
 }
 
-function wasteRate(agg: Omit<WindowAgg, "wasteRate" | "rabRate" | "rows" | "activeDays">) {
+function wasteRate(agg: { leftovers: number; served: number }) {
   const denom = Math.max(1, agg.served);
   return agg.leftovers / denom;
 }
 
-function rabRate(agg: Omit<WindowAgg, "wasteRate" | "rabRate" | "rows" | "activeDays">) {
+function rabRate(agg: { rab: number; served: number }) {
   const denom = Math.max(1, agg.served);
   return agg.rab / denom;
 }
