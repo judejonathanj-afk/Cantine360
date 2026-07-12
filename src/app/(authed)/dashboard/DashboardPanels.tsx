@@ -57,6 +57,9 @@ export default function DashboardPanels({
   refusalRatePct,
   rabRatePct,
   servedVsPresentPct,
+  totalWasteWeightG,
+  servicesWithWaste,
+  wasteGramsPer100Served,
   top,
   perDayRows,
   wastePerDayRows,
@@ -73,6 +76,9 @@ export default function DashboardPanels({
   refusalRatePct: string;
   rabRatePct: string;
   servedVsPresentPct: string;
+  totalWasteWeightG: number;
+  servicesWithWaste: number;
+  wasteGramsPer100Served: number | null;
   top: TopRow[];
   perDayRows: DashboardDayRow[];
   wastePerDayRows: WastePerDayRowInput[];
@@ -101,6 +107,19 @@ export default function DashboardPanels({
       label: "Restes",
       value: totals.leftovers.toLocaleString("fr-FR"),
       sub: `taux : ${leftoversRatePct}`,
+    },
+    {
+      label: "Déchets",
+      value:
+        totalWasteWeightG > 0
+          ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
+          : "—",
+      sub:
+        wasteGramsPer100Served != null
+          ? `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100 assiettes`
+          : servicesWithWaste > 0
+            ? `${servicesWithWaste} service${servicesWithWaste > 1 ? "s" : ""} saisi${servicesWithWaste > 1 ? "s" : ""}`
+            : "saisir en fin de service",
     },
   ];
 
@@ -165,7 +184,7 @@ export default function DashboardPanels({
         top des classes et détail jour par jour sur les {days} derniers jours.
       </p>
 
-      <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5">
+      <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-6">
         {kpis.map((item, i) => (
           <motion.div
             key={item.label}

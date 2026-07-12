@@ -227,6 +227,19 @@ export default async function DashboardPage({
   const rabRate = totals.served > 0 ? totals.rab / totals.served : 0;
   const servedVsPresent = totals.present > 0 ? totals.served / totals.present : 0;
 
+  let totalWasteWeightG = 0;
+  let servicesWithWaste = 0;
+  for (const s of services) {
+    if (s.wasteWeightG != null && s.wasteWeightG > 0) {
+      totalWasteWeightG += s.wasteWeightG;
+      servicesWithWaste += 1;
+    }
+  }
+  const wasteGramsPer100Served =
+    totals.served > 0 && totalWasteWeightG > 0
+      ? (totalWasteWeightG / totals.served) * 100
+      : null;
+
   const perDay = new Map<
     string,
     { present: number; served: number; rab: number; refused: number; leftovers: number }
@@ -423,6 +436,9 @@ export default async function DashboardPage({
       refusalRatePct={pct(refusalRate)}
       rabRatePct={pct(rabRate)}
       servedVsPresentPct={pct(servedVsPresent)}
+      totalWasteWeightG={totalWasteWeightG}
+      servicesWithWaste={servicesWithWaste}
+      wasteGramsPer100Served={wasteGramsPer100Served}
       top={top.map(({ group, leftovers }) => ({ group, leftovers }))}
       perDayRows={perDayRows}
       wastePerDayRows={wastePerDayRows}
