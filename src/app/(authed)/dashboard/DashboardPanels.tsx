@@ -237,21 +237,21 @@ export default function DashboardPanels({
 
       <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
         <LeftoversByGroupTop top={top} />
 
         <Card
-          className="border-border/50 backdrop-blur-sm"
+          className="flex h-full flex-col border-border/50 backdrop-blur-sm"
           style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
         >
-          <CardContent className="p-6">
+          <CardContent className="flex flex-1 flex-col p-6">
             <h2 className="text-lg font-semibold text-foreground">
               Détails par service
             </h2>
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
-              <div className="mt-4 max-h-80 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable]">
+              <div className="mt-4 min-h-[26rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-[28rem] lg:min-h-[32rem]">
                 <table className="min-w-full text-sm">
                   <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
                     <tr>
