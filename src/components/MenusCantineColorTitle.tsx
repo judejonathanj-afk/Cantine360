@@ -45,6 +45,19 @@ export function MenusCantineColorTitle({
             </span>
           );
         }
+        if (char === "+") {
+          const color = groupCardColorForIndex(colorIndex++);
+          return (
+            <span
+              key={`plus-${i}`}
+              style={{ color }}
+              className="inline-block align-middle text-[1.65em] leading-none sm:text-[1.75em]"
+              aria-hidden
+            >
+              +
+            </span>
+          );
+        }
         const color = groupCardColorForIndex(colorIndex++);
         return (
           <span key={`${char}-${i}`} style={{ color }} className="inline-block">
