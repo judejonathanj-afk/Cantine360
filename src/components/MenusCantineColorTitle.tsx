@@ -25,7 +25,7 @@ export function MenusCantineColorTitle({
     <h1
       className={cn(
         fredoka.className,
-        "flex flex-wrap items-baseline justify-center gap-y-1 text-4xl font-bold uppercase leading-tight tracking-wide md:text-5xl lg:text-6xl",
+        "flex flex-wrap items-center justify-center gap-y-1 text-4xl font-bold uppercase leading-tight tracking-wide md:text-5xl lg:text-6xl",
         className,
       )}
       aria-label={text}
@@ -51,7 +51,7 @@ export function MenusCantineColorTitle({
             <span
               key={`plus-${i}`}
               style={{ color }}
-              className="inline-block -translate-y-[0.28em] text-[1.65em] leading-none sm:-translate-y-[0.32em] sm:text-[1.75em]"
+              className="inline-block -translate-y-[0.1em] text-[1.65em] leading-none sm:-translate-y-[0.12em] sm:text-[1.75em]"
               aria-hidden
             >
               +
