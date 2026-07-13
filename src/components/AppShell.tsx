@@ -166,7 +166,7 @@ export function AppShell({
       {isServiceHome ? (
         <div
           aria-hidden
-          className="pointer-events-none fixed inset-0 top-16 bg-[linear-gradient(135deg,#000000_50%,#064e3b_58%,#6ee7b7_72%,#10b981_88%,#059669_100%)]"
+          className="pointer-events-none fixed inset-0 top-16 bg-black"
         />
       ) : null}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
