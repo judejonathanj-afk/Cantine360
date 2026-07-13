@@ -127,7 +127,7 @@ export function GroupMetricsEditor({
       if (!online) {
         if (dirty) await save(m);
         setStatus("offline");
-        router.back();
+        router.push(`/service/${serviceId}?group=${groupId}`);
         return;
       }
 
@@ -139,7 +139,7 @@ export function GroupMetricsEditor({
         }
       }
 
-      router.push(`/service/${serviceId}`);
+      router.push(`/service/${serviceId}?group=${groupId}`);
     } finally {
       setLeaving(false);
     }

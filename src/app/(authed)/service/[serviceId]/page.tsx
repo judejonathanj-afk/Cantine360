@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 import {
   ServiceAllergenOverview,
 } from "@/components/service/ServiceAllergenPanel";
@@ -114,13 +115,15 @@ export default async function ServicePage({
           </p>
         </div>
       ) : (
-        <ServiceMetricsSection
-          serviceId={serviceId}
-          kitchenMode={session.role === "KITCHEN"}
-          presentTotal={service.metrics.reduce((sum, m) => sum + m.presentCount, 0)}
-          cards={classCards}
-          hasMenu={allergenSummary?.hasMenu ?? false}
-        />
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-100" />}>
+          <ServiceMetricsSection
+            serviceId={serviceId}
+            kitchenMode={session.role === "KITCHEN"}
+            presentTotal={service.metrics.reduce((sum, m) => sum + m.presentCount, 0)}
+            cards={classCards}
+            hasMenu={allergenSummary?.hasMenu ?? false}
+          />
+        </Suspense>
       )}
 
       <ServiceWasteWeightPanel

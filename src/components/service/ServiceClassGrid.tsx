@@ -48,8 +48,9 @@ export function ServiceClassGrid({
         return (
           <Link
             key={m.groupId}
+            id={`group-${m.groupId}`}
             href={`/service/${serviceId}/group/${m.groupId}`}
-            className="relative rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-xl active:scale-[0.98]"
+            className="relative scroll-my-24 rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-xl active:scale-[0.98]"
             style={{
               backgroundColor: cardColor,
               borderColor: cardColor,
