@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 function RgpdNotice() {
   return (
-    <p className="flex items-start gap-2.5 rounded-xl border border-red-300/90 bg-white px-3.5 py-2.5 text-xs leading-relaxed text-red-950 shadow-sm">
+    <p className="flex items-start gap-2.5 rounded-xl border border-red-300/90 bg-white px-3.5 py-2.5 text-sm leading-relaxed text-red-950 shadow-sm">
       <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-red-600" aria-hidden />
       <span>
         <strong className="font-semibold">Donnée de santé</strong> — visible uniquement par le
@@ -27,23 +27,23 @@ function StudentAllergenRowItem({
   return (
     <li
       className={cn(
-        "rounded-xl border bg-white px-3.5 py-3 text-sm shadow-sm",
+        "rounded-xl border bg-white px-3.5 py-3.5 text-base shadow-sm",
         concerned ? "border-red-400 ring-1 ring-red-200/80" : "border-zinc-200",
       )}
     >
       <div className="font-semibold text-zinc-900">
         {formatStudentKitchenName(student.firstName, student.lastName)}
         {concerned ? (
-          <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-900">
+          <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-sm font-bold text-red-900">
             Menu
           </span>
         ) : null}
       </div>
-      <div className="mt-1.5 text-xs font-medium text-zinc-700">
+      <div className="mt-1.5 text-sm font-medium text-zinc-700">
         {student.allergens.join(" · ")}
       </div>
       {hasMenu && student.affectedDishes.length > 0 ? (
-        <div className="mt-1.5 text-xs text-red-900">
+        <div className="mt-1.5 text-sm text-red-900">
           <span className="font-semibold">Plats :</span> {student.affectedDishes.join(", ")}
         </div>
       ) : null}
@@ -71,7 +71,7 @@ export function ClassAllergenList({
   return (
     <div className="space-y-4 rounded-2xl border-2 border-red-300 bg-red-50 p-4 shadow-sm sm:p-5">
       <RgpdNotice />
-      <div className="text-sm font-semibold text-red-950">
+      <div className="text-base font-semibold text-red-950">
         Élèves & allergènes ({withAllergens.length})
         {hasMenu ? (
           <span className="font-normal text-red-900">
@@ -83,7 +83,7 @@ export function ClassAllergenList({
 
       {hasMenu && concerned.length > 0 ? (
         <div>
-          <p className="mb-2.5 text-xs font-bold uppercase tracking-wide text-red-800">
+          <p className="mb-2.5 text-sm font-bold uppercase tracking-wide text-red-800">
             Concernés par le menu
           </p>
           <ul className="space-y-2.5">
@@ -96,7 +96,7 @@ export function ClassAllergenList({
 
       {others.length > 0 ? (
         <div>
-          <p className="mb-2.5 text-xs font-semibold text-zinc-700">
+          <p className="mb-2.5 text-sm font-semibold text-zinc-700">
             Autres élèves avec allergènes déclarés
             {hasMenu ? " (non concernés par le menu du jour)" : ""}
           </p>
@@ -109,7 +109,7 @@ export function ClassAllergenList({
       ) : null}
 
       {hasMenu && concerned.length === 0 ? (
-        <p className="text-sm text-red-900">
+        <p className="text-base text-red-900">
           Aucun élève de cette classe n’est concerné par le menu du jour.
         </p>
       ) : null}
