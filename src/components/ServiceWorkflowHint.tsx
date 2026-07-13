@@ -9,7 +9,7 @@ import {
 import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
 import { cn } from "@/lib/utils";
 
-const t = SERVICE_INSIGHT_TONES.emerald;
+const t = SERVICE_INSIGHT_TONES.black;
 
 export function ServiceWorkflowHint({ className }: { className?: string }) {
   return (

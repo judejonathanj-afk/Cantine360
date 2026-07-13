@@ -22,7 +22,7 @@ export function ServiceGrammagePanel({
   if (!summary.hasGrammage) {
     return (
       <ServiceInsightCard
-        tone="sky"
+        tone="black"
         icon={Scale}
         title="Grammage du service"
         subtitle="Non renseigné"
@@ -37,7 +37,7 @@ export function ServiceGrammagePanel({
 
   return (
     <ServiceInsightCard
-      tone="sky"
+      tone="black"
       icon={Scale}
       title="Grammage du service"
       subtitle={`${summary.perPlate} g / assiette complète`}

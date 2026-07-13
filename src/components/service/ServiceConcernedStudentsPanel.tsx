@@ -12,7 +12,7 @@ import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
 import { cn } from "@/lib/utils";
 
-const t = SERVICE_INSIGHT_TONES.violet;
+const t = SERVICE_INSIGHT_TONES.black;
 
 export function ServiceConcernedStudentsPanel({
   groups,
