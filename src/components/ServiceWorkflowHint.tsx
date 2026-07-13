@@ -36,7 +36,7 @@ export function ServiceWorkflowHint({ className }: { className?: string }) {
               <Info className="h-5 w-5" aria-hidden />
             </span>
             <span className={cn("min-w-0 flex-1", t.text)}>
-              <span className="block text-base font-semibold">Aide — flux de saisie</span>
+              <span className={cn("block text-base font-semibold", t.title)}>Aide — flux de saisie</span>
               <span className={cn("mt-1 block text-sm leading-relaxed", t.muted)}>
                 Ordre conseillé pour les nouveaux — ouvrir pour voir les étapes.
               </span>

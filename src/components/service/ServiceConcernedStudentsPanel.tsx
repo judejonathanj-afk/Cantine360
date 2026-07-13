@@ -61,7 +61,7 @@ export function ServiceConcernedStudentsPanel({
               <ShieldAlert className="h-5 w-5" aria-hidden />
             </span>
             <div className={cn("min-w-0 flex-1", t.text)}>
-              <h2 className="text-base font-semibold">Liste nominative</h2>
+              <h2 className={cn("text-base font-semibold", t.title)}>Liste nominative</h2>
               <p className={cn("mt-1 text-sm", t.muted)}>
                 {total} élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
               </p>

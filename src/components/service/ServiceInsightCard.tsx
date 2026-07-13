@@ -53,7 +53,7 @@ export function ServiceInsightCard({
             >
               <Icon className="h-6 w-6" aria-hidden />
             </span>
-            <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
+            <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.title)}>
               {title}
             </h2>
           </div>
@@ -74,7 +74,7 @@ export function ServiceInsightCard({
             <Icon className="h-5 w-5" aria-hidden />
           </span>
           <div className={cn("min-w-0 flex-1", t.text)}>
-            <h2 className="text-base font-semibold leading-snug">{title}</h2>
+            <h2 className={cn("text-base font-semibold leading-snug", t.title)}>{title}</h2>
             {subtitle ? (
               <p className={cn("mt-1 text-sm leading-relaxed", t.muted)}>{subtitle}</p>
             ) : null}

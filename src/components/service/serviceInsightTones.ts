@@ -6,6 +6,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: string;
     icon: string;
     text: string;
+    title: string;
     muted: string;
     expand: string;
     expandBorder: string;
@@ -18,6 +19,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: "border-emerald-700 bg-emerald-600",
     icon: "bg-white/20 text-white ring-1 ring-white/30",
     text: "text-white",
+    title: "text-white",
     muted: "text-white/85",
     expand: "bg-emerald-700/50",
     expandBorder: "border-white/20",
@@ -29,6 +31,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: "border-amber-600 bg-amber-500",
     icon: "bg-white/20 text-white ring-1 ring-white/30",
     text: "text-white",
+    title: "text-white",
     muted: "text-white/85",
     expand: "bg-amber-600/50",
     expandBorder: "border-white/20",
@@ -40,6 +43,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: "border-sky-700 bg-sky-600",
     icon: "bg-white/20 text-white ring-1 ring-white/30",
     text: "text-white",
+    title: "text-white",
     muted: "text-white/85",
     expand: "bg-sky-700/50",
     expandBorder: "border-white/20",
@@ -51,6 +55,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: "border-violet-700 bg-violet-600",
     icon: "bg-white/20 text-white ring-1 ring-white/30",
     text: "text-white",
+    title: "text-white",
     muted: "text-white/85",
     expand: "bg-violet-700/50",
     expandBorder: "border-white/20",
@@ -62,6 +67,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: "border-zinc-900 bg-zinc-800",
     icon: "bg-white/20 text-white ring-1 ring-white/30",
     text: "text-white",
+    title: "text-white",
     muted: "text-white/85",
     expand: "bg-zinc-900/50",
     expandBorder: "border-white/20",
@@ -73,6 +79,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     shell: "border-black bg-black",
     icon: "bg-white/15 text-white ring-1 ring-white/25",
     text: "text-white",
+    title: "text-yellow-300",
     muted: "text-white/80",
     expand: "bg-white/10",
     expandBorder: "border-white/15",
