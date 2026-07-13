@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, CloudOff, Save, Trash2 } from "lucide-react";
+import { ArrowRight, CloudOff, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +38,7 @@ export function ServiceWasteWeightPanel({
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error" | "offline">(
     "idle",
   );
+  const [savedAck, setSavedAck] = useState(false);
 
   const parsedGrams = parseGramsInput(weightInput);
   const dirty = parsedGrams !== savedGrams;
@@ -48,7 +49,12 @@ export function ServiceWasteWeightPanel({
     setSavedGrams(initialWasteWeightG);
     setWeightInput(gramsToInput(initialWasteWeightG));
     setStatus("idle");
+    setSavedAck(false);
   }, [serviceId, initialWasteWeightG]);
+
+  useEffect(() => {
+    if (dirty) setSavedAck(false);
+  }, [dirty]);
 
   const save = useCallback(
     async (grams: number | null) => {
@@ -73,6 +79,7 @@ export function ServiceWasteWeightPanel({
         setSavedGrams(nextGrams);
         setWeightInput(gramsToInput(nextGrams));
         setStatus("saved");
+        setSavedAck(true);
         window.setTimeout(() => setStatus("idle"), 800);
         return true;
       } catch {
@@ -162,24 +169,39 @@ export function ServiceWasteWeightPanel({
               className="h-14 w-full max-w-[14rem] border-white/30 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl"
             />
             <span className="max-w-md text-base text-white/90 sm:text-lg">{conversionHint}</span>
-            <Button
-              type="button"
-              size="lg"
-              disabled={!canSave}
-              onClick={() => void save(parsedGrams)}
-              className="h-12 min-w-[11rem] rounded-xl border-2 border-yellow-400 bg-white font-semibold text-emerald-800 shadow-sm ring-2 ring-yellow-300/80 hover:bg-white/95 disabled:border-yellow-400/40 disabled:bg-white/50 disabled:text-emerald-800/50 disabled:ring-yellow-300/30"
-            >
-              <Save className="h-4 w-4 shrink-0" aria-hidden />
-              {status === "saving" ? "Enregistrement…" : "Enregistrer"}
-            </Button>
+            <div className="flex w-full max-w-xl flex-col items-center justify-center gap-3 sm:flex-row sm:items-center">
+              <Button
+                type="button"
+                size="lg"
+                disabled={!canSave}
+                onClick={() => void save(parsedGrams)}
+                className="h-12 min-w-[11rem] shrink-0 rounded-xl border-2 border-yellow-400 bg-white font-semibold text-emerald-800 shadow-sm ring-2 ring-yellow-300/80 hover:bg-white/95 disabled:border-yellow-400/40 disabled:bg-white/50 disabled:text-emerald-800/50 disabled:ring-yellow-300/30"
+              >
+                <Save className="h-4 w-4 shrink-0" aria-hidden />
+                {status === "saving" ? "Enregistrement…" : "Enregistrer"}
+              </Button>
+              {savedAck ? (
+                <p
+                  className="flex items-start gap-2 rounded-xl border border-lime-300/50 bg-white/15 px-3.5 py-2.5 text-left text-sm leading-snug text-white sm:max-w-xs sm:text-base"
+                  role="status"
+                >
+                  <ArrowRight
+                    className="mt-0.5 h-5 w-5 shrink-0 text-lime-300"
+                    aria-hidden
+                  />
+                  <span>
+                    <strong className="font-semibold">
+                      {(savedGrams ?? 0).toLocaleString("fr-FR")} g
+                    </strong>{" "}
+                    enregistrés — ce grammage est pris en compte dans le bilan et le dashboard
+                    Cantine+.
+                  </span>
+                </p>
+              ) : null}
+            </div>
             <p className="flex items-center justify-center gap-1.5 text-sm text-white/80 sm:text-base">
               {invalidInput ? (
                 "Saisissez un nombre de grammes valide"
-              ) : status === "saved" ? (
-                <>
-                  <Check className="h-3.5 w-3.5" aria-hidden />
-                  Enregistré
-                </>
               ) : status === "offline" ? (
                 <>
                   <CloudOff className="h-3.5 w-3.5" aria-hidden />
@@ -189,7 +211,7 @@ export function ServiceWasteWeightPanel({
                 "Erreur à l’enregistrement — réessayez"
               ) : dirty ? (
                 "Modifications non enregistrées"
-              ) : (
+              ) : savedAck ? null : (
                 "Appuyez sur Enregistrer après la pesée"
               )}
             </p>
