@@ -69,11 +69,11 @@ export function ServiceMetricsSection({
         role="separator"
         aria-hidden
       />
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">
+      <div className="space-y-2 text-center">
+        <h2 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">
           Saisie par classe
         </h2>
-        <p className="text-base leading-relaxed text-zinc-600">
+        <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-600 sm:text-lg">
           Appuyez sur une <strong className="font-semibold text-zinc-800">classe</strong> pour
           ouvrir le compteur, remplissez les chiffres (présents, servis, RAB, refus, restes), puis{" "}
           <strong className="font-semibold text-zinc-800">Enregistrer</strong>.
