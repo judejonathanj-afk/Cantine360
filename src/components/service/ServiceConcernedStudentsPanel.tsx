@@ -80,28 +80,35 @@ export function ServiceConcernedStudentsPanel({
         ref={panelRef}
         id="liste-nominative"
         className={cn(
-          "flex h-full min-h-[10.5rem] flex-col overflow-hidden rounded-2xl border shadow-md scroll-mt-24",
+          "flex h-full flex-col overflow-hidden rounded-2xl border shadow-md scroll-mt-24",
+          open ? "min-h-0" : "min-h-[10.5rem]",
           t.shell,
         )}
       >
         <CollapsibleTrigger
           className={cn(
-            "flex w-full flex-1 flex-col justify-center px-3 py-2.5 text-left outline-none [&[data-state=open]]:flex-none [&[data-state=open]]:justify-start",
+            "flex w-full shrink-0 flex-col px-3 text-left outline-none",
+            open ? "py-2" : "flex-1 justify-center py-2.5",
             t.hover,
           )}
         >
           <div className="flex items-center gap-2">
             <span
               className={cn(
-                "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+                "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
                 t.icon,
               )}
             >
-              <ShieldAlert className="h-4 w-4" aria-hidden />
+              <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
             </span>
             <h2 className={cn("min-w-0 flex-1 text-sm font-semibold", t.title)}>
               Liste nominative
             </h2>
+            {open ? (
+              <span className={cn("shrink-0 text-sm font-bold tabular-nums", t.text)}>
+                {total}
+              </span>
+            ) : null}
             <ChevronDown
               className={cn(
                 "h-4 w-4 shrink-0 transition-transform",
@@ -110,31 +117,39 @@ export function ServiceConcernedStudentsPanel({
               )}
             />
           </div>
-          <p className="mt-2 text-center text-5xl font-bold leading-none tracking-tight sm:text-6xl">
-            {total}
-          </p>
-          <p className={cn("mt-1 text-center text-xs", t.muted)}>
-            élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
-          </p>
+          {!open ? (
+            <>
+              <p className="mt-1.5 text-center text-4xl font-bold leading-none tracking-tight sm:text-5xl">
+                {total}
+              </p>
+              <p className={cn("mt-1 text-center text-xs", t.muted)}>
+                élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
+              </p>
+            </>
+          ) : null}
         </CollapsibleTrigger>
         <CollapsibleContent
-          className={cn("border-t px-4 pb-4 pt-3", t.expandBorder, t.expand, t.text)}
+          className={cn(
+            "flex min-h-0 flex-1 flex-col border-t px-3 pb-3 pt-2",
+            t.expandBorder,
+            t.expand,
+            t.text,
+          )}
         >
-          <p className={cn("rounded-lg px-2.5 py-1.5 text-xs leading-snug", t.nested)}>
-            <strong className="font-semibold">Donnée de santé (RGPD)</strong> — réservée au
-            personnel cantine connecté. Ne pas diffuser hors Cantine360.
+          <p className={cn("shrink-0 rounded-md px-2 py-1 text-[10px] leading-snug", t.nested)}>
+            <strong className="font-semibold">RGPD</strong> — personnel cantine uniquement.
           </p>
-          <ul className="mt-3 max-h-64 space-y-3 overflow-y-auto">
+          <ul className="mt-2 min-h-0 flex-1 space-y-2.5 overflow-y-auto sm:max-h-[26rem]">
             {concernedGroups.map((g) => {
               const cardColor = groupCardColorForIndex(groupColorIndexById?.[g.groupId] ?? 0);
               return (
               <li key={g.groupId}>
-                <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
-                <ul className="mt-1.5 space-y-1.5">
+                <p className="text-xs font-bold uppercase tracking-wide">{g.groupLabel}</p>
+                <ul className="mt-1 space-y-1">
                   {g.concerned.map((s) => (
                     <li
                       key={s.id}
-                      className="rounded-xl border-2 px-3 py-2.5 text-base text-zinc-900 shadow-sm"
+                      className="rounded-lg border-2 px-2.5 py-2 text-sm text-zinc-900 shadow-sm"
                       style={{
                         backgroundColor: cardColor,
                         borderColor: cardColor,
@@ -143,11 +158,11 @@ export function ServiceConcernedStudentsPanel({
                       <div className="font-semibold text-zinc-900">
                         {formatStudentKitchenName(s.firstName, s.lastName)}
                       </div>
-                      <div className="mt-0.5 text-sm font-medium text-zinc-700">
+                      <div className="mt-0.5 text-xs font-medium text-zinc-700">
                         {s.allergens.join(" · ")}
                       </div>
                       {s.affectedDishes.length > 0 ? (
-                        <div className="mt-0.5 text-sm font-medium text-zinc-800">
+                        <div className="mt-0.5 text-xs font-medium text-zinc-800">
                           Plats : {s.affectedDishes.join(", ")}
                         </div>
                       ) : null}
