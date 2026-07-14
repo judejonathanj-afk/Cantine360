@@ -333,7 +333,7 @@ function CantinePlusGlobalChart({
               sur <strong className="text-white">{periodLabel}</strong>.
             </li>
             <li>
-              La <strong className="text-yellow-300">courbe jaune</strong> = grammage des déchets
+              La <strong className="text-yellow-300">courbe jaune</strong> = poids des déchets
               (g, axe de droite). La <strong className="text-white">courbe blanche pointillée</strong>{" "}
               = taux restes pour 100 assiettes. La{" "}
               <strong className="text-lime-300">courbe verte pointillée</strong> = g de déchets pour
@@ -472,7 +472,7 @@ export function CantinePulseCard({
           <p className="mx-auto mt-2 max-w-2xl text-balance text-sm text-white/75 sm:text-base">
             Restes dans l&apos;assiette, RAB{" "}
             <span className="text-white/90">(assiettes adaptées ou resservies)</span> et déchets
-            (grammage) — {periodLabel}
+            (poids) — {periodLabel}
           </p>
         </div>
 
@@ -558,7 +558,7 @@ export function CantinePulseCard({
             />
             <StatTile
               icon={<Trash2 className="h-3.5 w-3.5" />}
-              label="Déchets (grammage)"
+              label="Déchets (poids)"
               value={
                 curr.wasteWeightG > 0
                   ? `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g`

@@ -136,7 +136,7 @@ export default function ExportsPage() {
         <p className="w-full text-base leading-relaxed text-zinc-700 sm:text-lg">
           Choisissez une <strong className="font-semibold text-zinc-900">période</strong>, puis
           exportez les compteurs cantine (présents, servis, RAB, refus, restes par classe), le{" "}
-          <strong className="font-semibold text-zinc-900">grammage des déchets par service</strong>{" "}
+          <strong className="font-semibold text-zinc-900">poids des déchets par service</strong>{" "}
           ou les <strong className="font-semibold text-zinc-900">menus du jour</strong> avec le
           détail des allergènes. Idéal pour la commission, les bilans et le partage avec
           l&apos;administration.
@@ -213,7 +213,7 @@ export default function ExportsPage() {
             </Button>
             <p className="text-xs text-muted-foreground">
               Le CSV services inclut la colonne <strong>wasteWeightG</strong> (grammes, unique par
-              service) et un résumé en bas de fichier avec un grammage par date de service.
+              service) et un résumé en bas de fichier avec un poids déchets par date de service.
             </p>
             <p className="text-xs text-muted-foreground">
               Période sélectionnée&nbsp;: {formatFrRange(from, to)}.

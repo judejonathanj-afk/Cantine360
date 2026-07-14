@@ -135,7 +135,7 @@ export function ServiceWasteWeightPanel({
                 <Trash2 className="h-6 w-6" aria-hidden />
               </span>
               <h2 className={cn("text-lg font-semibold leading-snug sm:text-xl", t.text)}>
-                Grammage des déchets
+                Poids des déchets
               </h2>
             </div>
             <p className={cn("mt-2 text-sm leading-relaxed sm:text-base", t.muted)}>
@@ -193,7 +193,7 @@ export function ServiceWasteWeightPanel({
                     <strong className="font-semibold">
                       {(savedGrams ?? 0).toLocaleString("fr-FR")} g
                     </strong>{" "}
-                    enregistrés — ce grammage est pris en compte dans le bilan et le dashboard
+                    enregistrés — ce poids est pris en compte dans le bilan et le dashboard
                     Cantine+.
                   </span>
                 </p>

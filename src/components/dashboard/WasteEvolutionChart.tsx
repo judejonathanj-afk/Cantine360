@@ -67,7 +67,7 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Déjeuner sur les {days} derniers jours — grammage des déchets par jour
+                Déjeuner sur les {days} derniers jours — poids des déchets par jour
                 (barres sur 7 jours, courbes sur 30) et grammes pour 100 assiettes servies en
                 pointillés.
               </p>
@@ -91,7 +91,7 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
 
         {series.length === 0 || !hasWasteData ? (
           <p className="mt-5 px-6 text-sm text-muted-foreground">
-            Pas encore de grammage déchets saisi sur la période — renseignez-le en fin de service
+            Pas encore de poids déchets saisi sur la période — renseignez-le en fin de service
             pour voir l&apos;évolution ici.
           </p>
         ) : (

@@ -84,7 +84,7 @@ export function ServiceWorkflowHint({ className }: { className?: string }) {
               en général après le repas.
             </li>
             <li>
-              <strong className={cn("font-semibold", t.text)}>Grammage des déchets</strong> —
+              <strong className={cn("font-semibold", t.text)}>Poids des déchets</strong> —
               poids total après le service, en <strong className={cn("font-semibold", t.text)}>grammes</strong>.
             </li>
           </ol>
