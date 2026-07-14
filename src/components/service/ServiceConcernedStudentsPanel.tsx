@@ -8,6 +8,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
+import { groupCardColorForIndex } from "@/lib/groupCardColors";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
 import { cn } from "@/lib/utils";
@@ -17,10 +18,12 @@ const t = SERVICE_INSIGHT_TONES.black;
 export function ServiceConcernedStudentsPanel({
   groups,
   hasMenu,
+  groupColorIndexById,
   className,
 }: {
   groups: GroupAllergenSummary[];
   hasMenu: boolean;
+  groupColorIndexById?: Record<string, number>;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -84,20 +87,29 @@ export function ServiceConcernedStudentsPanel({
             personnel cantine connecté. Ne pas diffuser hors Cantine360.
           </p>
           <ul className="mt-3 max-h-64 space-y-3 overflow-y-auto">
-            {concernedGroups.map((g) => (
+            {concernedGroups.map((g) => {
+              const cardColor = groupCardColorForIndex(groupColorIndexById?.[g.groupId] ?? 0);
+              return (
               <li key={g.groupId}>
                 <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
                 <ul className="mt-1.5 space-y-1.5">
                   {g.concerned.map((s) => (
-                    <li key={s.id} className={cn("rounded-xl px-3 py-2 text-base", t.nested)}>
-                      <div className="font-semibold">
+                    <li
+                      key={s.id}
+                      className="rounded-xl border-2 px-3 py-2.5 text-base text-zinc-900 shadow-sm"
+                      style={{
+                        backgroundColor: cardColor,
+                        borderColor: cardColor,
+                      }}
+                    >
+                      <div className="font-semibold text-zinc-900">
                         {formatStudentKitchenName(s.firstName, s.lastName)}
                       </div>
-                      <div className={cn("mt-0.5 text-sm", t.muted)}>
+                      <div className="mt-0.5 text-sm font-medium text-zinc-700">
                         {s.allergens.join(" · ")}
                       </div>
                       {s.affectedDishes.length > 0 ? (
-                        <div className="mt-0.5 text-sm font-medium">
+                        <div className="mt-0.5 text-sm font-medium text-zinc-800">
                           Plats : {s.affectedDishes.join(", ")}
                         </div>
                       ) : null}
@@ -105,7 +117,8 @@ export function ServiceConcernedStudentsPanel({
                   ))}
                 </ul>
               </li>
-            ))}
+            );
+            })}
           </ul>
         </CollapsibleContent>
       </div>

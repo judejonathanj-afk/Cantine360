@@ -72,6 +72,10 @@ export default async function ServicePage({
     groupSummary: summaryByGroup.get(m.groupId),
   }));
 
+  const groupColorIndexById = Object.fromEntries(
+    classCards.map((card, index) => [card.groupId, index]),
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex min-w-0 flex-col gap-3">
@@ -101,6 +105,7 @@ export default async function ServicePage({
           <ServiceConcernedStudentsPanel
             groups={allergenSummary.groups}
             hasMenu={allergenSummary.hasMenu}
+            groupColorIndexById={groupColorIndexById}
           />
         ) : null}
       </ServiceInfoGrid>
