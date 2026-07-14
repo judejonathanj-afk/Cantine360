@@ -64,6 +64,21 @@ export function ServiceMetricsSection({
 
   return (
     <div className="space-y-4">
+      <div
+        className="border-t border-zinc-300 pt-6"
+        role="separator"
+        aria-hidden
+      />
+      <div className="space-y-1">
+        <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">
+          Saisie par classe
+        </h2>
+        <p className="text-base leading-relaxed text-zinc-600">
+          Appuyez sur une <strong className="font-semibold text-zinc-800">classe</strong> pour
+          ouvrir le compteur, remplissez les chiffres (présents, servis, RAB, refus, restes), puis{" "}
+          <strong className="font-semibold text-zinc-800">Enregistrer</strong>.
+        </p>
+      </div>
       <ServiceAttendanceImport
         serviceId={serviceId}
         kitchenMode={kitchenMode}
