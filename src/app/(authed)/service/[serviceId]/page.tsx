@@ -96,7 +96,9 @@ export default async function ServicePage({
       </div>
 
       <ServiceInfoGrid>
-        <ServiceWorkflowHint />
+        <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-900" />}>
+          <ServiceWorkflowHint />
+        </Suspense>
         {allergenSummary && session.role === "ADMIN" ? (
           <ServiceAllergenOverview summary={allergenSummary} />
         ) : null}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ChevronDown, Info } from "lucide-react";
 import {
   Collapsible,
@@ -12,8 +14,16 @@ import { cn } from "@/lib/utils";
 const t = SERVICE_INSIGHT_TONES.black;
 
 export function ServiceWorkflowHint({ className }: { className?: string }) {
+  const searchParams = useSearchParams();
+  const openFromSave = searchParams.get("liste") === "1";
+  const [open, setOpen] = useState(openFromSave);
+
+  useEffect(() => {
+    if (openFromSave) setOpen(true);
+  }, [openFromSave]);
+
   return (
-    <Collapsible className={cn("group h-full", className)}>
+    <Collapsible open={open} onOpenChange={setOpen} className={cn("group h-full", className)}>
       <div
         className={cn(
           "flex h-full min-h-[10.5rem] flex-col overflow-hidden rounded-2xl border shadow-md",
@@ -43,8 +53,9 @@ export function ServiceWorkflowHint({ className }: { className?: string }) {
             </span>
             <ChevronDown
               className={cn(
-                "h-5 w-5 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180",
+                "h-5 w-5 shrink-0 transition-transform duration-200",
                 t.chevron,
+                open ? "rotate-180" : "",
               )}
               aria-hidden
             />
