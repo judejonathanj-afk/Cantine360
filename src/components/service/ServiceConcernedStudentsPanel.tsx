@@ -86,39 +86,41 @@ export function ServiceConcernedStudentsPanel({
       >
         <CollapsibleTrigger
           className={cn(
-            "flex flex-1 flex-col px-4 py-4 text-left outline-none [&[data-state=open]]:flex-none",
+            "flex w-full flex-1 flex-col justify-center px-3 py-2.5 text-left outline-none [&[data-state=open]]:flex-none [&[data-state=open]]:justify-start",
             t.hover,
           )}
         >
-          <div className="flex items-start gap-3">
+          <div className="flex items-center gap-2">
             <span
               className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
                 t.icon,
               )}
             >
-              <ShieldAlert className="h-5 w-5" aria-hidden />
+              <ShieldAlert className="h-4 w-4" aria-hidden />
             </span>
-            <div className={cn("min-w-0 flex-1", t.text)}>
-              <h2 className={cn("text-base font-semibold", t.title)}>Liste nominative</h2>
-              <p className={cn("mt-1 text-sm", t.muted)}>
-                {total} élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
-              </p>
-              <p className="mt-2 text-3xl font-bold tracking-tight">{total}</p>
-            </div>
+            <h2 className={cn("min-w-0 flex-1 text-sm font-semibold", t.title)}>
+              Liste nominative
+            </h2>
             <ChevronDown
               className={cn(
-                "h-5 w-5 shrink-0 transition-transform",
+                "h-4 w-4 shrink-0 transition-transform",
                 t.chevron,
                 open ? "rotate-180" : "",
               )}
             />
           </div>
+          <p className="mt-2 text-center text-5xl font-bold leading-none tracking-tight sm:text-6xl">
+            {total}
+          </p>
+          <p className={cn("mt-1 text-center text-xs", t.muted)}>
+            élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
+          </p>
         </CollapsibleTrigger>
         <CollapsibleContent
           className={cn("border-t px-4 pb-4 pt-3", t.expandBorder, t.expand, t.text)}
         >
-          <p className={cn("rounded-xl px-3 py-2 text-sm leading-relaxed", t.nested)}>
+          <p className={cn("rounded-lg px-2.5 py-1.5 text-xs leading-snug", t.nested)}>
             <strong className="font-semibold">Donnée de santé (RGPD)</strong> — réservée au
             personnel cantine connecté. Ne pas diffuser hors Cantine360.
           </p>
