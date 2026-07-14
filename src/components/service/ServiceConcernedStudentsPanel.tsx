@@ -95,9 +95,8 @@ export function ServiceConcernedStudentsPanel({
           <div className="flex items-start gap-3">
             <span
               className={cn(
-                "flex shrink-0 items-center justify-center rounded-xl",
+                "flex shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-400 ring-1 ring-red-400/40",
                 open ? "h-7 w-7 rounded-lg" : "h-10 w-10",
-                t.icon,
               )}
             >
               <ShieldAlert className={open ? "h-3.5 w-3.5" : "h-5 w-5"} aria-hidden />
