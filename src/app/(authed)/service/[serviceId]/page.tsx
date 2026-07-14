@@ -102,11 +102,14 @@ export default async function ServicePage({
         ) : null}
         <ServiceGrammagePanel menuItems={menuItems} metrics={metricsGrammage} />
         {allergenSummary ? (
-          <ServiceConcernedStudentsPanel
-            groups={allergenSummary.groups}
-            hasMenu={allergenSummary.hasMenu}
-            groupColorIndexById={groupColorIndexById}
-          />
+          <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-900" />}>
+            <ServiceConcernedStudentsPanel
+              serviceId={serviceId}
+              groups={allergenSummary.groups}
+              hasMenu={allergenSummary.hasMenu}
+              groupColorIndexById={groupColorIndexById}
+            />
+          </Suspense>
         ) : null}
       </ServiceInfoGrid>
 

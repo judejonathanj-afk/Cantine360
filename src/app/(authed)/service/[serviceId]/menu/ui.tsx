@@ -90,7 +90,7 @@ export function MenuEditor({
       }
       setStatus("Sauvegardé. Retour à la fiche service…");
       window.setTimeout(() => {
-        router.push(`/service/${serviceId}`);
+        router.push(`/service/${serviceId}?liste=1`);
       }, 600);
     } finally {
       setBusy(false);

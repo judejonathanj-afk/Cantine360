@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronDown, ShieldAlert } from "lucide-react";
 import {
   Collapsible,
@@ -16,19 +17,23 @@ import { cn } from "@/lib/utils";
 const t = SERVICE_INSIGHT_TONES.black;
 
 export function ServiceConcernedStudentsPanel({
+  serviceId,
   groups,
   hasMenu,
   groupColorIndexById,
   className,
 }: {
+  serviceId: string;
   groups: GroupAllergenSummary[];
   hasMenu: boolean;
   groupColorIndexById?: Record<string, number>;
   className?: string;
 }) {
-  const [open, setOpen] = useState(false);
-
-  if (!hasMenu) return null;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const openFromSave = searchParams.get("liste") === "1";
+  const panelRef = useRef<HTMLDivElement>(null);
+  const handledListeScroll = useRef(false);
 
   const concernedGroups = groups
     .map((g) => ({
@@ -38,13 +43,44 @@ export function ServiceConcernedStudentsPanel({
     .filter((g) => g.concerned.length > 0);
 
   const total = concernedGroups.reduce((n, g) => n + g.concerned.length, 0);
+
+  const [open, setOpen] = useState(() => total > 0);
+
+  useEffect(() => {
+    if (total > 0) setOpen(true);
+  }, [total]);
+
+  useEffect(() => {
+    if (!openFromSave || handledListeScroll.current || total === 0) return;
+
+    handledListeScroll.current = true;
+    setOpen(true);
+
+    requestAnimationFrame(() => {
+      panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    const timeout = window.setTimeout(() => {
+      router.replace(`/service/${serviceId}`, { scroll: false });
+    }, 700);
+
+    return () => window.clearTimeout(timeout);
+  }, [openFromSave, router, serviceId, total]);
+
+  if (!hasMenu) return null;
   if (total === 0) return null;
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className={cn("group h-full", className)}>
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      className={cn("group h-full", className)}
+    >
       <div
+        ref={panelRef}
+        id="liste-nominative"
         className={cn(
-          "flex h-full min-h-[10.5rem] flex-col overflow-hidden rounded-2xl border shadow-md",
+          "flex h-full min-h-[10.5rem] flex-col overflow-hidden rounded-2xl border shadow-md scroll-mt-24",
           t.shell,
         )}
       >
