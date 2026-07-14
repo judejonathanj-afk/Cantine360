@@ -87,23 +87,31 @@ export function ServiceConcernedStudentsPanel({
       >
         <CollapsibleTrigger
           className={cn(
-            "flex w-full shrink-0 flex-col px-3 text-left outline-none",
-            open ? "py-2" : "flex-1 justify-center py-2.5",
+            "flex w-full shrink-0 flex-col px-4 text-left outline-none",
+            open ? "py-2" : "py-4",
             t.hover,
           )}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-3">
             <span
               className={cn(
-                "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+                "flex shrink-0 items-center justify-center rounded-xl",
+                open ? "h-7 w-7 rounded-lg" : "h-10 w-10",
                 t.icon,
               )}
             >
-              <ShieldAlert className="h-3.5 w-3.5" aria-hidden />
+              <ShieldAlert className={open ? "h-3.5 w-3.5" : "h-5 w-5"} aria-hidden />
             </span>
-            <h2 className={cn("min-w-0 flex-1 text-sm font-semibold", t.title)}>
-              Liste nominative
-            </h2>
+            <div className={cn("min-w-0 flex-1", t.text)}>
+              <h2 className={cn("font-semibold leading-snug", open ? "text-sm" : "text-base", t.title)}>
+                Liste nominative
+              </h2>
+              {!open ? (
+                <p className={cn("mt-1 text-sm leading-relaxed", t.muted)}>
+                  élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
+                </p>
+              ) : null}
+            </div>
             {open ? (
               <span className={cn("shrink-0 text-sm font-bold tabular-nums", t.text)}>
                 {total}
@@ -111,21 +119,16 @@ export function ServiceConcernedStudentsPanel({
             ) : null}
             <ChevronDown
               className={cn(
-                "h-4 w-4 shrink-0 transition-transform",
+                "shrink-0 transition-transform",
+                open ? "h-4 w-4 rotate-180" : "h-5 w-5",
                 t.chevron,
-                open ? "rotate-180" : "",
               )}
             />
           </div>
           {!open ? (
-            <>
-              <p className="mt-1.5 text-center text-4xl font-bold leading-none tracking-tight sm:text-5xl">
-                {total}
-              </p>
-              <p className={cn("mt-1 text-center text-xs", t.muted)}>
-                élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
-              </p>
-            </>
+            <p className={cn("mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl", t.text)}>
+              {total}
+            </p>
           ) : null}
         </CollapsibleTrigger>
         <CollapsibleContent
