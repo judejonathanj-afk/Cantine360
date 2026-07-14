@@ -64,7 +64,7 @@ export default function ServiceHomeClient() {
       const data = (await res.json()) as { serviceId: string };
       setSuccess(true);
       window.setTimeout(() => {
-        window.location.assign(`/service/${data.serviceId}`);
+        window.location.assign(`/service/${data.serviceId}/menu`);
       }, 600);
     } finally {
       setBusy(false);

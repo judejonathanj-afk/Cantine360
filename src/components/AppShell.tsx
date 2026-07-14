@@ -126,10 +126,6 @@ export function AppShell({
   const showEndServiceButton = pathnameServiceId != null;
 
   const navItems: NavItem[] = [
-    {
-      ...NAV[0],
-      href: serviceId ? `/service/${serviceId}` : NAV[0].href,
-    },
     ...(serviceId
       ? [
           {
@@ -140,8 +136,12 @@ export function AppShell({
               p === `/service/${serviceId}/menu` ||
               p.startsWith(`/service/${serviceId}/menu/`),
           } satisfies NavItem,
+          {
+            ...NAV[0],
+            href: `/service/${serviceId}`,
+          },
         ]
-      : []),
+      : [NAV[0]]),
     ...(role === "ADMIN"
       ? [
           NAV[1],

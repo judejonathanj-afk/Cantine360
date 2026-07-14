@@ -36,6 +36,13 @@ export default async function ServicePage({
   });
   if (!service) notFound();
 
+  const hasFilledMenu = (service.menu?.items ?? []).some(
+    (item) => item.label.trim().length > 0,
+  );
+  if (!hasFilledMenu) {
+    redirect(`/service/${serviceId}/menu`);
+  }
+
   const allergenSummary = await getServiceAllergenSummary(
     db,
     session.establishmentId,
