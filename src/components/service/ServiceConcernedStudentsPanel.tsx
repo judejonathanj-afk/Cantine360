@@ -144,25 +144,25 @@ export function ServiceConcernedStudentsPanel({
               const cardColor = groupCardColorForIndex(groupColorIndexById?.[g.groupId] ?? 0);
               return (
               <li key={g.groupId}>
-                <p className="text-xs font-bold uppercase tracking-wide">{g.groupLabel}</p>
-                <ul className="mt-1 space-y-1">
+                <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
+                <ul className="mt-1.5 space-y-1.5">
                   {g.concerned.map((s) => (
                     <li
                       key={s.id}
-                      className="rounded-lg border-2 px-2.5 py-2 text-sm text-zinc-900 shadow-sm"
+                      className="rounded-xl border-2 px-3 py-2.5 text-base text-zinc-900 shadow-sm"
                       style={{
                         backgroundColor: cardColor,
                         borderColor: cardColor,
                       }}
                     >
-                      <div className="font-semibold text-zinc-900">
+                      <div className="text-base font-bold text-zinc-900">
                         {formatStudentKitchenName(s.firstName, s.lastName)}
                       </div>
-                      <div className="mt-0.5 text-xs font-medium text-zinc-700">
+                      <div className="mt-1 text-sm font-medium text-zinc-800">
                         {s.allergens.join(" · ")}
                       </div>
                       {s.affectedDishes.length > 0 ? (
-                        <div className="mt-0.5 text-xs font-medium text-zinc-800">
+                        <div className="mt-1 text-sm font-medium text-zinc-900">
                           Plats : {s.affectedDishes.join(", ")}
                         </div>
                       ) : null}
