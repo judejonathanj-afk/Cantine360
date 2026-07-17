@@ -5,16 +5,18 @@ import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
 import { groupCardColorForIndex } from "@/lib/groupCardColors";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
+import type { SchoolLevel } from "@/lib/schoolLevel";
+import { schoolLevelLabelFr } from "@/lib/schoolLevel";
 
 export type ServiceClassCard = {
   groupId: string;
   groupName: string;
   schoolName: string;
+  level: SchoolLevel;
   presentCount: number;
   servedCount: number;
   rabCount: number;
   refusedCount: number;
-  leftoversCount: number;
   groupSummary: GroupAllergenSummary | undefined;
 };
 
@@ -30,7 +32,7 @@ export function ServiceClassGrid({
   if (cards.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
-        Aucune classe pour cette école.
+        Aucune classe pour ce filtre.
       </p>
     );
   }
@@ -42,8 +44,7 @@ export function ServiceClassGrid({
           m.presentCount > 0 ||
           m.servedCount > 0 ||
           m.rabCount > 0 ||
-          m.refusedCount > 0 ||
-          m.leftoversCount > 0;
+          m.refusedCount > 0;
         const cardColor = groupCardColorForIndex(index);
         return (
           <Link
@@ -57,7 +58,12 @@ export function ServiceClassGrid({
             }}
           >
             <div className="flex items-start justify-between gap-3">
-              <GroupNameBadge name={m.groupName} schoolName={m.schoolName} />
+              <div className="min-w-0 space-y-1">
+                <GroupNameBadge name={m.groupName} schoolName={m.schoolName} />
+                <p className="text-xs font-medium text-zinc-700/80">
+                  {schoolLevelLabelFr(m.level)}
+                </p>
+              </div>
               <span
                 className={[
                   "rounded-full px-2 py-1 text-xs font-semibold",
@@ -88,10 +94,6 @@ export function ServiceClassGrid({
               <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
                 <div className="text-sm font-medium text-zinc-600">Refus</div>
                 <div className="text-xl font-bold tabular-nums">{m.refusedCount}</div>
-              </div>
-              <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                <div className="text-sm font-medium text-zinc-600">Restes</div>
-                <div className="text-xl font-bold tabular-nums">{m.leftoversCount}</div>
               </div>
             </div>
           </Link>

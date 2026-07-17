@@ -6,27 +6,27 @@ import { Download } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
-import { LeftoversEvolutionChart } from "@/components/dashboard/LeftoversEvolutionChart";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
-import { LeftoversByGroupTop } from "@/components/dashboard/LeftoversByGroupTop";
-import type { PerDayRowInput } from "@/lib/buildLeftoversEvolutionSeries";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 
 type Totals = {
   present: number;
   served: number;
   rab: number;
   refused: number;
-  leftovers: number;
 };
 
-type TopRow = { group: string; leftovers: number };
-
-type DashboardDayRow = PerDayRowInput & {
+type DashboardDayRow = {
+  date: string;
+  mealLabel: string;
   present: number;
+  served: number;
   rab: number;
+  refused: number;
+  wasteWeightG: number;
 };
 
 export type DashboardEcoGroupRow = {
@@ -49,18 +49,17 @@ export default function DashboardPanels({
   schoolNames,
   role,
   exportYear,
+  levelFilter,
   pulseRows,
   pulseWasteRows,
   eco,
   totals,
-  leftoversRatePct,
   refusalRatePct,
   rabRatePct,
   servedVsPresentPct,
   totalWasteWeightG,
   servicesWithWaste,
   wasteGramsPer100Served,
-  top,
   perDayRows,
   wastePerDayRows,
 }: {
@@ -68,21 +67,22 @@ export default function DashboardPanels({
   schoolNames: string[];
   role: "ADMIN" | "KITCHEN";
   exportYear: number;
+  levelFilter: "all" | SchoolLevel;
   pulseRows: CantineServiceRow[];
   pulseWasteRows: CantineWasteDayRow[];
   eco: DashboardEcoPayload | null;
   totals: Totals;
-  leftoversRatePct: string;
   refusalRatePct: string;
   rabRatePct: string;
   servedVsPresentPct: string;
   totalWasteWeightG: number;
   servicesWithWaste: number;
   wasteGramsPer100Served: number | null;
-  top: TopRow[];
   perDayRows: DashboardDayRow[];
   wastePerDayRows: WastePerDayRowInput[];
 }) {
+  const isKitchen = role === "KITCHEN";
+
   const kpis = [
     {
       label: "Élèves présents",
@@ -104,11 +104,6 @@ export default function DashboardPanels({
       sub: `taux : ${refusalRatePct}`,
     },
     {
-      label: "Restes",
-      value: totals.leftovers.toLocaleString("fr-FR"),
-      sub: `taux : ${leftoversRatePct}`,
-    },
-    {
       label: "Déchets",
       value:
         totalWasteWeightG > 0
@@ -123,11 +118,18 @@ export default function DashboardPanels({
     },
   ];
 
+  function levelHref(level: "all" | SchoolLevel) {
+    const params = new URLSearchParams();
+    params.set("days", String(days));
+    if (level !== "all") params.set("level", level);
+    return `/dashboard?${params.toString()}`;
+  }
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Bienvenue sur votre tableau de bord
+          {isKitchen ? "Tableau de bord cuisine" : "Bienvenue sur votre tableau de bord"}
           {schoolNames.length === 1 ? (
             <>
               <span aria-hidden> — </span>
@@ -153,37 +155,71 @@ export default function DashboardPanels({
         ) : null}
         <p className="mt-1 text-muted-foreground">
           Indicateurs sur les {days} derniers jours
+          {levelFilter !== "all"
+            ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
+            : ""}
         </p>
       </div>
 
       <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
-        Aperçu de la page — chiffres clés du déjeuner, note{" "}
-        <span className="whitespace-nowrap">Cantine +</span>, évolution des restes et des déchets,
-        top des classes et détail jour par jour sur les {days} derniers jours.
+        {isKitchen
+          ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
+          : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
       </p>
 
       <div className="flex flex-wrap gap-2">
         <Button variant={days === 7 ? "default" : "outline"} asChild>
-          <Link href="/dashboard?days=7">7 jours</Link>
+          <Link
+            href={`/dashboard?days=7${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
+          >
+            7 jours
+          </Link>
         </Button>
         <Button variant={days === 30 ? "default" : "outline"} asChild>
-          <Link href="/dashboard?days=30">30 jours</Link>
+          <Link
+            href={`/dashboard?days=30${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
+          >
+            30 jours
+          </Link>
         </Button>
-        {role === "ADMIN" ? (
-          <Button variant="outline" asChild>
-            <a
-              href={`/api/exports/commission-bilan?year=${exportYear}`}
-              download
-              className="inline-flex items-center gap-2"
+        {!isKitchen ? (
+          <>
+            <Button variant={levelFilter === "all" ? "default" : "outline"} asChild>
+              <Link href={levelHref("all")}>Tous niveaux</Link>
+            </Button>
+            <Button
+              variant={levelFilter === "MATERNELLE" ? "default" : "outline"}
+              asChild
             >
-              <Download className="h-4 w-4" aria-hidden />
-              Bilan commission (CSV)
-            </a>
-          </Button>
+              <Link href={levelHref("MATERNELLE")}>Maternelle</Link>
+            </Button>
+            <Button
+              variant={levelFilter === "PRIMAIRE" ? "default" : "outline"}
+              asChild
+            >
+              <Link href={levelHref("PRIMAIRE")}>Primaire</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <a
+                href={`/api/exports/commission-bilan?year=${exportYear}`}
+                download
+                className="inline-flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" aria-hidden />
+                Bilan commission (CSV)
+              </a>
+            </Button>
+          </>
         ) : null}
       </div>
 
-      <div className="grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-6">
+      <div
+        className={
+          isKitchen
+            ? "grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5"
+            : "grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5"
+        }
+      >
         {kpis.map((item, i) => (
           <motion.div
             key={item.label}
@@ -215,81 +251,79 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      <CantinePulseCard
-        rows={pulseRows}
-        wasteRows={pulseWasteRows}
-        mealType="LUNCH"
-        days={days}
-        eco={
-          eco
-            ? {
-                groups: eco.groups,
-                periodTitle: eco.periodTitle,
-                restesParen: eco.restesParen,
-                priorPhrase: eco.priorPhrase,
-              }
-            : null
-        }
-      />
-
-      <LeftoversEvolutionChart days={days} perDayRows={perDayRows} />
+      {!isKitchen ? (
+        <CantinePulseCard
+          rows={pulseRows}
+          wasteRows={pulseWasteRows}
+          mealType="LUNCH"
+          days={days}
+          eco={
+            eco
+              ? {
+                  groups: eco.groups,
+                  periodTitle: eco.periodTitle,
+                  restesParen: eco.restesParen,
+                  priorPhrase: eco.priorPhrase,
+                }
+              : null
+          }
+        />
+      ) : null}
 
       <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
-        <LeftoversByGroupTop top={top} />
-
-        <Card
-          className="flex h-full flex-col border-border/50 backdrop-blur-sm"
-          style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
-        >
-          <CardContent className="flex flex-1 flex-col p-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              Détails par service
-            </h2>
-            {perDayRows.length === 0 ? (
-              <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
-            ) : (
-              <div className="mt-4 min-h-[26rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-[28rem] lg:min-h-[32rem]">
-                <table className="min-w-full text-sm">
-                  <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
-                    <tr>
-                      <th className="py-2 pr-3">Date</th>
-                      <th className="py-2 pr-3">Présents</th>
-                      <th className="py-2 pr-3">Servis</th>
-                      <th className="py-2 pr-3">RAB</th>
-                      <th className="py-2 pr-3">Refus</th>
-                      <th className="py-2">Restes</th>
+      <Card
+        className="flex h-full flex-col border-border/50 backdrop-blur-sm"
+        style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
+      >
+        <CardContent className="flex flex-1 flex-col p-6">
+          <h2 className="text-lg font-semibold text-foreground">
+            {isKitchen ? "Aperçu du jour" : "Détails par service"}
+          </h2>
+          {perDayRows.length === 0 ? (
+            <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
+          ) : (
+            <div className="mt-4 min-h-[26rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-[28rem] lg:min-h-[32rem]">
+              <table className="min-w-full text-sm">
+                <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                  <tr>
+                    <th className="py-2 pr-3">Date</th>
+                    <th className="py-2 pr-3">Présents</th>
+                    <th className="py-2 pr-3">Servis</th>
+                    <th className="py-2 pr-3">RAB</th>
+                    <th className="py-2 pr-3">Refus</th>
+                    <th className="py-2">Déchets (g)</th>
+                  </tr>
+                </thead>
+                <tbody className="text-foreground">
+                  {perDayRows.map((row) => (
+                    <tr key={row.date} className="border-t border-border/60">
+                      <td className="py-2 pr-3 font-medium">{row.date}</td>
+                      <td className="py-2 pr-3">
+                        {row.present.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="py-2 pr-3">
+                        {row.served.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="py-2 pr-3">
+                        {row.rab.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="py-2 pr-3">
+                        {row.refused.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="py-2">
+                        {row.wasteWeightG > 0
+                          ? row.wasteWeightG.toLocaleString("fr-FR")
+                          : "—"}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="text-foreground">
-                    {perDayRows.map((row) => (
-                      <tr key={row.date} className="border-t border-border/60">
-                        <td className="py-2 pr-3 font-medium">{row.date}</td>
-                        <td className="py-2 pr-3">
-                          {row.present.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.served.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.rab.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {(row.refused ?? 0).toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2">
-                          {row.leftovers.toLocaleString("fr-FR")}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

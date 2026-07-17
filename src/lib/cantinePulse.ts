@@ -196,9 +196,9 @@ function withWasteMetrics(
   };
 }
 
-/** Score principal à partir du taux restes/servis (0 % → ~92, 5 % → ~52, 10 % → ~12). */
-function scoreFromWasteRate(rate: number) {
-  return 92 - rate * 100 * 8;
+/** Score principal à partir des g déchets / 100 assiettes (0 → ~92, 2000 → ~72, 5000 → ~42). */
+function scoreFromWasteGramsPer100(gPer100: number) {
+  return 92 - gPer100 * 0.01;
 }
 
 function pendingResult(
@@ -282,7 +282,7 @@ export function computeCantinePulse(
       prev,
       deltas,
       "Pas encore assez de saisie.",
-      "Dès que les présents, servis et restes sont renseignés, ce bloc se remplit tout seul.",
+      "Dès que les présents, servis et le poids des déchets sont renseignés, ce bloc se remplit tout seul.",
     );
   }
 
@@ -294,13 +294,12 @@ export function computeCantinePulse(
       deltas,
       "Pas encore assez de saisie.",
       curr.rows > 0
-        ? "Renseignez les portions servies pour obtenir une note sur les restes."
-        : "Dès que les présents, servis et restes sont renseignés, ce bloc se remplit tout seul.",
+        ? "Renseignez les portions servies pour obtenir une note sur les déchets."
+        : "Dès que les présents, servis et le poids des déchets sont renseignés, ce bloc se remplit tout seul.",
     );
   }
 
   const hasPreviousWeek = weeksWithServed.previous;
-  const wrPct = (curr.wasteRate * 100).toFixed(1);
   const rabLine =
     curr.rab > 0
       ? ` RAB : ${curr.rab} assiette${curr.rab > 1 ? "s" : ""} (${(curr.rabRate * 100).toFixed(1)} % des servis).`
@@ -313,16 +312,17 @@ export function computeCantinePulse(
             : "."
         }`
       : "";
+  const gPer100 = curr.wasteGramsPer100Served;
 
-  let score = scoreFromWasteRate(curr.wasteRate);
+  let score = scoreFromWasteGramsPer100(gPer100);
+  if (curr.wasteWeightG <= 0) {
+    // Sans poids déchets : note neutre basée sur le RAB uniquement
+    score = 78 - clamp(curr.rabRate * 100 * 0.5, 0, 15);
+  }
   if (hasPreviousWeek) {
-    score += clamp(-dWasteRate * 0.4, -12, 12);
-    score += clamp(-dLeftovers * 0.15, -8, 8);
+    score += clamp(-dWasteGrams * 0.15, -12, 12);
   }
   score -= clamp(curr.rabRate * 100 * 0.35, 0, 10);
-  if (curr.wasteWeightG > 0 && curr.served > 0) {
-    score -= clamp(curr.wasteGramsPer100Served * 0.015, 0, 10);
-  }
   if (hasPreviousWeek && prev.wasteWeightG > 0 && dWasteGrams > 10) {
     score -= clamp(dWasteGrams * 0.04, 0, 6);
   }
@@ -336,43 +336,38 @@ export function computeCantinePulse(
   let subline = "";
   let actionLabel = "Voir le détail";
 
-  if (!hasPreviousWeek) {
-    if (curr.wasteRate === 0) {
-      headline = "Aucun reste sur la période.";
-      subline = `${Math.round(curr.served)} assiettes servies sur ${period}, 0 reste enregistré.${rabLine}${wasteLine}`;
-      actionLabel = "Voir les groupes";
-    } else if (curr.wasteRate <= 0.06) {
-      headline = "Peu de restes par rapport aux servis.";
-      subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.${rabLine}${wasteLine}`;
+  if (curr.wasteWeightG <= 0) {
+    headline = "Poids des déchets à saisir.";
+    subline = `${Math.round(curr.served)} assiettes servies sur ${period}.${rabLine} Renseignez le poids des déchets en fin de service.`;
+    actionLabel = "Aller au service";
+  } else if (!hasPreviousWeek) {
+    if (gPer100 <= 1500) {
+      headline = "Peu de déchets pour 100 assiettes.";
+      subline = `${gPer100.toFixed(1)} g / 100 assiettes servies sur ${period}.${rabLine}`;
       actionLabel = "Voir les portions";
     } else {
       headline = `Suivi des ${period}.`;
-      subline = `${Math.round(curr.leftovers)} restes sur ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).${rabLine}${wasteLine}`;
+      subline = `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g de déchets pour ${Math.round(curr.served)} assiettes (${gPer100.toFixed(1)} g / 100).${rabLine}`;
       actionLabel = "Voir le tableau";
     }
-  } else if (curr.wasteRate === 0 && curr.served > 0) {
-    headline = "Aucun reste sur la période.";
-    subline = `${Math.round(curr.served)} assiettes servies sur ${period}, 0 reste enregistré.`;
-    if (curr.rab > 0) {
-      subline += ` RAB : ${curr.rab} (${(curr.rabRate * 100).toFixed(1)} % des servis).`;
-    }
-    subline += wasteLine;
+  } else if (dWasteGrams <= -12 && curr.wasteWeightG < prev.wasteWeightG) {
+    headline = "Moins de déchets qu’avant : bien joué.";
+    subline = `Environ ${Math.round(Math.abs(dWasteGrams))} % de déchets en moins qu’${priorPhrase} — ${gPer100.toFixed(1)} g / 100 assiettes.${rabLine}`;
     actionLabel = "Voir les groupes";
-  } else if (dLeftovers <= -12 && curr.leftovers < prev.leftovers) {
-    headline = "Moins de restes qu’avant : bien joué.";
-    subline = `Environ ${Math.round(Math.abs(dLeftovers))}% de restes en moins qu’${priorPhrase} — taux actuel ${wrPct} % pour 100 servies.${wasteLine}`;
-    actionLabel = "Voir les groupes";
-  } else if (dLeftovers >= 15 || dWasteRate >= 4) {
-    headline = "Il reste plus sur les assiettes qu’avant.";
-    subline = `Taux actuel ${wrPct} % pour 100 servies. Refus sur la période : ${curr.refused}.${wasteLine}`;
+  } else if (dWasteGrams >= 15) {
+    headline = "Plus de déchets qu’avant.";
+    subline = `Taux actuel ${gPer100.toFixed(1)} g / 100 assiettes. Refus sur la période : ${curr.refused}.${rabLine}`;
     actionLabel = "Voir par jour";
-  } else if (curr.wasteRate <= 0.06) {
-    headline = "Peu de restes par rapport aux servis.";
-    subline = `${wrPct} % de restes pour 100 assiettes servies sur ${period}.${wasteLine}`;
+  } else if (gPer100 <= 1500) {
+    headline = "Peu de déchets pour 100 assiettes.";
+    subline = `${gPer100.toFixed(1)} g / 100 assiettes servies sur ${period}.${rabLine}`;
     actionLabel = "Voir les portions";
   } else {
-    headline = windowDays === 30 ? "À peu près comme la période d’avant." : "À peu près comme la semaine d’avant.";
-    subline = `${Math.round(curr.leftovers)} restes sur ${period} pour ${Math.round(curr.served)} assiettes servies (${wrPct} % pour 100).${wasteLine}`;
+    headline =
+      windowDays === 30
+        ? "À peu près comme la période d’avant."
+        : "À peu près comme la semaine d’avant.";
+    subline = `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g de déchets sur ${period} pour ${Math.round(curr.served)} assiettes (${gPer100.toFixed(1)} g / 100).${rabLine}`;
     actionLabel = "Voir le tableau";
   }
 

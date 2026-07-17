@@ -1,7 +1,8 @@
-ecole;classe
-École Anne Frank;CE1 A
-École Anne Frank;CE1 B
-École Anne Frank;CE2 A
-École Voltaire;CP
-École Voltaire;CE1
-École Voltaire;CE2
+ecole;classe;niveau
+École Anne Frank;CE1 A;primaire
+École Anne Frank;CE1 B;primaire
+École Anne Frank;CE2 A;primaire
+École Voltaire;PS;maternelle
+École Voltaire;MS;maternelle
+École Voltaire;GS;maternelle
+École Voltaire;CP;primaire

@@ -80,7 +80,7 @@ export function ServiceWorkflowHint({ className }: { className?: string }) {
               <strong className={cn("font-semibold", t.text)}>import CSV</strong> depuis cette page.
             </li>
             <li>
-              <strong className={cn("font-semibold", t.text)}>Servis, RAB, refus, restes</strong> —
+              <strong className={cn("font-semibold", t.text)}>Servis, RAB, refus</strong> —
               en général après le repas.
             </li>
             <li>

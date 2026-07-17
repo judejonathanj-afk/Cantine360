@@ -8,6 +8,8 @@ import {
   type ServiceClassCard,
 } from "@/components/service/ServiceClassGrid";
 import { ServiceSchoolFilter } from "@/components/service/ServiceSchoolFilter";
+import { ServiceLevelFilter } from "@/components/service/ServiceLevelFilter";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 
 export function ServiceMetricsSection({
   serviceId,
@@ -26,15 +28,16 @@ export function ServiceMetricsSection({
   const searchParams = useSearchParams();
   const scrollGroupId = searchParams.get("group");
   const [schoolFilter, setSchoolFilter] = useState("all");
+  const [levelFilter, setLevelFilter] = useState<"all" | SchoolLevel>("all");
   const scrolledToGroup = useRef(false);
 
-  const filtered = useMemo(
-    () =>
-      schoolFilter === "all"
-        ? cards
-        : cards.filter((c) => c.schoolName === schoolFilter),
-    [cards, schoolFilter],
-  );
+  const filtered = useMemo(() => {
+    return cards.filter((c) => {
+      if (schoolFilter !== "all" && c.schoolName !== schoolFilter) return false;
+      if (levelFilter !== "all" && c.level !== levelFilter) return false;
+      return true;
+    });
+  }, [cards, schoolFilter, levelFilter]);
 
   useEffect(() => {
     if (!scrollGroupId || scrolledToGroup.current) return;
@@ -44,6 +47,10 @@ export function ServiceMetricsSection({
 
     if (schoolFilter !== "all" && card.schoolName !== schoolFilter) {
       setSchoolFilter("all");
+      return;
+    }
+    if (levelFilter !== "all" && card.level !== levelFilter) {
+      setLevelFilter("all");
       return;
     }
 
@@ -60,7 +67,7 @@ export function ServiceMetricsSection({
     }, 700);
 
     return () => window.clearTimeout(timeout);
-  }, [cards, router, schoolFilter, scrollGroupId, serviceId]);
+  }, [cards, levelFilter, router, schoolFilter, scrollGroupId, serviceId]);
 
   return (
     <div className="space-y-4">
@@ -75,8 +82,9 @@ export function ServiceMetricsSection({
         </h2>
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-600 sm:text-lg">
           Appuyez sur une <strong className="font-semibold text-zinc-800">classe</strong> pour
-          ouvrir le compteur, remplissez les chiffres (présents, servis, RAB, refus, restes), puis{" "}
-          <strong className="font-semibold text-zinc-800">Enregistrer</strong>.
+          ouvrir le compteur, remplissez les chiffres (présents, servis, RAB, refus), puis{" "}
+          <strong className="font-semibold text-zinc-800">Enregistrer</strong>. Les déchets se
+          saisissent en grammes en fin de service.
         </p>
       </div>
       <ServiceAttendanceImport
@@ -85,7 +93,8 @@ export function ServiceMetricsSection({
         presentTotal={presentTotal}
         className="w-full"
       />
-      <ServiceSchoolFilter cards={cards} value={schoolFilter} onChange={setSchoolFilter} />
+      <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
+      <ServiceSchoolFilter cards={filtered} value={schoolFilter} onChange={setSchoolFilter} />
       <ServiceClassGrid serviceId={serviceId} cards={filtered} hasMenu={hasMenu} />
     </div>
   );

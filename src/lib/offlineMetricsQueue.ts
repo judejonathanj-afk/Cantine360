@@ -3,7 +3,6 @@ export type QueuedMetricsPayload = {
   servedCount: number;
   rabCount: number;
   refusedCount: number;
-  leftoversCount: number;
 };
 
 export type QueuedMetricsEntry = {

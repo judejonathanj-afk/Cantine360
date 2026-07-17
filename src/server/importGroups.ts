@@ -1,13 +1,16 @@
 import Papa from "papaparse";
 import type { PrismaClient } from "@/generated/prisma/client";
+import { parseSchoolLevel, type SchoolLevel } from "@/lib/schoolLevel";
 
 export type ImportGroupRow = {
   school: string;
   className: string;
+  level: SchoolLevel;
 };
 
 const SCHOOL_HEADERS = new Set(["ecole", "école", "school", "etablissement", "établissement"]);
 const CLASS_HEADERS = new Set(["classe", "class", "groupe", "group"]);
+const LEVEL_HEADERS = new Set(["niveau", "level", "cycle"]);
 
 function normalizeHeader(h: string): string {
   return h.trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
@@ -46,11 +49,13 @@ export function parseGroupsImportCsv(text: string): {
   const first = data[0].map((c) => String(c ?? "").trim());
   const schoolIdx = pickColumn(first, SCHOOL_HEADERS);
   const classIdx = pickColumn(first, CLASS_HEADERS);
+  const levelIdx = pickColumn(first, LEVEL_HEADERS);
   const hasHeader = schoolIdx !== null && classIdx !== null;
 
   const body = hasHeader ? data.slice(1) : data;
   const sIdx = hasHeader ? schoolIdx! : 0;
   const cIdx = hasHeader ? classIdx! : 1;
+  const lIdx = hasHeader ? levelIdx : body[0]?.length > 2 ? 2 : null;
 
   const rows: ImportGroupRow[] = [];
   const errors: string[] = [];
@@ -60,13 +65,27 @@ export function parseGroupsImportCsv(text: string): {
     const row = body[i];
     const school = String(row[sIdx] ?? "").trim();
     const className = String(row[cIdx] ?? "").trim();
+    const levelRaw = lIdx != null ? String(row[lIdx] ?? "").trim() : "";
 
     if (!school && !className) continue;
     if (!school || !className) {
       errors.push(`Ligne ${lineNo} : école et classe requises.`);
       continue;
     }
-    rows.push({ school, className });
+
+    let level: SchoolLevel = "PRIMAIRE";
+    if (levelRaw) {
+      const parsedLevel = parseSchoolLevel(levelRaw);
+      if (!parsedLevel) {
+        errors.push(
+          `Ligne ${lineNo} : niveau invalide « ${levelRaw} » (maternelle ou primaire).`,
+        );
+        continue;
+      }
+      level = parsedLevel;
+    }
+
+    rows.push({ school, className, level });
   }
 
   return { rows, errors };
@@ -131,6 +150,7 @@ export async function importGroupsForEstablishment(
           name: row.className,
           schoolId: school.id,
           establishmentId,
+          level: row.level,
         },
       });
       groupsCreated++;

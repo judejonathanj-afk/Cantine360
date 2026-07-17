@@ -29,6 +29,11 @@ enum EcoObjectivePeriod {
   SCHOOL_YEAR
 }
 
+enum SchoolLevel {
+  MATERNELLE
+  PRIMAIRE
+}
+
 model Establishment {
   id         String   @id @default(cuid())
   name       String
@@ -77,6 +82,8 @@ model Group {
   id              String   @id @default(cuid())
   name            String
   active          Boolean  @default(true)
+  /** Niveau scolaire : maternelle ou primaire. */
+  level           SchoolLevel @default(PRIMAIRE)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   establishmentId String

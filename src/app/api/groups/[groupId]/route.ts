@@ -9,6 +9,7 @@ const PatchSchema = z.object({
   name: z.string().trim().min(1).max(80).optional(),
   schoolId: z.string().trim().min(1).optional(),
   active: z.boolean().optional(),
+  level: z.enum(["MATERNELLE", "PRIMAIRE"]).optional(),
   ecoRestesServisTargetPct: z.number().min(0).max(100).nullable().optional(),
   ecoReductionTargetPct: z.number().min(0).max(100).nullable().optional(),
 });
@@ -42,6 +43,7 @@ export async function PATCH(
     name?: string;
     schoolId?: string;
     active?: boolean;
+    level?: "MATERNELLE" | "PRIMAIRE";
     ecoRestesServisTargetPct?: number | null;
     ecoReductionTargetPct?: number | null;
   } = {};
@@ -57,6 +59,7 @@ export async function PATCH(
     data.schoolId = school.id;
   }
   if (p.active !== undefined) data.active = p.active;
+  if (p.level !== undefined) data.level = p.level;
   if (p.ecoRestesServisTargetPct !== undefined) data.ecoRestesServisTargetPct = p.ecoRestesServisTargetPct;
   if (p.ecoReductionTargetPct !== undefined) data.ecoReductionTargetPct = p.ecoReductionTargetPct;
 

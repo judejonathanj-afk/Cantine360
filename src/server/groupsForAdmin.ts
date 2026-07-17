@@ -1,5 +1,6 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import { isMissingEcoPeriodColumns } from "@/server/establishmentEco";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 
 export type GroupAdminListRow = {
   id: string;
@@ -7,6 +8,7 @@ export type GroupAdminListRow = {
   active: boolean;
   schoolId: string;
   schoolName: string;
+  level: SchoolLevel;
   ecoRestesServisTargetPct: number | null;
   ecoReductionTargetPct: number | null;
 };
@@ -16,6 +18,7 @@ const GROUP_ECO_SELECT = {
   name: true,
   active: true,
   schoolId: true,
+  level: true,
   school: { select: { name: true } },
   ecoRestesServisTargetPct: true,
   ecoReductionTargetPct: true,
@@ -36,6 +39,7 @@ function mapRow(
     active: boolean;
     schoolId: string;
     school: { name: string };
+    level?: SchoolLevel;
     ecoRestesServisTargetPct?: number | null;
     ecoReductionTargetPct?: number | null;
   },
@@ -46,6 +50,7 @@ function mapRow(
     active: r.active,
     schoolId: r.schoolId,
     schoolName: r.school.name,
+    level: r.level ?? "PRIMAIRE",
     ecoRestesServisTargetPct: r.ecoRestesServisTargetPct ?? null,
     ecoReductionTargetPct: r.ecoReductionTargetPct ?? null,
   };

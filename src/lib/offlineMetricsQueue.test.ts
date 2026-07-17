@@ -16,7 +16,6 @@ const metrics = {
   servedCount: 20,
   rabCount: 1,
   refusedCount: 0,
-  leftoversCount: 0,
 };
 
 describe("offlineMetricsQueue", () => {

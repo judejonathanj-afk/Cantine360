@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import type { EstablishmentEcoSettings } from "@/server/establishmentEco";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 
 type School = {
   id: string;
@@ -32,6 +33,7 @@ type Group = {
   active: boolean;
   schoolId: string;
   schoolName: string;
+  level: SchoolLevel;
   ecoRestesServisTargetPct: number | null;
   ecoReductionTargetPct: number | null;
 };
@@ -57,6 +59,7 @@ export function AdminGroupsClient({
   const [groups, setGroups] = useState<Group[]>(initialGroups);
   const [schools, setSchools] = useState<School[]>(initialSchools);
   const [className, setClassName] = useState("");
+  const [classLevel, setClassLevel] = useState<SchoolLevel>("PRIMAIRE");
   const [schoolId, setSchoolId] = useState(initialSchools[0]?.id ?? "");
   const [newSchoolName, setNewSchoolName] = useState("");
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
@@ -97,6 +100,7 @@ export function AdminGroupsClient({
           active: Boolean(x.active),
           schoolId: String(x.schoolId),
           schoolName: String(x.schoolName),
+          level: x.level === "MATERNELLE" ? "MATERNELLE" : "PRIMAIRE",
           ecoRestesServisTargetPct:
             typeof x.ecoRestesServisTargetPct === "number" ? x.ecoRestesServisTargetPct : null,
           ecoReductionTargetPct:
@@ -145,13 +149,14 @@ export function AdminGroupsClient({
       const res = await fetch("/api/groups", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name: className, schoolId }),
+        body: JSON.stringify({ name: className, schoolId, level: classLevel }),
       });
       if (!res.ok) {
         setError("Impossible d’ajouter la classe (doublon dans cette école ?)");
         return;
       }
       setClassName("");
+      setClassLevel("PRIMAIRE");
       await refresh();
     } finally {
       setBusy(false);
@@ -245,9 +250,11 @@ export function AdminGroupsClient({
         title="Importer des classes (CSV)"
         description={
           <>
-            Colonnes <code className="rounded bg-white/15 px-1 text-white/90">ecole</code> et{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">classe</code>, séparateur
-            point-virgule. Les écoles sont créées automatiquement si besoin.
+            Colonnes <code className="rounded bg-white/15 px-1 text-white/90">ecole</code>,{" "}
+            <code className="rounded bg-white/15 px-1 text-white/90">classe</code> et{" "}
+            <code className="rounded bg-white/15 px-1 text-white/90">niveau</code>{" "}
+            (maternelle ou primaire), séparateur point-virgule. Les écoles sont créées
+            automatiquement si besoin. Sans colonne niveau, la classe est en primaire.
           </>
         }
         exampleHref="/test-import-classes.csv"
@@ -308,6 +315,14 @@ export function AdminGroupsClient({
                 ))
               )}
             </select>
+            <select
+              value={classLevel}
+              onChange={(e) => setClassLevel(e.target.value as SchoolLevel)}
+              className="rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+            >
+              <option value="PRIMAIRE">Primaire</option>
+              <option value="MATERNELLE">Maternelle</option>
+            </select>
             <div className="flex flex-col gap-3 sm:flex-row">
               <input
                 value={className}
@@ -358,8 +373,34 @@ export function AdminGroupsClient({
                   className="rounded-2xl border border-zinc-200 bg-white p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <GroupNameBadge name={g.name} variant="plain" />
+                    <div className="min-w-0 space-y-1">
+                      <GroupNameBadge name={g.name} variant="plain" />
+                      <p className="text-xs font-medium text-zinc-500">
+                        {schoolLevelLabelFr(g.level)}
+                      </p>
+                    </div>
                     <div className="flex shrink-0 items-center gap-2">
+                      <select
+                        value={g.level}
+                        aria-label={`Niveau de ${g.name}`}
+                        onChange={(e) => {
+                          const level = e.target.value as SchoolLevel;
+                          setGroups((all) =>
+                            all.map((x) => (x.id === g.id ? { ...x, level } : x)),
+                          );
+                          void fetch(`/api/groups/${g.id}`, {
+                            method: "PATCH",
+                            headers: { "content-type": "application/json" },
+                            body: JSON.stringify({ level }),
+                          }).then((res) => {
+                            if (!res.ok) void refresh();
+                          });
+                        }}
+                        className="rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-700"
+                      >
+                        <option value="PRIMAIRE">Primaire</option>
+                        <option value="MATERNELLE">Maternelle</option>
+                      </select>
                       <button
                         type="button"
                         onClick={() => toggleActive(g)}

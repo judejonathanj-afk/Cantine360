@@ -8,6 +8,8 @@ export default async function DashboardLayout({
 }) {
   const session = await getServerSession();
   if (!session) redirect("/login");
-  if (session.role !== "ADMIN") redirect("/service");
+  if (session.role !== "ADMIN" && session.role !== "KITCHEN") {
+    redirect("/service");
+  }
   return children;
 }

@@ -12,7 +12,6 @@ export type ServiceExportSource = {
     servedCount: number;
     rabCount: number;
     refusedCount: number;
-    leftoversCount: number;
     group: { name: string; school: { name: string } };
   }>;
 };
@@ -39,7 +38,6 @@ export function buildServiceMetricExportRows(
         servedCount: "",
         rabCount: "",
         refusedCount: "",
-        leftoversCount: "",
         wasteWeightG,
       });
       continue;
@@ -56,7 +54,6 @@ export function buildServiceMetricExportRows(
         servedCount: metric.servedCount,
         rabCount: metric.rabCount,
         refusedCount: metric.refusedCount,
-        leftoversCount: metric.leftoversCount,
         wasteWeightG,
       });
     }

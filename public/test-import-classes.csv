@@ -1,17 +1,17 @@
-ecole;classe
-École Anne Frank;CP
-École Anne Frank;CE1 A
-École Anne Frank;CE1 B
-École Anne Frank;CE2 A
-École Anne Frank;CE2 B
-École Anne Frank;CM1
-École Anne Frank;CM2
-École Voltaire;CP
-École Voltaire;CE1
-École Voltaire;CE2
-École Voltaire;CM1
-École Jean Moulin;CP
-École Jean Moulin;CE1 A
-École Jean Moulin;CE1 B
-École Jean Moulin;CE2
-École Jean Moulin;ULIS
+ecole;classe;niveau
+École Anne Frank;CP;primaire
+École Anne Frank;CE1 A;primaire
+École Anne Frank;CE1 B;primaire
+École Anne Frank;CE2 A;primaire
+École Anne Frank;CE2 B;primaire
+École Anne Frank;CM1;primaire
+École Anne Frank;CM2;primaire
+École Voltaire;PS;maternelle
+École Voltaire;MS;maternelle
+École Voltaire;GS;maternelle
+École Voltaire;CP;primaire
+École Jean Moulin;CP;primaire
+École Jean Moulin;CE1 A;primaire
+École Jean Moulin;CE1 B;primaire
+École Jean Moulin;CE2;primaire
+École Jean Moulin;ULIS;primaire

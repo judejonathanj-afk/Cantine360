@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Percent,
   Target,
-  TrendingDown,
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
@@ -80,9 +79,7 @@ const MOOD_CHART_COLOR: Record<keyof typeof MOOD_STYLES, string> = {
 };
 
 const globalChartConfig = {
-  leftovers: { label: "Restes", color: "#3b82f6" },
   served: { label: "Servis", color: "#2dd4bf" },
-  ratioPct: { label: "% / 100 assiettes", color: "#fafafa" },
   wasteWeightG: { label: "Déchets (g)", color: "#eab308" },
   gramsPer100Waste: { label: "g déchets / 100 assiettes", color: "#a3e635" },
 } satisfies ChartConfig;
@@ -115,16 +112,8 @@ function CantineChartLegend() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-xs text-white/75">
       <span className="flex items-center gap-1.5">
-        <span className="h-2 w-2 rounded-[2px] bg-[#3b82f6]" aria-hidden />
-        Restes
-      </span>
-      <span className="flex items-center gap-1.5">
         <span className="h-2 w-2 rounded-[2px] bg-[#2dd4bf]" aria-hidden />
         Servis
-      </span>
-      <span className="flex items-center gap-1.5">
-        <span className="h-0.5 w-4 border-t-2 border-dashed border-white/90" aria-hidden />
-        % / 100 assiettes
       </span>
       <span className="flex items-center gap-1.5">
         <span className="h-0.5 w-4 border-t-[3px] border-[#eab308]" aria-hidden />
@@ -164,7 +153,7 @@ function CantinePlusGlobalChart({
     [rows, wasteRows, mealType, days],
   );
   const hasActivity = series.some(
-    (p) => p.leftovers > 0 || p.served > 0 || p.wasteWeightG > 0,
+    (p) => p.served > 0 || p.wasteWeightG > 0,
   );
   const totalWasteG = series.reduce((sum, p) => sum + p.wasteWeightG, 0);
   const rest = Math.max(0, 100 - score);
@@ -267,30 +256,10 @@ function CantinePlusGlobalChart({
                 />
                 <Bar
                   yAxisId="count"
-                  dataKey="leftovers"
-                  fill="var(--color-leftovers)"
-                  radius={[2, 2, 0, 0]}
-                  maxBarSize={18}
-                  legendType="none"
-                />
-                <Bar
-                  yAxisId="count"
                   dataKey="served"
                   fill="var(--color-served)"
                   radius={[2, 2, 0, 0]}
                   maxBarSize={18}
-                  legendType="none"
-                />
-                <Line
-                  yAxisId="pct"
-                  type="monotone"
-                  dataKey="ratioPct"
-                  name="% / 100 assiettes"
-                  stroke="var(--color-ratioPct)"
-                  strokeWidth={2}
-                  strokeDasharray="6 4"
-                  dot={false}
-                  connectNulls
                   legendType="none"
                 />
                 <Line
@@ -328,16 +297,14 @@ function CantinePlusGlobalChart({
           <p className="text-sm font-semibold text-white">Comment lire ce graphique ?</p>
           <ul className="mt-2.5 space-y-2 text-xs leading-relaxed text-white/75 sm:text-sm">
             <li>
-              Les <strong className="text-white">barres bleues</strong> = restes, les{" "}
-              <strong className="text-white">barres vert d&apos;eau</strong> = portions servies
-              sur <strong className="text-white">{periodLabel}</strong>.
+              Les <strong className="text-white">barres vert d&apos;eau</strong> = portions
+              servies sur <strong className="text-white">{periodLabel}</strong>.
             </li>
             <li>
               La <strong className="text-yellow-300">courbe jaune</strong> = poids des déchets
-              (g, axe de droite). La <strong className="text-white">courbe blanche pointillée</strong>{" "}
-              = taux restes pour 100 assiettes. La{" "}
-              <strong className="text-lime-300">courbe verte pointillée</strong> = g de déchets pour
-              100 assiettes.
+              (g, axe de droite). La{" "}
+              <strong className="text-lime-300">courbe verte pointillée</strong> = g de déchets
+              pour 100 assiettes.
             </li>
             <li>
               La <strong className="text-white">note sur 100</strong> ({score}/100) résume la
@@ -345,9 +312,9 @@ function CantinePlusGlobalChart({
               <strong className="text-white">100 = objectif idéal</strong>.
             </li>
             <li>
-              Le calcul repose surtout sur le taux restes ÷ servis, avec une petite pénalité si
-              le RAB ou les déchets sont élevés, et l&apos;évolution vs {priorLabel} dès qu&apos;il y a
-              assez d&apos;historique.
+              Le calcul repose surtout sur les grammes de déchets pour 100 assiettes, avec une
+              petite pénalité si le RAB est élevé, et l&apos;évolution vs {priorLabel} dès
+              qu&apos;il y a assez d&apos;historique.
             </li>
           </ul>
         </div>
@@ -429,19 +396,19 @@ export function CantinePulseCard({
     [rows, wasteRows, mealType, days],
   );
   const s = MOOD_STYLES[pulse.mood];
-  const wrCurr = (pulse.meta.curr.wasteRate * 100).toFixed(1);
-  const dL = pulse.meta.deltas.leftoversPct;
+  const wrCurr = pulse.meta.curr.wasteGramsPer100Served.toFixed(1);
+  const dW = pulse.meta.deltas.wasteGramsPct;
   const { curr, prev } = pulse.meta;
 
   const sparseServings = curr.served === 0 && curr.rows > 0;
   const noActivity = curr.rows === 0;
   const scorePending = pulse.score === null;
 
-  const evolLabel = Number.isFinite(dL)
-    ? `${dL > 0 ? "+" : ""}${Math.round(dL)}%`
+  const evolLabel = Number.isFinite(dW)
+    ? `${dW > 0 ? "+" : ""}${Math.round(dW)}%`
     : "—";
   const evolHint =
-    prev.leftovers > 0 || curr.leftovers > 0
+    prev.wasteWeightG > 0 || curr.wasteWeightG > 0
       ? `par rapport à ${priorLabel}`
       : "rien à comparer encore";
 
@@ -470,9 +437,8 @@ export function CantinePulseCard({
             </div>
           </div>
           <p className="mx-auto mt-2 max-w-2xl text-balance text-sm text-white/75 sm:text-base">
-            Restes dans l&apos;assiette, RAB{" "}
-            <span className="text-white/90">(assiettes adaptées ou resservies)</span> et déchets
-            (poids) — {periodLabel}
+            RAB <span className="text-white/90">(assiettes adaptées ou resservies)</span> et
+            déchets (poids) — {periodLabel}
           </p>
         </div>
 
@@ -530,14 +496,7 @@ export function CantinePulseCard({
 
         <div>
           <p className="mb-3 text-xs font-semibold text-white/70">Les chiffres</p>
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 sm:gap-3">
-            <StatTile
-              icon={<TrendingDown className="h-3.5 w-3.5" />}
-              label="Restes cumulés"
-              value={String(curr.leftovers)}
-              hint={periodLabel}
-              tileClass={STAT_TILE}
-            />
+          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
             <StatTile
               icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
               label="Assiettes servies"
@@ -576,8 +535,12 @@ export function CantinePulseCard({
             <StatTile
               icon={<Percent className="h-3.5 w-3.5" />}
               label="Pour 100 assiettes"
-              value={curr.served > 0 ? `${wrCurr} %` : "—"}
-              hint={curr.served > 0 ? "restes pour 100 servies" : "pas encore de servis"}
+              value={curr.served > 0 && curr.wasteWeightG > 0 ? `${wrCurr} g` : "—"}
+              hint={
+                curr.served > 0 && curr.wasteWeightG > 0
+                  ? "déchets pour 100 servies"
+                  : "pas encore de déchets"
+              }
               tileClass={STAT_TILE}
             />
             <StatTile
@@ -724,8 +687,8 @@ export function CantinePulseCard({
           <span className="font-medium text-white/85">{pulse.actionLabel}</span>
           {" — "}
           Note /100 dès les <strong className="font-semibold text-white/90">premières portions servies</strong> ;
-          basée surtout sur le taux restes / servis, avec une pénalité si le RAB ou les déchets
-          sont élevés, et sur l’évolution vs {priorLabel} dès qu’il y a assez d’historique.
+          basée surtout sur les grammes de déchets / 100 assiettes, avec une pénalité si le RAB
+          est élevé, et sur l’évolution vs {priorLabel} dès qu’il y a assez d’historique.
         </p>
       </CardContent>
     </Card>

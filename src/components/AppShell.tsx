@@ -142,9 +142,9 @@ export function AppShell({
           },
         ]
       : [NAV[0]]),
+    NAV[1],
     ...(role === "ADMIN"
       ? [
-          NAV[1],
           { href: "/admin/groups", label: "Écoles & classes", icon: Users } satisfies NavItem,
           {
             href: "/admin/students",

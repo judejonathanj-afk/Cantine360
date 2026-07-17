@@ -52,7 +52,6 @@ export default async function GroupMetricsPage({
           servedCount: metrics.servedCount,
           rabCount: metrics.rabCount,
           refusedCount: metrics.refusedCount,
-          leftoversCount: metrics.leftoversCount,
         }}
       />
       {groupAllergens ? (

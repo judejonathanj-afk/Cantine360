@@ -7,6 +7,7 @@ import { getGroupsForAdmin } from "@/server/groupsForAdmin";
 const CreateSchema = z.object({
   name: z.string().trim().min(1).max(80),
   schoolId: z.string().trim().min(1),
+  level: z.enum(["MATERNELLE", "PRIMAIRE"]).optional().default("PRIMAIRE"),
 });
 
 export async function GET() {
@@ -42,12 +43,14 @@ export async function POST(req: Request) {
       name: parsed.data.name,
       schoolId: school.id,
       establishmentId: session.establishmentId,
+      level: parsed.data.level,
     },
     select: {
       id: true,
       name: true,
       active: true,
       schoolId: true,
+      level: true,
       school: { select: { name: true } },
     },
   });
@@ -60,6 +63,7 @@ export async function POST(req: Request) {
         active: group.active,
         schoolId: group.schoolId,
         schoolName: group.school.name,
+        level: group.level,
         ecoRestesServisTargetPct: null as number | null,
         ecoReductionTargetPct: null as number | null,
       },

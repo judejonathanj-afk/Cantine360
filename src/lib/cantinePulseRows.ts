@@ -13,7 +13,12 @@ export type ServiceWithGroupMetrics = {
     rabCount: number;
     refusedCount: number;
     leftoversCount: number;
-    group: { id: string; name: string; school: { name: string } };
+    group: {
+      id: string;
+      name: string;
+      school: { name: string };
+      level?: "MATERNELLE" | "PRIMAIRE";
+    };
   }>;
 };
 

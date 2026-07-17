@@ -20,7 +20,6 @@ describe("buildServiceMetricExportRows", () => {
             servedCount: 22,
             rabCount: 0,
             refusedCount: 0,
-            leftoversCount: 2,
             group: { name: "CE1 A", school: { name: "École Anne Frank" } },
           },
           {
@@ -28,7 +27,6 @@ describe("buildServiceMetricExportRows", () => {
             servedCount: 23,
             rabCount: 1,
             refusedCount: 0,
-            leftoversCount: 0,
             group: { name: "CE1 B", school: { name: "École Anne Frank" } },
           },
         ],
@@ -38,6 +36,7 @@ describe("buildServiceMetricExportRows", () => {
     expect(rows).toHaveLength(2);
     expect(rows.every((row) => row.wasteWeightG === 8500)).toBe(true);
     expect(rows[0]?.groupLabel).toBe("École Anne Frank — CE1 A");
+    expect(rows[0]).not.toHaveProperty("leftoversCount");
   });
 
   it("inclut un service sans classe quand seul le grammage déchets est renseigné", () => {

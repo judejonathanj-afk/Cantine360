@@ -19,7 +19,6 @@ type Metrics = {
   servedCount: number;
   rabCount: number;
   refusedCount: number;
-  leftoversCount: number;
 };
 
 export function GroupMetricsEditor({
@@ -64,8 +63,7 @@ export function GroupMetricsEditor({
       lastSaved.presentCount !== m.presentCount ||
       lastSaved.servedCount !== m.servedCount ||
       lastSaved.rabCount !== m.rabCount ||
-      lastSaved.refusedCount !== m.refusedCount ||
-      lastSaved.leftoversCount !== m.leftoversCount
+      lastSaved.refusedCount !== m.refusedCount
     );
   }, [lastSaved, m]);
 
@@ -241,11 +239,6 @@ export function GroupMetricsEditor({
             label="Refus"
             value={m.refusedCount}
             onChange={(refusedCount) => setM((s) => ({ ...s, refusedCount }))}
-          />
-          <Counter
-            label="Restes"
-            value={m.leftoversCount}
-            onChange={(leftoversCount) => setM((s) => ({ ...s, leftoversCount }))}
           />
         </div>
       </div>

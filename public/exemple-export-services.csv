@@ -1,7 +1,7 @@
-date;mealType;school;group;groupLabel;presentCount;servedCount;rabCount;refusedCount;leftoversCount;wasteWeightG
-2026-05-11;LUNCH;École Anne Frank;CE1;École Anne Frank — CE1;22;22;0;0;2;8500
-2026-05-11;LUNCH;École Anne Frank;CE2;École Anne Frank — CE2;23;23;0;0;0;8500
-2026-05-11;LUNCH;École Anne Frank;CM1;École Anne Frank — CM1;25;25;1;0;1;8500
-2026-05-11;LUNCH;École Anne Frank;CM2;École Anne Frank — CM2;26;26;0;0;0;8500
-2026-05-11;LUNCH;École Anne Frank;CP;École Anne Frank — CP;22;22;0;0;0;8500
-2026-05-11;LUNCH;École Anne Frank;ULIS;École Anne Frank — ULIS;8;8;0;0;0;8500
+date;mealType;school;group;groupLabel;presentCount;servedCount;rabCount;refusedCount;wasteWeightG
+2026-05-11;LUNCH;École Anne Frank;CE1;École Anne Frank — CE1;22;22;0;0;8500
+2026-05-11;LUNCH;École Anne Frank;CE2;École Anne Frank — CE2;23;23;0;0;8500
+2026-05-11;LUNCH;École Anne Frank;CM1;École Anne Frank — CM1;25;25;1;0;8500
+2026-05-11;LUNCH;École Anne Frank;CM2;École Anne Frank — CM2;26;26;0;0;8500
+2026-05-11;LUNCH;École Anne Frank;CP;École Anne Frank — CP;22;22;0;0;8500
+2026-05-11;LUNCH;École Anne Frank;ULIS;École Anne Frank — ULIS;8;8;0;0;8500

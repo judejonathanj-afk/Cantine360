@@ -105,6 +105,9 @@ export default async function DashboardPage({
 }) {
   const sp = await searchParams;
   const days = sp.days === "30" ? 30 : 7;
+  const levelRaw = Array.isArray(sp.level) ? sp.level[0] : sp.level;
+  const levelFilter =
+    levelRaw === "MATERNELLE" || levelRaw === "PRIMAIRE" ? levelRaw : "all";
 
   const now = new Date();
   const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
@@ -208,21 +211,28 @@ export default async function DashboardPage({
     throw e;
   }
 
+  const metricsForLevel = <
+    T extends { group: { level?: string } },
+  >(
+    metrics: T[],
+  ) =>
+    levelFilter === "all"
+      ? metrics
+      : metrics.filter((m) => (m.group.level ?? "PRIMAIRE") === levelFilter);
+
   const totals = services.reduce(
     (acc, s) => {
-      for (const m of s.metrics) {
+      for (const m of metricsForLevel(s.metrics)) {
         acc.present += m.presentCount;
         acc.served += m.servedCount;
         acc.rab += m.rabCount;
         acc.refused += m.refusedCount;
-        acc.leftovers += m.leftoversCount;
       }
       return acc;
     },
-    { present: 0, served: 0, rab: 0, refused: 0, leftovers: 0 },
+    { present: 0, served: 0, rab: 0, refused: 0 },
   );
 
-  const leftoversRate = totals.served > 0 ? totals.leftovers / totals.served : 0;
   const refusalRate = totals.served > 0 ? totals.refused / totals.served : 0;
   const rabRate = totals.served > 0 ? totals.rab / totals.served : 0;
   const servedVsPresent = totals.present > 0 ? totals.served / totals.present : 0;
@@ -242,7 +252,13 @@ export default async function DashboardPage({
 
   const perDay = new Map<
     string,
-    { present: number; served: number; rab: number; refused: number; leftovers: number }
+    {
+      present: number;
+      served: number;
+      rab: number;
+      refused: number;
+      wasteWeightG: number;
+    }
   >();
   for (const s of services) {
     const key = formatServiceDateKey(s.date);
@@ -251,41 +267,19 @@ export default async function DashboardPage({
       served: 0,
       rab: 0,
       refused: 0,
-      leftovers: 0,
+      wasteWeightG: 0,
     };
-    for (const m of s.metrics) {
+    for (const m of metricsForLevel(s.metrics)) {
       bucket.present += m.presentCount;
       bucket.served += m.servedCount;
       bucket.rab += m.rabCount;
       bucket.refused += m.refusedCount;
-      bucket.leftovers += m.leftoversCount;
+    }
+    if (s.wasteWeightG != null && s.wasteWeightG > 0) {
+      bucket.wasteWeightG += s.wasteWeightG;
     }
     perDay.set(key, bucket);
   }
-
-  const topGroups = new Map<
-    string,
-    { group: string; leftovers: number; refused: number; served: number }
-  >();
-  for (const s of services) {
-    for (const m of s.metrics) {
-      const label = formatGroupLabel(m.group.school.name, m.group.name);
-      const key = label;
-      const b = topGroups.get(key) ?? {
-        group: label,
-        leftovers: 0,
-        refused: 0,
-        served: 0,
-      };
-      b.leftovers += m.leftoversCount;
-      b.refused += m.refusedCount;
-      b.served += m.servedCount;
-      topGroups.set(key, b);
-    }
-  }
-  const top = Array.from(topGroups.values())
-    .sort((a, b) => b.leftovers - a.leftovers)
-    .slice(0, 6);
 
   const perDayRows = Array.from(perDay.entries()).map(([date, v]) => ({
     date,
@@ -297,7 +291,7 @@ export default async function DashboardPage({
   for (const s of services) {
     const key = formatServiceDateKey(s.date);
     const bucket = wastePerDay.get(key) ?? { wasteWeightG: 0, served: 0 };
-    for (const m of s.metrics) {
+    for (const m of metricsForLevel(s.metrics)) {
       bucket.served += m.servedCount;
     }
     if (s.wasteWeightG != null && s.wasteWeightG > 0) {
@@ -309,6 +303,15 @@ export default async function DashboardPage({
     date,
     ...v,
   }));
+
+  pulseRows = servicesToCantinePulseRows(
+    wideServices
+      .filter((s) => s.date.getTime() >= pulseRangeStart.getTime())
+      .map((s) => ({
+        ...s,
+        metrics: metricsForLevel(s.metrics),
+      })),
+  );
 
   pulseWasteRows = wastePerDayRows
     .filter((r) => r.wasteWeightG > 0)
@@ -409,18 +412,19 @@ export default async function DashboardPage({
     (row) => row.restesServisTargetPct != null || row.reductionTargetPct != null,
   );
 
-  const eco = hasEcoTargets
-    ? {
-        groups,
-        periodTitle: ecoPeriodTitleFr(
-          establishment?.ecoPeriodKind ?? "CALENDAR_YEAR",
-          establishment?.ecoSchoolYearStartMonth ?? 9,
-          establishment?.ecoSchoolYearStartDay ?? 1,
-        ),
-        restesParen: ecoRestesParenFr(establishment?.ecoPeriodKind ?? "CALENDAR_YEAR"),
-        priorPhrase: ecoPriorPhraseFr(establishment?.ecoPeriodKind ?? "CALENDAR_YEAR"),
-      }
-    : null;
+  const eco =
+    session.role === "ADMIN" && hasEcoTargets
+      ? {
+          groups,
+          periodTitle: ecoPeriodTitleFr(
+            establishment?.ecoPeriodKind ?? "CALENDAR_YEAR",
+            establishment?.ecoSchoolYearStartMonth ?? 9,
+            establishment?.ecoSchoolYearStartDay ?? 1,
+          ),
+          restesParen: ecoRestesParenFr(establishment?.ecoPeriodKind ?? "CALENDAR_YEAR"),
+          priorPhrase: ecoPriorPhraseFr(establishment?.ecoPeriodKind ?? "CALENDAR_YEAR"),
+        }
+      : null;
 
   return (
     <DashboardPanels
@@ -428,18 +432,17 @@ export default async function DashboardPage({
       schoolNames={schoolNames}
       role={session.role}
       exportYear={now.getFullYear()}
+      levelFilter={levelFilter}
       pulseRows={pulseRows}
       pulseWasteRows={pulseWasteRows}
       eco={eco}
       totals={totals}
-      leftoversRatePct={pct(leftoversRate)}
       refusalRatePct={pct(refusalRate)}
       rabRatePct={pct(rabRate)}
       servedVsPresentPct={pct(servedVsPresent)}
       totalWasteWeightG={totalWasteWeightG}
       servicesWithWaste={servicesWithWaste}
       wasteGramsPer100Served={wasteGramsPer100Served}
-      top={top.map(({ group, leftovers }) => ({ group, leftovers }))}
       perDayRows={perDayRows}
       wastePerDayRows={wastePerDayRows}
     />
