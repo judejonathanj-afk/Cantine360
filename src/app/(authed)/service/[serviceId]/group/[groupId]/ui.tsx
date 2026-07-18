@@ -214,6 +214,12 @@ export function GroupMetricsEditor({
           </p>
         ) : null}
 
+        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm leading-relaxed text-emerald-950">
+          Remplissez chaque compteur avec les{" "}
+          <strong className="font-semibold">+/−</strong> (ou en tapant le nombre), puis
+          appuyez sur <strong className="font-semibold">Enregistrer</strong> en haut à droite.
+        </p>
+
         <div className="grid gap-3 sm:grid-cols-2">
           <Counter
             label="Présents"
