@@ -55,10 +55,16 @@ export default async function GroupMetricsPage({
         }}
       />
       {groupAllergens ? (
-        <ClassAllergenList
-          students={groupAllergens.students}
-          hasMenu={allergenSummary?.hasMenu ?? false}
-        />
+        <section className="space-y-4">
+          <div className="border-t border-zinc-300 pt-6" role="separator" aria-hidden />
+          <h2 className="text-center text-2xl font-semibold text-zinc-900 sm:text-3xl">
+            Allergie
+          </h2>
+          <ClassAllergenList
+            students={groupAllergens.students}
+            hasMenu={allergenSummary?.hasMenu ?? false}
+          />
+        </section>
       ) : null}
     </div>
   );
