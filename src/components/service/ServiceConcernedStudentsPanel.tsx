@@ -96,11 +96,14 @@ export function ServiceConcernedStudentsPanel({
           <div className="relative flex items-center">
             <span
               className={cn(
-                "relative z-10 flex shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-400 ring-1 ring-red-400/40",
-                open ? "h-8 w-8 rounded-lg" : "h-10 w-10",
+                "relative z-10 flex shrink-0 items-center justify-center rounded-xl bg-red-500/25 ring-1 ring-red-400/50",
+                open ? "h-11 w-11 rounded-xl" : "h-12 w-12",
               )}
             >
-              <ShieldAlert className={open ? "h-4 w-4" : "h-5 w-5"} aria-hidden />
+              <ShieldAlert
+                className={cn("text-white", open ? "h-6 w-6" : "h-7 w-7")}
+                aria-hidden
+              />
             </span>
             <h2
               className={cn(
