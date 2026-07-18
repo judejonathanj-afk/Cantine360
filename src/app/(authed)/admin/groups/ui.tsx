@@ -81,6 +81,15 @@ export function AdminGroupsClient({
       bucket.groups.push(g);
       map.set(g.schoolId, bucket);
     }
+    for (const bucket of map.values()) {
+      bucket.groups.sort((a, b) => {
+        // Primaire en haut, Maternelle en bas
+        if (a.level !== b.level) {
+          return a.level === "PRIMAIRE" ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name, "fr");
+      });
+    }
     return Array.from(map.entries()).sort((a, b) =>
       a[1].schoolName.localeCompare(b[1].schoolName, "fr"),
     );
@@ -363,19 +372,47 @@ export function AdminGroupsClient({
           Aucune classe. Importez un CSV ou ajoutez une école puis une classe.
         </div>
       ) : (
-        groupsBySchool.map(([sid, bucket]) => (
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-700">
+            <span className="font-medium text-zinc-900">Légende :</span>
+            <span className="inline-flex items-center gap-2">
+              <span
+                className="h-3.5 w-3.5 rounded-sm border border-emerald-300 bg-emerald-100"
+                aria-hidden
+              />
+              Vert = Primaire
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span
+                className="h-3.5 w-3.5 rounded-sm border border-sky-300 bg-sky-100"
+                aria-hidden
+              />
+              Bleu = Maternelle
+            </span>
+          </div>
+          {groupsBySchool.map(([sid, bucket]) => (
           <section key={sid} className="space-y-3">
             <h2 className="text-lg font-semibold text-zinc-900">{bucket.schoolName}</h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {bucket.groups.map((g) => (
                 <div
                   key={g.id}
-                  className="rounded-2xl border border-zinc-200 bg-white p-4"
+                  className={[
+                    "rounded-2xl border p-4",
+                    g.level === "MATERNELLE"
+                      ? "border-sky-300 bg-sky-100"
+                      : "border-emerald-300 bg-emerald-100",
+                  ].join(" ")}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 space-y-1">
                       <GroupNameBadge name={g.name} variant="plain" />
-                      <p className="text-xs font-medium text-zinc-500">
+                      <p
+                        className={[
+                          "text-xs font-semibold",
+                          g.level === "MATERNELLE" ? "text-sky-800" : "text-emerald-800",
+                        ].join(" ")}
+                      >
                         {schoolLevelLabelFr(g.level)}
                       </p>
                     </div>
@@ -396,7 +433,7 @@ export function AdminGroupsClient({
                             if (!res.ok) void refresh();
                           });
                         }}
-                        className="rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-700"
+                        className="rounded-lg border border-white/80 bg-white/80 px-2 py-1 text-xs font-medium text-zinc-700"
                       >
                         <option value="PRIMAIRE">Primaire</option>
                         <option value="MATERNELLE">Maternelle</option>
@@ -407,8 +444,8 @@ export function AdminGroupsClient({
                         className={[
                           "rounded-full px-3 py-1 text-xs font-semibold",
                           g.active
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-zinc-100 text-zinc-700",
+                            ? "bg-white/90 text-emerald-800"
+                            : "bg-white/70 text-zinc-700",
                         ].join(" ")}
                       >
                         {g.active ? "Actif" : "Inactif"}
@@ -417,7 +454,7 @@ export function AdminGroupsClient({
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                        className="h-9 w-9 text-zinc-700 hover:text-destructive"
                         aria-label={`Supprimer ${g.schoolName} ${g.name}`}
                         onClick={() => setToDelete(g)}
                       >
@@ -425,12 +462,17 @@ export function AdminGroupsClient({
                       </Button>
                     </div>
                   </div>
-                  <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3">
+                  <div
+                    className={[
+                      "mt-3 flex flex-wrap items-center gap-2 border-t pt-3",
+                      g.level === "MATERNELLE" ? "border-sky-200/80" : "border-emerald-200/80",
+                    ].join(" ")}
+                  >
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="gap-1.5 font-medium"
+                      className="gap-1.5 border-white/80 bg-white/80 font-medium"
                       onClick={() => {
                         setEcoGroup(g);
                         setEcoOpen(true);
@@ -444,7 +486,8 @@ export function AdminGroupsClient({
               ))}
             </div>
           </section>
-        ))
+        ))}
+        </div>
       )}
 
       <GroupEcoObjectivesDialog
