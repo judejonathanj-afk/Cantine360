@@ -27,7 +27,9 @@ export function Counter({
         className ?? "border-zinc-200",
       ].join(" ")}
     >
-      <div className="text-sm font-medium leading-snug text-zinc-700">{label}</div>
+      <div className="text-base font-semibold leading-snug text-black sm:text-lg">
+        {label}
+      </div>
       <div className="mt-3 flex items-center justify-between gap-4">
         <button
           type="button"
