@@ -43,7 +43,8 @@ export function ServiceWasteWeightPanel({
   const parsedGrams = parseGramsInput(weightInput);
   const dirty = parsedGrams !== savedGrams;
   const invalidInput = weightInput.trim() !== "" && parsedGrams === null;
-  const canSave = dirty && !invalidInput && online && status !== "saving";
+  // Toujours ré-enregistrable (correction d’une erreur) tant que la saisie est valide.
+  const canSave = !invalidInput && online && status !== "saving";
 
   useEffect(() => {
     setSavedGrams(initialWasteWeightG);
@@ -60,6 +61,10 @@ export function ServiceWasteWeightPanel({
     async (grams: number | null) => {
       if (!online) {
         setStatus("offline");
+        return false;
+      }
+      if (invalidInput) {
+        setStatus("error");
         return false;
       }
 
@@ -87,7 +92,7 @@ export function ServiceWasteWeightPanel({
         return false;
       }
     },
-    [online, serviceId],
+    [online, serviceId, invalidInput],
   );
 
   const savedDisplay = savedGrams ?? 0;
@@ -175,7 +180,7 @@ export function ServiceWasteWeightPanel({
                 size="lg"
                 disabled={!canSave}
                 onClick={() => void save(parsedGrams)}
-                className="h-12 min-w-[11rem] shrink-0 rounded-xl border-2 border-yellow-400 bg-white font-semibold text-emerald-800 shadow-sm ring-2 ring-yellow-300/80 hover:bg-white/95 disabled:border-yellow-400/40 disabled:bg-white/50 disabled:text-emerald-800/50 disabled:ring-yellow-300/30"
+                className="h-12 min-w-[11rem] shrink-0 rounded-xl border-2 border-yellow-400 bg-white font-semibold text-emerald-800 shadow-sm ring-2 ring-yellow-300/80 hover:bg-white/95 disabled:border-white/25 disabled:bg-white/40 disabled:text-emerald-900/40 disabled:ring-transparent"
               >
                 <Save className="h-4 w-4 shrink-0" aria-hidden />
                 {status === "saving" ? "Enregistrement…" : "Enregistrer"}
@@ -211,7 +216,9 @@ export function ServiceWasteWeightPanel({
                 "Erreur à l’enregistrement — réessayez"
               ) : dirty ? (
                 "Modifications non enregistrées"
-              ) : savedAck ? null : (
+              ) : savedAck ? (
+                "Vous pouvez modifier le poids et ré-enregistrer si besoin"
+              ) : (
                 "Appuyez sur Enregistrer après la pesée"
               )}
             </p>
