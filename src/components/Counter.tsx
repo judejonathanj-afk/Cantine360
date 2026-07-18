@@ -6,14 +6,27 @@ type Props = {
   onChange: (next: number) => void;
   min?: number;
   max?: number;
+  className?: string;
 };
 
-export function Counter({ label, value, onChange, min = 0, max = 500 }: Props) {
+export function Counter({
+  label,
+  value,
+  onChange,
+  min = 0,
+  max = 500,
+  className,
+}: Props) {
   const dec = () => onChange(Math.max(min, value - 1));
   const inc = () => onChange(Math.min(max, value + 1));
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+    <div
+      className={[
+        "rounded-2xl border-2 bg-white p-4",
+        className ?? "border-zinc-200",
+      ].join(" ")}
+    >
       <div className="text-sm font-medium leading-snug text-zinc-700">{label}</div>
       <div className="mt-3 flex items-center justify-between gap-4">
         <button
@@ -48,4 +61,3 @@ export function Counter({ label, value, onChange, min = 0, max = 500 }: Props) {
     </div>
   );
 }
-

@@ -13,6 +13,7 @@ import {
   getQueuedMetrics,
   removeQueuedMetrics,
 } from "@/lib/offlineMetricsQueue";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 
 type Metrics = {
   presentCount: number;
@@ -29,6 +30,7 @@ export function GroupMetricsEditor({
   className,
   mealType,
   dateLabel,
+  level,
   initial,
 }: {
   serviceId: string;
@@ -38,6 +40,7 @@ export function GroupMetricsEditor({
   className?: string;
   mealType: string;
   dateLabel: string;
+  level: SchoolLevel;
   initial: Metrics;
 }) {
   const router = useRouter();
@@ -154,6 +157,9 @@ export function GroupMetricsEditor({
           ? "Enregistré"
           : "Enregistrer";
 
+  const counterBorder =
+    level === "MATERNELLE" ? "border-sky-400" : "border-emerald-500";
+
   return (
     <div className="space-y-6">
       <div className="relative px-2">
@@ -225,17 +231,20 @@ export function GroupMetricsEditor({
             label="Présents"
             value={m.presentCount}
             onChange={(presentCount) => setM((s) => ({ ...s, presentCount }))}
+            className={counterBorder}
           />
           <Counter
             label="Portions servies"
             value={m.servedCount}
             onChange={(servedCount) => setM((s) => ({ ...s, servedCount }))}
+            className={counterBorder}
           />
           <div className="sm:col-span-2">
             <Counter
               label="RAB = Assiettes adaptées ou resservies (en plus du service standard)."
               value={m.rabCount}
               onChange={(rabCount) => setM((s) => ({ ...s, rabCount }))}
+              className={counterBorder}
             />
           </div>
           <div className="sm:col-span-2">
@@ -243,6 +252,7 @@ export function GroupMetricsEditor({
               label="Refus"
               value={m.refusedCount}
               onChange={(refusedCount) => setM((s) => ({ ...s, refusedCount }))}
+              className={counterBorder}
             />
           </div>
         </div>

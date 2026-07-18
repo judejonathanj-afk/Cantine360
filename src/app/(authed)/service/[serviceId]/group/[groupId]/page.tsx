@@ -47,6 +47,7 @@ export default async function GroupMetricsPage({
         schoolName={metrics.group.school.name}
         mealType={metrics.service.mealType}
         dateLabel={dateLabel}
+        level={metrics.group.level === "MATERNELLE" ? "MATERNELLE" : "PRIMAIRE"}
         initial={{
           presentCount: metrics.presentCount,
           servedCount: metrics.servedCount,
