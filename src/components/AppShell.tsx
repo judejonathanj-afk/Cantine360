@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Leaf,
   Utensils,
@@ -19,7 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { OfflineSyncBanner } from "@/components/service/OfflineSyncBanner";
 import { EndServiceButton } from "@/components/service/EndServiceButton";
-import { activeServiceIdFromPathname } from "@/lib/activeService";
+import {
+  activeServiceIdFromPathname,
+  readRememberedServiceId,
+  rememberActiveServiceId,
+} from "@/lib/activeService";
 
 type Props = {
   role: "ADMIN" | "KITCHEN";
@@ -107,6 +111,9 @@ export function AppShell({
 }: Props) {
   const pathname = usePathname();
   const [busy, setBusy] = useState(false);
+  const [rememberedServiceId, setRememberedServiceId] = useState<string | null>(
+    initialServiceId,
+  );
 
   async function logout() {
     setBusy(true);
@@ -120,9 +127,27 @@ export function AppShell({
 
   const isServiceHome = pathname === "/service";
   const pathnameServiceId = activeServiceIdFromPathname(pathname);
-  // Sur /service (accueil), ne pas réutiliser initialServiceId après « Fin de service ».
+
+  useEffect(() => {
+    if (pathnameServiceId) {
+      rememberActiveServiceId(pathnameServiceId);
+      setRememberedServiceId(pathnameServiceId);
+      return;
+    }
+    if (isServiceHome) {
+      rememberActiveServiceId(null);
+      setRememberedServiceId(null);
+      return;
+    }
+    // Ex. /dashboard : le layout RSC peut recharger sans id — reprendre la session onglet.
+    const fromStorage = readRememberedServiceId() ?? initialServiceId;
+    if (fromStorage) rememberActiveServiceId(fromStorage);
+    setRememberedServiceId(fromStorage);
+  }, [pathnameServiceId, isServiceHome, initialServiceId]);
+
+  // Sur /service (accueil), ne pas réutiliser un id après « Fin de service ».
   const serviceId =
-    pathnameServiceId ?? (isServiceHome ? null : initialServiceId) ?? null;
+    pathnameServiceId ?? (isServiceHome ? null : rememberedServiceId) ?? null;
   const showEndServiceButton = pathnameServiceId != null;
 
   const navItems: NavItem[] = [
