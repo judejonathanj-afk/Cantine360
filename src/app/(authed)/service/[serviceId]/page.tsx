@@ -4,7 +4,6 @@ import {
   ServiceAllergenOverview,
 } from "@/components/service/ServiceAllergenPanel";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
-import { ServiceWorkflowHint } from "@/components/ServiceWorkflowHint";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { ServiceConcernedStudentsPanel } from "@/components/service/ServiceConcernedStudentsPanel";
@@ -93,19 +92,26 @@ export default async function ServicePage({
             className="w-full justify-start"
           />
         </h1>
-        <p className="w-full text-pretty text-base leading-relaxed text-zinc-600 sm:text-lg md:text-xl">
-          Avant le repas : consultez le menu, les allergènes et le grammage, puis
-          renseignez les présents par groupe (saisie ou import CSV). Après le
-          repas : complétez servis, RAB et refus pour chaque classe, puis
-          notez le <strong className="font-semibold text-zinc-800">poids total des déchets</strong>.
-          Clôturez avec « Fin de service » en haut à droite lorsque tout est à jour.
-        </p>
+        <div className="w-full space-y-2 text-pretty text-base leading-relaxed text-zinc-700 sm:text-lg">
+          <p className="font-semibold text-zinc-900">Aide au flux de saisie</p>
+          <ol className="list-decimal space-y-1.5 pl-5">
+            <li>
+              <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
+              allergènes et grammage, puis présents par classe (saisie ou import).
+            </li>
+            <li>
+              <strong className="font-semibold text-zinc-900">Pendant / après</strong> — servis,
+              RAB et refus sur chaque classe.
+            </li>
+            <li>
+              <strong className="font-semibold text-zinc-900">Fin de service</strong> — poids des
+              déchets en grammes, puis « Fin de service » en haut à droite.
+            </li>
+          </ol>
+        </div>
       </div>
 
       <ServiceInfoGrid>
-        <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-900" />}>
-          <ServiceWorkflowHint />
-        </Suspense>
         {allergenSummary && session.role === "ADMIN" ? (
           <ServiceAllergenOverview summary={allergenSummary} />
         ) : null}
