@@ -84,38 +84,44 @@ export default async function ServicePage({
 
   return (
     <div className="space-y-6">
-      <div className="flex min-w-0 flex-col gap-3">
-        <h1 className="w-full">
-          <ServiceMealTitle
-            mealType={service.mealType}
-            dateLabel={dateLabel}
-            className="w-full justify-start"
-          />
-        </h1>
-        <div className="w-full space-y-2 text-pretty text-base leading-relaxed text-zinc-700 sm:text-lg">
-          <p className="font-semibold text-zinc-900">Aide au flux de saisie</p>
-          <ol className="list-decimal space-y-1.5 pl-5">
-            <li>
-              <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
-              allergènes et grammage, puis présents par classe (saisie ou import).
-            </li>
-            <li>
-              <strong className="font-semibold text-zinc-900">Pendant / après</strong> — servis,
-              RAB et refus sur chaque classe.
-            </li>
-            <li>
-              <strong className="font-semibold text-zinc-900">Fin de service</strong> — poids des
-              déchets en grammes, puis « Fin de service » en haut à droite.
-            </li>
-          </ol>
+      <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 flex-1 space-y-3">
+          <h1 className="w-full">
+            <ServiceMealTitle
+              mealType={service.mealType}
+              dateLabel={dateLabel}
+              className="w-full justify-start"
+            />
+          </h1>
+          <div className="w-full space-y-2 text-pretty text-base leading-relaxed text-zinc-700 sm:text-lg">
+            <p className="font-semibold text-zinc-900">Aide au flux de saisie</p>
+            <ol className="list-decimal space-y-1.5 pl-5">
+              <li>
+                <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
+                allergènes et grammage, puis présents par classe (saisie ou import).
+              </li>
+              <li>
+                <strong className="font-semibold text-zinc-900">Pendant / après</strong> — servis,
+                RAB et refus sur chaque classe.
+              </li>
+              <li>
+                <strong className="font-semibold text-zinc-900">Fin de service</strong> — poids des
+                déchets en grammes, puis « Fin de service » en haut à droite.
+              </li>
+            </ol>
+          </div>
         </div>
+        <ServiceGrammagePanel
+          menuItems={menuItems}
+          metrics={metricsGrammage}
+          className="lg:sticky lg:top-20"
+        />
       </div>
 
       <ServiceInfoGrid>
         {allergenSummary && session.role === "ADMIN" ? (
           <ServiceAllergenOverview summary={allergenSummary} />
         ) : null}
-        <ServiceGrammagePanel menuItems={menuItems} metrics={metricsGrammage} />
         {allergenSummary ? (
           <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-900" />}>
             <ServiceConcernedStudentsPanel
