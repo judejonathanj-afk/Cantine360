@@ -14,6 +14,7 @@ import {
   removeQueuedMetrics,
 } from "@/lib/offlineMetricsQueue";
 import type { SchoolLevel } from "@/lib/schoolLevel";
+import { schoolLevelLabelFr } from "@/lib/schoolLevel";
 
 type Metrics = {
   presentCount: number;
@@ -185,6 +186,14 @@ export function GroupMetricsEditor({
               variant="plain"
             />
           </h1>
+          <p
+            className={[
+              "text-sm font-semibold sm:text-base",
+              level === "MATERNELLE" ? "text-sky-700" : "text-emerald-700",
+            ].join(" ")}
+          >
+            {schoolLevelLabelFr(level)}
+          </p>
         </div>
       </div>
 
