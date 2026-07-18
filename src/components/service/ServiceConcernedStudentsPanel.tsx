@@ -9,7 +9,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
-import { groupCardColorForIndex } from "@/lib/groupCardColors";
+import { LEVEL_CARD_COLORS } from "@/lib/schoolLevel";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
 import { cn } from "@/lib/utils";
@@ -20,13 +21,13 @@ export function ServiceConcernedStudentsPanel({
   serviceId,
   groups,
   hasMenu,
-  groupColorIndexById,
+  groupLevelById,
   className,
 }: {
   serviceId: string;
   groups: GroupAllergenSummary[];
   hasMenu: boolean;
-  groupColorIndexById?: Record<string, number>;
+  groupLevelById?: Record<string, SchoolLevel>;
   className?: string;
 }) {
   const router = useRouter();
@@ -143,7 +144,8 @@ export function ServiceConcernedStudentsPanel({
           </p>
           <ul className="mt-2 min-h-0 flex-1 space-y-2.5 overflow-y-auto sm:max-h-[26rem]">
             {concernedGroups.map((g) => {
-              const cardColor = groupCardColorForIndex(groupColorIndexById?.[g.groupId] ?? 0);
+              const level = groupLevelById?.[g.groupId] ?? "PRIMAIRE";
+              const cardColor = LEVEL_CARD_COLORS[level];
               return (
               <li key={g.groupId}>
                 <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>

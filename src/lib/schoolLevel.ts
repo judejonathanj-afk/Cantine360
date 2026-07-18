@@ -2,6 +2,12 @@ export type SchoolLevel = "MATERNELLE" | "PRIMAIRE";
 
 export const SCHOOL_LEVELS: SchoolLevel[] = ["MATERNELLE", "PRIMAIRE"];
 
+/** Couleurs des cartes classe (service + admin) : vert primaire, bleu maternelle. */
+export const LEVEL_CARD_COLORS = {
+  PRIMAIRE: "#ABEBC6",
+  MATERNELLE: "#85C1E9",
+} as const;
+
 export function schoolLevelLabelFr(level: SchoolLevel): string {
   return level === "MATERNELLE" ? "Maternelle" : "Primaire";
 }

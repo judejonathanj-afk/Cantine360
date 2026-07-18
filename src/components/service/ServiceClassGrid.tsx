@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
-import { groupCardColorForIndex } from "@/lib/groupCardColors";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import type { SchoolLevel } from "@/lib/schoolLevel";
-import { schoolLevelLabelFr } from "@/lib/schoolLevel";
+import { LEVEL_CARD_COLORS, schoolLevelLabelFr } from "@/lib/schoolLevel";
 
 export type ServiceClassCard = {
   groupId: string;
@@ -39,13 +38,13 @@ export function ServiceClassGrid({
 
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
-      {cards.map((m, index) => {
+      {cards.map((m) => {
         const done =
           m.presentCount > 0 ||
           m.servedCount > 0 ||
           m.rabCount > 0 ||
           m.refusedCount > 0;
-        const cardColor = groupCardColorForIndex(index);
+        const cardColor = LEVEL_CARD_COLORS[m.level] ?? LEVEL_CARD_COLORS.PRIMAIRE;
         return (
           <Link
             key={m.groupId}

@@ -79,8 +79,8 @@ export default async function ServicePage({
     groupSummary: summaryByGroup.get(m.groupId),
   }));
 
-  const groupColorIndexById = Object.fromEntries(
-    classCards.map((card, index) => [card.groupId, index]),
+  const groupLevelById = Object.fromEntries(
+    classCards.map((card) => [card.groupId, card.level]),
   );
 
   return (
@@ -116,7 +116,7 @@ export default async function ServicePage({
               serviceId={serviceId}
               groups={allergenSummary.groups}
               hasMenu={allergenSummary.hasMenu}
-              groupColorIndexById={groupColorIndexById}
+              groupLevelById={groupLevelById}
             />
           </Suspense>
         ) : null}
