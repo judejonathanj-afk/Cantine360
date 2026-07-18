@@ -104,13 +104,8 @@ export function ServiceConcernedStudentsPanel({
             </span>
             <div className={cn("min-w-0 flex-1", t.text)}>
               <h2 className={cn("font-semibold leading-snug", open ? "text-sm" : "text-base", t.title)}>
-                Liste nominative
+                Élèves concernés par le menu
               </h2>
-              {!open ? (
-                <p className={cn("mt-1 text-sm leading-relaxed", t.muted)}>
-                  élève{total > 1 ? "s" : ""} concerné{total > 1 ? "s" : ""} par le menu
-                </p>
-              ) : null}
             </div>
             {open ? (
               <span className={cn("shrink-0 text-sm font-bold tabular-nums", t.text)}>
