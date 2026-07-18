@@ -149,11 +149,11 @@ export function ServiceConcernedStudentsPanel({
               return (
               <li key={g.groupId}>
                 <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
-                <ul className="mt-1.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
+                <ul className="mt-1.5 space-y-1.5">
                   {g.concerned.map((s) => (
                     <li
                       key={s.id}
-                      className="rounded-xl border-2 px-3 py-2.5 text-base text-zinc-900 shadow-sm"
+                      className="w-full rounded-xl border-2 px-4 py-2.5 text-base text-zinc-900 shadow-sm"
                       style={{
                         backgroundColor: cardColor,
                         borderColor: cardColor,
