@@ -54,12 +54,17 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
       <CardContent className="p-0">
         <header className="border-b-2 border-emerald-500">
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
-            <div className="flex shrink-0 items-center gap-3 self-stretch bg-emerald-100 px-6 py-5 md:px-6">
-              <Trash2
-                className="h-8 w-8 shrink-0 text-foreground lg:h-9 lg:w-9"
+            <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-emerald-100 py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
+              <div
+                className="pointer-events-none absolute inset-y-0 left-0 w-12 overflow-hidden sm:w-14 md:w-16"
                 aria-hidden
-              />
-              <h2 className="whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              >
+                <Trash2
+                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-emerald-700/35 sm:h-32 sm:w-32 md:h-36 md:w-36"
+                  strokeWidth={1.25}
+                />
+              </div>
+              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
                 Évolution des déchets
               </h2>
             </div>

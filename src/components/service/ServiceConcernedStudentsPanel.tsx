@@ -88,40 +88,46 @@ export function ServiceConcernedStudentsPanel({
       >
         <CollapsibleTrigger
           className={cn(
-            "flex w-full shrink-0 flex-col px-4 text-left outline-none",
-            open ? "py-2" : "py-4",
+            "flex w-full shrink-0 flex-col px-4 outline-none",
+            open ? "py-3" : "py-4",
             t.hover,
           )}
         >
-          <div className="flex items-start gap-3">
+          <div className="relative flex items-center">
             <span
               className={cn(
-                "flex shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-400 ring-1 ring-red-400/40",
-                open ? "h-7 w-7 rounded-lg" : "h-10 w-10",
+                "relative z-10 flex shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-400 ring-1 ring-red-400/40",
+                open ? "h-8 w-8 rounded-lg" : "h-10 w-10",
               )}
             >
-              <ShieldAlert className={open ? "h-3.5 w-3.5" : "h-5 w-5"} aria-hidden />
+              <ShieldAlert className={open ? "h-4 w-4" : "h-5 w-5"} aria-hidden />
             </span>
-            <div className={cn("min-w-0 flex-1", t.text)}>
-              <h2 className={cn("font-semibold leading-snug", open ? "text-sm" : "text-base", t.title)}>
-                Élèves concernés par le menu
-              </h2>
-            </div>
-            {open ? (
-              <span className={cn("shrink-0 text-sm font-bold tabular-nums", t.text)}>
-                {total}
-              </span>
-            ) : null}
-            <ChevronDown
+            <h2
               className={cn(
-                "shrink-0 transition-transform",
-                open ? "h-4 w-4 rotate-180" : "h-5 w-5",
-                t.chevron,
+                "absolute inset-x-0 text-center font-bold leading-snug",
+                open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
+                t.title,
               )}
-            />
+            >
+              Élèves concernés par le menu
+            </h2>
+            <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2">
+              {open ? (
+                <span className={cn("text-base font-bold tabular-nums", t.text)}>
+                  {total}
+                </span>
+              ) : null}
+              <ChevronDown
+                className={cn(
+                  "shrink-0 transition-transform",
+                  open ? "h-5 w-5 rotate-180" : "h-5 w-5",
+                  t.chevron,
+                )}
+              />
+            </div>
           </div>
           {!open ? (
-            <p className={cn("mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl", t.text)}>
+            <p className={cn("mt-3 text-center text-3xl font-bold tracking-tight text-white sm:text-4xl", t.text)}>
               {total}
             </p>
           ) : null}
