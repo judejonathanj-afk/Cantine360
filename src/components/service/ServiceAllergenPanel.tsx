@@ -79,19 +79,25 @@ export function GroupAllergenBadge({
   const { studentsWithAllergens, affectedByMenu } = groupSummary;
 
   return (
-    <div className="mt-3 rounded-xl bg-white/90 px-3 py-2 text-xs font-medium text-zinc-800 shadow-sm">
+    <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm sm:text-base">
+      <AlertTriangle
+        className="h-5 w-5 shrink-0 text-yellow-500"
+        aria-hidden
+      />
       <span>
-        {studentsWithAllergens} allergie{studentsWithAllergens > 1 ? "s" : ""}
-      </span>
-      {hasMenu ? (
-        <span className="text-zinc-600">
-          {" "}
-          ·{" "}
-          <span className={affectedByMenu > 0 ? "font-bold text-amber-900" : ""}>
-            {affectedByMenu} concerné{affectedByMenu > 1 ? "s" : ""} menu
-          </span>
+        <span>
+          {studentsWithAllergens} allergie{studentsWithAllergens > 1 ? "s" : ""}
         </span>
-      ) : null}
+        {hasMenu ? (
+          <span className="font-medium text-zinc-600">
+            {" "}
+            ·{" "}
+            <span className={affectedByMenu > 0 ? "font-bold text-amber-900" : ""}>
+              {affectedByMenu} concerné{affectedByMenu > 1 ? "s" : ""} menu
+            </span>
+          </span>
+        ) : null}
+      </span>
     </div>
   );
 }
