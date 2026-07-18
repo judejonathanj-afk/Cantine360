@@ -94,7 +94,7 @@ export function ServiceMetricsSection({
         className="w-full"
       />
       <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
-      <ServiceSchoolFilter cards={filtered} value={schoolFilter} onChange={setSchoolFilter} />
+      <ServiceSchoolFilter cards={cards} value={schoolFilter} onChange={setSchoolFilter} />
       <ServiceClassGrid serviceId={serviceId} cards={filtered} hasMenu={hasMenu} />
     </div>
   );
