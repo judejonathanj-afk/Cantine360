@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -58,7 +59,11 @@ export default async function GroupMetricsPage({
       {groupAllergens ? (
         <section className="space-y-4">
           <div className="border-t border-zinc-300 pt-6" role="separator" aria-hidden />
-          <h2 className="text-center text-2xl font-semibold text-zinc-900 sm:text-3xl">
+          <h2 className="flex items-center justify-center gap-2.5 text-2xl font-semibold text-zinc-900 sm:text-3xl">
+            <AlertTriangle
+              className="h-7 w-7 shrink-0 text-yellow-500 sm:h-8 sm:w-8"
+              aria-hidden
+            />
             Élèves &amp; allergènes
           </h2>
           <ClassAllergenList
