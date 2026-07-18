@@ -17,6 +17,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   buildWasteEvolutionSeries,
@@ -53,7 +54,11 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
       <CardContent className="p-0">
         <header className="border-b-2 border-emerald-500">
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
-            <div className="flex shrink-0 items-center self-stretch bg-emerald-100 px-6 py-5 md:w-[11rem] md:px-5 lg:w-[13rem]">
+            <div className="flex shrink-0 items-center gap-2.5 self-stretch bg-emerald-100 px-6 py-5 md:w-[11rem] md:px-5 lg:w-[13rem]">
+              <Trash2
+                className="h-7 w-7 shrink-0 text-foreground lg:h-8 lg:w-8"
+                aria-hidden
+              />
               <h2 className="text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
                 Évolution des déchets
               </h2>

@@ -142,14 +142,14 @@ export function ServiceConcernedStudentsPanel({
           <p className={cn("shrink-0 rounded-md px-2 py-1 text-[10px] leading-snug", t.nested)}>
             <strong className="font-semibold">RGPD</strong> — personnel cantine uniquement.
           </p>
-          <ul className="mt-2 min-h-0 flex-1 space-y-2.5 overflow-y-auto sm:max-h-[26rem]">
+          <ul className="mt-2 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[26rem]">
             {concernedGroups.map((g) => {
               const level = groupLevelById?.[g.groupId] ?? "PRIMAIRE";
               const cardColor = LEVEL_CARD_COLORS[level];
               return (
               <li key={g.groupId}>
                 <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
-                <ul className="mt-1.5 space-y-1.5">
+                <ul className="mt-1.5 grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3">
                   {g.concerned.map((s) => (
                     <li
                       key={s.id}

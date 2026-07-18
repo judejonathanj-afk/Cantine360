@@ -129,6 +129,7 @@ export default async function ServicePage({
               groups={allergenSummary.groups}
               hasMenu={allergenSummary.hasMenu}
               groupLevelById={groupLevelById}
+              className="col-span-full"
             />
           </Suspense>
         ) : null}
