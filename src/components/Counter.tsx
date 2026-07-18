@@ -14,7 +14,7 @@ export function Counter({ label, value, onChange, min = 0, max = 500 }: Props) {
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-4">
-      <div className="text-sm font-medium text-zinc-700">{label}</div>
+      <div className="text-sm font-medium leading-snug text-zinc-700">{label}</div>
       <div className="mt-3 flex items-center justify-between gap-4">
         <button
           type="button"

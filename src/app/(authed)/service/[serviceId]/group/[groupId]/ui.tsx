@@ -227,13 +227,10 @@ export function GroupMetricsEditor({
           />
           <div className="sm:col-span-2">
             <Counter
-              label="RAB"
+              label="RAB = Assiettes adaptées ou resservies (en plus du service standard)."
               value={m.rabCount}
               onChange={(rabCount) => setM((s) => ({ ...s, rabCount }))}
             />
-            <p className="mt-1 text-xs text-zinc-500">
-              Assiettes adaptées ou resservies (en plus du service standard).
-            </p>
           </div>
           <Counter
             label="Refus"
