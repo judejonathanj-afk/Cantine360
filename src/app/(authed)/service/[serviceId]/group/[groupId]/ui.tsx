@@ -232,11 +232,13 @@ export function GroupMetricsEditor({
               onChange={(rabCount) => setM((s) => ({ ...s, rabCount }))}
             />
           </div>
-          <Counter
-            label="Refus"
-            value={m.refusedCount}
-            onChange={(refusedCount) => setM((s) => ({ ...s, refusedCount }))}
-          />
+          <div className="sm:col-span-2">
+            <Counter
+              label="Refus"
+              value={m.refusedCount}
+              onChange={(refusedCount) => setM((s) => ({ ...s, refusedCount }))}
+            />
+          </div>
         </div>
       </div>
     </div>
