@@ -150,36 +150,37 @@ export function AppShell({
     pathnameServiceId ?? (isServiceHome ? null : rememberedServiceId) ?? null;
   const showEndServiceButton = pathnameServiceId != null;
 
-  const navItems: NavItem[] = [
-    ...(serviceId
+  const serviceNavItems: NavItem[] = serviceId
+    ? [
+        {
+          href: `/service/${serviceId}/menu`,
+          label: "Menu & allergènes",
+          icon: ClipboardList,
+          isActive: (p: string) =>
+            p === `/service/${serviceId}/menu` ||
+            p.startsWith(`/service/${serviceId}/menu/`),
+        },
+        {
+          ...NAV[0],
+          href: `/service/${serviceId}`,
+        },
+      ]
+    : [NAV[0]];
+
+  const navItems: NavItem[] =
+    role === "ADMIN"
       ? [
-          {
-            href: `/service/${serviceId}/menu`,
-            label: "Menu & allergènes",
-            icon: ClipboardList,
-            isActive: (p: string) =>
-              p === `/service/${serviceId}/menu` ||
-              p.startsWith(`/service/${serviceId}/menu/`),
-          } satisfies NavItem,
-          {
-            ...NAV[0],
-            href: `/service/${serviceId}`,
-          },
-        ]
-      : [NAV[0]]),
-    NAV[1],
-    ...(role === "ADMIN"
-      ? [
-          { href: "/admin/groups", label: "Écoles & classes", icon: Users } satisfies NavItem,
+          NAV[1],
+          { href: "/admin/groups", label: "Écoles & classes", icon: Users },
           {
             href: "/admin/students",
             label: "Élèves & allergènes",
             icon: GraduationCap,
-          } satisfies NavItem,
-          { href: "/exports", label: "Exports", icon: FileDown } satisfies NavItem,
+          },
+          ...serviceNavItems,
+          { href: "/exports", label: "Exports", icon: FileDown },
         ]
-      : []),
-  ];
+      : [...serviceNavItems, NAV[1]];
 
   return (
     <div
@@ -197,7 +198,7 @@ export function AppShell({
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
           <Link
-            href="/service"
+            href={role === "ADMIN" ? "/dashboard" : "/service"}
             className="flex min-w-0 max-w-[45%] shrink items-center gap-2 sm:max-w-[14rem] sm:gap-3 md:max-w-[16rem]"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">

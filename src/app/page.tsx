@@ -15,6 +15,8 @@ export default async function Home() {
     getPlatformSession(),
   ]);
   if (platform) redirect("/platform/establishments");
-  if (establishment) redirect("/service");
+  if (establishment) {
+    redirect(establishment.role === "ADMIN" ? "/dashboard" : "/service");
+  }
   return <LandingPage />;
 }

@@ -59,7 +59,7 @@ export function LoginClient() {
   const [busy, setBusy] = useState(false);
   const sp = useSearchParams();
 
-  const nextPath = useMemo(() => sp.get("next") ?? "/service", [sp]);
+  const nextPath = useMemo(() => sp.get("next"), [sp]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,7 +72,7 @@ export function LoginClient() {
         body: JSON.stringify({
           slug: normalizeEstablishmentSlug(slug),
           pin: pin.replace(/\D/g, ""),
-          next: nextPath,
+          ...(nextPath ? { next: nextPath } : {}),
         }),
       });
       if (!res.ok) {

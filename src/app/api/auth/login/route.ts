@@ -89,9 +89,12 @@ export async function POST(req: Request) {
       accessCredentialRevision: establishment.accessCredentialRevision,
     });
 
-    const redirectTo = parsed.data.next?.startsWith("/")
-      ? parsed.data.next
-      : "/service";
+    const defaultHome = role === "ADMIN" ? "/dashboard" : "/service";
+    const requestedNext = parsed.data.next;
+    const redirectTo =
+      requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
+        ? requestedNext
+        : defaultHome;
 
     const res = NextResponse.json({ redirectTo });
     const cookieJar = parseCookieHeader(req.headers.get("cookie") ?? "");
