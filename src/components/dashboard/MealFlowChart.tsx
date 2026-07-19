@@ -16,30 +16,34 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import { UtensilsCrossed } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   buildMealFlowSeries,
   type MealFlowDayInput,
 } from "@/lib/buildMealFlowSeries";
+import {
+  cantinePlusChartCardClass,
+  cantinePlusChartPlotClass,
+} from "@/lib/cantinePlusTheme";
+import { cn } from "@/lib/utils";
 
 const chartConfig = {
   present: {
     label: "Présents",
-    color: "#0f766e",
+    color: "#2dd4bf",
   },
   served: {
     label: "Servis",
-    color: "#10b981",
+    color: "#34d399",
   },
   rab: {
     label: "RAB",
-    color: "#d97706",
+    color: "#fbbf24",
   },
   refused: {
     label: "Refus",
-    color: "#e11d48",
+    color: "#fb7185",
   },
 } satisfies ChartConfig;
 
@@ -55,26 +59,28 @@ export function MealFlowChart({ days, perDayRows }: Props) {
   );
 
   return (
-    <Card className="overflow-hidden border-2 border-yellow-400 bg-card/50 pb-6 pt-0 shadow-sm shadow-yellow-400/15 backdrop-blur-sm">
+    <Card
+      className={cn(
+        cantinePlusChartCardClass,
+        "border-2 border-yellow-400 shadow-yellow-400/15",
+      )}
+    >
       <CardContent className="p-0">
         <header className="border-b-2 border-yellow-400">
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
-            <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-teal-100 py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
+            <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-[#06101c] py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
               <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-12 overflow-hidden sm:w-14 md:w-16"
                 aria-hidden
               >
                 <UtensilsCrossed
-                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-teal-800/35 sm:h-32 sm:w-32 md:h-36 md:w-36"
+                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-yellow-300/30 sm:h-32 sm:w-32 md:h-36 md:w-36"
                   strokeWidth={1.25}
                 />
               </div>
-              <div className="relative z-10 flex flex-col items-start gap-2">
-                <CantinePlusBadge />
-                <h2 className="whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-                  Flux du repas
-                </h2>
-              </div>
+              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+                Flux du repas
+              </h2>
             </div>
 
             <div
@@ -84,20 +90,19 @@ export function MealFlowChart({ days, perDayRows }: Props) {
             <div className="h-px w-full shrink-0 bg-yellow-400/80 md:hidden" aria-hidden />
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
                 Déjeuner sur les {days} derniers jours — présents, assiettes
                 servies, RAB et refus jour par jour.
               </p>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                <strong className="font-semibold text-foreground">Présents</strong>{" "}
-                →{" "}
-                <strong className="font-semibold text-foreground">servis</strong> →{" "}
-                <strong className="font-semibold text-foreground">RAB</strong> /{" "}
-                <strong className="font-semibold text-foreground">refus</strong> :
-                le parcours du repas en un coup d&apos;œil.
+              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
+                <strong className="font-semibold text-white">Présents</strong> →{" "}
+                <strong className="font-semibold text-white">servis</strong> →{" "}
+                <strong className="font-semibold text-white">RAB</strong> /{" "}
+                <strong className="font-semibold text-white">refus</strong> : le
+                parcours du repas en un coup d&apos;œil.
               </p>
-              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                <strong className="font-semibold text-foreground">En résumé :</strong>{" "}
+              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
+                <strong className="font-semibold text-white">En résumé :</strong>{" "}
                 utile pour voir si l&apos;écart présents / servis se creuse, ou si
                 RAB et refus montent un jour donné.
               </p>
@@ -106,15 +111,12 @@ export function MealFlowChart({ days, perDayRows }: Props) {
         </header>
 
         {!hasData ? (
-          <p className="mt-5 px-6 text-sm text-muted-foreground">
+          <p className="mt-5 px-6 text-sm text-white/65">
             Pas encore de compteurs saisis sur la période — ouvrez un service et
             renseignez présents / servis / RAB / refus pour voir le flux ici.
           </p>
         ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="mt-5 h-[min(22rem,50vw)] w-full min-h-[240px] aspect-auto px-6"
-          >
+          <ChartContainer config={chartConfig} className={cantinePlusChartPlotClass}>
             <ComposedChart
               data={series}
               margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
