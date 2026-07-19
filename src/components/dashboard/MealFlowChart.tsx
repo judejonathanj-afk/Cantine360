@@ -54,9 +54,9 @@ export function MealFlowChart({ days, perDayRows }: Props) {
   );
 
   return (
-    <Card className="overflow-hidden border-2 border-teal-600 bg-card/50 pb-6 pt-0 shadow-sm shadow-teal-600/10 backdrop-blur-sm">
+    <Card className="overflow-hidden border-2 border-yellow-400 bg-card/50 pb-6 pt-0 shadow-sm shadow-yellow-400/15 backdrop-blur-sm">
       <CardContent className="p-0">
-        <header className="border-b-2 border-teal-600">
+        <header className="border-b-2 border-yellow-400">
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
             <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-teal-100 py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
               <div
@@ -74,10 +74,10 @@ export function MealFlowChart({ days, perDayRows }: Props) {
             </div>
 
             <div
-              className="hidden w-px shrink-0 self-stretch bg-teal-600/70 md:block"
+              className="hidden w-px shrink-0 self-stretch bg-yellow-400/80 md:block"
               aria-hidden
             />
-            <div className="h-px w-full shrink-0 bg-teal-600/70 md:hidden" aria-hidden />
+            <div className="h-px w-full shrink-0 bg-yellow-400/80 md:hidden" aria-hidden />
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
