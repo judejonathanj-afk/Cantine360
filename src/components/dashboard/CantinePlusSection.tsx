@@ -20,11 +20,11 @@ export function CantinePlusSection({
         <div className="flex justify-center">
           <div
             id="cantine-plus-heading"
-            className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-black px-8 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-14 sm:py-3"
+            className="inline-flex w-full max-w-3xl justify-center rounded-xl bg-black px-8 py-3.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-4"
           >
             <MenusCantineColorTitle
               text="CANTINE +"
-              className="text-2xl tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] lg:text-4xl"
+              className="text-4xl tracking-[0.12em] sm:text-5xl sm:tracking-[0.16em] lg:text-6xl"
             />
           </div>
         </div>
