@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
+import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
@@ -269,6 +270,8 @@ export default function DashboardPanels({
           }
         />
       ) : null}
+
+      <MealFlowChart days={days} perDayRows={perDayRows} />
 
       <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
 
