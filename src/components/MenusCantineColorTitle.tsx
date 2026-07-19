@@ -51,7 +51,7 @@ export function MenusCantineColorTitle({
             <span
               key={`plus-${i}`}
               style={{ color }}
-              className="inline-block translate-y-px pl-1 text-[1.35em] font-bold leading-none"
+              className="inline-block -translate-y-[0.18em] pl-1 text-[1.35em] font-bold leading-none"
               aria-hidden
             >
               +
