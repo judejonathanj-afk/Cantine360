@@ -9,6 +9,7 @@ import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
+import { CantinePlusSection } from "@/components/dashboard/CantinePlusSection";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
@@ -256,30 +257,33 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      {!isKitchen ? (
-        <CantinePulseCard
-          rows={pulseRows}
-          wasteRows={pulseWasteRows}
-          mealType="LUNCH"
-          days={days}
-          eco={
-            eco
-              ? {
-                  groups: eco.groups,
-                  periodTitle: eco.periodTitle,
-                  restesParen: eco.restesParen,
-                  priorPhrase: eco.priorPhrase,
-                }
-              : null
-          }
-        />
-      ) : null}
+      <CantinePlusSection>
+        {!isKitchen ? (
+          <CantinePulseCard
+            rows={pulseRows}
+            wasteRows={pulseWasteRows}
+            mealType="LUNCH"
+            days={days}
+            showBrandTitle={false}
+            eco={
+              eco
+                ? {
+                    groups: eco.groups,
+                    periodTitle: eco.periodTitle,
+                    restesParen: eco.restesParen,
+                    priorPhrase: eco.priorPhrase,
+                  }
+                : null
+            }
+          />
+        ) : null}
 
-      <MealFlowChart days={days} perDayRows={perDayRows} />
+        <MealFlowChart days={days} perDayRows={perDayRows} />
 
-      <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
+        <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
 
-      <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
+        <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
+      </CantinePlusSection>
 
       <Card
         className="flex h-full flex-col border-border/50 backdrop-blur-sm"

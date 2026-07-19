@@ -380,12 +380,15 @@ export function CantinePulseCard({
   mealType,
   days = 7,
   eco = null,
+  showBrandTitle = true,
 }: {
   rows: CantineServiceRow[];
   wasteRows?: CantineWasteDayRow[];
   mealType: "LUNCH";
   days?: CantinePulseWindowDays;
   eco?: CantinePulseEco | null;
+  /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
+  showBrandTitle?: boolean;
 }) {
   const [ecoPanelOpen, setEcoPanelOpen] = useState(false);
   const periodLabel = days === 30 ? "30 jours" : "7 jours";
@@ -427,20 +430,26 @@ export function CantinePulseCard({
     >
       <div className={cn("h-1.5 w-full shrink-0", s.topBar)} aria-hidden />
       <CardContent className="space-y-5 p-6 pt-4">
-        <div className="text-center">
-          <div className="flex justify-center">
-            <div className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-black px-10 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-3">
-              <MenusCantineColorTitle
-                text="CANTINE +"
-                className="text-2xl tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] lg:text-4xl"
-              />
+        {showBrandTitle ? (
+          <div className="text-center">
+            <div className="flex justify-center">
+              <div className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-black px-10 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-3">
+                <MenusCantineColorTitle
+                  text="CANTINE +"
+                  className="text-2xl tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] lg:text-4xl"
+                />
+              </div>
             </div>
+            <p className="mx-auto mt-2 max-w-2xl text-balance text-sm text-white/75 sm:text-base">
+              RAB <span className="text-white/90">(assiettes adaptées ou resservies)</span> et
+              déchets (poids) — {periodLabel}
+            </p>
           </div>
-          <p className="mx-auto mt-2 max-w-2xl text-balance text-sm text-white/75 sm:text-base">
-            RAB <span className="text-white/90">(assiettes adaptées ou resservies)</span> et
-            déchets (poids) — {periodLabel}
+        ) : (
+          <p className="text-center text-sm text-white/75 sm:text-base">
+            Score & lecture globale — RAB et déchets (poids) — {periodLabel}
           </p>
-        </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-4">
           <MealIcon />

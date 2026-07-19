@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import {
   buildWasteEvolutionSeries,
   type WastePerDayRowInput,
@@ -64,9 +65,12 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-                Évolution des déchets
-              </h2>
+              <div className="relative z-10 flex flex-col items-start gap-2">
+                <CantinePlusBadge />
+                <h2 className="whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                  Évolution des déchets
+                </h2>
+              </div>
             </div>
 
             <div

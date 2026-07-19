@@ -16,6 +16,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import { UtensilsCrossed } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -68,9 +69,12 @@ export function MealFlowChart({ days, perDayRows }: Props) {
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-                Flux du repas
-              </h2>
+              <div className="relative z-10 flex flex-col items-start gap-2">
+                <CantinePlusBadge />
+                <h2 className="whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                  Flux du repas
+                </h2>
+              </div>
             </div>
 
             <div
