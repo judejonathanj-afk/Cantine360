@@ -259,8 +259,13 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      <CantinePlusSection>
-        {!isKitchen ? (
+      {isKitchen ? (
+        <div className="space-y-4">
+          <MealFlowChart days={days} perDayRows={perDayRows} />
+          <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
+        </div>
+      ) : (
+        <CantinePlusSection>
           <CantinePulseCard
             rows={pulseRows}
             wasteRows={pulseWasteRows}
@@ -278,14 +283,11 @@ export default function DashboardPanels({
                 : null
             }
           />
-        ) : null}
-
-        <MealFlowChart days={days} perDayRows={perDayRows} />
-
-        <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
-
-        <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
-      </CantinePlusSection>
+          <MealFlowChart days={days} perDayRows={perDayRows} />
+          <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
+          <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
+        </CantinePlusSection>
+      )}
 
       <Card
         className="flex h-full flex-col border-border/50 backdrop-blur-sm"
