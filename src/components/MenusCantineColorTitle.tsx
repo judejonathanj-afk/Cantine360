@@ -51,7 +51,7 @@ export function MenusCantineColorTitle({
             <span
               key={`plus-${i}`}
               style={{ color }}
-              className="inline-flex h-[0.92em] w-[0.92em] items-center justify-center text-[0.92em] leading-none"
+              className="inline-flex items-center justify-center pl-0.5 text-[1.05em] font-bold leading-none"
               aria-hidden
             >
               +
