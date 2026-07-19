@@ -175,25 +175,49 @@ export function GroupMetricsEditor({
           ) : null}
           {saveLabel}
         </Button>
-        <div className="flex flex-col items-center gap-1 px-2 text-center sm:px-24">
-          <div className="text-zinc-600">
-            <ServiceMealTitle mealType={mealType} dateLabel={dateLabel} size="sm" />
+
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1fr)] sm:items-start">
+          <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-left sm:mt-1 sm:max-w-[16rem]">
+            <p className="text-xs font-bold uppercase tracking-wide text-zinc-700">
+              À faire
+            </p>
+            <ol className="mt-1.5 list-decimal space-y-1.5 pl-4 text-sm leading-snug text-zinc-800">
+              <li>
+                Remplissez chaque compteur avec les{" "}
+                <strong className="font-semibold">+/−</strong> (ou en tapant le
+                nombre).
+              </li>
+              <li>
+                Consultez{" "}
+                <strong className="font-semibold">Élèves &amp; allergènes</strong>
+                , puis appuyez sur{" "}
+                <strong className="font-semibold">Enregistrer</strong>.
+              </li>
+            </ol>
           </div>
-          <h1 className="mt-1 w-full text-center">
-            <GroupNameBadge
-              name={className ?? groupName}
-              schoolName={schoolName}
-              variant="plain"
-            />
-          </h1>
-          <p
-            className={[
-              "text-sm font-semibold sm:text-base",
-              level === "MATERNELLE" ? "text-sky-700" : "text-emerald-700",
-            ].join(" ")}
-          >
-            {schoolLevelLabelFr(level)}
-          </p>
+
+          <div className="flex flex-col items-center gap-1 px-2 text-center sm:px-4">
+            <div className="text-zinc-600">
+              <ServiceMealTitle mealType={mealType} dateLabel={dateLabel} size="sm" />
+            </div>
+            <h1 className="mt-1 w-full text-center">
+              <GroupNameBadge
+                name={className ?? groupName}
+                schoolName={schoolName}
+                variant="plain"
+              />
+            </h1>
+            <p
+              className={[
+                "text-sm font-semibold sm:text-base",
+                level === "MATERNELLE" ? "text-sky-700" : "text-emerald-700",
+              ].join(" ")}
+            >
+              {schoolLevelLabelFr(level)}
+            </p>
+          </div>
+
+          <div className="hidden sm:block" aria-hidden />
         </div>
       </div>
 
@@ -228,12 +252,6 @@ export function GroupMetricsEditor({
             synchronisés au retour du réseau.
           </p>
         ) : null}
-
-        <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm leading-relaxed text-emerald-950">
-          Remplissez chaque compteur avec les{" "}
-          <strong className="font-semibold">+/−</strong> (ou en tapant le nombre), puis
-          appuyez sur <strong className="font-semibold">Enregistrer</strong> en haut à droite.
-        </p>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <Counter
