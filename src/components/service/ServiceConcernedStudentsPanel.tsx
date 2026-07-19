@@ -13,6 +13,7 @@ import { LEVEL_CARD_COLORS } from "@/lib/schoolLevel";
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
+import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import { cn } from "@/lib/utils";
 
 const t = SERVICE_INSIGHT_TONES.black;
@@ -89,7 +90,7 @@ export function ServiceConcernedStudentsPanel({
         <CollapsibleTrigger
           className={cn(
             "flex w-full shrink-0 flex-col px-4 outline-none",
-            open ? "py-3" : "py-4",
+            open ? "py-3.5" : "py-4",
             t.hover,
           )}
         >
@@ -105,21 +106,19 @@ export function ServiceConcernedStudentsPanel({
                 aria-hidden
               />
             </span>
-            <h2
-              className={cn(
-                "absolute inset-x-0 text-center font-bold leading-snug",
-                open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
-                t.title,
-              )}
-            >
-              Élèves concernés par le menu
-            </h2>
-            <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2">
-              {open ? (
-                <span className={cn("text-base font-bold tabular-nums", t.text)}>
-                  {total}
-                </span>
-              ) : null}
+            <div className="absolute inset-x-0 flex flex-col items-center gap-1.5 px-14">
+              <CantinePlusBadge />
+              <h2
+                className={cn(
+                  "text-center font-bold leading-snug",
+                  open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
+                  t.title,
+                )}
+              >
+                <span className="tabular-nums">{total}</span> Élèves concernés par le menu
+              </h2>
+            </div>
+            <div className="relative z-10 ml-auto flex shrink-0 items-center">
               <ChevronDown
                 className={cn(
                   "shrink-0 transition-transform",
@@ -129,11 +128,6 @@ export function ServiceConcernedStudentsPanel({
               />
             </div>
           </div>
-          {!open ? (
-            <p className={cn("mt-3 text-center text-3xl font-bold tracking-tight text-white sm:text-4xl", t.text)}>
-              {total}
-            </p>
-          ) : null}
         </CollapsibleTrigger>
         <CollapsibleContent
           className={cn(
