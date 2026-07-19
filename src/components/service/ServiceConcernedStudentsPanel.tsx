@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ShieldAlert } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -94,30 +94,17 @@ export function ServiceConcernedStudentsPanel({
             t.hover,
           )}
         >
-          <div className="relative flex items-center">
-            <span
+          <div className="relative flex items-center gap-3">
+            <CantinePlusBadge className="relative z-10 shrink-0" />
+            <h2
               className={cn(
-                "relative z-10 flex shrink-0 items-center justify-center rounded-xl bg-red-500/25 ring-1 ring-red-400/50",
-                open ? "h-11 w-11 rounded-xl" : "h-12 w-12",
+                "absolute inset-x-0 text-center font-bold leading-snug",
+                open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
+                t.title,
               )}
             >
-              <ShieldAlert
-                className={cn("text-white", open ? "h-6 w-6" : "h-7 w-7")}
-                aria-hidden
-              />
-            </span>
-            <div className="absolute inset-x-0 flex flex-col items-center gap-1.5 px-14">
-              <CantinePlusBadge />
-              <h2
-                className={cn(
-                  "text-center font-bold leading-snug",
-                  open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
-                  t.title,
-                )}
-              >
-                <span className="tabular-nums">{total}</span> Élèves concernés par le menu
-              </h2>
-            </div>
+              <span className="tabular-nums">{total}</span> Élèves concernés par le menu
+            </h2>
             <div className="relative z-10 ml-auto flex shrink-0 items-center">
               <ChevronDown
                 className={cn(
