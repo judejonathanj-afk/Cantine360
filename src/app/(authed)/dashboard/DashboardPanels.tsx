@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
+import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
+import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
@@ -63,6 +65,7 @@ export default function DashboardPanels({
   wasteGramsPer100Served,
   perDayRows,
   wastePerDayRows,
+  levelComparisonTotals,
 }: {
   days: 7 | 30;
   schoolNames: string[];
@@ -81,6 +84,7 @@ export default function DashboardPanels({
   wasteGramsPer100Served: number | null;
   perDayRows: DashboardDayRow[];
   wastePerDayRows: WastePerDayRowInput[];
+  levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
 }) {
   const isKitchen = role === "KITCHEN";
 
@@ -272,6 +276,8 @@ export default function DashboardPanels({
       ) : null}
 
       <MealFlowChart days={days} perDayRows={perDayRows} />
+
+      <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
 
       <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
 

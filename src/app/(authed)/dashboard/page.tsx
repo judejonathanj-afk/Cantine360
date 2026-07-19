@@ -22,6 +22,7 @@ import { getGroupsForAdmin } from "@/server/groupsForAdmin";
 import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { formatServiceDateKey } from "@/lib/serviceDate";
+import { aggregateTotalsByLevel } from "@/lib/buildLevelComparisonSeries";
 
 function pct(num: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -426,6 +427,18 @@ export default async function DashboardPage({
         }
       : null;
 
+  const levelComparisonTotals = aggregateTotalsByLevel(
+    services.flatMap((s) =>
+      s.metrics.map((m) => ({
+        level: m.group.level,
+        presentCount: m.presentCount,
+        servedCount: m.servedCount,
+        rabCount: m.rabCount,
+        refusedCount: m.refusedCount,
+      })),
+    ),
+  );
+
   return (
     <DashboardPanels
       days={days === 30 ? 30 : 7}
@@ -445,6 +458,7 @@ export default async function DashboardPage({
       wasteGramsPer100Served={wasteGramsPer100Served}
       perDayRows={perDayRows}
       wastePerDayRows={wastePerDayRows}
+      levelComparisonTotals={levelComparisonTotals}
     />
   );
 }
