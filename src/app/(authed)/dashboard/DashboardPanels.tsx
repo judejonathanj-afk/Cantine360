@@ -173,23 +173,9 @@ export default function DashboardPanels({
           : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
       </p>
 
-      <div className="flex flex-wrap gap-2">
-        <Button variant={days === 7 ? "default" : "outline"} asChild>
-          <Link
-            href={`/dashboard?days=7${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
-          >
-            7 jours
-          </Link>
-        </Button>
-        <Button variant={days === 30 ? "default" : "outline"} asChild>
-          <Link
-            href={`/dashboard?days=30${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
-          >
-            30 jours
-          </Link>
-        </Button>
+      <div className="flex flex-col gap-2">
         {!isKitchen ? (
-          <>
+          <div className="flex flex-wrap gap-2">
             <Button variant={levelFilter === "all" ? "default" : "outline"} asChild>
               <Link href={levelHref("all")}>Tous niveaux</Link>
             </Button>
@@ -215,8 +201,24 @@ export default function DashboardPanels({
                 Bilan commission (CSV)
               </a>
             </Button>
-          </>
+          </div>
         ) : null}
+        <div className="flex flex-wrap gap-2">
+          <Button variant={days === 7 ? "default" : "outline"} asChild>
+            <Link
+              href={`/dashboard?days=7${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
+            >
+              7 jours
+            </Link>
+          </Button>
+          <Button variant={days === 30 ? "default" : "outline"} asChild>
+            <Link
+              href={`/dashboard?days=30${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
+            >
+              30 jours
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div
