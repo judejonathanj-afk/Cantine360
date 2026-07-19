@@ -1,6 +1,7 @@
 "use client";
 
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
+import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
 /** Enveloppe marketing : regroupe score + graphiques sous la marque Cantine +. */
@@ -16,11 +17,16 @@ export function CantinePlusSection({
       className={cn("space-y-4", className)}
       aria-labelledby="cantine-plus-heading"
     >
-      <div className="overflow-hidden rounded-2xl border-2 border-zinc-900 bg-zinc-950 px-4 py-5 text-center shadow-md sm:px-6 sm:py-6">
+      <div
+        className={cn(
+          "overflow-hidden rounded-2xl border-2 px-4 py-5 text-center shadow-md sm:px-6 sm:py-6",
+          cantinePlusShellClass,
+        )}
+      >
         <div className="flex justify-center">
           <div
             id="cantine-plus-heading"
-            className="inline-flex w-full max-w-3xl justify-center rounded-xl bg-black px-8 py-3.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-4"
+            className="inline-flex w-full max-w-3xl justify-center rounded-xl bg-[#06101c] px-8 py-3.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-4"
           >
             <MenusCantineColorTitle
               text="CANTINE +"
@@ -52,7 +58,7 @@ export function CantinePlusBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border border-zinc-800 bg-black px-3 py-1 shadow-sm ring-1 ring-white/10",
+        "inline-flex items-center rounded-full border border-[#1a2d4a] bg-[#0a1628] px-3 py-1 shadow-sm ring-1 ring-white/10",
         className,
       )}
     >
@@ -63,4 +69,3 @@ export function CantinePlusBadge({ className }: { className?: string }) {
     </span>
   );
 }
-

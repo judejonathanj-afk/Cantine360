@@ -76,7 +76,7 @@ export const SERVICE_INSIGHT_TONES: Record<
     nested: "bg-white/15 text-white ring-1 ring-white/20",
   },
   black: {
-    shell: "border-black bg-black",
+    shell: "border-[#1a2d4a] bg-[#0a1628]",
     icon: "bg-white/15 text-white ring-1 ring-white/25",
     text: "text-white",
     title: "text-yellow-300",

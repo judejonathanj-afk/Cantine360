@@ -426,14 +426,14 @@ export function CantinePulseCard({
 
   return (
     <Card
-      className="overflow-hidden border-zinc-800 bg-zinc-950 text-white shadow-md ring-1 ring-zinc-800 transition-shadow hover:shadow-lg"
+      className="overflow-hidden border-[#1a2d4a] bg-[#0a1628] text-white shadow-md ring-1 ring-[#1a2d4a] transition-shadow hover:shadow-lg"
     >
       <div className={cn("h-1.5 w-full shrink-0", s.topBar)} aria-hidden />
       <CardContent className="space-y-5 p-6 pt-4">
         {showBrandTitle ? (
           <div className="text-center">
             <div className="flex justify-center">
-              <div className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-black px-10 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-3">
+              <div className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-[#06101c] px-10 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-3">
                 <MenusCantineColorTitle
                   text="CANTINE +"
                   className="text-2xl tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] lg:text-4xl"
