@@ -47,16 +47,20 @@ export function CantinePlusSection({
   );
 }
 
-/** Pastille discrète sur chaque graphique du module. */
+/** Pastille sur chaque graphique — mêmes couleurs que le titre CANTINE +. */
 export function CantinePlusBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border border-zinc-800 bg-zinc-950 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white sm:text-xs",
+        "inline-flex items-center rounded-full border border-zinc-800 bg-black px-3 py-1 shadow-sm ring-1 ring-white/10",
         className,
       )}
     >
-      Cantine+
+      <MenusCantineColorTitle
+        text="CANTINE +"
+        className="!text-[11px] !leading-none tracking-[0.14em] sm:!text-xs"
+      />
     </span>
   );
 }
+
