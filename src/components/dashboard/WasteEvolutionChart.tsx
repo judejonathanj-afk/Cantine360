@@ -32,11 +32,11 @@ import { cn } from "@/lib/utils";
 const chartConfig = {
   wasteWeightG: {
     label: "Déchets (déjeuner)",
-    color: "#34d399",
+    color: "#10b981",
   },
   gramsPer100Served: {
     label: "g / 100 assiettes",
-    color: "#a3e635",
+    color: "#059669",
   },
 } satisfies ChartConfig;
 
@@ -58,50 +58,50 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
     <Card
       className={cn(
         cantinePlusChartCardClass,
-        "border-2 border-emerald-400 shadow-emerald-400/15",
+        "border-2 border-emerald-500 shadow-emerald-500/10",
       )}
     >
       <CardContent className="p-0">
-        <header className="border-b-2 border-emerald-400">
+        <header className="border-b-2 border-emerald-500">
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
-            <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-[#06101c] py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
+            <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-emerald-100 py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
               <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-12 overflow-hidden sm:w-14 md:w-16"
                 aria-hidden
               >
                 <Trash2
-                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-emerald-300/30 sm:h-32 sm:w-32 md:h-36 md:w-36"
+                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-emerald-700/35 sm:h-32 sm:w-32 md:h-36 md:w-36"
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
                 Évolution des déchets
               </h2>
             </div>
 
             <div
-              className="hidden w-px shrink-0 self-stretch bg-emerald-400/70 md:block"
+              className="hidden w-px shrink-0 self-stretch bg-emerald-500/70 md:block"
               aria-hidden
             />
-            <div className="h-px w-full shrink-0 bg-emerald-400/70 md:hidden" aria-hidden />
+            <div className="h-px w-full shrink-0 bg-emerald-500/70 md:hidden" aria-hidden />
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
-              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                 Déjeuner sur les {days} derniers jours — poids des déchets par jour
                 (barres sur 7 jours, courbes sur 30) et grammes pour 100 assiettes
                 servies en pointillés.
               </p>
-              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
-                <strong className="font-semibold text-white">Barres</strong> =
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <strong className="font-semibold text-foreground">Barres</strong> =
                 poids total des déchets (g) ·{" "}
-                <strong className="font-semibold text-white">courbe en g</strong> =
+                <strong className="font-semibold text-foreground">courbe en g</strong> =
                 déchets pour 100 assiettes servies (pas le nombre
                 d&apos;assiettes).
               </p>
-              <p className="text-sm leading-relaxed text-white/70 sm:text-base">
-                <strong className="font-semibold text-white">En résumé :</strong>{" "}
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                <strong className="font-semibold text-foreground">En résumé :</strong>{" "}
                 c&apos;est la courbe dans le temps — utile pour repérer{" "}
-                <strong className="font-semibold text-white">
+                <strong className="font-semibold text-foreground">
                   « quel jour les déchets ont augmenté ? »
                 </strong>{" "}
                 (menu, affluence, préparation, etc.).
@@ -111,7 +111,7 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
         </header>
 
         {series.length === 0 || !hasWasteData ? (
-          <p className="mt-5 px-6 text-sm text-white/65">
+          <p className="mt-5 px-6 text-sm text-muted-foreground">
             Pas encore de poids déchets saisi sur la période — renseignez-le en
             fin de service pour voir l&apos;évolution ici.
           </p>
