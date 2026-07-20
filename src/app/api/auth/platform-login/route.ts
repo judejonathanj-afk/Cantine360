@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { signPlatformSession } from "@/server/auth";
 import { applyPlatformLoginCookies } from "@/server/auth-cookies";
+import {
+  clearLoginAttempts,
+  clientIpFromRequest,
+  consumeLoginAttempt,
+} from "@/server/loginRateLimit";
 
 const BodySchema = z.object({
   pin: z.string().min(1),
@@ -23,6 +28,18 @@ export async function POST(req: Request) {
     );
   }
 
+  const rateKey = `${clientIpFromRequest(req)}:platform`;
+  const rate = consumeLoginAttempt(rateKey);
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "Trop de tentatives. Réessayez dans quelques minutes." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(rate.retryAfterSec) },
+      },
+    );
+  }
+
   const json = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(json);
   if (!parsed.success) {
@@ -33,6 +50,8 @@ export async function POST(req: Request) {
   if (pin !== expected) {
     return NextResponse.json({ error: "Code plateforme incorrect." }, { status: 401 });
   }
+
+  clearLoginAttempts(rateKey);
 
   const token = await signPlatformSession();
   const res = NextResponse.json({ redirectTo: "/platform/establishments" });

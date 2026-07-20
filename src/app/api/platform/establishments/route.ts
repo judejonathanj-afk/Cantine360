@@ -5,6 +5,7 @@ import {
   resolveEstablishmentSlug,
   validateEstablishmentPins,
 } from "@/lib/platformEstablishment";
+import { hashEstablishmentPin } from "@/lib/pinHash";
 import { getPlatformSession } from "@/server/auth";
 import { db } from "@/server/db";
 import { platformDbErrorResponse } from "@/server/platformDbErrors";
@@ -86,12 +87,17 @@ export async function POST(req: Request) {
       );
     }
 
+    const [adminPinHash, kitchenPinHash] = await Promise.all([
+      hashEstablishmentPin(adminPin),
+      hashEstablishmentPin(kitchenPin),
+    ]);
+
     const establishment = await db.establishment.create({
       data: {
         name: parsed.data.name,
         slug,
-        adminPin,
-        kitchenPin,
+        adminPin: adminPinHash,
+        kitchenPin: kitchenPinHash,
       },
       select: {
         id: true,

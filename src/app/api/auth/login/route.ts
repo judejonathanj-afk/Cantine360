@@ -8,8 +8,18 @@ import {
   ESTABLISHMENT_SESSIONS_COOKIE_NAME,
 } from "@/server/auth-cookies";
 import { normalizeEstablishmentPin } from "@/lib/platformEstablishment";
+import {
+  hashEstablishmentPin,
+  isHashedPin,
+  verifyEstablishmentPin,
+} from "@/lib/pinHash";
 import { normalizeEstablishmentSlug } from "@/lib/establishmentSlug";
 import { db } from "@/server/db";
+import {
+  clearLoginAttempts,
+  clientIpFromRequest,
+  consumeLoginAttempt,
+} from "@/server/loginRateLimit";
 import { z } from "zod";
 
 const BodySchema = z.object({
@@ -47,6 +57,21 @@ export async function POST(req: Request) {
       );
     }
 
+    const rateKey = `${clientIpFromRequest(req)}:est:${slug}`;
+    const rate = consumeLoginAttempt(rateKey);
+    if (!rate.ok) {
+      return NextResponse.json(
+        {
+          error:
+            "Trop de tentatives. Réessayez dans quelques minutes.",
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rate.retryAfterSec) },
+        },
+      );
+    }
+
     const establishment = await db.establishment.findUnique({
       where: { slug },
       select: {
@@ -71,15 +96,37 @@ export async function POST(req: Request) {
       );
     }
 
-    const adminPin = normalizeEstablishmentPin(establishment.adminPin);
-    const kitchenPin = normalizeEstablishmentPin(establishment.kitchenPin);
-
     let role: EstablishmentRole | null = null;
-    if (pin === adminPin) role = "ADMIN";
-    else if (pin === kitchenPin) role = "KITCHEN";
+    let matchedField: "adminPin" | "kitchenPin" | null = null;
+    if (await verifyEstablishmentPin(pin, establishment.adminPin)) {
+      role = "ADMIN";
+      matchedField = "adminPin";
+    } else if (await verifyEstablishmentPin(pin, establishment.kitchenPin)) {
+      role = "KITCHEN";
+      matchedField = "kitchenPin";
+    }
 
-    if (!role) {
+    if (!role || !matchedField) {
       return NextResponse.json({ error: "Code incorrect." }, { status: 401 });
+    }
+
+    clearLoginAttempts(rateKey);
+
+    // Migration transparente : ancien PIN en clair → hash scrypt au premier login réussi.
+    const stored =
+      matchedField === "adminPin"
+        ? establishment.adminPin
+        : establishment.kitchenPin;
+    if (!isHashedPin(stored)) {
+      try {
+        const hashed = await hashEstablishmentPin(pin);
+        await db.establishment.update({
+          where: { id: establishment.id },
+          data: { [matchedField]: hashed },
+        });
+      } catch (upgradeErr) {
+        console.error("[auth/login] pin upgrade", upgradeErr);
+      }
     }
 
     const token = await signEstablishmentSession({

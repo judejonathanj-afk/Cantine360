@@ -5,6 +5,10 @@ import {
   resolveEstablishmentSlug,
   validateEstablishmentPins,
 } from "@/lib/platformEstablishment";
+import {
+  hashEstablishmentPin,
+  verifyEstablishmentPin,
+} from "@/lib/pinHash";
 import { getPlatformSession } from "@/server/auth";
 import { db } from "@/server/db";
 
@@ -96,37 +100,79 @@ export async function PATCH(
     }
     nextSlug = resolved.slug;
   } else if (parsed.data.name !== undefined) {
-    // Le nom change sans slug explicite : on ne modifie pas le code connexion automatiquement.
     nextSlug = existing.slug;
   }
 
-  const nextAdminPin =
+  const adminPlain =
     parsed.data.adminPin !== undefined
       ? normalizeEstablishmentPin(parsed.data.adminPin)
-      : existing.adminPin;
-  const nextKitchenPin =
+      : null;
+  const kitchenPlain =
     parsed.data.kitchenPin !== undefined
       ? normalizeEstablishmentPin(parsed.data.kitchenPin)
-      : existing.kitchenPin;
+      : null;
 
-  const pinError = validateEstablishmentPins(nextAdminPin, nextKitchenPin);
-  if (pinError) {
-    return NextResponse.json({ error: pinError }, { status: 400 });
+  if (adminPlain !== null && adminPlain.length < 4) {
+    return NextResponse.json(
+      { error: "Le code admin doit contenir au moins 4 chiffres." },
+      { status: 400 },
+    );
+  }
+  if (kitchenPlain !== null && kitchenPlain.length < 4) {
+    return NextResponse.json(
+      { error: "Le code cuisine doit contenir au moins 4 chiffres." },
+      { status: 400 },
+    );
   }
 
-  const pinsTouched =
-    parsed.data.adminPin !== undefined || parsed.data.kitchenPin !== undefined;
+  if (adminPlain !== null && kitchenPlain !== null) {
+    const pinError = validateEstablishmentPins(adminPlain, kitchenPlain);
+    if (pinError) {
+      return NextResponse.json({ error: pinError }, { status: 400 });
+    }
+  } else if (adminPlain !== null) {
+    if (await verifyEstablishmentPin(adminPlain, existing.kitchenPin)) {
+      return NextResponse.json(
+        { error: "Les codes admin et cuisine doivent être différents." },
+        { status: 400 },
+      );
+    }
+  } else if (kitchenPlain !== null) {
+    if (await verifyEstablishmentPin(kitchenPlain, existing.adminPin)) {
+      return NextResponse.json(
+        { error: "Les codes admin et cuisine doivent être différents." },
+        { status: 400 },
+      );
+    }
+  }
+
+  const pinsTouched = adminPlain !== null || kitchenPlain !== null;
 
   try {
+    const data: {
+      name: string;
+      slug: string;
+      adminPin?: string;
+      kitchenPin?: string;
+      accessCredentialRevision?: { increment: number };
+    } = {
+      name: nextName,
+      slug: nextSlug,
+    };
+
+    if (adminPlain !== null) {
+      data.adminPin = await hashEstablishmentPin(adminPlain);
+    }
+    if (kitchenPlain !== null) {
+      data.kitchenPin = await hashEstablishmentPin(kitchenPlain);
+    }
+    if (pinsTouched) {
+      data.accessCredentialRevision = { increment: 1 };
+    }
+
     await db.establishment.update({
       where: { id: establishmentId },
-      data: {
-        name: nextName,
-        slug: nextSlug,
-        adminPin: nextAdminPin,
-        kitchenPin: nextKitchenPin,
-        ...(pinsTouched ? { accessCredentialRevision: { increment: 1 } } : {}),
-      },
+      data,
     });
 
     const fresh = await db.establishment.findUnique({
@@ -135,10 +181,7 @@ export async function PATCH(
         id: true,
         name: true,
         slug: true,
-        adminPin: true,
-        kitchenPin: true,
         updatedAt: true,
-        accessCredentialRevision: true,
       },
     });
     if (!fresh) {
@@ -146,20 +189,11 @@ export async function PATCH(
     }
 
     const pinChanges: { adminPin?: string; kitchenPin?: string } = {};
-    if (parsed.data.adminPin !== undefined) {
-      pinChanges.adminPin = normalizeEstablishmentPin(fresh.adminPin);
-    }
-    if (parsed.data.kitchenPin !== undefined) {
-      pinChanges.kitchenPin = normalizeEstablishmentPin(fresh.kitchenPin);
-    }
+    if (adminPlain !== null) pinChanges.adminPin = adminPlain;
+    if (kitchenPlain !== null) pinChanges.kitchenPin = kitchenPlain;
 
     return NextResponse.json({
-      establishment: {
-        id: fresh.id,
-        name: fresh.name,
-        slug: fresh.slug,
-        updatedAt: fresh.updatedAt,
-      },
+      establishment: fresh,
       codesUpdated: Object.keys(pinChanges).length > 0,
       pinChanges,
       sessionsInvalidated: pinsTouched,

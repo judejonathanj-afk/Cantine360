@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import {
+  normalizeEstablishmentPin,
+  validateEstablishmentPins,
+} from "@/lib/platformEstablishment";
+import { hashEstablishmentPin } from "@/lib/pinHash";
 import { db } from "@/server/db";
 
 const CreateSchema = z.object({
@@ -39,13 +44,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Slug trop court" }, { status: 400 });
   }
 
+  const adminPin = normalizeEstablishmentPin(parsed.data.adminPin);
+  const kitchenPin = normalizeEstablishmentPin(parsed.data.kitchenPin);
+  const pinError = validateEstablishmentPins(adminPin, kitchenPin);
+  if (pinError) {
+    return NextResponse.json({ error: pinError }, { status: 400 });
+  }
+
   try {
+    const [adminPinHash, kitchenPinHash] = await Promise.all([
+      hashEstablishmentPin(adminPin),
+      hashEstablishmentPin(kitchenPin),
+    ]);
+
     const establishment = await db.establishment.create({
       data: {
         name: parsed.data.name,
         slug,
-        adminPin: parsed.data.adminPin,
-        kitchenPin: parsed.data.kitchenPin,
+        adminPin: adminPinHash,
+        kitchenPin: kitchenPinHash,
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        createdAt: true,
       },
     });
     return NextResponse.json({ establishment }, { status: 201 });
