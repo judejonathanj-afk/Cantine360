@@ -180,7 +180,9 @@ export function AppShell({
           ...serviceNavItems,
           { href: "/exports", label: "Exports", icon: FileDown },
         ]
-      : [...serviceNavItems, NAV[1]];
+      : serviceId
+        ? [...serviceNavItems, NAV[1]]
+        : serviceNavItems;
 
   return (
     <div

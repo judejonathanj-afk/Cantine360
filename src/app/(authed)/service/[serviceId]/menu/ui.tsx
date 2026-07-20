@@ -122,6 +122,7 @@ export function MenuEditor({
         menu complet.
       </p>
 
+      <div className="space-y-10">
       {(Object.keys(CATEGORY_LABEL) as Category[]).map((cat) => (
         <section key={cat} className="space-y-3">
           <div className="flex items-center justify-between gap-3">
@@ -237,6 +238,7 @@ export function MenuEditor({
           </div>
         </section>
       ))}
+      </div>
 
       <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-center">
         <p className="max-w-xl text-sm text-emerald-950">
