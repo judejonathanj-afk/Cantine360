@@ -19,26 +19,35 @@ export async function PUT(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { serviceId } = await params;
-  const service = await db.service.findFirst({
-    where: { id: serviceId, establishmentId: session.establishmentId },
-  });
-  if (!service) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const json = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  const group = await db.group.findFirst({
+  // Une seule lecture : service du tenant + classe du même établissement.
+  const service = await db.service.findFirst({
     where: {
-      id: parsed.data.groupId,
+      id: serviceId,
       establishmentId: session.establishmentId,
     },
+    select: {
+      id: true,
+      establishment: {
+        select: {
+          groups: {
+            where: { id: parsed.data.groupId },
+            select: { id: true },
+            take: 1,
+          },
+        },
+      },
+    },
   });
-  if (!group) {
+  if (!service) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  if (service.establishment.groups.length === 0) {
     return NextResponse.json({ error: "Groupe invalide" }, { status: 400 });
   }
 
@@ -66,4 +75,3 @@ export async function PUT(
 
   return NextResponse.json({ metrics: updated });
 }
-

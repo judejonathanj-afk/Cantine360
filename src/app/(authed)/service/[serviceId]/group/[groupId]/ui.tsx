@@ -111,9 +111,10 @@ export function GroupMetricsEditor({
   useEffect(() => {
     if (!dirty) return;
     if (saveTimer.current) window.clearTimeout(saveTimer.current);
+    // Debounce plus long pour limiter les PUT au pic du service (midi).
     saveTimer.current = window.setTimeout(() => {
       void save(m);
-    }, 400);
+    }, 900);
     return () => {
       if (saveTimer.current) window.clearTimeout(saveTimer.current);
     };

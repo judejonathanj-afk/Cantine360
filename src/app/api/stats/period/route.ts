@@ -21,14 +21,14 @@ export async function GET(req: Request) {
   const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
   start.setHours(0, 0, 0, 0);
 
-  const metrics = await db.serviceGroupMetrics.findMany({
+  const agg = await db.serviceGroupMetrics.aggregate({
     where: {
       service: {
         date: { gte: start },
         establishmentId: session.establishmentId,
       },
     },
-    select: {
+    _sum: {
       presentCount: true,
       servedCount: true,
       refusedCount: true,
@@ -36,15 +36,11 @@ export async function GET(req: Request) {
     },
   });
 
-  const totals = metrics.reduce(
-    (acc, m) => ({
-      present: acc.present + m.presentCount,
-      served: acc.served + m.servedCount,
-      refused: acc.refused + m.refusedCount,
-      leftovers: acc.leftovers + m.leftoversCount,
-    }),
-    { present: 0, served: 0, refused: 0, leftovers: 0 },
-  );
-
-  return NextResponse.json({ days, ...totals });
+  return NextResponse.json({
+    days,
+    present: agg._sum.presentCount ?? 0,
+    served: agg._sum.servedCount ?? 0,
+    refused: agg._sum.refusedCount ?? 0,
+    leftovers: agg._sum.leftoversCount ?? 0,
+  });
 }

@@ -13,9 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type PeriodPresetId = "today" | "7d" | "30d" | "month" | "year" | "all" | "custom";
-
-const ALL_FROM = "2020-01-01";
+type PeriodPresetId = "today" | "7d" | "30d" | "month" | "year" | "12m" | "custom";
 
 function formatYyyyMmDd(d: Date) {
   const yyyy = d.getFullYear();
@@ -61,8 +59,9 @@ function computePresetRange(id: Exclude<PeriodPresetId, "custom">) {
     }
     case "year":
       return { from: `${new Date().getFullYear()}-01-01`, to };
-    case "all":
-      return { from: ALL_FROM, to };
+    case "12m":
+      // Plafond API = 400 j ; 365 j glissants restent confortables pour Excel.
+      return { from: addDays(to, -364), to };
   }
 }
 
@@ -72,7 +71,7 @@ function presetOptions() {
   const r30 = computePresetRange("30d");
   const rMonth = computePresetRange("month");
   const rYear = computePresetRange("year");
-  const rAll = computePresetRange("all");
+  const r12 = computePresetRange("12m");
 
   return [
     { id: "today" as const, label: "Aujourd'hui", detail: formatFrDate(today) },
@@ -97,9 +96,9 @@ function presetOptions() {
       detail: formatFrRange(rYear.from, rYear.to),
     },
     {
-      id: "all" as const,
-      label: "Toutes les dates précédentes",
-      detail: `Du ${formatFrDate(rAll.from)} au ${formatFrDate(rAll.to)}`,
+      id: "12m" as const,
+      label: "12 derniers mois",
+      detail: formatFrRange(r12.from, r12.to),
     },
     { id: "custom" as const, label: "Personnalisé", detail: "Ajuster Du / Au ci-dessous" },
   ];
@@ -148,7 +147,8 @@ export default function ExportsPage() {
           <CardHeader>
             <CardTitle className="text-lg">Période</CardTitle>
             <CardDescription>
-              Choisissez une période rapide ou ajustez les dates Du / Au.
+              Choisissez une période rapide ou ajustez les dates Du / Au (max 400
+              jours).
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
