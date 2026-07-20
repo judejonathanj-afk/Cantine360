@@ -6,6 +6,7 @@ import { Pool } from "pg";
 
 declare global {
   var __db: PrismaClient | undefined;
+  var __pgPool: Pool | undefined;
 }
 
 /** Supabase + driver `pg` : `sslmode=require` dans l’URL force une vérif TLS stricte et peut provoquer P1011 / cert chain errors ; on retire sslmode et on configure SSL au pool. */
@@ -24,24 +25,48 @@ function postgresUrlWithoutSslMode(connectionString: string): string {
   }
 }
 
+/**
+ * Sur Vercel (serverless), chaque instance doit ouvrir très peu de connexions :
+ * le pooler Supabase (port 6543) + max bas évite l’épuisement à l’échelle multi-cantines.
+ * Surcharge possible via PG_POOL_MAX.
+ */
+function resolvePoolMax(): number {
+  const raw = process.env.PG_POOL_MAX?.trim();
+  if (raw) {
+    const n = Number(raw);
+    if (Number.isFinite(n) && n >= 1 && n <= 20) return Math.floor(n);
+  }
+  return process.env.NODE_ENV === "production" ? 1 : 5;
+}
+
 function pgPoolOptions(): ConstructorParameters<typeof Pool>[0] {
   const raw = process.env.DATABASE_URL;
-  if (!raw) return { connectionString: raw };
+  if (!raw) return { connectionString: raw, max: resolvePoolMax() };
 
-  const supabase = raw.includes(".supabase.co");
+  const supabase = raw.includes(".supabase.co") || raw.includes("pooler.supabase.com");
   const connectionString = supabase
     ? postgresUrlWithoutSslMode(raw)
     : raw;
 
   return {
     connectionString,
+    max: resolvePoolMax(),
+    idleTimeoutMillis: 20_000,
+    connectionTimeoutMillis: 10_000,
     ...(supabase ? { ssl: { rejectUnauthorized: false } } : {}),
   };
 }
 
+function getOrCreatePool(): Pool {
+  if (globalThis.__pgPool) return globalThis.__pgPool;
+  const pool = new Pool(pgPoolOptions());
+  globalThis.__pgPool = pool;
+  return pool;
+}
+
 function createPrismaClient(): PrismaClient {
   return new PrismaClient({
-    adapter: new PrismaPg(new Pool(pgPoolOptions())),
+    adapter: new PrismaPg(getOrCreatePool()),
   });
 }
 
@@ -97,9 +122,8 @@ function getOrCreatePrismaClient(): PrismaClient {
       "[db] Client Prisma incomplet (modèle Establishment absent). Lancez `npx prisma generate`, supprimez `.next`, puis redémarrez `npm run dev`.",
     );
   }
-  if (process.env.NODE_ENV !== "production") {
-    globalThis.__db = client;
-  }
+  // Réutiliser le client sur l’instance (dev + serverless) pour ne pas multiplier les pools.
+  globalThis.__db = client;
   prismaSingleton = client;
   return client;
 }
