@@ -16,9 +16,19 @@ describe("parseAttendanceImportCsv", () => {
     ]);
   });
 
-  it("rejette les présents hors plage", () => {
+  it("accepte des présents au-delà de 500", () => {
     const { rows, errors } = parseAttendanceImportCsv(
       "ecole;classe;presents\nÉcole Anne Frank;CE1 A;999",
+    );
+    expect(errors).toEqual([]);
+    expect(rows).toEqual([
+      { school: "École Anne Frank", className: "CE1 A", presentCount: 999 },
+    ]);
+  });
+
+  it("rejette les présents absurdes (> 1 million)", () => {
+    const { rows, errors } = parseAttendanceImportCsv(
+      "ecole;classe;presents\nÉcole Anne Frank;CE1 A;1000001",
     );
     expect(rows).toEqual([]);
     expect(errors.some((e) => e.includes("présents invalides"))).toBe(true);

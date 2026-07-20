@@ -79,8 +79,12 @@ export function parseAttendanceImportCsv(text: string): {
     }
 
     const presentCount = Number(presentRaw);
-    if (!Number.isFinite(presentCount) || presentCount < 0 || presentCount > 500) {
-      errors.push(`Ligne ${lineNo} : présents invalides (0–500).`);
+    if (
+      !Number.isFinite(presentCount) ||
+      presentCount < 0 ||
+      presentCount > 1_000_000
+    ) {
+      errors.push(`Ligne ${lineNo} : présents invalides (nombre ≥ 0 requis).`);
       continue;
     }
 

@@ -5,10 +5,10 @@ import { getServerSession } from "@/server/auth";
 
 const BodySchema = z.object({
   groupId: z.string().min(1),
-  presentCount: z.number().int().min(0).max(500).optional(),
-  servedCount: z.number().int().min(0).max(500).optional(),
-  rabCount: z.number().int().min(0).max(500).optional(),
-  refusedCount: z.number().int().min(0).max(500).optional(),
+  presentCount: z.number().int().min(0).max(1_000_000).optional(),
+  servedCount: z.number().int().min(0).max(1_000_000).optional(),
+  rabCount: z.number().int().min(0).max(1_000_000).optional(),
+  refusedCount: z.number().int().min(0).max(1_000_000).optional(),
 });
 
 export async function PUT(

@@ -5,6 +5,7 @@ type Props = {
   value: number;
   onChange: (next: number) => void;
   min?: number;
+  /** Si omis, pas de plafond (seule la borne min s’applique). */
   max?: number;
   className?: string;
 };
@@ -14,11 +15,16 @@ export function Counter({
   value,
   onChange,
   min = 0,
-  max = 500,
+  max,
   className,
 }: Props) {
-  const dec = () => onChange(Math.max(min, value - 1));
-  const inc = () => onChange(Math.min(max, value + 1));
+  const clamp = (n: number) => {
+    const lower = Math.max(min, n);
+    return max == null ? lower : Math.min(max, lower);
+  };
+
+  const dec = () => onChange(clamp(value - 1));
+  const inc = () => onChange(clamp(value + 1));
 
   return (
     <div
@@ -44,11 +50,11 @@ export function Counter({
           value={String(value)}
           onChange={(e) => {
             const n = Number(e.target.value.replace(/[^\d]/g, ""));
-            if (Number.isFinite(n)) onChange(Math.min(max, Math.max(min, n)));
+            if (Number.isFinite(n)) onChange(clamp(n));
             else onChange(min);
           }}
           inputMode="numeric"
-          className="w-24 rounded-xl border border-zinc-300 px-3 py-3 text-center text-xl font-semibold outline-none focus:border-zinc-900"
+          className="w-28 rounded-xl border border-zinc-300 px-3 py-3 text-center text-xl font-semibold outline-none focus:border-zinc-900"
         />
 
         <button
