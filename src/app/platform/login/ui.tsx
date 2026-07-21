@@ -39,7 +39,7 @@ export function PlatformLoginClient() {
   }
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4">
+    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-4 py-24 sm:py-28">
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0 flex">
         <div className="w-1/2 bg-background" />
         <div className="w-1/2 bg-black" />
@@ -66,17 +66,17 @@ export function PlatformLoginClient() {
         Accès plateforme
       </p>
 
-      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center gap-8">
-        <header className="w-full space-y-3 px-2 text-center">
+      <div className="relative z-10 my-auto flex w-full max-w-3xl flex-col items-center gap-6 sm:gap-8">
+        <header className="w-full space-y-3 rounded-2xl bg-background/90 px-4 py-4 text-center shadow-sm backdrop-blur-md sm:px-6">
           <MenusCantineColorTitle
             text="ADMINISTRATION CANTINE360"
-            className="text-3xl md:text-4xl lg:text-5xl"
+            className="text-[1.65rem] leading-tight sm:text-3xl md:text-4xl lg:text-5xl"
           />
           <hr
             className="mx-auto h-1 w-full max-w-2xl rounded-full border-0 bg-emerald-500"
             aria-hidden
           />
-          <p className="mx-auto max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg">
             Créez et gérez les établissements — accès réservé à l’équipe plateforme.
           </p>
         </header>
