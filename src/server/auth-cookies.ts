@@ -15,6 +15,30 @@ export type EstablishmentSessionsMap = Record<string, string>;
 export const ESTABLISHMENT_SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 export const PLATFORM_SESSION_MAX_AGE = 60 * 60 * 12;
 
+/** Plafond de sessions établissement dans le cookie (évite dépassement ~4 Ko navigateur). */
+export const MAX_ESTABLISHMENT_SESSIONS = 5;
+
+/**
+ * Garde au plus `max` sessions ; `keepId` est toujours conservé.
+ * Les autres sont évincées dans l’ordre d’insertion (les plus anciennes d’abord).
+ */
+export function pruneEstablishmentSessionsMap(
+  map: EstablishmentSessionsMap,
+  keepId: string,
+  max: number = MAX_ESTABLISHMENT_SESSIONS,
+): EstablishmentSessionsMap {
+  const next: EstablishmentSessionsMap = { ...map };
+  if (!keepId || max < 1) return next;
+
+  const others = Object.keys(next).filter((id) => id !== keepId);
+  while (others.length >= max) {
+    const drop = others.shift();
+    if (!drop) break;
+    delete next[drop];
+  }
+  return next;
+}
+
 export function cookieBaseOptions() {
   return {
     httpOnly: true,
@@ -99,7 +123,11 @@ export function applyEstablishmentLoginCookies(
   token: string,
   existingMap: EstablishmentSessionsMap = {},
 ): void {
-  const map: EstablishmentSessionsMap = { ...existingMap, [establishmentId]: token };
+  const pruned = pruneEstablishmentSessionsMap(existingMap, establishmentId);
+  const map: EstablishmentSessionsMap = {
+    ...pruned,
+    [establishmentId]: token,
+  };
   const base = cookieBaseOptions();
   res.cookies.set(
     ESTABLISHMENT_SESSIONS_COOKIE_NAME,

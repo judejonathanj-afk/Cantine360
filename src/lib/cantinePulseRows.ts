@@ -13,8 +13,8 @@ export type ServiceWithGroupMetrics = {
     rabCount: number;
     refusedCount: number;
     leftoversCount: number;
-    group: {
-      id: string;
+    group?: {
+      id?: string;
       name: string;
       school: { name: string };
       level?: "MATERNELLE" | "PRIMAIRE";
@@ -33,7 +33,9 @@ export function servicesToCantinePulseRows(
       rows.push({
         date,
         mealType: s.mealType,
-        group: formatGroupLabel(m.group.school.name, m.group.name),
+        group: m.group
+          ? formatGroupLabel(m.group.school.name, m.group.name)
+          : "—",
         presentCount: m.presentCount,
         servedCount: m.servedCount,
         rabCount: m.rabCount,

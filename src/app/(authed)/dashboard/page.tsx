@@ -173,9 +173,28 @@ export default async function DashboardPage({
           mealType: MealType.LUNCH,
         },
         orderBy: [{ date: "asc" }, { mealType: "asc" }],
-        include: {
-          metrics: { include: { group: { include: { school: true } } } },
-          menu: { include: { items: { select: { category: true } } } },
+        select: {
+          date: true,
+          mealType: true,
+          wasteWeightG: true,
+          metrics: {
+            select: {
+              presentCount: true,
+              servedCount: true,
+              rabCount: true,
+              refusedCount: true,
+              leftoversCount: true,
+              group: {
+                select: {
+                  id: true,
+                  name: true,
+                  level: true,
+                  school: { select: { name: true } },
+                },
+              },
+            },
+          },
+          menu: { select: { items: { select: { category: true } } } },
         },
       }),
       db.service.findMany({
@@ -185,8 +204,27 @@ export default async function DashboardPage({
           mealType: MealType.LUNCH,
         },
         orderBy: [{ date: "asc" }, { mealType: "asc" }],
-        include: {
-          metrics: { include: { group: { include: { school: true } } } },
+        select: {
+          date: true,
+          mealType: true,
+          wasteWeightG: true,
+          metrics: {
+            select: {
+              presentCount: true,
+              servedCount: true,
+              rabCount: true,
+              refusedCount: true,
+              leftoversCount: true,
+              group: {
+                select: {
+                  id: true,
+                  name: true,
+                  level: true,
+                  school: { select: { name: true } },
+                },
+              },
+            },
+          },
         },
       }),
     ]);

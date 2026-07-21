@@ -71,6 +71,7 @@ export async function GET(req: Request) {
   const rangeStart = isCurrentYear ? ecoBound.priorStart : priorCalendarStart;
   const rangeEndExclusive = isCurrentYear ? ecoBound.currentEndExclusive : calendarYearEndExclusive;
 
+  // Select léger : pas besoin école/classe pour les agrégats bilan / pulse.
   const allServices = await db.service.findMany({
     where: {
       establishmentId: session.establishmentId,
@@ -78,10 +79,18 @@ export async function GET(req: Request) {
       mealType: MealType.LUNCH,
     },
     orderBy: [{ date: "asc" }, { mealType: "asc" }],
-    include: {
+    select: {
+      date: true,
+      mealType: true,
+      wasteWeightG: true,
       metrics: {
-        orderBy: [{ group: { name: "asc" } }],
-        include: { group: { include: { school: true } } },
+        select: {
+          presentCount: true,
+          servedCount: true,
+          rabCount: true,
+          refusedCount: true,
+          leftoversCount: true,
+        },
       },
     },
   });

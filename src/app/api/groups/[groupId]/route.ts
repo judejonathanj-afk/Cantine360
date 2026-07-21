@@ -129,7 +129,11 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   try {
-    await db.group.delete({ where: { id: groupId } });
+    // Soft-delete : conserve l’historique ServiceGroupMetrics (pas de cascade).
+    await db.group.update({
+      where: { id: groupId },
+      data: { active: false },
+    });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
