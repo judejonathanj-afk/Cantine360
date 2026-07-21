@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Leaf } from "lucide-react";
+import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,46 +65,63 @@ export function PlatformLoginClient() {
       >
         Accès plateforme
       </p>
-      <Card className="relative z-10 w-full max-w-xl border-border/50 bg-card/95 shadow-md backdrop-blur-sm">
-        <CardHeader className="space-y-3 px-8 pb-4 pt-8">
-          <CardTitle className="text-2xl md:text-3xl">Accès plateforme</CardTitle>
-          <CardDescription className="text-base leading-relaxed">
-            Réservé à l’équipe qui provisionne les établissements. Ce formulaire n’est pas
-            l’accès cantine (admin / cuisine).
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-8 pb-8">
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="platform-pin" className="text-base">
-                Code plateforme
-              </Label>
-              <Input
-                id="platform-pin"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                inputMode="numeric"
-                autoComplete="off"
-                className="h-14 text-xl tracking-widest"
-                placeholder="••••••"
-              />
-            </div>
-            {error ? (
-              <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {error}
-              </p>
-            ) : null}
-            <Button
-              type="submit"
-              size="lg"
-              className="h-12 w-full text-base"
-              disabled={busy || pin.trim().length === 0}
-            >
-              {busy ? "Connexion…" : "Entrer"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+
+      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center gap-8">
+        <header className="w-full space-y-3 px-2 text-center">
+          <MenusCantineColorTitle
+            text="ADMINISTRATION CANTINE360"
+            className="text-3xl md:text-4xl lg:text-5xl"
+          />
+          <hr
+            className="mx-auto h-1 w-full max-w-2xl rounded-full border-0 bg-emerald-500"
+            aria-hidden
+          />
+          <p className="mx-auto max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Créez et gérez les établissements — accès réservé à l’équipe plateforme.
+          </p>
+        </header>
+
+        <Card className="w-full max-w-xl border-border/50 bg-card/95 shadow-md backdrop-blur-sm">
+          <CardHeader className="space-y-3 px-8 pb-4 pt-8">
+            <CardTitle className="text-2xl md:text-3xl">Accès plateforme</CardTitle>
+            <CardDescription className="text-base leading-relaxed">
+              Réservé à l’équipe qui provisionne les établissements. Ce formulaire n’est pas
+              l’accès cantine (admin / cuisine).
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-8 pb-8">
+            <form onSubmit={onSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <Label htmlFor="platform-pin" className="text-base">
+                  Code plateforme
+                </Label>
+                <Input
+                  id="platform-pin"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  inputMode="numeric"
+                  autoComplete="off"
+                  className="h-14 text-xl tracking-widest"
+                  placeholder="••••••"
+                />
+              </div>
+              {error ? (
+                <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {error}
+                </p>
+              ) : null}
+              <Button
+                type="submit"
+                size="lg"
+                className="h-12 w-full text-base"
+                disabled={busy || pin.trim().length === 0}
+              >
+                {busy ? "Connexion…" : "Entrer"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
