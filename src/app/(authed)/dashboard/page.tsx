@@ -251,13 +251,13 @@ export default async function DashboardPage({
   }
 
   const metricsForLevel = <
-    T extends { group: { level?: string } },
+    T extends { group?: { level?: string | null } },
   >(
     metrics: T[],
   ) =>
     levelFilter === "all"
       ? metrics
-      : metrics.filter((m) => (m.group.level ?? "PRIMAIRE") === levelFilter);
+      : metrics.filter((m) => (m.group?.level ?? "PRIMAIRE") === levelFilter);
 
   const totals = services.reduce(
     (acc, s) => {
@@ -346,10 +346,28 @@ export default async function DashboardPage({
   pulseRows = servicesToCantinePulseRows(
     wideServices
       .filter((s) => s.date.getTime() >= pulseRangeStart.getTime())
-      .map((s) => ({
-        ...s,
-        metrics: metricsForLevel(s.metrics),
-      })),
+      .map(
+        (s): ServiceWithGroupMetrics => ({
+          date: s.date,
+          mealType: s.mealType,
+          wasteWeightG: s.wasteWeightG,
+          metrics: metricsForLevel(s.metrics).map((m) => ({
+            presentCount: m.presentCount,
+            servedCount: m.servedCount,
+            rabCount: m.rabCount,
+            refusedCount: m.refusedCount,
+            leftoversCount: m.leftoversCount,
+            group: m.group
+              ? {
+                  id: m.group.id,
+                  name: m.group.name,
+                  school: m.group.school,
+                  level: m.group.level,
+                }
+              : undefined,
+          })),
+        }),
+      ),
   );
 
   pulseWasteRows = wastePerDayRows
@@ -392,14 +410,16 @@ export default async function DashboardPage({
   const wideForEco = wideServices.map((s) => ({
     date: s.date,
     mealType: s.mealType,
-    metrics: s.metrics.map((m) => ({
-      groupId: m.group.id,
-      presentCount: m.presentCount,
-      servedCount: m.servedCount,
-      rabCount: m.rabCount,
-      refusedCount: m.refusedCount,
-      leftoversCount: m.leftoversCount,
-    })),
+    metrics: s.metrics
+      .filter((m) => m.group?.id)
+      .map((m) => ({
+        groupId: m.group!.id!,
+        presentCount: m.presentCount,
+        servedCount: m.servedCount,
+        rabCount: m.rabCount,
+        refusedCount: m.refusedCount,
+        leftoversCount: m.leftoversCount,
+      })),
   }));
 
   function ecoRowsForMeal(): DashboardEcoGroupRow[] {
