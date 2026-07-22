@@ -272,7 +272,7 @@ export default function DashboardPanels({
 
       {isKitchen ? (
         <div className="space-y-4">
-          <div className="relative space-y-4 pl-4">
+          <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
               aria-hidden
               className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
@@ -286,7 +286,7 @@ export default function DashboardPanels({
               />
             ))}
           </div>
-          <div className="relative space-y-4 pl-4">
+          <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
               aria-hidden
               className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
@@ -320,7 +320,7 @@ export default function DashboardPanels({
                 : null
             }
           />
-          <div className="relative space-y-4 pl-4">
+          <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
               aria-hidden
               className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
@@ -334,7 +334,7 @@ export default function DashboardPanels({
               />
             ))}
           </div>
-          <div className="relative space-y-4 pl-4">
+          <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
               aria-hidden
               className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-zinc-900"
@@ -348,7 +348,7 @@ export default function DashboardPanels({
               />
             ))}
           </div>
-          <div className="relative space-y-4 pl-4">
+          <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
               aria-hidden
               className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
