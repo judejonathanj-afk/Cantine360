@@ -286,14 +286,20 @@ export default function DashboardPanels({
               />
             ))}
           </div>
-          {SCHOOL_LEVELS.map((level) => (
-            <WasteEvolutionChart
-              key={`waste-${level}`}
-              days={days}
-              level={level}
-              perDayRows={wasteByLevel[level]}
+          <div className="relative space-y-4 pl-4">
+            <div
+              aria-hidden
+              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
             />
-          ))}
+            {SCHOOL_LEVELS.map((level) => (
+              <WasteEvolutionChart
+                key={`waste-${level}`}
+                days={days}
+                level={level}
+                perDayRows={wasteByLevel[level]}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <CantinePlusSection>
@@ -342,14 +348,20 @@ export default function DashboardPanels({
               />
             ))}
           </div>
-          {SCHOOL_LEVELS.map((level) => (
-            <WasteEvolutionChart
-              key={`waste-${level}`}
-              days={days}
-              level={level}
-              perDayRows={wasteByLevel[level]}
+          <div className="relative space-y-4 pl-4">
+            <div
+              aria-hidden
+              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
             />
-          ))}
+            {SCHOOL_LEVELS.map((level) => (
+              <WasteEvolutionChart
+                key={`waste-${level}`}
+                days={days}
+                level={level}
+                perDayRows={wasteByLevel[level]}
+              />
+            ))}
+          </div>
         </CantinePlusSection>
       )}
 
