@@ -480,9 +480,37 @@ export function CantinePulseCard({
           />
         )}
 
-        <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-3.5">
-          <p className="text-sm font-semibold leading-snug text-white">{pulse.headline}</p>
-          <p className="mt-1.5 text-sm leading-relaxed text-white/75">{pulse.subline}</p>
+        <div
+          className={cn(
+            "rounded-2xl border px-4 py-3.5",
+            pulse.mood === "attention" && "border-rose-400/50 bg-rose-500/15",
+            pulse.mood === "great" && "border-emerald-400/45 bg-emerald-500/15",
+            pulse.mood === "ok" && "border-amber-400/45 bg-amber-500/15",
+            pulse.mood === "pending" && "border-white/15 bg-white/10",
+          )}
+        >
+          <p
+            className={cn(
+              "text-base font-bold leading-snug sm:text-lg",
+              pulse.mood === "attention" && "text-rose-300",
+              pulse.mood === "great" && "text-emerald-300",
+              pulse.mood === "ok" && "text-amber-300",
+              pulse.mood === "pending" && "text-white",
+            )}
+          >
+            {pulse.headline}
+          </p>
+          <p
+            className={cn(
+              "mt-1.5 text-sm font-medium leading-relaxed sm:text-[15px]",
+              pulse.mood === "attention" && "text-rose-100",
+              pulse.mood === "great" && "text-emerald-100",
+              pulse.mood === "ok" && "text-amber-100",
+              pulse.mood === "pending" && "text-white/80",
+            )}
+          >
+            {pulse.subline}
+          </p>
         </div>
 
         {sparseServings ? (
