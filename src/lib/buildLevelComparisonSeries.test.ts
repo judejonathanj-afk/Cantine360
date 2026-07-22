@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   aggregateTotalsByLevel,
   buildLevelComparisonBars,
+  buildLevelRateBars,
   levelComparisonHasData,
+  levelTotalsHasData,
 } from "@/lib/buildLevelComparisonSeries";
 
 describe("buildLevelComparisonSeries", () => {
@@ -43,11 +45,18 @@ describe("buildLevelComparisonSeries", () => {
     expect(bars[1].maternelle).toBe(10);
     expect(bars[2].primaire).toBeCloseTo(3.2, 1);
     expect(levelComparisonHasData(byLevel)).toBe(true);
+
+    const matRates = buildLevelRateBars(byLevel.MATERNELLE);
+    expect(matRates[0].rate).toBe(80);
+    expect(matRates[1].rate).toBe(10);
+    expect(levelTotalsHasData(byLevel.MATERNELLE)).toBe(true);
   });
 
   it("signale l’absence de données", () => {
     const empty = aggregateTotalsByLevel([]);
     expect(levelComparisonHasData(empty)).toBe(false);
+    expect(levelTotalsHasData(empty.MATERNELLE)).toBe(false);
     expect(buildLevelComparisonBars(empty)[0].maternelle).toBe(0);
+    expect(buildLevelRateBars(empty.PRIMAIRE)[0].rate).toBe(0);
   });
 });

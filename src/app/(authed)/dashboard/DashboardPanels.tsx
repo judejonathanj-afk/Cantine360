@@ -316,7 +316,14 @@ export default function DashboardPanels({
               perDayRows={mealFlowByLevel[level]}
             />
           ))}
-          <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
+          {SCHOOL_LEVELS.map((level) => (
+            <LevelComparisonChart
+              key={`level-rates-${level}`}
+              days={days}
+              level={level}
+              totals={levelComparisonTotals[level]}
+            />
+          ))}
           {SCHOOL_LEVELS.map((level) => (
             <WasteEvolutionChart
               key={`waste-${level}`}

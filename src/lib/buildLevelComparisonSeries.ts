@@ -13,6 +13,11 @@ export type LevelComparisonBar = {
   primaire: number;
 };
 
+export type LevelRateBar = {
+  metric: string;
+  rate: number;
+};
+
 function emptyTotals(): LevelMealTotals {
   return { present: 0, served: 0, rab: 0, refused: 0 };
 }
@@ -50,6 +55,28 @@ export function aggregateTotalsByLevel(
   return out;
 }
 
+/** Barres pour un seul cycle : taux de service, RAB, refus (%). */
+export function buildLevelRateBars(totals: LevelMealTotals): LevelRateBar[] {
+  return [
+    {
+      metric: "Taux de service",
+      rate: ratePct(totals.served, totals.present),
+    },
+    {
+      metric: "Taux RAB",
+      rate: ratePct(totals.rab, totals.served),
+    },
+    {
+      metric: "Taux refus",
+      rate: ratePct(totals.refused, totals.served),
+    },
+  ];
+}
+
+export function levelTotalsHasData(totals: LevelMealTotals): boolean {
+  return totals.present > 0 || totals.served > 0;
+}
+
 /** Barres côte à côte : taux de service, RAB, refus (%). */
 export function buildLevelComparisonBars(
   byLevel: Record<SchoolLevel, LevelMealTotals>,
@@ -80,9 +107,6 @@ export function levelComparisonHasData(
   byLevel: Record<SchoolLevel, LevelMealTotals>,
 ): boolean {
   return (
-    byLevel.MATERNELLE.present > 0 ||
-    byLevel.MATERNELLE.served > 0 ||
-    byLevel.PRIMAIRE.present > 0 ||
-    byLevel.PRIMAIRE.served > 0
+    levelTotalsHasData(byLevel.MATERNELLE) || levelTotalsHasData(byLevel.PRIMAIRE)
   );
 }

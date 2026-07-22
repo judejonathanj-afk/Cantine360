@@ -6,79 +6,116 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 import { GraduationCap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  buildLevelComparisonBars,
-  levelComparisonHasData,
+  buildLevelRateBars,
+  levelTotalsHasData,
   type LevelMealTotals,
 } from "@/lib/buildLevelComparisonSeries";
-import type { SchoolLevel } from "@/lib/schoolLevel";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import {
   cantinePlusChartCardClass,
   cantinePlusChartPlotClass,
 } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
-const chartConfig = {
-  maternelle: {
-    label: "Maternelle",
+const LEVEL_CHART = {
+  MATERNELLE: {
     color: "#3b82f6",
+    headerBg: "bg-sky-100",
+    icon: "text-sky-800/35",
+    border: "border-sky-500 shadow-sky-500/10",
+    headerBorder: "border-sky-500",
+    divider: "bg-sky-500/70",
+    titleAccent: "text-sky-800",
   },
-  primaire: {
-    label: "Primaire",
+  PRIMAIRE: {
     color: "#10b981",
+    headerBg: "bg-emerald-100",
+    icon: "text-emerald-800/35",
+    border: "border-emerald-500 shadow-emerald-500/10",
+    headerBorder: "border-emerald-500",
+    divider: "bg-emerald-500/70",
+    titleAccent: "text-emerald-800",
   },
-} satisfies ChartConfig;
+} as const;
 
 type Props = {
   days: 7 | 30;
-  byLevel: Record<SchoolLevel, LevelMealTotals>;
+  level: SchoolLevel;
+  totals: LevelMealTotals;
 };
 
-export function LevelComparisonChart({ days, byLevel }: Props) {
-  const series = useMemo(() => buildLevelComparisonBars(byLevel), [byLevel]);
-  const hasData = levelComparisonHasData(byLevel);
+export function LevelComparisonChart({ days, level, totals }: Props) {
+  const theme = LEVEL_CHART[level];
+  const levelLabel = schoolLevelLabelFr(level);
+  const series = useMemo(() => buildLevelRateBars(totals), [totals]);
+  const hasData = levelTotalsHasData(totals);
+
+  const chartConfig = {
+    rate: {
+      label: levelLabel,
+      color: theme.color,
+    },
+  } satisfies ChartConfig;
 
   return (
     <Card
-      className={cn(
-        cantinePlusChartCardClass,
-        "border-2 border-sky-500 shadow-sky-500/10",
-      )}
+      className={cn(cantinePlusChartCardClass, "border-2", theme.border)}
     >
       <CardContent className="p-0">
-        <header className="border-b-2 border-sky-500">
+        <header className={cn("border-b-2", theme.headerBorder)}>
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
-            <div className="relative flex shrink-0 items-center self-stretch overflow-hidden bg-sky-100 py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8">
+            <div
+              className={cn(
+                "relative flex shrink-0 items-center self-stretch overflow-hidden py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8",
+                theme.headerBg,
+              )}
+            >
               <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-12 overflow-hidden sm:w-14 md:w-16"
                 aria-hidden
               >
                 <GraduationCap
-                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-sky-800/35 sm:h-32 sm:w-32 md:h-36 md:w-36"
+                  className={cn(
+                    "absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 sm:h-32 sm:w-32 md:h-36 md:w-36",
+                    theme.icon,
+                  )}
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-                Maternelle / Primaire
+              <h2 className="relative z-10 text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                Taux du cycle
+                <span
+                  className={cn(
+                    "block text-lg font-semibold sm:text-xl lg:text-2xl",
+                    theme.titleAccent,
+                  )}
+                >
+                  {levelLabel}
+                </span>
               </h2>
             </div>
 
             <div
-              className="hidden w-px shrink-0 self-stretch bg-sky-500/70 md:block"
+              className={cn(
+                "hidden w-px shrink-0 self-stretch md:block",
+                theme.divider,
+              )}
               aria-hidden
             />
-            <div className="h-px w-full shrink-0 bg-sky-500/70 md:hidden" aria-hidden />
+            <div
+              className={cn("h-px w-full shrink-0 md:hidden", theme.divider)}
+              aria-hidden
+            />
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Déjeuner sur les {days} derniers jours — comparaison des deux
-                cycles (indépendante du filtre niveau ci-dessus).
+                Déjeuner {levelLabel.toLowerCase()} sur les {days} derniers jours —
+                taux de service, RAB et refus.
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                 <strong className="font-semibold text-foreground">Barres</strong> =
@@ -91,8 +128,7 @@ export function LevelComparisonChart({ days, byLevel }: Props) {
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                 <strong className="font-semibold text-foreground">En résumé :</strong>{" "}
-                pour ajuster portions et menu par cycle, pas seulement à
-                l&apos;échelle de l&apos;établissement.
+                pour ajuster portions et menu de ce cycle.
               </p>
             </div>
           </div>
@@ -100,8 +136,8 @@ export function LevelComparisonChart({ days, byLevel }: Props) {
 
         {!hasData ? (
           <p className="mt-5 px-6 text-sm text-muted-foreground">
-            Pas encore de compteurs par classe sur la période — saisissez les
-            présents / servis / RAB / refus pour comparer maternelle et primaire.
+            Pas encore de compteurs {levelLabel.toLowerCase()} sur la période —
+            saisissez les présents / servis / RAB / refus pour voir les taux ici.
           </p>
         ) : (
           <ChartContainer config={chartConfig} className={cantinePlusChartPlotClass}>
@@ -143,18 +179,11 @@ export function LevelComparisonChart({ days, byLevel }: Props) {
                   />
                 )}
               />
-              <ChartLegend content={<ChartLegendContent />} />
               <Bar
-                dataKey="maternelle"
-                fill="var(--color-maternelle)"
+                dataKey="rate"
+                fill="var(--color-rate)"
                 radius={[4, 4, 0, 0]}
-                maxBarSize={48}
-              />
-              <Bar
-                dataKey="primaire"
-                fill="var(--color-primaire)"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={48}
+                maxBarSize={64}
               />
             </BarChart>
           </ChartContainer>
