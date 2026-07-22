@@ -162,7 +162,7 @@ function CantinePlusGlobalChart({
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
       <p className="text-xs font-semibold text-white/70">Lecture globale</p>
-      <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start">
+      <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(16rem,0.7fr)] lg:items-start">
         <div className="space-y-4">
           <div className="flex flex-wrap items-end gap-6">
             <div>
@@ -202,7 +202,7 @@ function CantinePlusGlobalChart({
             <>
             <ChartContainer
               config={globalChartConfig}
-              className="h-[min(16rem,45vw)] w-full min-h-[200px] aspect-auto"
+              className="h-[min(26rem,58vw)] w-full min-h-[280px] aspect-auto sm:min-h-[320px]"
             >
               <ComposedChart data={series} margin={{ top: 8, right: 44, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
