@@ -5,6 +5,7 @@ export type StudentAdminListRow = {
   firstName: string;
   lastName: string;
   allergens: string[];
+  allergenNotes: string | null;
   active: boolean;
   groupId: string;
   className: string;
@@ -29,6 +30,7 @@ export async function getStudentsForAdmin(
       firstName: true,
       lastName: true,
       allergens: true,
+      allergenNotes: true,
       active: true,
       groupId: true,
       group: {
@@ -46,6 +48,7 @@ export async function getStudentsForAdmin(
     firstName: r.firstName,
     lastName: r.lastName,
     allergens: r.allergens,
+    allergenNotes: r.allergenNotes,
     active: r.active,
     groupId: r.groupId,
     className: r.group.name,

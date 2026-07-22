@@ -108,6 +108,8 @@ model Student {
   firstName       String
   lastName        String
   allergens       String[] @default([])
+  /** Consignes détaillées des parents (affichées en cuisine). */
+  allergenNotes   String?
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt

@@ -11,6 +11,7 @@ export type StudentAllergenRow = {
   firstName: string;
   lastName: string;
   allergens: string[];
+  allergenNotes: string | null;
   schoolName: string;
   className: string;
   groupLabel: string;
@@ -75,6 +76,7 @@ export async function getServiceAllergenSummary(
       firstName: true,
       lastName: true,
       allergens: true,
+      allergenNotes: true,
       groupId: true,
       group: {
         select: {
@@ -114,6 +116,7 @@ export async function getServiceAllergenSummary(
         firstName: s.firstName,
         lastName: s.lastName,
         allergens: s.allergens,
+        allergenNotes: s.allergenNotes,
         schoolName,
         className,
         groupLabel,

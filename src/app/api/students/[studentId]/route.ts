@@ -9,6 +9,7 @@ const PatchSchema = z.object({
   lastName: z.string().trim().min(1).max(80).optional(),
   groupId: z.string().trim().min(1).optional(),
   allergens: z.array(z.enum(EU14_ALLERGENS)).optional(),
+  allergenNotes: z.string().trim().max(500).nullable().optional(),
   active: z.boolean().optional(),
 });
 
@@ -41,12 +42,17 @@ export async function PATCH(
     lastName?: string;
     groupId?: string;
     allergens?: string[];
+    allergenNotes?: string | null;
     active?: boolean;
   } = {};
 
   if (parsed.data.firstName !== undefined) data.firstName = parsed.data.firstName;
   if (parsed.data.lastName !== undefined) data.lastName = parsed.data.lastName;
   if (parsed.data.allergens !== undefined) data.allergens = parsed.data.allergens;
+  if (parsed.data.allergenNotes !== undefined) {
+    const notes = parsed.data.allergenNotes?.trim() ?? "";
+    data.allergenNotes = notes.length > 0 ? notes : null;
+  }
   if (parsed.data.active !== undefined) data.active = parsed.data.active;
 
   if (parsed.data.groupId !== undefined) {

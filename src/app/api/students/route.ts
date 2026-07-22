@@ -10,6 +10,7 @@ const CreateSchema = z.object({
   lastName: z.string().trim().min(1).max(80),
   groupId: z.string().trim().min(1),
   allergens: z.array(z.enum(EU14_ALLERGENS)).default([]),
+  allergenNotes: z.string().trim().max(500).optional().nullable(),
 });
 
 export async function GET() {
@@ -51,6 +52,9 @@ export async function POST(req: Request) {
         firstName: parsed.data.firstName,
         lastName: parsed.data.lastName,
         allergens: parsed.data.allergens,
+        allergenNotes: parsed.data.allergenNotes?.trim()
+          ? parsed.data.allergenNotes.trim()
+          : null,
         groupId: group.id,
         establishmentId: session.establishmentId,
       },
@@ -62,6 +66,7 @@ export async function POST(req: Request) {
           firstName: student.firstName,
           lastName: student.lastName,
           allergens: student.allergens,
+          allergenNotes: student.allergenNotes,
           active: student.active,
           groupId: group.id,
           className: group.name,

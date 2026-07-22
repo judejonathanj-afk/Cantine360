@@ -18,7 +18,14 @@ function RgpdNotice() {
   );
 }
 
+function kitchenAllergenDetail(notes: string | null | undefined): string {
+  const trimmed = notes?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : "à ne pas servir — allergie";
+}
+
 function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
+  const detail = kitchenAllergenDetail(student.allergenNotes);
+
   return (
     <li className="rounded-xl border border-[#1a2d4a] bg-white px-3.5 py-3.5 text-base shadow-sm ring-1 ring-[#1a2d4a]/25">
       <div className="flex flex-wrap items-center gap-2">
@@ -35,7 +42,7 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
             Allergène :{" "}
             <strong className="text-lg font-bold text-zinc-950 sm:text-xl">{allergen}</strong>
             {" "}
-            <span className="text-zinc-700">(à ne pas servir — allergie)</span>
+            <span className="text-zinc-700">({detail})</span>
           </li>
         ))}
       </ul>

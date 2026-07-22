@@ -29,6 +29,7 @@ type Student = {
   firstName: string;
   lastName: string;
   allergens: string[];
+  allergenNotes: string | null;
   active: boolean;
   groupId: string;
   className: string;
@@ -56,6 +57,7 @@ export function AdminStudentsClient({
   const [lastName, setLastName] = useState("");
   const [groupId, setGroupId] = useState(groups.find((g) => g.active)?.id ?? "");
   const [selectedAllergens, setSelectedAllergens] = useState<AllergenLabel[]>([]);
+  const [allergenNotes, setAllergenNotes] = useState("");
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -130,6 +132,7 @@ export function AdminStudentsClient({
           lastName,
           groupId,
           allergens: selectedAllergens,
+          allergenNotes: allergenNotes.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -139,6 +142,7 @@ export function AdminStudentsClient({
       setFirstName("");
       setLastName("");
       setSelectedAllergens([]);
+      setAllergenNotes("");
       await refresh();
     } finally {
       setBusy(false);
@@ -153,6 +157,20 @@ export function AdminStudentsClient({
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ active: !s.active }),
+    });
+    if (!res.ok) await refresh();
+  }
+
+  async function saveAllergenNotes(s: Student, notes: string) {
+    const next = notes.trim() || null;
+    if ((s.allergenNotes ?? null) === next) return;
+    setStudents((all) =>
+      all.map((x) => (x.id === s.id ? { ...x, allergenNotes: next } : x)),
+    );
+    const res = await fetch(`/api/students/${s.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ allergenNotes: next }),
     });
     if (!res.ok) await refresh();
   }
@@ -214,8 +232,9 @@ export function AdminStudentsClient({
             <code className="rounded bg-white/15 px-1 text-white/90">classe</code>,{" "}
             <code className="rounded bg-white/15 px-1 text-white/90">prenom</code>,{" "}
             <code className="rounded bg-white/15 px-1 text-white/90">nom</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">allergenes</code>. Importez
-            d’abord les classes.
+            <code className="rounded bg-white/15 px-1 text-white/90">allergenes</code>,{" "}
+            <code className="rounded bg-white/15 px-1 text-white/90">consignes</code>{" "}
+            (optionnel). Importez d’abord les classes.
           </>
         }
         exampleHref="/test-import-eleves.csv"
@@ -284,6 +303,20 @@ export function AdminStudentsClient({
             })}
           </div>
         </div>
+        <div className="mt-3">
+          <label className="text-xs font-medium text-zinc-700" htmlFor="allergen-notes">
+            Consignes parents (affichées en cuisine)
+          </label>
+          <textarea
+            id="allergen-notes"
+            value={allergenNotes}
+            onChange={(e) => setAllergenNotes(e.target.value)}
+            rows={2}
+            maxLength={500}
+            className="mt-1.5 w-full rounded-xl border border-zinc-300 px-4 py-3 text-sm outline-none focus:border-zinc-900"
+            placeholder="Ex. : ne pas servir d’œufs même en trace ; pain sans gluten fourni par la famille…"
+          />
+        </div>
         <button
           type="submit"
           disabled={busy || !firstName.trim() || !lastName.trim() || !groupId}
@@ -338,6 +371,17 @@ export function AdminStudentsClient({
                     ) : (
                       <p className="mt-1 text-xs text-zinc-500">Aucun allergène déclaré</p>
                     )}
+                    {s.allergens.length > 0 ? (
+                      <textarea
+                        defaultValue={s.allergenNotes ?? ""}
+                        key={`${s.id}-${s.allergenNotes ?? ""}`}
+                        rows={2}
+                        maxLength={500}
+                        onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
+                        className="mt-2 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:border-zinc-900 focus:bg-white"
+                        placeholder="Consignes parents (sinon : à ne pas servir — allergie)"
+                      />
+                    ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <button

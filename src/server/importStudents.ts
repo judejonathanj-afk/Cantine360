@@ -8,6 +8,7 @@ export type ImportStudentRow = {
   firstName: string;
   lastName: string;
   allergensRaw: string;
+  allergenNotes: string;
 };
 
 const SCHOOL_HEADERS = new Set(["ecole", "école", "school", "etablissement", "établissement"]);
@@ -15,6 +16,17 @@ const CLASS_HEADERS = new Set(["classe", "class", "groupe", "group"]);
 const FIRST_HEADERS = new Set(["prenom", "prénom", "firstname", "first_name"]);
 const LAST_HEADERS = new Set(["nom", "lastname", "last_name", "name"]);
 const ALLERGEN_HEADERS = new Set(["allergenes", "allergènes", "allergens", "allergie", "allergies"]);
+const NOTES_HEADERS = new Set([
+  "consignes",
+  "consigne",
+  "notes",
+  "note",
+  "allergennotes",
+  "notes_allergenes",
+  "notesallergenes",
+  "detail",
+  "details",
+]);
 
 function normalizeHeader(h: string): string {
   return h.trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
@@ -50,6 +62,7 @@ export function parseStudentsImportCsv(text: string): {
   const firstIdx = pickColumn(first, FIRST_HEADERS);
   const lastIdx = pickColumn(first, LAST_HEADERS);
   const allergenIdx = pickColumn(first, ALLERGEN_HEADERS);
+  const notesIdx = pickColumn(first, NOTES_HEADERS);
   const hasHeader =
     schoolIdx !== null &&
     classIdx !== null &&
@@ -62,6 +75,7 @@ export function parseStudentsImportCsv(text: string): {
   const fIdx = hasHeader ? firstIdx! : 2;
   const lIdx = hasHeader ? lastIdx! : 3;
   const aIdx = hasHeader ? (allergenIdx ?? 4) : 4;
+  const nIdx = hasHeader ? notesIdx : null;
 
   const rows: ImportStudentRow[] = [];
   const errors: string[] = [];
@@ -74,13 +88,15 @@ export function parseStudentsImportCsv(text: string): {
     const firstName = String(row[fIdx] ?? "").trim();
     const lastName = String(row[lIdx] ?? "").trim();
     const allergensRaw = String(row[aIdx] ?? "").trim();
+    const allergenNotes =
+      nIdx != null ? String(row[nIdx] ?? "").trim() : "";
 
     if (!school && !className && !firstName && !lastName) continue;
     if (!school || !className || !firstName || !lastName) {
       errors.push(`Ligne ${lineNo} : école, classe, prénom et nom requis.`);
       continue;
     }
-    rows.push({ school, className, firstName, lastName, allergensRaw });
+    rows.push({ school, className, firstName, lastName, allergensRaw, allergenNotes });
   }
 
   return { rows, errors };
@@ -129,6 +145,7 @@ export async function importStudentsForEstablishment(
     }
 
     const allergens = parseAllergenTokens(row.allergensRaw);
+    const allergenNotes = row.allergenNotes.trim() ? row.allergenNotes.trim() : null;
 
     const existing = await db.student.findUnique({
       where: {
@@ -145,7 +162,7 @@ export async function importStudentsForEstablishment(
       if (existing) {
         await db.student.update({
           where: { id: existing.id },
-          data: { allergens, active: true },
+          data: { allergens, allergenNotes, active: true },
         });
         studentsUpdated++;
       } else {
@@ -154,6 +171,7 @@ export async function importStudentsForEstablishment(
             firstName: row.firstName,
             lastName: row.lastName,
             allergens,
+            allergenNotes,
             groupId: group.id,
             establishmentId,
           },
