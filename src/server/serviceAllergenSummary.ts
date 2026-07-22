@@ -1,10 +1,19 @@
 import type { PrismaClient } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import {
   countStudentsAffectedByDish,
   dishesAffectingStudent,
   studentAffectedByMenu,
 } from "@/lib/allergenMatch";
+
+function isMissingAllergenNotesColumn(e: unknown): boolean {
+  return (
+    e instanceof Prisma.PrismaClientKnownRequestError &&
+    e.code === "P2022" &&
+    String(e.message).includes("allergenNotes")
+  );
+}
 
 export type StudentAllergenRow = {
   id: string;
@@ -65,27 +74,54 @@ export async function getServiceAllergenSummary(
 
   const groupIds = service.metrics.map((m) => m.groupId);
 
-  const students = await db.student.findMany({
-    where: {
-      establishmentId,
-      active: true,
-      groupId: { in: groupIds },
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      allergens: true,
-      allergenNotes: true,
-      groupId: true,
-      group: {
-        select: {
-          name: true,
-          school: { select: { name: true } },
-        },
+  const studentSelectBase = {
+    id: true,
+    firstName: true,
+    lastName: true,
+    allergens: true,
+    groupId: true,
+    group: {
+      select: {
+        name: true,
+        school: { select: { name: true } },
       },
     },
-  });
+  } as const;
+
+  let students: Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    allergens: string[];
+    allergenNotes: string | null;
+    groupId: string;
+    group: { name: string; school: { name: string } };
+  }>;
+
+  try {
+    students = await db.student.findMany({
+      where: {
+        establishmentId,
+        active: true,
+        groupId: { in: groupIds },
+      },
+      select: {
+        ...studentSelectBase,
+        allergenNotes: true,
+      },
+    });
+  } catch (e) {
+    if (!isMissingAllergenNotesColumn(e)) throw e;
+    const rows = await db.student.findMany({
+      where: {
+        establishmentId,
+        active: true,
+        groupId: { in: groupIds },
+      },
+      select: studentSelectBase,
+    });
+    students = rows.map((s) => ({ ...s, allergenNotes: null }));
+  }
 
   const menuItems = (service.menu?.items ?? []).map((i) => ({
     label: i.label,
