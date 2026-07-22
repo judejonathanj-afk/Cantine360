@@ -67,20 +67,20 @@ export function WasteEvolutionChart({ days, perDayRows, level }: Props) {
       <CardContent className="p-0">
         <header className="border-b-2 border-emerald-500">
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
-            <div className="relative flex w-full shrink-0 items-center overflow-hidden bg-emerald-100 py-3 pl-10 pr-3 sm:pl-11 md:w-[11.5rem] md:max-w-[11.5rem] md:py-4 md:pr-4 lg:w-52 lg:max-w-[13rem]">
+            <div className="relative flex w-full shrink-0 items-center self-stretch overflow-hidden bg-emerald-100 py-5 pl-14 pr-6 sm:pl-16 md:w-[16.5rem] md:max-w-[16.5rem] md:pl-16 md:pr-6">
               <div
-                className="pointer-events-none absolute inset-y-0 left-0 w-9 overflow-hidden sm:w-10"
+                className="pointer-events-none absolute inset-y-0 left-0 w-12 overflow-hidden sm:w-14 md:w-16"
                 aria-hidden
               >
                 <Trash2
-                  className="absolute right-0 top-1/2 h-16 w-16 -translate-y-1/2 text-emerald-700/35 sm:h-20 sm:w-20"
+                  className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 text-emerald-700/35 sm:h-32 sm:w-32 md:h-36 md:w-36"
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 text-base font-bold leading-tight tracking-tight text-foreground sm:text-lg lg:text-xl">
+              <h2 className="relative z-10 text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-[1.75rem] lg:leading-tight">
                 Évolution des déchets
                 {levelLabel ? (
-                  <span className="mt-0.5 block text-sm font-semibold text-emerald-800 sm:text-base">
+                  <span className="block text-lg font-semibold text-emerald-800 sm:text-xl lg:text-2xl">
                     {levelLabel}
                   </span>
                 ) : null}

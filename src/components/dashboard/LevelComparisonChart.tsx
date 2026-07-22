@@ -71,7 +71,7 @@ export function LevelComparisonChart({ days, level, totals }: Props) {
           <div className="flex flex-col md:flex-row md:items-stretch md:gap-0">
             <div
               className={cn(
-                "relative flex shrink-0 items-center self-stretch overflow-hidden py-5 pl-14 pr-6 sm:pl-16 md:pl-20 md:pr-8",
+                "relative flex w-full shrink-0 items-center self-stretch overflow-hidden py-5 pl-14 pr-6 sm:pl-16 md:w-[16.5rem] md:max-w-[16.5rem] md:pl-16 md:pr-6",
                 theme.headerBg,
               )}
             >
@@ -87,7 +87,7 @@ export function LevelComparisonChart({ days, level, totals }: Props) {
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              <h2 className="relative z-10 text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-[1.75rem] lg:leading-tight">
                 Taux du cycle
                 <span
                   className={cn(
