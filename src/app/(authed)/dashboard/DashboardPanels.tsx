@@ -328,14 +328,20 @@ export default function DashboardPanels({
               />
             ))}
           </div>
-          {SCHOOL_LEVELS.map((level) => (
-            <LevelComparisonChart
-              key={`level-rates-${level}`}
-              days={days}
-              level={level}
-              totals={levelComparisonTotals[level]}
+          <div className="relative space-y-4 pl-4">
+            <div
+              aria-hidden
+              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-zinc-900"
             />
-          ))}
+            {SCHOOL_LEVELS.map((level) => (
+              <LevelComparisonChart
+                key={`level-rates-${level}`}
+                days={days}
+                level={level}
+                totals={levelComparisonTotals[level]}
+              />
+            ))}
+          </div>
           {SCHOOL_LEVELS.map((level) => (
             <WasteEvolutionChart
               key={`waste-${level}`}
