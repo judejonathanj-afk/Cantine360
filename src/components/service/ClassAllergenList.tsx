@@ -18,6 +18,12 @@ function RgpdNotice() {
   );
 }
 
+function allergenAvoidPhrase(label: string): string {
+  const lower = label.trim().toLowerCase();
+  const elision = /^[aeiouyhàâäéèêëïîôùûüœ]/i.test(lower);
+  return elision ? `d’${lower}` : `de ${lower}`;
+}
+
 function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
   return (
     <li className="rounded-xl border border-[#1a2d4a] bg-white px-3.5 py-3.5 text-base shadow-sm ring-1 ring-[#1a2d4a]/25">
@@ -29,11 +35,20 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
           Menu
         </span>
       </div>
-      <div className="mt-1.5 text-sm font-medium text-zinc-700">
-        {student.allergens.join(" · ")}
-      </div>
+      <ul className="mt-2 space-y-1.5">
+        {student.allergens.map((allergen) => (
+          <li key={allergen} className="text-base leading-snug text-zinc-800 sm:text-lg">
+            Allergène :{" "}
+            <strong className="text-lg font-bold text-zinc-950 sm:text-xl">{allergen}</strong>
+            {" "}
+            <span className="text-zinc-700">
+              (ne mange pas {allergenAvoidPhrase(allergen)} car allergique)
+            </span>
+          </li>
+        ))}
+      </ul>
       {student.affectedDishes.length > 0 ? (
-        <div className="mt-1.5 text-sm text-[#0a1628]">
+        <div className="mt-2 text-sm text-[#0a1628]">
           <span className="font-semibold">Plats :</span> {student.affectedDishes.join(", ")}
         </div>
       ) : null}
