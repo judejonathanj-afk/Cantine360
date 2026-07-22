@@ -1,17 +1,21 @@
 import type { StudentAllergenRow } from "@/server/serviceAllergenSummary";
 import { ShieldAlert } from "lucide-react";
+import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
 import { cn } from "@/lib/utils";
 
 function RgpdNotice() {
   return (
-    <p className="flex items-start gap-2.5 rounded-xl border border-[#1a2d4a]/40 bg-white px-3.5 py-2.5 text-sm leading-relaxed text-[#0a1628] shadow-sm">
-      <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-[#0a1628]" aria-hidden />
-      <span>
-        <strong className="font-semibold">Donnée de santé</strong> — visible uniquement par le
-        personnel connecté. Ne pas diffuser hors du service de restauration.
-      </span>
-    </p>
+    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#1a2d4a]/40 bg-white px-3 py-2.5 shadow-sm sm:flex-nowrap sm:gap-3.5 sm:px-3.5">
+      <CantinePlusBadge className="shrink-0" />
+      <p className="flex min-w-0 flex-1 items-start gap-2 text-sm leading-relaxed text-[#0a1628]">
+        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-[#0a1628]" aria-hidden />
+        <span>
+          <strong className="font-semibold">Donnée de santé</strong> — visible uniquement par le
+          personnel connecté. Ne pas diffuser hors du service de restauration.
+        </span>
+      </p>
+    </div>
   );
 }
 
