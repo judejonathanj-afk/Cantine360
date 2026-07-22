@@ -273,7 +273,7 @@ export default function DashboardPanels({
       {isKitchen ? (
         <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
-            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Flux du repas
             </h2>
             <div className="relative space-y-4 pl-8 sm:pl-10">
@@ -292,7 +292,7 @@ export default function DashboardPanels({
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Évolution des déchets
             </h2>
             <div className="relative space-y-4 pl-8 sm:pl-10">
@@ -331,7 +331,7 @@ export default function DashboardPanels({
             }
           />
           <div className="space-y-3">
-            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Flux du repas
             </h2>
             <div className="relative space-y-4 pl-8 sm:pl-10">
@@ -350,7 +350,7 @@ export default function DashboardPanels({
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Taux du cycle
             </h2>
             <div className="relative space-y-4 pl-8 sm:pl-10">
@@ -369,7 +369,7 @@ export default function DashboardPanels({
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               Évolution des déchets
             </h2>
             <div className="relative space-y-4 pl-8 sm:pl-10">
