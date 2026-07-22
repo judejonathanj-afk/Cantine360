@@ -72,7 +72,7 @@ export function ClassAllergenList({
     <div className="space-y-4 rounded-2xl border-2 border-red-300 bg-red-50 p-4 shadow-sm sm:p-5">
       <RgpdNotice />
       <div className="text-base font-semibold text-red-950">
-        Élèves & allergènes ({withAllergens.length})
+        Élèves concernés par le menu ({withAllergens.length})
         {hasMenu ? (
           <span className="font-normal text-red-900">
             {" "}

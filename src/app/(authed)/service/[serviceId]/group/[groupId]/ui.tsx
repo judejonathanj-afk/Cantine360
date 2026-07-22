@@ -184,7 +184,9 @@ export function GroupMetricsEditor({
               </li>
               <li>
                 Consultez{" "}
-                <strong className="font-semibold">Élèves &amp; allergènes</strong>
+                <strong className="font-semibold">
+                  Élèves concernés par le menu
+                </strong>
                 , puis appuyez sur{" "}
                 <strong className="font-semibold">Enregistrer</strong> en bas de
                 page.
@@ -289,7 +291,7 @@ export function GroupMetricsEditor({
               className="h-7 w-7 shrink-0 text-yellow-500 sm:h-8 sm:w-8"
               aria-hidden
             />
-            Élèves &amp; allergènes
+            Élèves concernés par le menu
           </h2>
           <ClassAllergenList students={allergenStudents} hasMenu={hasMenu ?? false} />
         </section>
