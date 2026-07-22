@@ -212,8 +212,10 @@ export default function ExportsPage() {
               <a href={`/api/exports/menus?${qs}`}>CSV Menus (allergènes)</a>
             </Button>
             <p className="text-xs text-muted-foreground">
-              Le CSV services inclut la colonne <strong>wasteWeightG</strong> (total en grammes =
-              maternelle + primaire) et un résumé en bas de fichier par date de service.
+              Le CSV services inclut <strong>wasteWeightG</strong> (total),{" "}
+              <strong>wasteWeightMaternelleG</strong> et{" "}
+              <strong>wasteWeightPrimaireG</strong> (grammes), plus un résumé en bas
+              de fichier par date de service.
             </p>
             <p className="text-xs text-muted-foreground">
               Période sélectionnée&nbsp;: {formatFrRange(from, to)}.

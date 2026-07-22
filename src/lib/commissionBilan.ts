@@ -4,6 +4,8 @@ export type ServiceWithMetrics = {
   date: Date;
   mealType: MealType;
   wasteWeightG?: number | null;
+  wasteWeightMaternelleG?: number | null;
+  wasteWeightPrimaireG?: number | null;
   metrics: Array<{
     presentCount: number;
     servedCount: number;
@@ -75,6 +77,8 @@ export function sumServiceWasteWeightG(
   const t0 = opts.fromInclusive.getTime();
   const t1 = opts.toExclusive.getTime();
   let wasteWeightG = 0;
+  let wasteWeightMaternelleG = 0;
+  let wasteWeightPrimaireG = 0;
   let servicesWithWaste = 0;
 
   for (const service of services) {
@@ -85,9 +89,20 @@ export function sumServiceWasteWeightG(
     if (grams == null || grams <= 0) continue;
     wasteWeightG += grams;
     servicesWithWaste += 1;
+    if (service.wasteWeightMaternelleG != null && service.wasteWeightMaternelleG > 0) {
+      wasteWeightMaternelleG += service.wasteWeightMaternelleG;
+    }
+    if (service.wasteWeightPrimaireG != null && service.wasteWeightPrimaireG > 0) {
+      wasteWeightPrimaireG += service.wasteWeightPrimaireG;
+    }
   }
 
-  return { wasteWeightG, servicesWithWaste };
+  return {
+    wasteWeightG,
+    wasteWeightMaternelleG,
+    wasteWeightPrimaireG,
+    servicesWithWaste,
+  };
 }
 
 export function monthRange(year: number, monthIndex0: number) {

@@ -287,9 +287,33 @@ export default async function DashboardPage({
   const servedVsPresent = totals.present > 0 ? totals.served / totals.present : 0;
 
   let totalWasteWeightG = 0;
+  let totalWasteMaternelleG = 0;
+  let totalWastePrimaireG = 0;
   let servicesWithWaste = 0;
   for (const s of services) {
-    if (s.wasteWeightG != null && s.wasteWeightG > 0) {
+    const servedShare: Record<SchoolLevel, number> = {
+      MATERNELLE: 0,
+      PRIMAIRE: 0,
+    };
+    for (const m of s.metrics) {
+      servedShare[resolveMetricLevel(m.group?.level)] += m.servedCount;
+    }
+    const matG = wasteWeightForLevel(s, "MATERNELLE", servedShare);
+    const primG = wasteWeightForLevel(s, "PRIMAIRE", servedShare);
+    totalWasteMaternelleG += matG;
+    totalWastePrimaireG += primG;
+
+    if (levelFilter === "MATERNELLE") {
+      if (matG > 0) {
+        totalWasteWeightG += matG;
+        servicesWithWaste += 1;
+      }
+    } else if (levelFilter === "PRIMAIRE") {
+      if (primG > 0) {
+        totalWasteWeightG += primG;
+        servicesWithWaste += 1;
+      }
+    } else if (s.wasteWeightG != null && s.wasteWeightG > 0) {
       totalWasteWeightG += s.wasteWeightG;
       servicesWithWaste += 1;
     }
@@ -307,6 +331,8 @@ export default async function DashboardPage({
       rab: number;
       refused: number;
       wasteWeightG: number;
+      wasteWeightMaternelleG: number;
+      wasteWeightPrimaireG: number;
     }
   >();
   for (const s of services) {
@@ -317,6 +343,8 @@ export default async function DashboardPage({
       rab: 0,
       refused: 0,
       wasteWeightG: 0,
+      wasteWeightMaternelleG: 0,
+      wasteWeightPrimaireG: 0,
     };
     for (const m of metricsForLevel(s.metrics)) {
       bucket.present += m.presentCount;
@@ -324,7 +352,22 @@ export default async function DashboardPage({
       bucket.rab += m.rabCount;
       bucket.refused += m.refusedCount;
     }
-    if (s.wasteWeightG != null && s.wasteWeightG > 0) {
+    const servedShare: Record<SchoolLevel, number> = {
+      MATERNELLE: 0,
+      PRIMAIRE: 0,
+    };
+    for (const m of s.metrics) {
+      servedShare[resolveMetricLevel(m.group?.level)] += m.servedCount;
+    }
+    const matG = wasteWeightForLevel(s, "MATERNELLE", servedShare);
+    const primG = wasteWeightForLevel(s, "PRIMAIRE", servedShare);
+    bucket.wasteWeightMaternelleG += matG;
+    bucket.wasteWeightPrimaireG += primG;
+    if (levelFilter === "MATERNELLE") {
+      bucket.wasteWeightG += matG;
+    } else if (levelFilter === "PRIMAIRE") {
+      bucket.wasteWeightG += primG;
+    } else if (s.wasteWeightG != null && s.wasteWeightG > 0) {
       bucket.wasteWeightG += s.wasteWeightG;
     }
     perDay.set(key, bucket);
@@ -600,6 +643,8 @@ export default async function DashboardPage({
       rabRatePct={pct(rabRate)}
       servedVsPresentPct={pct(servedVsPresent)}
       totalWasteWeightG={totalWasteWeightG}
+      totalWasteMaternelleG={totalWasteMaternelleG}
+      totalWastePrimaireG={totalWastePrimaireG}
       servicesWithWaste={servicesWithWaste}
       wasteGramsPer100Served={wasteGramsPer100Served}
       perDayRows={perDayRows}

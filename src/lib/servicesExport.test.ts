@@ -14,6 +14,8 @@ describe("buildServiceMetricExportRows", () => {
         date: lunch,
         mealType: MealType.LUNCH,
         wasteWeightG: 8500,
+        wasteWeightMaternelleG: 3000,
+        wasteWeightPrimaireG: 5500,
         metrics: [
           {
             presentCount: 22,
@@ -35,6 +37,8 @@ describe("buildServiceMetricExportRows", () => {
 
     expect(rows).toHaveLength(2);
     expect(rows.every((row) => row.wasteWeightG === 8500)).toBe(true);
+    expect(rows.every((row) => row.wasteWeightMaternelleG === 3000)).toBe(true);
+    expect(rows.every((row) => row.wasteWeightPrimaireG === 5500)).toBe(true);
     expect(rows[0]?.groupLabel).toBe("École Anne Frank — CE1 A");
     expect(rows[0]).not.toHaveProperty("leftoversCount");
   });
@@ -56,6 +60,8 @@ describe("buildServiceMetricExportRows", () => {
       school: "",
       group: "",
       wasteWeightG: 4200,
+      wasteWeightMaternelleG: "",
+      wasteWeightPrimaireG: "",
     });
   });
 });
@@ -67,6 +73,8 @@ describe("buildServiceWasteSummaryRows", () => {
         date: lunch,
         mealType: MealType.LUNCH,
         wasteWeightG: 8500,
+        wasteWeightMaternelleG: 2500,
+        wasteWeightPrimaireG: 6000,
         metrics: [],
       },
       {
@@ -82,6 +90,8 @@ describe("buildServiceWasteSummaryRows", () => {
       date: "2026-06-10",
       wasteWeightG: 8500,
       wasteWeightKg: 8.5,
+      wasteWeightMaternelleG: 2500,
+      wasteWeightPrimaireG: 6000,
       repas: "Déjeuner",
     });
   });

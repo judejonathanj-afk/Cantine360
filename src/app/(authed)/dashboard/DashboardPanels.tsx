@@ -31,6 +31,8 @@ type DashboardDayRow = {
   rab: number;
   refused: number;
   wasteWeightG: number;
+  wasteWeightMaternelleG: number;
+  wasteWeightPrimaireG: number;
 };
 
 export type DashboardEcoGroupRow = {
@@ -62,6 +64,8 @@ export default function DashboardPanels({
   rabRatePct,
   servedVsPresentPct,
   totalWasteWeightG,
+  totalWasteMaternelleG,
+  totalWastePrimaireG,
   servicesWithWaste,
   wasteGramsPer100Served,
   perDayRows,
@@ -82,6 +86,8 @@ export default function DashboardPanels({
   rabRatePct: string;
   servedVsPresentPct: string;
   totalWasteWeightG: number;
+  totalWasteMaternelleG: number;
+  totalWastePrimaireG: number;
   servicesWithWaste: number;
   wasteGramsPer100Served: number | null;
   perDayRows: DashboardDayRow[];
@@ -128,12 +134,34 @@ export default function DashboardPanels({
         totalWasteWeightG > 0
           ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
           : "—",
-      sub:
-        wasteGramsPer100Served != null
-          ? `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100 assiettes`
-          : servicesWithWaste > 0
-            ? `${servicesWithWaste} service${servicesWithWaste > 1 ? "s" : ""} saisi${servicesWithWaste > 1 ? "s" : ""}`
-            : "saisir en fin de service",
+      sub: (() => {
+        const parts: string[] = [];
+        if (
+          levelFilter === "all" &&
+          (totalWasteMaternelleG > 0 || totalWastePrimaireG > 0)
+        ) {
+          if (totalWasteMaternelleG > 0) {
+            parts.push(
+              `Mat. ${Math.round(totalWasteMaternelleG).toLocaleString("fr-FR")} g`,
+            );
+          }
+          if (totalWastePrimaireG > 0) {
+            parts.push(
+              `Prim. ${Math.round(totalWastePrimaireG).toLocaleString("fr-FR")} g`,
+            );
+          }
+        }
+        if (wasteGramsPer100Served != null) {
+          parts.push(
+            `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100 assiettes`,
+          );
+        } else if (parts.length === 0 && servicesWithWaste > 0) {
+          parts.push(
+            `${servicesWithWaste} service${servicesWithWaste > 1 ? "s" : ""} saisi${servicesWithWaste > 1 ? "s" : ""}`,
+          );
+        }
+        return parts.length > 0 ? parts.join(" · ") : "saisir en fin de service";
+      })(),
     },
   ];
 
@@ -412,7 +440,9 @@ export default function DashboardPanels({
                     <th className="py-2 pr-3">Servis</th>
                     <th className="py-2 pr-3">RAB</th>
                     <th className="py-2 pr-3">Refus</th>
-                    <th className="py-2">Déchets (g)</th>
+                    <th className="py-2 pr-3">Déchets mat. (g)</th>
+                    <th className="py-2 pr-3">Déchets prim. (g)</th>
+                    <th className="py-2">Déchets total (g)</th>
                   </tr>
                 </thead>
                 <tbody className="text-foreground">
@@ -430,6 +460,16 @@ export default function DashboardPanels({
                       </td>
                       <td className="py-2 pr-3">
                         {row.refused.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="py-2 pr-3">
+                        {row.wasteWeightMaternelleG > 0
+                          ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
+                          : "—"}
+                      </td>
+                      <td className="py-2 pr-3">
+                        {row.wasteWeightPrimaireG > 0
+                          ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
+                          : "—"}
                       </td>
                       <td className="py-2">
                         {row.wasteWeightG > 0

@@ -7,6 +7,8 @@ export type ServiceExportSource = {
   date: Date;
   mealType: MealType;
   wasteWeightG: number | null;
+  wasteWeightMaternelleG?: number | null;
+  wasteWeightPrimaireG?: number | null;
   metrics: Array<{
     presentCount: number;
     servedCount: number;
@@ -19,13 +21,25 @@ export type ServiceExportSource = {
 export type ServiceMetricExportRow = Record<string, string | number>;
 export type ServiceWasteSummaryRow = Record<string, string | number | null>;
 
+function gramsOrEmpty(grams: number | null | undefined): string | number {
+  return grams != null && grams > 0 ? grams : "";
+}
+
+function wasteColumns(service: ServiceExportSource) {
+  return {
+    wasteWeightG: gramsOrEmpty(service.wasteWeightG),
+    wasteWeightMaternelleG: gramsOrEmpty(service.wasteWeightMaternelleG),
+    wasteWeightPrimaireG: gramsOrEmpty(service.wasteWeightPrimaireG),
+  };
+}
+
 export function buildServiceMetricExportRows(
   services: ServiceExportSource[],
 ): ServiceMetricExportRow[] {
   const rows: ServiceMetricExportRow[] = [];
 
   for (const service of services) {
-    const wasteWeightG = service.wasteWeightG ?? "";
+    const waste = wasteColumns(service);
 
     if (service.metrics.length === 0) {
       rows.push({
@@ -38,7 +52,7 @@ export function buildServiceMetricExportRows(
         servedCount: "",
         rabCount: "",
         refusedCount: "",
-        wasteWeightG,
+        ...waste,
       });
       continue;
     }
@@ -54,7 +68,7 @@ export function buildServiceMetricExportRows(
         servedCount: metric.servedCount,
         rabCount: metric.rabCount,
         refusedCount: metric.refusedCount,
-        wasteWeightG,
+        ...waste,
       });
     }
   }
@@ -74,5 +88,7 @@ export function buildServiceWasteSummaryRows(
       repas: mealTypeLabelFr(service.mealType),
       wasteWeightG: service.wasteWeightG,
       wasteWeightKg: Math.round((service.wasteWeightG! / 1000) * 100) / 100,
+      wasteWeightMaternelleG: gramsOrEmpty(service.wasteWeightMaternelleG) || null,
+      wasteWeightPrimaireG: gramsOrEmpty(service.wasteWeightPrimaireG) || null,
     }));
 }

@@ -83,6 +83,8 @@ export async function GET(req: Request) {
       date: true,
       mealType: true,
       wasteWeightG: true,
+      wasteWeightMaternelleG: true,
+      wasteWeightPrimaireG: true,
       metrics: {
         select: {
           presentCount: true,
@@ -153,6 +155,8 @@ export async function GET(req: Request) {
       "RAB / servis %": rabRatio != null ? Math.round(rabRatio * 100) / 100 : "",
       Refus: t.refused,
       "Déchets (g)": waste.wasteWeightG || "",
+      "Déchets maternelle (g)": waste.wasteWeightMaternelleG || "",
+      "Déchets primaire (g)": waste.wasteWeightPrimaireG || "",
       "Services avec déchets saisis": waste.servicesWithWaste || "",
     });
   }
@@ -177,6 +181,8 @@ export async function GET(req: Request) {
       "YTD RAB / servis %": rabRatioY != null ? Math.round(rabRatioY * 100) / 100 : "",
       "YTD refus": y.refused,
       "YTD déchets (g)": yWaste.wasteWeightG || "",
+      "YTD déchets maternelle (g)": yWaste.wasteWeightMaternelleG || "",
+      "YTD déchets primaire (g)": yWaste.wasteWeightPrimaireG || "",
       "YTD services avec déchets saisis": yWaste.servicesWithWaste || "",
     });
   } else {
@@ -198,6 +204,8 @@ export async function GET(req: Request) {
       "Année RAB / servis %": rabRatioY != null ? Math.round(rabRatioY * 100) / 100 : "",
       "Année refus": y.refused,
       "Année déchets (g)": yWaste.wasteWeightG || "",
+      "Année déchets maternelle (g)": yWaste.wasteWeightMaternelleG || "",
+      "Année déchets primaire (g)": yWaste.wasteWeightPrimaireG || "",
       "Année services avec déchets saisis": yWaste.servicesWithWaste || "",
     });
   }
