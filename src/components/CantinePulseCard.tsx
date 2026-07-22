@@ -162,8 +162,8 @@ function CantinePlusGlobalChart({
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
       <p className="text-xs font-semibold text-white/70">Lecture globale</p>
-      <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start">
-        <div className="space-y-4">
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_11rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_12.5rem]">
+        <div className="space-y-4 min-w-0">
           <div className="flex flex-wrap items-end gap-6">
             <div>
               <p className="text-xs text-white/60">Note Cantine +</p>
@@ -293,9 +293,11 @@ function CantinePlusGlobalChart({
           )}
         </div>
 
-        <div className="rounded-xl border border-white/15 bg-black/20 px-4 py-3.5">
-          <p className="text-sm font-semibold text-white">Comment lire ce graphique ?</p>
-          <ul className="mt-2.5 space-y-2 text-xs leading-relaxed text-white/75 sm:text-sm">
+        <div className="flex h-full flex-col rounded-xl border border-white/15 bg-black/20 px-3 py-3.5 lg:min-h-0">
+          <p className="text-sm font-semibold leading-snug text-white">
+            Comment lire ce graphique ?
+          </p>
+          <ul className="mt-2.5 flex-1 space-y-2.5 text-[11px] leading-relaxed text-white/75 sm:text-xs">
             <li>
               Les <strong className="text-white">barres vert d&apos;eau</strong> = portions
               servies sur <strong className="text-white">{periodLabel}</strong>.
