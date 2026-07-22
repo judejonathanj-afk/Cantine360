@@ -48,7 +48,7 @@ export function CantinePlusSection({
         </p>
       </div>
 
-      <div className="space-y-4">{children}</div>
+      <div className="space-y-8 sm:space-y-10">{children}</div>
     </section>
   );
 }

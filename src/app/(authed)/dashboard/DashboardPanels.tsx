@@ -271,7 +271,7 @@ export default function DashboardPanels({
       </div>
 
       {isKitchen ? (
-        <div className="space-y-4">
+        <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
             <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
               Flux du repas
