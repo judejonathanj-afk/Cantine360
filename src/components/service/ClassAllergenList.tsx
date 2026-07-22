@@ -69,7 +69,7 @@ export function ClassAllergenList({
   const others = withAllergens.filter((s) => !s.affectedByMenu);
 
   return (
-    <div className="space-y-4 rounded-2xl border-2 border-[#1a2d4a] bg-[#e8eef5] p-4 shadow-sm sm:p-5">
+    <div className="space-y-4 rounded-2xl border-2 border-yellow-400 bg-[#e8eef5] p-4 shadow-sm sm:p-5">
       <RgpdNotice />
       <div className="text-base font-semibold text-[#0a1628]">
         Élèves concernés par le menu ({withAllergens.length})
