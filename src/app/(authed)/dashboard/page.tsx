@@ -23,6 +23,7 @@ import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { formatServiceDateKey } from "@/lib/serviceDate";
 import { aggregateTotalsByLevel } from "@/lib/buildLevelComparisonSeries";
+import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { SCHOOL_LEVELS, type SchoolLevel } from "@/lib/schoolLevel";
 
 function resolveMetricLevel(level?: string | null): SchoolLevel {
@@ -182,6 +183,8 @@ export default async function DashboardPage({
           date: true,
           mealType: true,
           wasteWeightG: true,
+          wasteWeightMaternelleG: true,
+          wasteWeightPrimaireG: true,
           metrics: {
             select: {
               presentCount: true,
@@ -213,6 +216,8 @@ export default async function DashboardPage({
           date: true,
           mealType: true,
           wasteWeightG: true,
+          wasteWeightMaternelleG: true,
+          wasteWeightPrimaireG: true,
           metrics: {
             select: {
               presentCount: true,
@@ -407,17 +412,12 @@ export default async function DashboardPage({
         servedShare[lvl] += m.servedCount;
       }
 
-      const wasteG =
-        s.wasteWeightG != null && s.wasteWeightG > 0 ? s.wasteWeightG : 0;
-      if (wasteG > 0) {
-        const totalServed = servedShare.MATERNELLE + servedShare.PRIMAIRE;
-        for (const lvl of SCHOOL_LEVELS) {
-          const share = totalServed > 0 ? servedShare[lvl] / totalServed : 0;
-          if (share <= 0) continue;
-          const waste = wasteMaps[lvl].get(key) ?? { wasteWeightG: 0, served: 0 };
-          waste.wasteWeightG += wasteG * share;
-          wasteMaps[lvl].set(key, waste);
-        }
+      for (const lvl of SCHOOL_LEVELS) {
+        const grams = wasteWeightForLevel(s, lvl, servedShare);
+        if (grams <= 0) continue;
+        const waste = wasteMaps[lvl].get(key) ?? { wasteWeightG: 0, served: 0 };
+        waste.wasteWeightG += grams;
+        wasteMaps[lvl].set(key, waste);
       }
     }
 

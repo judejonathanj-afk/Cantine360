@@ -160,6 +160,8 @@ export default async function ServicePage({
         key={serviceId}
         serviceId={serviceId}
         initialWasteWeightG={service.wasteWeightG}
+        initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
+        initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
       />
     </div>
   );

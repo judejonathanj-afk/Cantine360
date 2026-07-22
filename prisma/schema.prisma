@@ -127,8 +127,12 @@ model Service {
   id              String   @id @default(cuid())
   date            DateTime
   mealType        MealType
-  /** Poids total des déchets après le service (grammes), saisi par la cuisine. */
+  /** Poids total des déchets (grammes) = somme maternelle + primaire, ou saisie legacy. */
   wasteWeightG    Int?
+  /** Poids des déchets cycle maternelle (grammes). */
+  wasteWeightMaternelleG Int?
+  /** Poids des déchets cycle primaire (grammes). */
+  wasteWeightPrimaireG   Int?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   establishmentId String
