@@ -99,6 +99,8 @@ export default function DashboardPanels({
   levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
 }) {
   const isKitchen = role === "KITCHEN";
+  const chartLevels =
+    levelFilter === "all" ? SCHOOL_LEVELS : ([levelFilter] as SchoolLevel[]);
 
   const kpis = [
     {
@@ -281,7 +283,7 @@ export default function DashboardPanels({
                 aria-hidden
                 className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
               />
-              {SCHOOL_LEVELS.map((level) => (
+              {chartLevels.map((level) => (
                 <MealFlowChart
                   key={`meal-flow-${level}`}
                   days={days}
@@ -300,7 +302,7 @@ export default function DashboardPanels({
                 aria-hidden
                 className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
               />
-              {SCHOOL_LEVELS.map((level) => (
+              {chartLevels.map((level) => (
                 <WasteEvolutionChart
                   key={`waste-${level}`}
                   days={days}
@@ -339,7 +341,7 @@ export default function DashboardPanels({
                 aria-hidden
                 className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
               />
-              {SCHOOL_LEVELS.map((level) => (
+              {chartLevels.map((level) => (
                 <MealFlowChart
                   key={`meal-flow-${level}`}
                   days={days}
@@ -358,7 +360,7 @@ export default function DashboardPanels({
                 aria-hidden
                 className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-zinc-900"
               />
-              {SCHOOL_LEVELS.map((level) => (
+              {chartLevels.map((level) => (
                 <LevelComparisonChart
                   key={`level-rates-${level}`}
                   days={days}
@@ -377,7 +379,7 @@ export default function DashboardPanels({
                 aria-hidden
                 className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
               />
-              {SCHOOL_LEVELS.map((level) => (
+              {chartLevels.map((level) => (
                 <WasteEvolutionChart
                   key={`waste-${level}`}
                   days={days}
