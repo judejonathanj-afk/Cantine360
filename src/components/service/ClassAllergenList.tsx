@@ -18,12 +18,6 @@ function RgpdNotice() {
   );
 }
 
-function allergenAvoidPhrase(label: string): string {
-  const lower = label.trim().toLowerCase();
-  const elision = /^[aeiouyhàâäéèêëïîôùûüœ]/i.test(lower);
-  return elision ? `d’${lower}` : `de ${lower}`;
-}
-
 function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
   return (
     <li className="rounded-xl border border-[#1a2d4a] bg-white px-3.5 py-3.5 text-base shadow-sm ring-1 ring-[#1a2d4a]/25">
@@ -41,9 +35,7 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
             Allergène :{" "}
             <strong className="text-lg font-bold text-zinc-950 sm:text-xl">{allergen}</strong>
             {" "}
-            <span className="text-zinc-700">
-              (ne mange pas {allergenAvoidPhrase(allergen)} car allergique)
-            </span>
+            <span className="text-zinc-700">(à ne pas servir — allergie)</span>
           </li>
         ))}
       </ul>
