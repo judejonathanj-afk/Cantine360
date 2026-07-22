@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, CloudOff } from "lucide-react";
+import { AlertTriangle, Check, CloudOff } from "lucide-react";
 import { Counter } from "@/components/Counter";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
+import { ClassAllergenList } from "@/components/service/ClassAllergenList";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { Button } from "@/components/ui/button";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
@@ -15,6 +16,7 @@ import {
 } from "@/lib/offlineMetricsQueue";
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import { schoolLevelLabelFr } from "@/lib/schoolLevel";
+import type { StudentAllergenRow } from "@/server/serviceAllergenSummary";
 
 type Metrics = {
   presentCount: number;
@@ -33,6 +35,8 @@ export function GroupMetricsEditor({
   dateLabel,
   level,
   initial,
+  allergenStudents,
+  hasMenu,
 }: {
   serviceId: string;
   groupId: string;
@@ -43,6 +47,8 @@ export function GroupMetricsEditor({
   dateLabel: string;
   level: SchoolLevel;
   initial: Metrics;
+  allergenStudents?: StudentAllergenRow[];
+  hasMenu?: boolean;
 }) {
   const router = useRouter();
   const online = useOnlineStatus();
@@ -165,18 +171,6 @@ export function GroupMetricsEditor({
   return (
     <div className="space-y-6">
       <div className="relative px-2">
-        <Button
-          type="button"
-          onClick={() => void saveAndLeave()}
-          disabled={leaving || status === "saving"}
-          className="absolute right-0 top-0 z-10 inline-flex shrink-0 rounded-xl border border-emerald-700 bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-70"
-        >
-          {status === "saved" && !dirty && !leaving ? (
-            <Check className="h-4 w-4" />
-          ) : null}
-          {saveLabel}
-        </Button>
-
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1fr)] sm:items-start">
           <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-left sm:mt-1 sm:max-w-[16rem]">
             <p className="text-xs font-bold uppercase tracking-wide text-zinc-700">
@@ -192,7 +186,8 @@ export function GroupMetricsEditor({
                 Consultez{" "}
                 <strong className="font-semibold">Élèves &amp; allergènes</strong>
                 , puis appuyez sur{" "}
-                <strong className="font-semibold">Enregistrer</strong>.
+                <strong className="font-semibold">Enregistrer</strong> en bas de
+                page.
               </li>
             </ol>
           </div>
@@ -284,6 +279,34 @@ export function GroupMetricsEditor({
             />
           </div>
         </div>
+      </div>
+
+      {allergenStudents ? (
+        <section className="space-y-4">
+          <div className="border-t border-zinc-300 pt-6" role="separator" aria-hidden />
+          <h2 className="flex items-center justify-center gap-2.5 text-2xl font-semibold text-zinc-900 sm:text-3xl">
+            <AlertTriangle
+              className="h-7 w-7 shrink-0 text-yellow-500 sm:h-8 sm:w-8"
+              aria-hidden
+            />
+            Élèves &amp; allergènes
+          </h2>
+          <ClassAllergenList students={allergenStudents} hasMenu={hasMenu ?? false} />
+        </section>
+      ) : null}
+
+      <div className="flex justify-center border-t border-zinc-200 pt-6 pb-2">
+        <Button
+          type="button"
+          onClick={() => void saveAndLeave()}
+          disabled={leaving || status === "saving"}
+          className="inline-flex min-w-[12rem] shrink-0 items-center justify-center gap-2 rounded-xl border border-emerald-700 bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-70"
+        >
+          {status === "saved" && !dirty && !leaving ? (
+            <Check className="h-4 w-4" />
+          ) : null}
+          {saveLabel}
+        </Button>
       </div>
     </div>
   );
