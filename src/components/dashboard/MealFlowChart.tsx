@@ -65,7 +65,7 @@ export function MealFlowChart({ days, perDayRows, level }: Props) {
     <Card
       className={cn(
         cantinePlusChartCardClass,
-        "relative border-2 border-yellow-400 border-l-[6px] border-l-yellow-400 shadow-yellow-400/15",
+        "relative border-2 border-yellow-400 shadow-yellow-400/15",
       )}
     >
       <CardContent className="p-0">

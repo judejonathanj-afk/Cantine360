@@ -272,14 +272,20 @@ export default function DashboardPanels({
 
       {isKitchen ? (
         <div className="space-y-4">
-          {SCHOOL_LEVELS.map((level) => (
-            <MealFlowChart
-              key={`meal-flow-${level}`}
-              days={days}
-              level={level}
-              perDayRows={mealFlowByLevel[level]}
+          <div className="relative space-y-4 pl-4">
+            <div
+              aria-hidden
+              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
             />
-          ))}
+            {SCHOOL_LEVELS.map((level) => (
+              <MealFlowChart
+                key={`meal-flow-${level}`}
+                days={days}
+                level={level}
+                perDayRows={mealFlowByLevel[level]}
+              />
+            ))}
+          </div>
           {SCHOOL_LEVELS.map((level) => (
             <WasteEvolutionChart
               key={`waste-${level}`}
@@ -308,14 +314,20 @@ export default function DashboardPanels({
                 : null
             }
           />
-          {SCHOOL_LEVELS.map((level) => (
-            <MealFlowChart
-              key={`meal-flow-${level}`}
-              days={days}
-              level={level}
-              perDayRows={mealFlowByLevel[level]}
+          <div className="relative space-y-4 pl-4">
+            <div
+              aria-hidden
+              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
             />
-          ))}
+            {SCHOOL_LEVELS.map((level) => (
+              <MealFlowChart
+                key={`meal-flow-${level}`}
+                days={days}
+                level={level}
+                perDayRows={mealFlowByLevel[level]}
+              />
+            ))}
+          </div>
           {SCHOOL_LEVELS.map((level) => (
             <LevelComparisonChart
               key={`level-rates-${level}`}
