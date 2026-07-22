@@ -14,7 +14,7 @@ import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
-import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
+import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 
 type Totals = {
   present: number;
@@ -65,7 +65,8 @@ export default function DashboardPanels({
   servicesWithWaste,
   wasteGramsPer100Served,
   perDayRows,
-  wastePerDayRows,
+  mealFlowByLevel,
+  wasteByLevel,
   levelComparisonTotals,
 }: {
   days: 7 | 30;
@@ -84,7 +85,17 @@ export default function DashboardPanels({
   servicesWithWaste: number;
   wasteGramsPer100Served: number | null;
   perDayRows: DashboardDayRow[];
-  wastePerDayRows: WastePerDayRowInput[];
+  mealFlowByLevel: Record<
+    SchoolLevel,
+    Array<{
+      date: string;
+      present: number;
+      served: number;
+      rab: number;
+      refused: number;
+    }>
+  >;
+  wasteByLevel: Record<SchoolLevel, WastePerDayRowInput[]>;
   levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
 }) {
   const isKitchen = role === "KITCHEN";
@@ -261,8 +272,22 @@ export default function DashboardPanels({
 
       {isKitchen ? (
         <div className="space-y-4">
-          <MealFlowChart days={days} perDayRows={perDayRows} />
-          <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
+          {SCHOOL_LEVELS.map((level) => (
+            <MealFlowChart
+              key={`meal-flow-${level}`}
+              days={days}
+              level={level}
+              perDayRows={mealFlowByLevel[level]}
+            />
+          ))}
+          {SCHOOL_LEVELS.map((level) => (
+            <WasteEvolutionChart
+              key={`waste-${level}`}
+              days={days}
+              level={level}
+              perDayRows={wasteByLevel[level]}
+            />
+          ))}
         </div>
       ) : (
         <CantinePlusSection>
@@ -283,9 +308,23 @@ export default function DashboardPanels({
                 : null
             }
           />
-          <MealFlowChart days={days} perDayRows={perDayRows} />
+          {SCHOOL_LEVELS.map((level) => (
+            <MealFlowChart
+              key={`meal-flow-${level}`}
+              days={days}
+              level={level}
+              perDayRows={mealFlowByLevel[level]}
+            />
+          ))}
           <LevelComparisonChart days={days} byLevel={levelComparisonTotals} />
-          <WasteEvolutionChart days={days} perDayRows={wastePerDayRows} />
+          {SCHOOL_LEVELS.map((level) => (
+            <WasteEvolutionChart
+              key={`waste-${level}`}
+              days={days}
+              level={level}
+              perDayRows={wasteByLevel[level]}
+            />
+          ))}
         </CantinePlusSection>
       )}
 

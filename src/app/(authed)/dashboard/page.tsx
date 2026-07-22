@@ -23,6 +23,11 @@ import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { formatServiceDateKey } from "@/lib/serviceDate";
 import { aggregateTotalsByLevel } from "@/lib/buildLevelComparisonSeries";
+import { SCHOOL_LEVELS, type SchoolLevel } from "@/lib/schoolLevel";
+
+function resolveMetricLevel(level?: string | null): SchoolLevel {
+  return level === "MATERNELLE" ? "MATERNELLE" : "PRIMAIRE";
+}
 
 function pct(num: number) {
   return new Intl.NumberFormat("fr-FR", {
@@ -343,6 +348,89 @@ export default async function DashboardPage({
     ...v,
   }));
 
+  /** Séries graphiques toujours séparées maternelle / primaire (indépendantes du filtre KPI). */
+  const mealFlowByLevel: Record<
+    SchoolLevel,
+    Array<{
+      date: string;
+      present: number;
+      served: number;
+      rab: number;
+      refused: number;
+    }>
+  > = { MATERNELLE: [], PRIMAIRE: [] };
+  const wasteByLevel: Record<
+    SchoolLevel,
+    Array<{ date: string; wasteWeightG: number; served: number }>
+  > = { MATERNELLE: [], PRIMAIRE: [] };
+
+  {
+    const mealMaps: Record<
+      SchoolLevel,
+      Map<string, { present: number; served: number; rab: number; refused: number }>
+    > = {
+      MATERNELLE: new Map(),
+      PRIMAIRE: new Map(),
+    };
+    const wasteMaps: Record<
+      SchoolLevel,
+      Map<string, { wasteWeightG: number; served: number }>
+    > = {
+      MATERNELLE: new Map(),
+      PRIMAIRE: new Map(),
+    };
+
+    for (const s of services) {
+      const key = formatServiceDateKey(s.date);
+      const servedShare: Record<SchoolLevel, number> = {
+        MATERNELLE: 0,
+        PRIMAIRE: 0,
+      };
+
+      for (const m of s.metrics) {
+        const lvl = resolveMetricLevel(m.group?.level);
+        const meal = mealMaps[lvl].get(key) ?? {
+          present: 0,
+          served: 0,
+          rab: 0,
+          refused: 0,
+        };
+        meal.present += m.presentCount;
+        meal.served += m.servedCount;
+        meal.rab += m.rabCount;
+        meal.refused += m.refusedCount;
+        mealMaps[lvl].set(key, meal);
+
+        const waste = wasteMaps[lvl].get(key) ?? { wasteWeightG: 0, served: 0 };
+        waste.served += m.servedCount;
+        wasteMaps[lvl].set(key, waste);
+        servedShare[lvl] += m.servedCount;
+      }
+
+      const wasteG =
+        s.wasteWeightG != null && s.wasteWeightG > 0 ? s.wasteWeightG : 0;
+      if (wasteG > 0) {
+        const totalServed = servedShare.MATERNELLE + servedShare.PRIMAIRE;
+        for (const lvl of SCHOOL_LEVELS) {
+          const share = totalServed > 0 ? servedShare[lvl] / totalServed : 0;
+          if (share <= 0) continue;
+          const waste = wasteMaps[lvl].get(key) ?? { wasteWeightG: 0, served: 0 };
+          waste.wasteWeightG += wasteG * share;
+          wasteMaps[lvl].set(key, waste);
+        }
+      }
+    }
+
+    for (const lvl of SCHOOL_LEVELS) {
+      mealFlowByLevel[lvl] = Array.from(mealMaps[lvl].entries()).map(
+        ([date, v]) => ({ date, ...v }),
+      );
+      wasteByLevel[lvl] = Array.from(wasteMaps[lvl].entries()).map(
+        ([date, v]) => ({ date, ...v }),
+      );
+    }
+  }
+
   pulseRows = servicesToCantinePulseRows(
     wideServices
       .filter((s) => s.date.getTime() >= pulseRangeStart.getTime())
@@ -515,7 +603,8 @@ export default async function DashboardPage({
       servicesWithWaste={servicesWithWaste}
       wasteGramsPer100Served={wasteGramsPer100Served}
       perDayRows={perDayRows}
-      wastePerDayRows={wastePerDayRows}
+      mealFlowByLevel={mealFlowByLevel}
+      wasteByLevel={wasteByLevel}
       levelComparisonTotals={levelComparisonTotals}
     />
   );

@@ -27,6 +27,7 @@ import {
   cantinePlusChartCardClass,
   cantinePlusChartPlotClass,
 } from "@/lib/cantinePlusTheme";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { cn } from "@/lib/utils";
 
 const chartConfig = {
@@ -43,9 +44,10 @@ const chartConfig = {
 type Props = {
   days: 7 | 30;
   perDayRows: WastePerDayRowInput[];
+  level?: SchoolLevel;
 };
 
-export function WasteEvolutionChart({ days, perDayRows }: Props) {
+export function WasteEvolutionChart({ days, perDayRows, level }: Props) {
   const series = useMemo(
     () => buildWasteEvolutionSeries(perDayRows),
     [perDayRows],
@@ -53,6 +55,7 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
 
   const useBars = days === 7;
   const hasWasteData = series.some((p) => p.wasteWeightG > 0);
+  const levelLabel = level ? schoolLevelLabelFr(level) : null;
 
   return (
     <Card
@@ -74,8 +77,13 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              <h2 className="relative z-10 text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
                 Évolution des déchets
+                {levelLabel ? (
+                  <span className="block text-lg font-semibold text-emerald-800 sm:text-xl lg:text-2xl">
+                    {levelLabel}
+                  </span>
+                ) : null}
               </h2>
             </div>
 
@@ -87,13 +95,19 @@ export function WasteEvolutionChart({ days, perDayRows }: Props) {
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Déjeuner sur les {days} derniers jours — poids des déchets par jour
-                (barres sur 7 jours, courbes sur 30) et grammes pour 100 assiettes
-                servies en pointillés.
+                Déjeuner
+                {levelLabel ? ` ${levelLabel.toLowerCase()}` : ""} sur les{" "}
+                {days} derniers jours — poids des déchets par jour (barres sur 7
+                jours, courbes sur 30) et grammes pour 100 assiettes servies en
+                pointillés.
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                 <strong className="font-semibold text-foreground">Barres</strong> =
-                poids total des déchets (g) ·{" "}
+                poids des déchets (g)
+                {levelLabel
+                  ? " réparti au prorata des assiettes servies de ce cycle"
+                  : ""}{" "}
+                ·{" "}
                 <strong className="font-semibold text-foreground">courbe en g</strong> =
                 déchets pour 100 assiettes servies (pas le nombre
                 d&apos;assiettes).

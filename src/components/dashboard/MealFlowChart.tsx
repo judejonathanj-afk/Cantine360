@@ -26,6 +26,7 @@ import {
   cantinePlusChartCardClass,
   cantinePlusChartPlotClass,
 } from "@/lib/cantinePlusTheme";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { cn } from "@/lib/utils";
 
 const chartConfig = {
@@ -50,13 +51,15 @@ const chartConfig = {
 type Props = {
   days: 7 | 30;
   perDayRows: MealFlowDayInput[];
+  level?: SchoolLevel;
 };
 
-export function MealFlowChart({ days, perDayRows }: Props) {
+export function MealFlowChart({ days, perDayRows, level }: Props) {
   const series = useMemo(() => buildMealFlowSeries(perDayRows), [perDayRows]);
   const hasData = series.some(
     (p) => p.present > 0 || p.served > 0 || p.rab > 0 || p.refused > 0,
   );
+  const levelLabel = level ? schoolLevelLabelFr(level) : null;
 
   return (
     <Card
@@ -78,8 +81,13 @@ export function MealFlowChart({ days, perDayRows }: Props) {
                   strokeWidth={1.25}
                 />
               </div>
-              <h2 className="relative z-10 whitespace-nowrap text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              <h2 className="relative z-10 text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
                 Flux du repas
+                {levelLabel ? (
+                  <span className="block text-lg font-semibold text-teal-800 sm:text-xl lg:text-2xl">
+                    {levelLabel}
+                  </span>
+                ) : null}
               </h2>
             </div>
 
@@ -91,8 +99,10 @@ export function MealFlowChart({ days, perDayRows }: Props) {
 
             <div className="min-w-0 space-y-2 px-6 py-5 md:flex-1 md:pl-6 md:pr-0">
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Déjeuner sur les {days} derniers jours — présents, assiettes
-                servies, RAB et refus jour par jour.
+                Déjeuner
+                {levelLabel ? ` ${levelLabel.toLowerCase()}` : ""} sur les{" "}
+                {days} derniers jours — présents, assiettes servies, RAB et
+                refus jour par jour.
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                 <strong className="font-semibold text-foreground">Présents</strong> →{" "}
