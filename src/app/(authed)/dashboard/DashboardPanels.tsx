@@ -272,19 +272,24 @@ export default function DashboardPanels({
 
       {isKitchen ? (
         <div className="space-y-4">
-          <div className="relative space-y-4 pl-8 sm:pl-10">
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
-            />
-            {SCHOOL_LEVELS.map((level) => (
-              <MealFlowChart
-                key={`meal-flow-${level}`}
-                days={days}
-                level={level}
-                perDayRows={mealFlowByLevel[level]}
+          <div className="space-y-3">
+            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+              Flux du repas
+            </h2>
+            <div className="relative space-y-4 pl-8 sm:pl-10">
+              <div
+                aria-hidden
+                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
               />
-            ))}
+              {SCHOOL_LEVELS.map((level) => (
+                <MealFlowChart
+                  key={`meal-flow-${level}`}
+                  days={days}
+                  level={level}
+                  perDayRows={mealFlowByLevel[level]}
+                />
+              ))}
+            </div>
           </div>
           <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
@@ -320,19 +325,24 @@ export default function DashboardPanels({
                 : null
             }
           />
-          <div className="relative space-y-4 pl-8 sm:pl-10">
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
-            />
-            {SCHOOL_LEVELS.map((level) => (
-              <MealFlowChart
-                key={`meal-flow-${level}`}
-                days={days}
-                level={level}
-                perDayRows={mealFlowByLevel[level]}
+          <div className="space-y-3">
+            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+              Flux du repas
+            </h2>
+            <div className="relative space-y-4 pl-8 sm:pl-10">
+              <div
+                aria-hidden
+                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
               />
-            ))}
+              {SCHOOL_LEVELS.map((level) => (
+                <MealFlowChart
+                  key={`meal-flow-${level}`}
+                  days={days}
+                  level={level}
+                  perDayRows={mealFlowByLevel[level]}
+                />
+              ))}
+            </div>
           </div>
           <div className="relative space-y-4 pl-8 sm:pl-10">
             <div
