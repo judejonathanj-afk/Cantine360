@@ -291,19 +291,24 @@ export default function DashboardPanels({
               ))}
             </div>
           </div>
-          <div className="relative space-y-4 pl-8 sm:pl-10">
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
-            />
-            {SCHOOL_LEVELS.map((level) => (
-              <WasteEvolutionChart
-                key={`waste-${level}`}
-                days={days}
-                level={level}
-                perDayRows={wasteByLevel[level]}
+          <div className="space-y-3">
+            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+              Évolution des déchets
+            </h2>
+            <div className="relative space-y-4 pl-8 sm:pl-10">
+              <div
+                aria-hidden
+                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
               />
-            ))}
+              {SCHOOL_LEVELS.map((level) => (
+                <WasteEvolutionChart
+                  key={`waste-${level}`}
+                  days={days}
+                  level={level}
+                  perDayRows={wasteByLevel[level]}
+                />
+              ))}
+            </div>
           </div>
         </div>
       ) : (
@@ -344,33 +349,43 @@ export default function DashboardPanels({
               ))}
             </div>
           </div>
-          <div className="relative space-y-4 pl-8 sm:pl-10">
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-zinc-900"
-            />
-            {SCHOOL_LEVELS.map((level) => (
-              <LevelComparisonChart
-                key={`level-rates-${level}`}
-                days={days}
-                level={level}
-                totals={levelComparisonTotals[level]}
+          <div className="space-y-3">
+            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+              Taux du cycle
+            </h2>
+            <div className="relative space-y-4 pl-8 sm:pl-10">
+              <div
+                aria-hidden
+                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-zinc-900"
               />
-            ))}
+              {SCHOOL_LEVELS.map((level) => (
+                <LevelComparisonChart
+                  key={`level-rates-${level}`}
+                  days={days}
+                  level={level}
+                  totals={levelComparisonTotals[level]}
+                />
+              ))}
+            </div>
           </div>
-          <div className="relative space-y-4 pl-8 sm:pl-10">
-            <div
-              aria-hidden
-              className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
-            />
-            {SCHOOL_LEVELS.map((level) => (
-              <WasteEvolutionChart
-                key={`waste-${level}`}
-                days={days}
-                level={level}
-                perDayRows={wasteByLevel[level]}
+          <div className="space-y-3">
+            <h2 className="pl-8 text-xl font-bold tracking-tight text-foreground sm:pl-10 sm:text-2xl">
+              Évolution des déchets
+            </h2>
+            <div className="relative space-y-4 pl-8 sm:pl-10">
+              <div
+                aria-hidden
+                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
               />
-            ))}
+              {SCHOOL_LEVELS.map((level) => (
+                <WasteEvolutionChart
+                  key={`waste-${level}`}
+                  days={days}
+                  level={level}
+                  perDayRows={wasteByLevel[level]}
+                />
+              ))}
+            </div>
           </div>
         </CantinePlusSection>
       )}
