@@ -18,6 +18,11 @@ import { cn } from "@/lib/utils";
 
 const t = SERVICE_INSIGHT_TONES.black;
 
+function kitchenAllergenDetail(notes: string | null | undefined): string {
+  const trimmed = notes?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : "à ne pas servir — allergie";
+}
+
 export function ServiceConcernedStudentsPanel({
   serviceId,
   groups,
@@ -135,7 +140,9 @@ export function ServiceConcernedStudentsPanel({
               <li key={g.groupId}>
                 <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
                 <ul className="mt-1.5 space-y-1.5">
-                  {g.concerned.map((s) => (
+                  {g.concerned.map((s) => {
+                    const detail = kitchenAllergenDetail(s.allergenNotes);
+                    return (
                     <li
                       key={s.id}
                       className="w-full rounded-xl border-2 px-4 py-2.5 text-base text-zinc-900 shadow-sm"
@@ -144,19 +151,37 @@ export function ServiceConcernedStudentsPanel({
                         borderColor: cardColor,
                       }}
                     >
-                      <div className="text-base font-bold text-zinc-900">
-                        {formatStudentKitchenName(s.firstName, s.lastName)}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
+                          {formatStudentKitchenName(s.firstName, s.lastName)}
+                        </span>
+                        <span className="rounded-full bg-[#0a1628] px-2 py-0.5 text-sm font-bold text-white">
+                          Menu
+                        </span>
                       </div>
-                      <div className="mt-1 text-sm font-medium text-zinc-800">
-                        {s.allergens.join(" · ")}
-                      </div>
+                      <ul className="mt-1.5 space-y-1">
+                        {s.allergens.map((allergen) => (
+                          <li
+                            key={allergen}
+                            className="text-base leading-snug text-zinc-800 sm:text-lg"
+                          >
+                            Allergène :{" "}
+                            <strong className="text-lg font-bold text-zinc-950 sm:text-xl">
+                              {allergen}
+                            </strong>{" "}
+                            <span className="text-zinc-700">({detail})</span>
+                          </li>
+                        ))}
+                      </ul>
                       {s.affectedDishes.length > 0 ? (
                         <div className="mt-1 text-sm font-medium text-zinc-900">
-                          Plats : {s.affectedDishes.join(", ")}
+                          <span className="font-semibold">Plats :</span>{" "}
+                          {s.affectedDishes.join(", ")}
                         </div>
                       ) : null}
                     </li>
-                  ))}
+                    );
+                  })}
                 </ul>
               </li>
             );
