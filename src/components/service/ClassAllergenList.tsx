@@ -35,10 +35,12 @@ function StudentAllergenRowItem({
         concerned ? "border-[#1a2d4a] ring-1 ring-[#1a2d4a]/25" : "border-zinc-200",
       )}
     >
-      <div className="font-semibold text-zinc-900">
-        {formatStudentKitchenName(student.firstName, student.lastName)}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
+          {formatStudentKitchenName(student.firstName, student.lastName)}
+        </span>
         {concerned ? (
-          <span className="ml-2 rounded-full bg-[#0a1628] px-2 py-0.5 text-sm font-bold text-white">
+          <span className="rounded-full bg-[#0a1628] px-2 py-0.5 text-sm font-bold text-white">
             Menu
           </span>
         ) : null}
