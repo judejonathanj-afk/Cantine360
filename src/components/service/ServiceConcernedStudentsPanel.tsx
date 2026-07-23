@@ -12,11 +12,8 @@ import { formatStudentKitchenName } from "@/lib/studentDisplayName";
 import { LEVEL_CARD_COLORS } from "@/lib/schoolLevel";
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
-import { SERVICE_INSIGHT_TONES } from "@/components/service/serviceInsightTones";
 import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import { cn } from "@/lib/utils";
-
-const t = SERVICE_INSIGHT_TONES.black;
 
 function kitchenAllergenDetail(notes: string | null | undefined): string {
   const trimmed = notes?.trim();
@@ -87,25 +84,22 @@ export function ServiceConcernedStudentsPanel({
         ref={panelRef}
         id="liste-nominative"
         className={cn(
-          "flex h-full flex-col overflow-hidden rounded-2xl border shadow-md scroll-mt-24",
+          "flex h-full flex-col overflow-hidden rounded-2xl border-2 border-yellow-400 bg-[#e8eef5] shadow-md scroll-mt-24",
           open ? "min-h-0" : "min-h-[10.5rem]",
-          t.shell,
         )}
       >
         <CollapsibleTrigger
           className={cn(
-            "flex w-full shrink-0 flex-col px-4 outline-none",
+            "flex w-full shrink-0 flex-col px-4 outline-none hover:bg-[#dce6f0]/60",
             open ? "py-3.5" : "py-4",
-            t.hover,
           )}
         >
           <div className="relative flex items-center gap-3">
             <CantinePlusBadge className="relative z-10 shrink-0" />
             <h2
               className={cn(
-                "absolute inset-x-0 text-center font-bold leading-snug",
+                "absolute inset-x-0 text-center font-bold leading-snug text-[#0a1628]",
                 open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
-                t.title,
               )}
             >
               <span className="tabular-nums">{total}</span> Élèves concernés par le menu
@@ -113,23 +107,17 @@ export function ServiceConcernedStudentsPanel({
             <div className="relative z-10 ml-auto flex shrink-0 items-center">
               <ChevronDown
                 className={cn(
-                  "shrink-0 transition-transform",
+                  "shrink-0 text-[#0a1628]/70 transition-transform",
                   open ? "h-5 w-5 rotate-180" : "h-5 w-5",
-                  t.chevron,
                 )}
               />
             </div>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent
-          className={cn(
-            "flex min-h-0 flex-1 flex-col border-t px-3 pb-3 pt-2",
-            t.expandBorder,
-            t.expand,
-            t.text,
-          )}
+          className="flex min-h-0 flex-1 flex-col border-t border-[#1a2d4a]/15 bg-[#e8eef5] px-3 pb-3 pt-2 text-[#0a1628]"
         >
-          <p className={cn("shrink-0 rounded-md px-2 py-1 text-[10px] leading-snug", t.nested)}>
+          <p className="shrink-0 rounded-md border border-[#1a2d4a]/15 bg-white/80 px-2 py-1 text-[10px] leading-snug text-[#0a1628]">
             <strong className="font-semibold">RGPD</strong> — personnel cantine uniquement.
           </p>
           <ul className="mt-2 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[26rem]">
