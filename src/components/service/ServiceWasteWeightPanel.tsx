@@ -189,28 +189,39 @@ export function ServiceWasteWeightPanel({
         className,
       )}
     >
-      <div className="border-b border-white/20 bg-zinc-800 px-4 py-4 text-center sm:px-6 sm:py-5">
-        <div className="flex items-center justify-center gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/25">
-            <Trash2 className="h-6 w-6" aria-hidden />
-          </span>
-          <h2 className="text-lg font-semibold leading-snug text-white sm:text-xl">
-            Poids des déchets
-          </h2>
+      <div className="relative overflow-hidden border-b border-white/20 bg-zinc-800 px-4 py-4 text-center sm:px-6 sm:py-5">
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 w-[4.5rem] overflow-hidden sm:w-28 md:w-36"
+          aria-hidden
+        >
+          <Trash2
+            className="absolute right-0 top-1/2 h-44 w-44 -translate-y-1/2 text-white/25 sm:h-56 sm:w-56 md:h-64 md:w-64"
+            strokeWidth={1.25}
+          />
         </div>
-        <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
-          Après le service — une pesée par cycle (maternelle / primaire)
-        </p>
-        <div className="mx-auto mt-4 inline-flex min-w-[12rem] flex-col items-center justify-center rounded-2xl border-2 border-white/35 bg-white/10 px-8 py-3 text-white shadow-inner sm:min-w-[14rem] sm:px-10">
-          <span className="text-xs font-semibold uppercase tracking-wide text-white/70">
-            Total
-          </span>
-          <span className="mt-1 flex flex-wrap items-baseline justify-center gap-x-2 text-3xl font-bold tracking-tight sm:text-4xl">
-            <span>{totalSaved.toLocaleString("fr-FR")} g</span>
-            <span className="text-base font-medium text-white/80 sm:text-lg">
-              ({formatKgFromGrams(totalSaved)})
+        <div className="relative z-10">
+          <div className="flex items-center justify-center gap-3">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/25">
+              <Trash2 className="h-6 w-6" aria-hidden />
             </span>
-          </span>
+            <h2 className="text-lg font-semibold leading-snug text-white sm:text-xl">
+              Poids des déchets
+            </h2>
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
+            Après le service — une pesée par cycle (maternelle / primaire)
+          </p>
+          <div className="mx-auto mt-4 inline-flex min-w-[12rem] flex-col items-center justify-center rounded-2xl border-2 border-white/35 bg-white/10 px-8 py-3 text-white shadow-inner sm:min-w-[14rem] sm:px-10">
+            <span className="text-xs font-semibold uppercase tracking-wide text-white/70">
+              Total
+            </span>
+            <span className="mt-1 flex flex-wrap items-baseline justify-center gap-x-2 text-3xl font-bold tracking-tight sm:text-4xl">
+              <span>{totalSaved.toLocaleString("fr-FR")} g</span>
+              <span className="text-base font-medium text-white/80 sm:text-lg">
+                ({formatKgFromGrams(totalSaved)})
+              </span>
+            </span>
+          </div>
         </div>
       </div>
 
