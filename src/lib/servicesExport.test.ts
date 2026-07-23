@@ -88,10 +88,10 @@ describe("buildServiceWasteSummaryRows", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
       date: "2026-06-10",
-      wasteWeightG: 8500,
-      wasteWeightKg: 8.5,
-      wasteWeightMaternelleG: 2500,
-      wasteWeightPrimaireG: 6000,
+      "Déchets total (g)": 8500,
+      "Déchets total (kg)": 8.5,
+      "Déchets maternelle (g)": 2500,
+      "Déchets primaire (g)": 6000,
       repas: "Déjeuner",
     });
   });

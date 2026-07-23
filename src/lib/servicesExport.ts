@@ -86,9 +86,9 @@ export function buildServiceWasteSummaryRows(
       date: formatServiceDateKey(service.date),
       mealType: service.mealType,
       repas: mealTypeLabelFr(service.mealType),
-      wasteWeightG: service.wasteWeightG,
-      wasteWeightKg: Math.round((service.wasteWeightG! / 1000) * 100) / 100,
-      wasteWeightMaternelleG: gramsOrEmpty(service.wasteWeightMaternelleG) || null,
-      wasteWeightPrimaireG: gramsOrEmpty(service.wasteWeightPrimaireG) || null,
+      "Déchets total (g)": service.wasteWeightG,
+      "Déchets total (kg)": Math.round((service.wasteWeightG! / 1000) * 100) / 100,
+      "Déchets maternelle (g)": gramsOrEmpty(service.wasteWeightMaternelleG) || null,
+      "Déchets primaire (g)": gramsOrEmpty(service.wasteWeightPrimaireG) || null,
     }));
 }

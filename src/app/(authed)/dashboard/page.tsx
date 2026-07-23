@@ -383,10 +383,21 @@ export default async function DashboardPage({
   for (const s of services) {
     const key = formatServiceDateKey(s.date);
     const bucket = wastePerDay.get(key) ?? { wasteWeightG: 0, served: 0 };
+    const servedShare: Record<SchoolLevel, number> = {
+      MATERNELLE: 0,
+      PRIMAIRE: 0,
+    };
+    for (const m of s.metrics) {
+      servedShare[resolveMetricLevel(m.group?.level)] += m.servedCount;
+    }
     for (const m of metricsForLevel(s.metrics)) {
       bucket.served += m.servedCount;
     }
-    if (s.wasteWeightG != null && s.wasteWeightG > 0) {
+    if (levelFilter === "MATERNELLE") {
+      bucket.wasteWeightG += wasteWeightForLevel(s, "MATERNELLE", servedShare);
+    } else if (levelFilter === "PRIMAIRE") {
+      bucket.wasteWeightG += wasteWeightForLevel(s, "PRIMAIRE", servedShare);
+    } else if (s.wasteWeightG != null && s.wasteWeightG > 0) {
       bucket.wasteWeightG += s.wasteWeightG;
     }
     wastePerDay.set(key, bucket);
