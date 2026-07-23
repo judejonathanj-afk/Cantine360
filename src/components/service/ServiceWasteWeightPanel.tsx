@@ -224,7 +224,7 @@ export function ServiceWasteWeightPanel({
             <div
               key={level}
               className={cn(
-                "relative flex min-h-[14rem] flex-col items-center justify-center px-4 py-6 sm:min-h-[16rem] sm:px-6",
+                "relative flex min-h-[14rem] flex-col px-4 pb-6 pt-4 sm:min-h-[16rem] sm:px-6 sm:pt-5",
                 tone.shell,
                 level === "PRIMAIRE" && "border-t border-white/25 sm:border-l sm:border-t-0",
               )}
@@ -238,13 +238,13 @@ export function ServiceWasteWeightPanel({
                   strokeWidth={1.25}
                 />
               </div>
-              <div className="relative z-10 flex w-full max-w-[14rem] flex-col items-center gap-2 text-center">
-                <Label
-                  htmlFor={`waste-${level}-${serviceId}`}
-                  className="text-base font-semibold text-white sm:text-lg"
-                >
-                  {schoolLevelLabelFr(level)} (g)
-                </Label>
+              <Label
+                htmlFor={`waste-${level}-${serviceId}`}
+                className="relative z-10 w-full text-center text-lg font-bold tracking-wide text-white sm:text-xl"
+              >
+                {schoolLevelLabelFr(level)} (g)
+              </Label>
+              <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-2 text-center">
                 <Input
                   id={`waste-${level}-${serviceId}`}
                   type="text"
@@ -253,7 +253,7 @@ export function ServiceWasteWeightPanel({
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   className={cn(
-                    "h-14 w-full border-2 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl",
+                    "h-14 w-full max-w-[14rem] border-2 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl",
                     tone.inputBorder,
                   )}
                 />
