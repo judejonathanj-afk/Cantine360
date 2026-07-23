@@ -214,36 +214,7 @@ export default function DashboardPanels({
           : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
       </p>
 
-      <div className="flex flex-col gap-2">
-        {!isKitchen ? (
-          <div className="flex flex-wrap gap-2">
-            <Button variant={levelFilter === "all" ? "default" : "outline"} asChild>
-              <Link href={levelHref("all")}>Tous niveaux</Link>
-            </Button>
-            <Button
-              variant={levelFilter === "MATERNELLE" ? "default" : "outline"}
-              asChild
-            >
-              <Link href={levelHref("MATERNELLE")}>Maternelle</Link>
-            </Button>
-            <Button
-              variant={levelFilter === "PRIMAIRE" ? "default" : "outline"}
-              asChild
-            >
-              <Link href={levelHref("PRIMAIRE")}>Primaire</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <a
-                href={`/api/exports/commission-bilan?year=${exportYear}`}
-                download
-                className="inline-flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" aria-hidden />
-                Bilan commission (CSV)
-              </a>
-            </Button>
-          </div>
-        ) : null}
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
           <Button variant={days === 7 ? "default" : "outline"} asChild>
             <Link
@@ -259,6 +230,35 @@ export default function DashboardPanels({
               30 jours
             </Link>
           </Button>
+        </div>
+        <div className="flex flex-wrap gap-2 sm:justify-end">
+          <Button variant={levelFilter === "all" ? "default" : "outline"} asChild>
+            <Link href={levelHref("all")}>Tous niveaux</Link>
+          </Button>
+          <Button
+            variant={levelFilter === "MATERNELLE" ? "default" : "outline"}
+            asChild
+          >
+            <Link href={levelHref("MATERNELLE")}>Maternelle</Link>
+          </Button>
+          <Button
+            variant={levelFilter === "PRIMAIRE" ? "default" : "outline"}
+            asChild
+          >
+            <Link href={levelHref("PRIMAIRE")}>Primaire</Link>
+          </Button>
+          {!isKitchen ? (
+            <Button variant="outline" asChild>
+              <a
+                href={`/api/exports/commission-bilan?year=${exportYear}`}
+                download
+                className="inline-flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" aria-hidden />
+                Bilan commission (CSV)
+              </a>
+            </Button>
+          ) : null}
         </div>
       </div>
 
@@ -440,9 +440,13 @@ export default function DashboardPanels({
                     <th className="py-2 pr-3">Servis</th>
                     <th className="py-2 pr-3">RAB</th>
                     <th className="py-2 pr-3">Refus</th>
-                    <th className="py-2 pr-3">Déchets mat. (g)</th>
-                    <th className="py-2 pr-3">Déchets prim. (g)</th>
-                    <th className="py-2">Déchets total (g)</th>
+                    {levelFilter === "all" ? (
+                      <>
+                        <th className="py-2 pr-3">Déchets mat. (g)</th>
+                        <th className="py-2 pr-3">Déchets prim. (g)</th>
+                      </>
+                    ) : null}
+                    <th className="py-2">Déchets{levelFilter === "all" ? " total" : ""} (g)</th>
                   </tr>
                 </thead>
                 <tbody className="text-foreground">
@@ -461,16 +465,20 @@ export default function DashboardPanels({
                       <td className="py-2 pr-3">
                         {row.refused.toLocaleString("fr-FR")}
                       </td>
-                      <td className="py-2 pr-3">
-                        {row.wasteWeightMaternelleG > 0
-                          ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
-                          : "—"}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.wasteWeightPrimaireG > 0
-                          ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
-                          : "—"}
-                      </td>
+                      {levelFilter === "all" ? (
+                        <>
+                          <td className="py-2 pr-3">
+                            {row.wasteWeightMaternelleG > 0
+                              ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
+                              : "—"}
+                          </td>
+                          <td className="py-2 pr-3">
+                            {row.wasteWeightPrimaireG > 0
+                              ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
+                              : "—"}
+                          </td>
+                        </>
+                      ) : null}
                       <td className="py-2">
                         {row.wasteWeightG > 0
                           ? row.wasteWeightG.toLocaleString("fr-FR")
