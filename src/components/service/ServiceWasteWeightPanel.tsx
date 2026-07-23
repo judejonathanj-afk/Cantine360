@@ -240,15 +240,6 @@ export function ServiceWasteWeightPanel({
                 level === "PRIMAIRE" && "border-t border-white/25 sm:border-l sm:border-t-0",
               )}
             >
-              <div
-                className="pointer-events-none absolute inset-y-0 left-0 w-16 overflow-hidden opacity-30 sm:w-24"
-                aria-hidden
-              >
-                <Trash2
-                  className="absolute right-0 top-1/2 h-40 w-40 -translate-y-1/2 text-white sm:h-52 sm:w-52"
-                  strokeWidth={1.25}
-                />
-              </div>
               <Label
                 htmlFor={`waste-${level}-${serviceId}`}
                 className="relative z-10 w-full justify-center text-center text-lg font-bold tracking-wide text-white sm:text-xl"
