@@ -240,7 +240,7 @@ export function ServiceWasteWeightPanel({
               </div>
               <Label
                 htmlFor={`waste-${level}-${serviceId}`}
-                className="relative z-10 w-full text-center text-lg font-bold tracking-wide text-white sm:text-xl"
+                className="relative z-10 w-full justify-center text-center text-lg font-bold tracking-wide text-white sm:text-xl"
               >
                 {schoolLevelLabelFr(level)} (g)
               </Label>
