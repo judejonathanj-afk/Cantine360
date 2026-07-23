@@ -102,7 +102,8 @@ export function ServiceConcernedStudentsPanel({
                 open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
               )}
             >
-              <span className="tabular-nums">{total}</span> Élèves concernés par le menu
+              <span className="tabular-nums text-yellow-400">{total}</span> Élèves
+              concernés par le menu
             </h2>
             <div className="relative z-10 ml-auto flex shrink-0 items-center">
               <ChevronDown
