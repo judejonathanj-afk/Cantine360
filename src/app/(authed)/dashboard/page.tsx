@@ -24,6 +24,7 @@ import { formatGroupLabel } from "@/lib/groupLabel";
 import { formatServiceDateKey } from "@/lib/serviceDate";
 import { aggregateTotalsByLevel } from "@/lib/buildLevelComparisonSeries";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
+import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { SCHOOL_LEVELS, type SchoolLevel } from "@/lib/schoolLevel";
 
 function resolveMetricLevel(level?: string | null): SchoolLevel {
@@ -127,6 +128,11 @@ export default async function DashboardPage({
   let pulseRows: CantineServiceRow[] = [];
   let pulseWasteRows: CantineWasteDayRow[] = [];
   let wideServices: ServiceWithGroupMetrics[] = [];
+  let dashboardStudents: Array<{
+    id: string;
+    allergens: string[];
+    groupId: string;
+  }> = [];
   let establishment: {
     ecoRestesServisTargetPct: number | null;
     ecoReductionTargetPct: number | null;
@@ -171,7 +177,7 @@ export default async function DashboardPage({
       Math.min(pulseRangeStart.getTime(), ecoBounds.priorStart.getTime()),
     );
 
-    const [servicesResult, wide] = await Promise.all([
+    const [servicesResult, wide, studentRows] = await Promise.all([
       db.service.findMany({
         where: {
           date: { gte: start },
@@ -202,7 +208,13 @@ export default async function DashboardPage({
               },
             },
           },
-          menu: { select: { items: { select: { category: true } } } },
+          menu: {
+            select: {
+              items: {
+                select: { category: true, label: true, allergens: true },
+              },
+            },
+          },
         },
       }),
       db.service.findMany({
@@ -237,9 +249,14 @@ export default async function DashboardPage({
           },
         },
       }),
+      db.student.findMany({
+        where: { establishmentId: session.establishmentId, active: true },
+        select: { id: true, allergens: true, groupId: true },
+      }),
     ]);
     services = servicesResult;
     wideServices = wide;
+    dashboardStudents = studentRows;
     pulseRows = servicesToCantinePulseRows(
       wide.filter((s) => s.date.getTime() >= pulseRangeStart.getTime()),
     );
@@ -323,61 +340,10 @@ export default async function DashboardPage({
       ? (totalWasteWeightG / totals.served) * 100
       : null;
 
-  const perDay = new Map<
-    string,
-    {
-      present: number;
-      served: number;
-      rab: number;
-      refused: number;
-      wasteWeightG: number;
-      wasteWeightMaternelleG: number;
-      wasteWeightPrimaireG: number;
-    }
-  >();
-  for (const s of services) {
-    const key = formatServiceDateKey(s.date);
-    const bucket = perDay.get(key) ?? {
-      present: 0,
-      served: 0,
-      rab: 0,
-      refused: 0,
-      wasteWeightG: 0,
-      wasteWeightMaternelleG: 0,
-      wasteWeightPrimaireG: 0,
-    };
-    for (const m of metricsForLevel(s.metrics)) {
-      bucket.present += m.presentCount;
-      bucket.served += m.servedCount;
-      bucket.rab += m.rabCount;
-      bucket.refused += m.refusedCount;
-    }
-    const servedShare: Record<SchoolLevel, number> = {
-      MATERNELLE: 0,
-      PRIMAIRE: 0,
-    };
-    for (const m of s.metrics) {
-      servedShare[resolveMetricLevel(m.group?.level)] += m.servedCount;
-    }
-    const matG = wasteWeightForLevel(s, "MATERNELLE", servedShare);
-    const primG = wasteWeightForLevel(s, "PRIMAIRE", servedShare);
-    bucket.wasteWeightMaternelleG += matG;
-    bucket.wasteWeightPrimaireG += primG;
-    if (levelFilter === "MATERNELLE") {
-      bucket.wasteWeightG += matG;
-    } else if (levelFilter === "PRIMAIRE") {
-      bucket.wasteWeightG += primG;
-    } else if (s.wasteWeightG != null && s.wasteWeightG > 0) {
-      bucket.wasteWeightG += s.wasteWeightG;
-    }
-    perDay.set(key, bucket);
-  }
-
-  const perDayRows = Array.from(perDay.entries()).map(([date, v]) => ({
-    date,
-    mealLabel: "Déjeuner",
-    ...v,
-  }));
+  const perDayRows = buildDashboardDayDetailRows(services, {
+    levelFilter,
+    students: dashboardStudents,
+  });
 
   const wastePerDay = new Map<string, { wasteWeightG: number; served: number }>();
   for (const s of services) {
