@@ -419,7 +419,7 @@ export default function DashboardPanels({
         </CantinePlusSection>
       )}
 
-      <div className="grid items-stretch gap-4 lg:grid-cols-2">
+      <div className="flex flex-col gap-4">
         <Card
           className="flex h-full flex-col border-border/50 backdrop-blur-sm"
           style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
