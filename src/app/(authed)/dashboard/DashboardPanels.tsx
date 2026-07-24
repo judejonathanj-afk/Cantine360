@@ -17,6 +17,8 @@ import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
+import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 type Totals = {
   present: number;
@@ -26,6 +28,36 @@ type Totals = {
 };
 
 type DashboardDayRow = DashboardDayDetailRow;
+
+function SectionHeading({
+  title,
+  lineClassName,
+  titleClassName,
+  trailing,
+}: {
+  title: ReactNode;
+  lineClassName: string;
+  titleClassName?: string;
+  trailing?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <h2
+        className={cn(
+          "shrink-0 text-xl font-bold tracking-tight text-foreground sm:text-2xl",
+          titleClassName,
+        )}
+      >
+        {title}
+      </h2>
+      <div
+        aria-hidden
+        className={cn("h-1 min-h-1 min-w-[2.5rem] flex-1 rounded-full", lineClassName)}
+      />
+      {trailing}
+    </div>
+  );
+}
 
 export type DashboardEcoGroupRow = {
   groupName: string;
@@ -302,9 +334,7 @@ export default function DashboardPanels({
       {isKitchen ? (
         <div className="space-y-8 sm:space-y-10">
           <div className="space-y-3">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Flux du repas
-            </h2>
+            <SectionHeading title="Flux du repas" lineClassName="bg-yellow-400" />
             <div className="relative space-y-4 pl-8 sm:pl-10">
               <div
                 aria-hidden
@@ -321,9 +351,10 @@ export default function DashboardPanels({
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Évolution des déchets
-            </h2>
+            <SectionHeading
+              title="Évolution des déchets"
+              lineClassName="bg-emerald-500"
+            />
             <div className="relative space-y-4 pl-8 sm:pl-10">
               <div
                 aria-hidden
@@ -361,9 +392,7 @@ export default function DashboardPanels({
             }
           />
           <div className="space-y-3">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Flux du repas
-            </h2>
+            <SectionHeading title="Flux du repas" lineClassName="bg-yellow-400" />
             <div className="relative space-y-4 pl-8 sm:pl-10">
               <div
                 aria-hidden
@@ -380,9 +409,7 @@ export default function DashboardPanels({
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Taux du cycle
-            </h2>
+            <SectionHeading title="Taux du cycle" lineClassName="bg-zinc-900" />
             <div className="relative space-y-4 pl-8 sm:pl-10">
               <div
                 aria-hidden
@@ -399,9 +426,10 @@ export default function DashboardPanels({
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              Évolution des déchets
-            </h2>
+            <SectionHeading
+              title="Évolution des déchets"
+              lineClassName="bg-emerald-500"
+            />
             <div className="relative space-y-4 pl-8 sm:pl-10">
               <div
                 aria-hidden
@@ -421,28 +449,29 @@ export default function DashboardPanels({
       )}
 
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            Suivi jour par jour
-          </h2>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={perDayRows.length === 0}
-            className="gap-2"
-            onClick={() =>
-              downloadSuiviJourPdf(perDayRows, {
-                days,
-                levelFilter,
-                isKitchen,
-              })
-            }
-          >
-            <Download className="h-4 w-4" aria-hidden />
-            Télécharger PDF
-          </Button>
-        </div>
+        <SectionHeading
+          title="Suivi jour par jour"
+          lineClassName="bg-sky-500"
+          trailing={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={perDayRows.length === 0}
+              className="shrink-0 gap-2"
+              onClick={() =>
+                downloadSuiviJourPdf(perDayRows, {
+                  days,
+                  levelFilter,
+                  isKitchen,
+                })
+              }
+            >
+              <Download className="h-4 w-4" aria-hidden />
+              Télécharger PDF
+            </Button>
+          }
+        />
         <div className="relative space-y-4 pl-8 sm:pl-10">
           <div
             aria-hidden
@@ -454,18 +483,24 @@ export default function DashboardPanels({
           style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
         >
           <CardContent className="flex flex-1 flex-col p-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              {isKitchen ? "Aperçu du jour" : "Détails par service"}
-              {levelFilter !== "all" ? (
+            <SectionHeading
+              title={
                 <>
-                  {" "}
-                  —{" "}
-                  <span className="text-emerald-700">
-                    {schoolLevelLabelFr(levelFilter)}
-                  </span>
+                  {isKitchen ? "Aperçu du jour" : "Détails par service"}
+                  {levelFilter !== "all" ? (
+                    <>
+                      {" "}
+                      —{" "}
+                      <span className="text-emerald-700">
+                        {schoolLevelLabelFr(levelFilter)}
+                      </span>
+                    </>
+                  ) : null}
                 </>
-              ) : null}
-            </h2>
+              }
+              lineClassName="bg-sky-500"
+              titleClassName="text-lg sm:text-xl"
+            />
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
@@ -552,18 +587,24 @@ export default function DashboardPanels({
           style={{ backgroundColor: GROUP_CARD_COLORS[0] }}
         >
           <CardContent className="flex flex-1 flex-col p-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              Contexte du service
-              {levelFilter !== "all" ? (
+            <SectionHeading
+              title={
                 <>
-                  {" "}
-                  —{" "}
-                  <span className="text-emerald-700">
-                    {schoolLevelLabelFr(levelFilter)}
-                  </span>
+                  Contexte du service
+                  {levelFilter !== "all" ? (
+                    <>
+                      {" "}
+                      —{" "}
+                      <span className="text-emerald-700">
+                        {schoolLevelLabelFr(levelFilter)}
+                      </span>
+                    </>
+                  ) : null}
                 </>
-              ) : null}
-            </h2>
+              }
+              lineClassName="bg-sky-500"
+              titleClassName="text-lg sm:text-xl"
+            />
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
