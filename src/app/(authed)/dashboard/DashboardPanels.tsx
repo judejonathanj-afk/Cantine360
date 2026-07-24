@@ -419,7 +419,16 @@ export default function DashboardPanels({
         </CantinePlusSection>
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="space-y-3">
+        <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          Suivi jour par jour
+        </h2>
+        <div className="relative space-y-4 pl-8 sm:pl-10">
+          <div
+            aria-hidden
+            className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-sky-500"
+          />
+          <div className="flex flex-col gap-4">
         <Card
           className="flex h-full flex-col border-border/50 backdrop-blur-sm"
           style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
@@ -599,6 +608,8 @@ export default function DashboardPanels({
             )}
           </CardContent>
         </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
