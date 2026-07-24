@@ -16,6 +16,7 @@ import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
+import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 
 type Totals = {
   present: number;
@@ -420,9 +421,28 @@ export default function DashboardPanels({
       )}
 
       <div className="space-y-3">
-        <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-          Suivi jour par jour
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+            Suivi jour par jour
+          </h2>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={perDayRows.length === 0}
+            className="gap-2"
+            onClick={() =>
+              downloadSuiviJourPdf(perDayRows, {
+                days,
+                levelFilter,
+                isKitchen,
+              })
+            }
+          >
+            <Download className="h-4 w-4" aria-hidden />
+            Télécharger PDF
+          </Button>
+        </div>
         <div className="relative space-y-4 pl-8 sm:pl-10">
           <div
             aria-hidden
