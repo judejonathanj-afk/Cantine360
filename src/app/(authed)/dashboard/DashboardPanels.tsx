@@ -428,6 +428,15 @@ export default function DashboardPanels({
         <CardContent className="flex flex-1 flex-col p-6">
           <h2 className="text-lg font-semibold text-foreground">
             {isKitchen ? "Aperçu du jour" : "Détails par service"}
+            {levelFilter !== "all" ? (
+              <>
+                {" "}
+                —{" "}
+                <span className="text-emerald-700">
+                  {schoolLevelLabelFr(levelFilter)}
+                </span>
+              </>
+            ) : null}
           </h2>
           {perDayRows.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
