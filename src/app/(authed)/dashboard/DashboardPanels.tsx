@@ -440,7 +440,7 @@ export default function DashboardPanels({
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
-              <div className="mt-4 max-h-80 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:max-h-96">
+              <div className="mt-3 min-h-72 max-h-[28rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-80 sm:max-h-[32rem]">
                 <table className="min-w-full text-sm">
                   <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
                     <tr>
@@ -538,7 +538,7 @@ export default function DashboardPanels({
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
-              <div className="mt-4 max-h-80 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:max-h-96">
+              <div className="mt-3 min-h-72 max-h-[28rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-80 sm:max-h-[32rem]">
                 <table className="min-w-full text-sm">
                   <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
                     <tr>
