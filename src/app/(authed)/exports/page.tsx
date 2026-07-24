@@ -212,10 +212,8 @@ export default function ExportsPage() {
               <a href={`/api/exports/menus?${qs}`}>CSV Menus (allergènes)</a>
             </Button>
             <p className="text-xs text-muted-foreground">
-              Le CSV services inclut <strong>wasteWeightG</strong> (total),{" "}
-              <strong>wasteWeightMaternelleG</strong> et{" "}
-              <strong>wasteWeightPrimaireG</strong> (grammes), plus un résumé en bas
-              de fichier par date de service.
+              Fichier Excel prêt à l’emploi (colonnes séparées) : Date, Repas, École,
+              Classe, Présents, Servis, RAB, Refus, Déchets total / maternelle / primaire.
             </p>
             <p className="text-xs text-muted-foreground">
               Période sélectionnée&nbsp;: {formatFrRange(from, to)}.

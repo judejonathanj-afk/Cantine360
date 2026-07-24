@@ -36,10 +36,11 @@ describe("buildServiceMetricExportRows", () => {
     ]);
 
     expect(rows).toHaveLength(2);
-    expect(rows.every((row) => row.wasteWeightG === 8500)).toBe(true);
-    expect(rows.every((row) => row.wasteWeightMaternelleG === 3000)).toBe(true);
-    expect(rows.every((row) => row.wasteWeightPrimaireG === 5500)).toBe(true);
-    expect(rows[0]?.groupLabel).toBe("École Anne Frank — CE1 A");
+    expect(rows.every((row) => row["Déchets total (g)"] === 8500)).toBe(true);
+    expect(rows.every((row) => row["Déchets maternelle (g)"] === 3000)).toBe(true);
+    expect(rows.every((row) => row["Déchets primaire (g)"] === 5500)).toBe(true);
+    expect(rows[0]?.["Libellé classe"]).toBe("École Anne Frank — CE1 A");
+    expect(rows[0]?.Repas).toBe("Déjeuner");
     expect(rows[0]).not.toHaveProperty("leftoversCount");
   });
 
@@ -55,13 +56,13 @@ describe("buildServiceMetricExportRows", () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
-      date: "2026-06-10",
-      mealType: "LUNCH",
-      school: "",
-      group: "",
-      wasteWeightG: 4200,
-      wasteWeightMaternelleG: "",
-      wasteWeightPrimaireG: "",
+      Date: "2026-06-10",
+      Repas: "Déjeuner",
+      École: "",
+      Classe: "",
+      "Déchets total (g)": 4200,
+      "Déchets maternelle (g)": "",
+      "Déchets primaire (g)": "",
     });
   });
 });
@@ -87,12 +88,12 @@ describe("buildServiceWasteSummaryRows", () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({
-      date: "2026-06-10",
+      Date: "2026-06-10",
+      Repas: "Déjeuner",
       "Déchets total (g)": 8500,
       "Déchets total (kg)": 8.5,
       "Déchets maternelle (g)": 2500,
       "Déchets primaire (g)": 6000,
-      repas: "Déjeuner",
     });
   });
 });

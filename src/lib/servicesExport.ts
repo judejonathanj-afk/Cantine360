@@ -27,12 +27,13 @@ function gramsOrEmpty(grams: number | null | undefined): string | number {
 
 function wasteColumns(service: ServiceExportSource) {
   return {
-    wasteWeightG: gramsOrEmpty(service.wasteWeightG),
-    wasteWeightMaternelleG: gramsOrEmpty(service.wasteWeightMaternelleG),
-    wasteWeightPrimaireG: gramsOrEmpty(service.wasteWeightPrimaireG),
+    "Déchets total (g)": gramsOrEmpty(service.wasteWeightG),
+    "Déchets maternelle (g)": gramsOrEmpty(service.wasteWeightMaternelleG),
+    "Déchets primaire (g)": gramsOrEmpty(service.wasteWeightPrimaireG),
   };
 }
 
+/** Une ligne = une classe / service, colonnes FR pour Excel. */
 export function buildServiceMetricExportRows(
   services: ServiceExportSource[],
 ): ServiceMetricExportRow[] {
@@ -40,18 +41,21 @@ export function buildServiceMetricExportRows(
 
   for (const service of services) {
     const waste = wasteColumns(service);
+    const base = {
+      Date: formatServiceDateKey(service.date),
+      Repas: mealTypeLabelFr(service.mealType),
+    };
 
     if (service.metrics.length === 0) {
       rows.push({
-        date: formatServiceDateKey(service.date),
-        mealType: service.mealType,
-        school: "",
-        group: "",
-        groupLabel: "",
-        presentCount: "",
-        servedCount: "",
-        rabCount: "",
-        refusedCount: "",
+        ...base,
+        École: "",
+        Classe: "",
+        "Libellé classe": "",
+        Présents: "",
+        Servis: "",
+        RAB: "",
+        Refus: "",
         ...waste,
       });
       continue;
@@ -59,15 +63,17 @@ export function buildServiceMetricExportRows(
 
     for (const metric of service.metrics) {
       rows.push({
-        date: formatServiceDateKey(service.date),
-        mealType: service.mealType,
-        school: metric.group.school.name,
-        group: metric.group.name,
-        groupLabel: formatGroupLabel(metric.group.school.name, metric.group.name),
-        presentCount: metric.presentCount,
-        servedCount: metric.servedCount,
-        rabCount: metric.rabCount,
-        refusedCount: metric.refusedCount,
+        ...base,
+        École: metric.group.school.name,
+        Classe: metric.group.name,
+        "Libellé classe": formatGroupLabel(
+          metric.group.school.name,
+          metric.group.name,
+        ),
+        Présents: metric.presentCount,
+        Servis: metric.servedCount,
+        RAB: metric.rabCount,
+        Refus: metric.refusedCount,
         ...waste,
       });
     }
@@ -83,9 +89,8 @@ export function buildServiceWasteSummaryRows(
   return services
     .filter((service) => service.wasteWeightG != null && service.wasteWeightG > 0)
     .map((service) => ({
-      date: formatServiceDateKey(service.date),
-      mealType: service.mealType,
-      repas: mealTypeLabelFr(service.mealType),
+      Date: formatServiceDateKey(service.date),
+      Repas: mealTypeLabelFr(service.mealType),
       "Déchets total (g)": service.wasteWeightG,
       "Déchets total (kg)": Math.round((service.wasteWeightG! / 1000) * 100) / 100,
       "Déchets maternelle (g)": gramsOrEmpty(service.wasteWeightMaternelleG) || null,

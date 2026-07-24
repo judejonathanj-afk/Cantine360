@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
-import Papa from "papaparse";
 import { z } from "zod";
-import { unparseCsvSemicolon } from "@/lib/csvExport";
+import { excelCsvResponse, unparseCsvSemicolon } from "@/lib/csvExport";
 import { resolveExportDateRange } from "@/lib/exportDateRange";
-import {
-  buildServiceMetricExportRows,
-  buildServiceWasteSummaryRows,
-} from "@/lib/servicesExport";
+import { buildServiceMetricExportRows } from "@/lib/servicesExport";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 
@@ -50,27 +46,10 @@ export async function GET(req: Request) {
     },
   });
 
-  const metricRows = buildServiceMetricExportRows(services);
-  const wasteSummaryRows = buildServiceWasteSummaryRows(services);
-
-  const sections = [unparseCsvSemicolon(metricRows)];
-
-  if (wasteSummaryRows.length > 0) {
-    sections.push("");
-    sections.push(
-      Papa.unparse(wasteSummaryRows, {
-        delimiter: ";",
-        quotes: true,
-        quoteChar: '"',
-      }),
-    );
-  }
-
-  const csv = "\uFEFF" + sections.join("\n");
-  return new Response(csv, {
-    headers: {
-      "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="cantine360-services-${range.fromStr}_to_${range.toStr}.csv"`,
-    },
-  });
+  // Un seul tableau Excel : métriques + déchets mat/prim/total.
+  const csv = unparseCsvSemicolon(buildServiceMetricExportRows(services));
+  return excelCsvResponse(
+    csv,
+    `cantine360-services-${range.fromStr}_to_${range.toStr}.csv`,
+  );
 }

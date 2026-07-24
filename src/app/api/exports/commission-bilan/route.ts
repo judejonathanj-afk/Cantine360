@@ -1,6 +1,6 @@
 import { z } from "zod";
-import Papa from "papaparse";
 import { NextResponse } from "next/server";
+import { excelCsvResponse, unparseCsvSemicolonBody } from "@/lib/csvExport";
 import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -239,33 +239,20 @@ export async function GET(req: Request) {
   }
 
   const sections: string[] = [];
-  sections.push(Papa.unparse(metaRows, { delimiter: ";", quotes: true }));
+  sections.push(unparseCsvSemicolonBody(metaRows));
   sections.push("");
-  sections.push(Papa.unparse(monthly, { delimiter: ";", quotes: true }));
-
+  sections.push(unparseCsvSemicolonBody(monthly));
   sections.push("");
-  sections.push(
-    Papa.unparse(ytdRows, {
-      delimiter: ";",
-      quotes: true,
-    }),
-  );
+  sections.push(unparseCsvSemicolonBody(ytdRows));
 
   if (pulseMeta.length) {
     sections.push("");
-    sections.push(
-      Papa.unparse(pulseMeta, {
-        delimiter: ";",
-        quotes: true,
-      }),
-    );
+    sections.push(unparseCsvSemicolonBody(pulseMeta));
   }
 
-  const csv = "\uFEFF" + sections.join("\n");
-  return new Response(csv, {
-    headers: {
-      "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="cantine360-bilan-commission-${establishment.slug}-${year}.csv"`,
-    },
-  });
+  const csv = `\uFEFFsep=;\r\n${sections.join("\r\n")}`;
+  return excelCsvResponse(
+    csv,
+    `cantine360-bilan-commission-${establishment.slug}-${year}.csv`,
+  );
 }

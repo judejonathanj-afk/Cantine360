@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { unparseCsvSemicolon } from "@/lib/csvExport";
+import { excelCsvResponse, unparseCsvSemicolon } from "@/lib/csvExport";
 import { resolveExportDateRange } from "@/lib/exportDateRange";
+import { mealTypeLabelFr } from "@/lib/mealType";
 import { formatServiceDateKey } from "@/lib/serviceDate";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -10,6 +11,13 @@ const QuerySchema = z.object({
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
+
+const CATEGORY_FR: Record<string, string> = {
+  STARTER: "Entrée",
+  MAIN: "Plat",
+  DESSERT: "Dessert",
+  OTHER: "Autre",
+};
 
 export async function GET(req: Request) {
   const session = await getServerSession();
@@ -43,20 +51,18 @@ export async function GET(req: Request) {
 
   const rows = services.flatMap((s) =>
     (s.menu?.items ?? []).map((i) => ({
-      date: formatServiceDateKey(s.date),
-      mealType: s.mealType,
-      category: i.category,
-      label: i.label,
-      allergens: i.allergens.join(", "),
-      grammageG: i.grammageG ?? "",
+      Date: formatServiceDateKey(s.date),
+      Repas: mealTypeLabelFr(s.mealType),
+      Catégorie: CATEGORY_FR[i.category] ?? i.category,
+      Plat: i.label,
+      Allergènes: i.allergens.join(", "),
+      "Grammage (g)": i.grammageG ?? "",
     })),
   );
 
   const csv = unparseCsvSemicolon(rows);
-  return new Response(csv, {
-    headers: {
-      "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="cantine360-menus-${range.fromStr}_to_${range.toStr}.csv"`,
-    },
-  });
+  return excelCsvResponse(
+    csv,
+    `cantine360-menus-${range.fromStr}_to_${range.toStr}.csv`,
+  );
 }

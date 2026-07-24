@@ -2,18 +2,23 @@ import { describe, expect, it } from "vitest";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
 
 describe("unparseCsvSemicolon", () => {
-  it("entoure les champs de guillemets", () => {
+  it("produit un CSV Excel FR (BOM, sep=;, point-virgule, guillemets)", () => {
     const csv = unparseCsvSemicolon([
       {
-        date: "2026-06-18",
-        label: "lasagnes",
-        allergens: "Lait, Céréales contenant du gluten",
-        grammageG: 120,
+        Date: "2026-06-18",
+        Plat: "lasagnes",
+        Allergènes: "Lait, Céréales contenant du gluten",
+        "Grammage (g)": 120,
       },
     ]);
+    expect(csv.startsWith("\uFEFF")).toBe(true);
+    expect(csv).toContain("sep=;");
     expect(csv).toContain('"Lait, Céréales contenant du gluten"');
     expect(csv).toContain('"120"');
-    const lines = csv.trim().split("\n");
-    expect(lines[0].split(";").length).toBe(lines[1].split(";").length);
+    expect(csv).toContain("\r\n");
+    const lines = csv.replace(/^\uFEFF/, "").trim().split("\r\n");
+    // sep=; puis en-tête puis données
+    expect(lines[0]).toBe("sep=;");
+    expect(lines[1].split(";").length).toBe(lines[2].split(";").length);
   });
 });
