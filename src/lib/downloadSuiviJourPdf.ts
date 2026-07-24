@@ -26,7 +26,6 @@ export function downloadSuiviJourPdf(
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const levelLabel =
     opts.levelFilter === "all" ? "Tous niveaux" : schoolLevelLabelFr(opts.levelFilter);
-  const detailsTitle = opts.isKitchen ? "Aperçu du jour" : "Détails par service";
   const today = new Date().toLocaleDateString("fr-FR");
 
   doc.setFontSize(14);
@@ -36,6 +35,12 @@ export function downloadSuiviJourPdf(
     `${levelLabel} · ${opts.days} derniers jours · exporté le ${today}`,
     14,
     20,
+  );
+  doc.setFontSize(11);
+  doc.text(
+    opts.isKitchen ? "Aperçu du jour" : "Détails par service",
+    14,
+    26,
   );
 
   const detailsHead = [
@@ -78,7 +83,7 @@ export function downloadSuiviJourPdf(
   ]);
 
   autoTable(doc, {
-    startY: 26,
+    startY: 30,
     head: detailsHead,
     body: detailsBody,
     styles: { fontSize: 7, cellPadding: 1.2 },
