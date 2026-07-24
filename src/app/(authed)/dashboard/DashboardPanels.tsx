@@ -483,24 +483,18 @@ export default function DashboardPanels({
           style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
         >
           <CardContent className="flex flex-1 flex-col p-6">
-            <SectionHeading
-              title={
+            <h2 className="text-lg font-semibold text-foreground">
+              {isKitchen ? "Aperçu du jour" : "Détails par service"}
+              {levelFilter !== "all" ? (
                 <>
-                  {isKitchen ? "Aperçu du jour" : "Détails par service"}
-                  {levelFilter !== "all" ? (
-                    <>
-                      {" "}
-                      —{" "}
-                      <span className="text-emerald-700">
-                        {schoolLevelLabelFr(levelFilter)}
-                      </span>
-                    </>
-                  ) : null}
+                  {" "}
+                  —{" "}
+                  <span className="text-emerald-700">
+                    {schoolLevelLabelFr(levelFilter)}
+                  </span>
                 </>
-              }
-              lineClassName="bg-sky-500"
-              titleClassName="text-lg sm:text-xl"
-            />
+              ) : null}
+            </h2>
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
@@ -587,24 +581,18 @@ export default function DashboardPanels({
           style={{ backgroundColor: GROUP_CARD_COLORS[0] }}
         >
           <CardContent className="flex flex-1 flex-col p-6">
-            <SectionHeading
-              title={
+            <h2 className="text-lg font-semibold text-foreground">
+              Contexte du service
+              {levelFilter !== "all" ? (
                 <>
-                  Contexte du service
-                  {levelFilter !== "all" ? (
-                    <>
-                      {" "}
-                      —{" "}
-                      <span className="text-emerald-700">
-                        {schoolLevelLabelFr(levelFilter)}
-                      </span>
-                    </>
-                  ) : null}
+                  {" "}
+                  —{" "}
+                  <span className="text-emerald-700">
+                    {schoolLevelLabelFr(levelFilter)}
+                  </span>
                 </>
-              }
-              lineClassName="bg-sky-500"
-              titleClassName="text-lg sm:text-xl"
-            />
+              ) : null}
+            </h2>
             {perDayRows.length === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
             ) : (
