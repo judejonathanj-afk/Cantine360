@@ -349,6 +349,7 @@ export default function DashboardPanels({
             mealType="LUNCH"
             days={days}
             showBrandTitle={false}
+            levelFilter={levelFilter}
             eco={
               eco
                 ? {

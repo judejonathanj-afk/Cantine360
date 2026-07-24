@@ -16,6 +16,7 @@ import {
   ratioRestesServisPct,
 } from "@/lib/commissionBilan";
 import { cn } from "@/lib/utils";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
 import { Card, CardContent } from "@/components/ui/card";
@@ -383,6 +384,7 @@ export function CantinePulseCard({
   days = 7,
   eco = null,
   showBrandTitle = true,
+  levelFilter = "all",
 }: {
   rows: CantineServiceRow[];
   wasteRows?: CantineWasteDayRow[];
@@ -391,10 +393,13 @@ export function CantinePulseCard({
   eco?: CantinePulseEco | null;
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
+  levelFilter?: "all" | SchoolLevel;
 }) {
   const [ecoPanelOpen, setEcoPanelOpen] = useState(false);
   const periodLabel = days === 30 ? "30 jours" : "7 jours";
   const priorLabel = days === 30 ? "les 30 jours d’avant" : "la semaine d’avant";
+  const levelLabel =
+    levelFilter === "all" ? null : schoolLevelLabelFr(levelFilter);
 
   const pulse = useMemo(
     () => computeCantinePulse(rows, mealType, { windowDays: days, wasteRows }),
@@ -446,11 +451,23 @@ export function CantinePulseCard({
               RAB <span className="text-white/90">(assiettes adaptées ou resservies)</span> et
               déchets (poids) — {periodLabel}
             </p>
+            {levelLabel ? (
+              <p className="mt-1 text-sm font-semibold text-emerald-300 sm:text-base">
+                {levelLabel}
+              </p>
+            ) : null}
           </div>
         ) : (
-          <p className="text-center text-sm text-white/75 sm:text-base">
-            Score & lecture globale — RAB et déchets (poids) — {periodLabel}
-          </p>
+          <div className="text-center">
+            <p className="text-sm text-white/75 sm:text-base">
+              Score & lecture globale — RAB et déchets (poids) — {periodLabel}
+            </p>
+            {levelLabel ? (
+              <p className="mt-1 text-sm font-semibold text-emerald-300 sm:text-base">
+                {levelLabel}
+              </p>
+            ) : null}
+          </div>
         )}
 
         <div className="flex flex-wrap items-center gap-4">
