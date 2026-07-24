@@ -419,140 +419,187 @@ export default function DashboardPanels({
         </CantinePlusSection>
       )}
 
-      <Card
-        className="flex h-full flex-col border-border/50 backdrop-blur-sm"
-        style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
-      >
-        <CardContent className="flex flex-1 flex-col p-6">
-          <h2 className="text-lg font-semibold text-foreground">
-            {isKitchen ? "Aperçu du jour" : "Détails par service"}
-            {levelFilter !== "all" ? (
-              <>
-                {" "}
-                —{" "}
-                <span className="text-emerald-700">
-                  {schoolLevelLabelFr(levelFilter)}
-                </span>
-              </>
-            ) : null}
-          </h2>
-          {perDayRows.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
-          ) : (
-            <div className="mt-4 min-h-[26rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-[28rem] lg:min-h-[32rem]">
-              <table className="min-w-[68rem] text-sm">
-                <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
-                  <tr>
-                    <th className="py-2 pr-3">Date</th>
-                    <th className="py-2 pr-3">Présents</th>
-                    <th className="py-2 pr-3">Servis</th>
-                    <th className="py-2 pr-3">RAB</th>
-                    <th className="py-2 pr-3">RAB %</th>
-                    <th className="py-2 pr-3">Refus</th>
-                    <th className="py-2 pr-3">Refus %</th>
-                    {levelFilter === "all" ? (
-                      <>
-                        <th className="py-2 pr-3">Déchets mat. (g)</th>
-                        <th className="py-2 pr-3">Déchets prim. (g)</th>
-                      </>
-                    ) : null}
-                    <th className="py-2 pr-3">
-                      Déchets{levelFilter === "all" ? " total" : ""} (g)
-                    </th>
-                    <th className="py-2 pr-3">g / 100</th>
-                    <th className="py-2 pr-3">Pesée</th>
-                    <th className="py-2 pr-3">Écoles</th>
-                    <th className="py-2 pr-3">Classes</th>
-                    <th className="py-2 pr-3">Menu</th>
-                    <th className="py-2 pr-3">Élèves concernés</th>
-                    <th className="py-2 pr-3">Δ servis</th>
-                    <th className="py-2">Δ déchets</th>
-                  </tr>
-                </thead>
-                <tbody className="text-foreground">
-                  {perDayRows.map((row) => (
-                    <tr key={row.date} className="border-t border-border/60 align-top">
-                      <td className="py-2 pr-3 font-medium whitespace-nowrap">
-                        {row.date}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.present.toLocaleString("fr-FR")}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.served.toLocaleString("fr-FR")}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.rab.toLocaleString("fr-FR")}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.rabRatePct != null
-                          ? `${row.rabRatePct.toLocaleString("fr-FR")} %`
-                          : "—"}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.refused.toLocaleString("fr-FR")}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.refusalRatePct != null
-                          ? `${row.refusalRatePct.toLocaleString("fr-FR")} %`
-                          : "—"}
-                      </td>
+      <div className="grid items-stretch gap-4 lg:grid-cols-2">
+        <Card
+          className="flex h-full flex-col border-border/50 backdrop-blur-sm"
+          style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
+        >
+          <CardContent className="flex flex-1 flex-col p-6">
+            <h2 className="text-lg font-semibold text-foreground">
+              {isKitchen ? "Aperçu du jour" : "Détails par service"}
+              {levelFilter !== "all" ? (
+                <>
+                  {" "}
+                  —{" "}
+                  <span className="text-emerald-700">
+                    {schoolLevelLabelFr(levelFilter)}
+                  </span>
+                </>
+              ) : null}
+            </h2>
+            {perDayRows.length === 0 ? (
+              <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
+            ) : (
+              <div className="mt-4 min-h-[26rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-[28rem] lg:min-h-[32rem]">
+                <table className="min-w-full text-sm">
+                  <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                    <tr>
+                      <th className="py-2 pr-3">Date</th>
+                      <th className="py-2 pr-3">Présents</th>
+                      <th className="py-2 pr-3">Servis</th>
+                      <th className="py-2 pr-3">RAB</th>
+                      <th className="py-2 pr-3">RAB %</th>
+                      <th className="py-2 pr-3">Refus</th>
+                      <th className="py-2 pr-3">Refus %</th>
                       {levelFilter === "all" ? (
                         <>
-                          <td className="py-2 pr-3">
-                            {row.wasteWeightMaternelleG > 0
-                              ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
-                              : "—"}
-                          </td>
-                          <td className="py-2 pr-3">
-                            {row.wasteWeightPrimaireG > 0
-                              ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
-                              : "—"}
-                          </td>
+                          <th className="py-2 pr-3">Déchets mat. (g)</th>
+                          <th className="py-2 pr-3">Déchets prim. (g)</th>
                         </>
                       ) : null}
-                      <td className="py-2 pr-3">
-                        {row.wasteWeightG > 0
-                          ? row.wasteWeightG.toLocaleString("fr-FR")
-                          : "—"}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.wasteGramsPer100 != null
-                          ? row.wasteGramsPer100.toLocaleString("fr-FR", {
-                              maximumFractionDigits: 1,
-                            })
-                          : "—"}
-                      </td>
-                      <td className="py-2 pr-3 whitespace-nowrap">{row.weighLabel}</td>
-                      <td className="max-w-[10rem] py-2 pr-3 text-xs leading-snug">
-                        {row.schools}
-                      </td>
-                      <td className="py-2 pr-3">{row.classCount}</td>
-                      <td
-                        className="max-w-[14rem] py-2 pr-3 text-xs leading-snug"
-                        title={row.menuSummary}
-                      >
-                        {row.menuSummary}
-                      </td>
-                      <td className="py-2 pr-3">
-                        {row.concernedStudents > 0
-                          ? row.concernedStudents.toLocaleString("fr-FR")
-                          : "—"}
-                      </td>
-                      <td className="py-2 pr-3 tabular-nums">
-                        {formatDelta(row.servedDelta)}
-                      </td>
-                      <td className="py-2 tabular-nums">
-                        {formatDelta(row.wasteDelta)}
-                      </td>
+                      <th className="py-2">
+                        Déchets{levelFilter === "all" ? " total" : ""} (g)
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  </thead>
+                  <tbody className="text-foreground">
+                    {perDayRows.map((row) => (
+                      <tr key={row.date} className="border-t border-border/60">
+                        <td className="py-2 pr-3 font-medium whitespace-nowrap">
+                          {row.date}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.present.toLocaleString("fr-FR")}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.served.toLocaleString("fr-FR")}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.rab.toLocaleString("fr-FR")}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.rabRatePct != null
+                            ? `${row.rabRatePct.toLocaleString("fr-FR")} %`
+                            : "—"}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.refused.toLocaleString("fr-FR")}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.refusalRatePct != null
+                            ? `${row.refusalRatePct.toLocaleString("fr-FR")} %`
+                            : "—"}
+                        </td>
+                        {levelFilter === "all" ? (
+                          <>
+                            <td className="py-2 pr-3">
+                              {row.wasteWeightMaternelleG > 0
+                                ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
+                                : "—"}
+                            </td>
+                            <td className="py-2 pr-3">
+                              {row.wasteWeightPrimaireG > 0
+                                ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
+                                : "—"}
+                            </td>
+                          </>
+                        ) : null}
+                        <td className="py-2">
+                          {row.wasteWeightG > 0
+                            ? row.wasteWeightG.toLocaleString("fr-FR")
+                            : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          className="flex h-full flex-col border-border/50 backdrop-blur-sm"
+          style={{ backgroundColor: GROUP_CARD_COLORS[0] }}
+        >
+          <CardContent className="flex flex-1 flex-col p-6">
+            <h2 className="text-lg font-semibold text-foreground">
+              Contexte du service
+              {levelFilter !== "all" ? (
+                <>
+                  {" "}
+                  —{" "}
+                  <span className="text-emerald-700">
+                    {schoolLevelLabelFr(levelFilter)}
+                  </span>
+                </>
+              ) : null}
+            </h2>
+            {perDayRows.length === 0 ? (
+              <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
+            ) : (
+              <div className="mt-4 min-h-[26rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-[28rem] lg:min-h-[32rem]">
+                <table className="min-w-full text-sm">
+                  <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                    <tr>
+                      <th className="py-2 pr-3">Date</th>
+                      <th className="py-2 pr-3">g / 100</th>
+                      <th className="py-2 pr-3">Pesée</th>
+                      <th className="py-2 pr-3">Écoles</th>
+                      <th className="py-2 pr-3">Classes</th>
+                      <th className="py-2 pr-3">Menu</th>
+                      <th className="py-2 pr-3">Élèves concernés</th>
+                      <th className="py-2 pr-3">Δ servis</th>
+                      <th className="py-2">Δ déchets</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-foreground">
+                    {perDayRows.map((row) => (
+                      <tr
+                        key={`ctx-${row.date}`}
+                        className="border-t border-border/60 align-top"
+                      >
+                        <td className="py-2 pr-3 font-medium whitespace-nowrap">
+                          {row.date}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.wasteGramsPer100 != null
+                            ? row.wasteGramsPer100.toLocaleString("fr-FR", {
+                                maximumFractionDigits: 1,
+                              })
+                            : "—"}
+                        </td>
+                        <td className="py-2 pr-3 whitespace-nowrap">{row.weighLabel}</td>
+                        <td className="max-w-[10rem] py-2 pr-3 text-xs leading-snug">
+                          {row.schools}
+                        </td>
+                        <td className="py-2 pr-3">{row.classCount}</td>
+                        <td
+                          className="max-w-[14rem] py-2 pr-3 text-xs leading-snug"
+                          title={row.menuSummary}
+                        >
+                          {row.menuSummary}
+                        </td>
+                        <td className="py-2 pr-3">
+                          {row.concernedStudents > 0
+                            ? row.concernedStudents.toLocaleString("fr-FR")
+                            : "—"}
+                        </td>
+                        <td className="py-2 pr-3 tabular-nums">
+                          {formatDelta(row.servedDelta)}
+                        </td>
+                        <td className="py-2 tabular-nums">
+                          {formatDelta(row.wasteDelta)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
