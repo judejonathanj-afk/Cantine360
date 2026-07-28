@@ -6,6 +6,10 @@ import {
   flushMetricsQueue,
   queuedMetricsCount,
 } from "@/lib/offlineMetricsQueue";
+import {
+  flushWasteQueue,
+  queuedWasteCount,
+} from "@/lib/offlineWasteQueue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useRouter } from "next/navigation";
 
@@ -16,23 +20,30 @@ export function OfflineSyncBanner() {
   const [syncing, setSyncing] = useState(false);
 
   const refreshPending = useCallback(() => {
-    setPending(queuedMetricsCount());
+    setPending(queuedMetricsCount() + queuedWasteCount());
   }, []);
 
   useEffect(() => {
     refreshPending();
     const onStorage = (e: StorageEvent) => {
-      if (e.key === "c360_metrics_queue") refreshPending();
+      if (e.key === "c360_metrics_queue" || e.key === "c360_waste_queue") {
+        refreshPending();
+      }
     };
+    const onLocalQueue = () => refreshPending();
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener("c360-offline-queue", onLocalQueue);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("c360-offline-queue", onLocalQueue);
+    };
   }, [refreshPending]);
 
   const sync = useCallback(async () => {
     if (!online || syncing) return;
     setSyncing(true);
     try {
-      await flushMetricsQueue();
+      await Promise.all([flushMetricsQueue(), flushWasteQueue()]);
       refreshPending();
       router.refresh();
     } finally {
@@ -42,7 +53,7 @@ export function OfflineSyncBanner() {
 
   useEffect(() => {
     if (!online) return;
-    if (queuedMetricsCount() === 0) return;
+    if (queuedMetricsCount() + queuedWasteCount() === 0) return;
     void sync();
     // Resync when connectivity returns.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,8 +76,8 @@ export function OfflineSyncBanner() {
           <CloudOff className="h-4 w-4 shrink-0" aria-hidden />
           {!online ? (
             <span>
-              <strong className="font-semibold">Hors ligne</strong> — les compteurs sont
-              enregistrés sur cet appareil et seront synchronisés au retour du réseau.
+              <strong className="font-semibold">Hors ligne</strong> — compteurs et
+              déchets sont gardés sur cet appareil et synchronisés au retour du réseau.
             </span>
           ) : (
             <span>
@@ -82,7 +93,9 @@ export function OfflineSyncBanner() {
             disabled={syncing}
             className="inline-flex items-center gap-1.5 rounded-lg bg-amber-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-950 disabled:opacity-60"
           >
-            <RefreshCw className={["h-3.5 w-3.5", syncing ? "animate-spin" : ""].join(" ")} />
+            <RefreshCw
+              className={["h-3.5 w-3.5", syncing ? "animate-spin" : ""].join(" ")}
+            />
             {syncing ? "Sync…" : "Synchroniser"}
           </button>
         ) : null}

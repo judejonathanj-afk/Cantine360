@@ -8,6 +8,11 @@ import { Label } from "@/components/ui/label";
 import { formatKgFromGrams } from "@/lib/serviceGrammage";
 import { totalWasteFromLevels } from "@/lib/serviceWasteByLevel";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
+import {
+  enqueueWasteSave,
+  getQueuedWaste,
+  removeQueuedWaste,
+} from "@/lib/offlineWasteQueue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { cn } from "@/lib/utils";
 
@@ -86,7 +91,7 @@ export function ServiceWasteWeightPanel({
   const dirty =
     parsedMat !== saved.MATERNELLE || parsedPrim !== saved.PRIMAIRE;
   const canSave =
-    dirty && !invalidMat && !invalidPrim && online && status !== "saving";
+    dirty && !invalidMat && !invalidPrim && status !== "saving";
 
   const totalSaved =
     totalWasteFromLevels(saved.MATERNELLE, saved.PRIMAIRE) ??
@@ -97,6 +102,19 @@ export function ServiceWasteWeightPanel({
       : 0);
 
   useEffect(() => {
+    const queued = getQueuedWaste(serviceId);
+    if (queued) {
+      const next = {
+        MATERNELLE: queued.waste.wasteWeightMaternelleG,
+        PRIMAIRE: queued.waste.wasteWeightPrimaireG,
+      };
+      setSaved(next);
+      setMatInput(gramsToInput(next.MATERNELLE));
+      setPrimInput(gramsToInput(next.PRIMAIRE));
+      setStatus("offline");
+      setSavedAck(false);
+      return;
+    }
     const next = initialLevels();
     setSaved(next);
     setMatInput(gramsToInput(next.MATERNELLE));
@@ -116,13 +134,22 @@ export function ServiceWasteWeightPanel({
   }, [dirty]);
 
   const save = useCallback(async () => {
-    if (!online) {
-      setStatus("offline");
-      return false;
-    }
     if (invalidMat || invalidPrim) {
       setStatus("error");
       return false;
+    }
+
+    const payload = {
+      wasteWeightMaternelleG: parsedMat,
+      wasteWeightPrimaireG: parsedPrim,
+    };
+
+    if (!online) {
+      enqueueWasteSave(serviceId, payload);
+      setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
+      setStatus("offline");
+      setSavedAck(true);
+      return true;
     }
 
     setStatus("saving");
@@ -130,13 +157,13 @@ export function ServiceWasteWeightPanel({
       const res = await fetch(`/api/services/${serviceId}`, {
         method: "PATCH",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          wasteWeightMaternelleG: parsedMat,
-          wasteWeightPrimaireG: parsedPrim,
-        }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        setStatus("error");
+        enqueueWasteSave(serviceId, payload);
+        setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
+        setStatus("offline");
+        setSavedAck(true);
         return false;
       }
       const data = (await res.json()) as {
@@ -150,6 +177,7 @@ export function ServiceWasteWeightPanel({
         MATERNELLE: data.service.wasteWeightMaternelleG,
         PRIMAIRE: data.service.wasteWeightPrimaireG,
       };
+      removeQueuedWaste(serviceId);
       setSaved(next);
       setMatInput(gramsToInput(next.MATERNELLE));
       setPrimInput(gramsToInput(next.PRIMAIRE));
@@ -158,7 +186,10 @@ export function ServiceWasteWeightPanel({
       window.setTimeout(() => setStatus("idle"), 800);
       return true;
     } catch {
+      enqueueWasteSave(serviceId, payload);
+      setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
       setStatus("offline");
+      setSavedAck(true);
       return false;
     }
   }, [online, serviceId, invalidMat, invalidPrim, parsedMat, parsedPrim]);
@@ -170,7 +201,7 @@ export function ServiceWasteWeightPanel({
   ) : status === "offline" ? (
     <>
       <CloudOff className="h-3.5 w-3.5" aria-hidden />
-      Hors ligne — réessayez quand la connexion revient
+      Hors ligne — saisie gardée sur cet appareil, sync au retour du réseau
     </>
   ) : status === "error" ? (
     "Erreur à l’enregistrement — réessayez"
