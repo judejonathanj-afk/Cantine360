@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Camera, UserRound } from "lucide-react";
+import { Camera, ChefHat } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +77,7 @@ export function DashboardProfileAvatar({
         <Avatar className="size-12 border-2 border-emerald-600/80 bg-emerald-50 shadow-sm sm:size-14">
           {src ? <AvatarImage src={src} alt="" /> : null}
           <AvatarFallback className="bg-emerald-50 text-emerald-800">
-            <UserRound className="size-6 sm:size-7" aria-hidden />
+            <ChefHat className="size-6 sm:size-7" aria-hidden />
           </AvatarFallback>
         </Avatar>
         <span
