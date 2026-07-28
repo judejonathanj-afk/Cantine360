@@ -208,52 +208,54 @@ export default function DashboardPanels({
 
   return (
     <div className="space-y-8">
-      <div>
-        <div className="flex items-center gap-3 sm:gap-4">
-          {isKitchen ? (
-            <DashboardProfileAvatar establishmentId={establishmentId} />
-          ) : null}
-          <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            {isKitchen
-              ? "Tableau de bord cuisine"
-              : "Bienvenue sur votre tableau de bord"}
-            {schoolNames.length === 1 ? (
-              <>
-                <span aria-hidden> — </span>
-                <span className="text-emerald-700">{schoolNames[0]}</span>
-              </>
+      <div className="space-y-3 rounded-2xl border border-yellow-100 bg-yellow-50 px-4 py-5 sm:px-6 sm:py-6">
+        <div>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {isKitchen ? (
+              <DashboardProfileAvatar establishmentId={establishmentId} />
             ) : null}
-          </h1>
-        </div>
-        {schoolNames.length > 1 ? (
-          <p className="mt-1 text-sm text-zinc-700 sm:text-base">
-            <span className="font-medium text-zinc-600">Écoles suivies : </span>
-            {schoolNames.map((name, index) => (
-              <span key={name}>
-                {index > 0 ? (
-                  <span aria-hidden className="text-zinc-400">
-                    {" "}
-                    ·{" "}
-                  </span>
-                ) : null}
-                <span className="font-semibold text-emerald-700">{name}</span>
-              </span>
-            ))}
+            <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              {isKitchen
+                ? "Tableau de bord cuisine"
+                : "Bienvenue sur votre tableau de bord"}
+              {schoolNames.length === 1 ? (
+                <>
+                  <span aria-hidden> — </span>
+                  <span className="text-emerald-700">{schoolNames[0]}</span>
+                </>
+              ) : null}
+            </h1>
+          </div>
+          {schoolNames.length > 1 ? (
+            <p className="mt-1 text-sm text-zinc-700 sm:text-base">
+              <span className="font-medium text-zinc-600">Écoles suivies : </span>
+              {schoolNames.map((name, index) => (
+                <span key={name}>
+                  {index > 0 ? (
+                    <span aria-hidden className="text-zinc-400">
+                      {" "}
+                      ·{" "}
+                    </span>
+                  ) : null}
+                  <span className="font-semibold text-emerald-700">{name}</span>
+                </span>
+              ))}
+            </p>
+          ) : null}
+          <p className="mt-1 text-muted-foreground">
+            Indicateurs sur les {days} derniers jours
+            {levelFilter !== "all"
+              ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
+              : ""}
           </p>
-        ) : null}
-        <p className="mt-1 text-muted-foreground">
-          Indicateurs sur les {days} derniers jours
-          {levelFilter !== "all"
-            ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
-            : ""}
+        </div>
+
+        <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
+          {isKitchen
+            ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
+            : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
         </p>
       </div>
-
-      <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
-        {isKitchen
-          ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
-          : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
-      </p>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2">
