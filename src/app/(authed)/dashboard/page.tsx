@@ -610,6 +610,7 @@ export default async function DashboardPage({
       days={days === 30 ? 30 : 7}
       schoolNames={schoolNames}
       role={session.role}
+      establishmentId={session.establishmentId}
       exportYear={now.getFullYear()}
       levelFilter={levelFilter}
       pulseRows={pulseRows}

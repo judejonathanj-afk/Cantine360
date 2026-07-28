@@ -16,6 +16,7 @@ import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
+import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -78,6 +79,7 @@ export default function DashboardPanels({
   days,
   schoolNames,
   role,
+  establishmentId,
   exportYear,
   levelFilter,
   pulseRows,
@@ -100,6 +102,7 @@ export default function DashboardPanels({
   days: 7 | 30;
   schoolNames: string[];
   role: "ADMIN" | "KITCHEN";
+  establishmentId: string;
   exportYear: number;
   levelFilter: "all" | SchoolLevel;
   pulseRows: CantineServiceRow[];
@@ -206,15 +209,22 @@ export default function DashboardPanels({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          {isKitchen ? "Tableau de bord cuisine" : "Bienvenue sur votre tableau de bord"}
-          {schoolNames.length === 1 ? (
-            <>
-              <span aria-hidden> — </span>
-              <span className="text-emerald-700">{schoolNames[0]}</span>
-            </>
+        <div className="flex items-center gap-3 sm:gap-4">
+          {isKitchen ? (
+            <DashboardProfileAvatar establishmentId={establishmentId} />
           ) : null}
-        </h1>
+          <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            {isKitchen
+              ? "Tableau de bord cuisine"
+              : "Bienvenue sur votre tableau de bord"}
+            {schoolNames.length === 1 ? (
+              <>
+                <span aria-hidden> — </span>
+                <span className="text-emerald-700">{schoolNames[0]}</span>
+              </>
+            ) : null}
+          </h1>
+        </div>
         {schoolNames.length > 1 ? (
           <p className="mt-1 text-sm text-zinc-700 sm:text-base">
             <span className="font-medium text-zinc-600">Écoles suivies : </span>
