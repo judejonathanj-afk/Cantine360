@@ -138,9 +138,17 @@ export async function POST(req: Request) {
 
     const defaultHome = role === "ADMIN" ? "/dashboard" : "/service";
     const requestedNext = parsed.data.next;
+    const nextLooksSafe =
+      typeof requestedNext === "string" &&
+      requestedNext.startsWith("/") &&
+      !requestedNext.startsWith("//");
+    // Admin : ne pas rouvrir un service via ?next=/service/[id]…
+    const nextOpensService =
+      typeof requestedNext === "string" &&
+      /^\/service\/[^/]+/.test(requestedNext);
     const redirectTo =
-      requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
-        ? requestedNext
+      nextLooksSafe && !(role === "ADMIN" && nextOpensService)
+        ? requestedNext!
         : defaultHome;
 
     const res = NextResponse.json({ redirectTo });

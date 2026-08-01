@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { normalizeEstablishmentSlug } from "@/lib/establishmentSlug";
+import { rememberActiveServiceId } from "@/lib/activeService";
 
 function LoginDecorPanel({
   src,
@@ -83,6 +84,8 @@ export function LoginClient() {
         return;
       }
       const data = (await res.json()) as { redirectTo: string };
+      // Nouvelle session = service fermé (pas de Menu & allergènes résiduel).
+      rememberActiveServiceId(null);
       window.location.assign(data.redirectTo);
     } catch {
       setError("Réseau indisponible. Réessayez dans un instant.");

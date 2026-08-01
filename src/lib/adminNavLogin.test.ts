@@ -6,9 +6,17 @@ function loginRedirectTo(
   requestedNext?: string,
 ): string {
   const defaultHome = role === "ADMIN" ? "/dashboard" : "/service";
-  return requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
-    ? requestedNext
-    : defaultHome;
+  const nextLooksSafe =
+    typeof requestedNext === "string" &&
+    requestedNext.startsWith("/") &&
+    !requestedNext.startsWith("//");
+  const nextOpensService =
+    typeof requestedNext === "string" &&
+    /^\/service\/[^/]+/.test(requestedNext);
+  if (nextLooksSafe && !(role === "ADMIN" && nextOpensService)) {
+    return requestedNext!;
+  }
+  return defaultHome;
 }
 
 /** Miroir de l’ordre de nav admin (AppShell). */
@@ -34,9 +42,20 @@ describe("admin login redirect", () => {
     expect(loginRedirectTo("KITCHEN")).toBe("/service");
   });
 
-  it("respecte un next explicite (deep link)", () => {
+  it("respecte un next explicite (deep link admin hors service ouvert)", () => {
     expect(loginRedirectTo("ADMIN", "/admin/students")).toBe("/admin/students");
     expect(loginRedirectTo("ADMIN", "/service")).toBe("/service");
+  });
+
+  it("n’ouvre pas un service déjà démarré pour l’admin via next", () => {
+    expect(loginRedirectTo("ADMIN", "/service/abc123")).toBe("/dashboard");
+    expect(loginRedirectTo("ADMIN", "/service/abc123/menu")).toBe("/dashboard");
+  });
+
+  it("laisse la cuisine reprendre un service via next", () => {
+    expect(loginRedirectTo("KITCHEN", "/service/abc123/menu")).toBe(
+      "/service/abc123/menu",
+    );
   });
 
   it("ignore un next open-redirect", () => {

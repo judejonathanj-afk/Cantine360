@@ -118,6 +118,8 @@ export function AppShell({
   async function logout() {
     setBusy(true);
     try {
+      rememberActiveServiceId(null);
+      setRememberedServiceId(null);
       await fetch("/api/auth/logout", { method: "POST" });
       window.location.assign("/login");
     } finally {
@@ -139,15 +141,25 @@ export function AppShell({
       setRememberedServiceId(null);
       return;
     }
-    // Ex. /dashboard : le layout RSC peut recharger sans id — reprendre la session onglet.
+    // Admin : hors d’une URL /service/[id], le service n’est pas considéré ouvert
+    // (évite Menu & allergènes après connexion / sur le dashboard).
+    if (role === "ADMIN") {
+      rememberActiveServiceId(null);
+      setRememberedServiceId(null);
+      return;
+    }
+    // Cuisine : garder le service ouvert dans l’onglet si on va sur le dashboard.
     const fromStorage = readRememberedServiceId() ?? initialServiceId;
     if (fromStorage) rememberActiveServiceId(fromStorage);
     setRememberedServiceId(fromStorage);
-  }, [pathnameServiceId, isServiceHome, initialServiceId]);
+  }, [pathnameServiceId, isServiceHome, initialServiceId, role]);
 
   // Sur /service (accueil), ne pas réutiliser un id après « Fin de service ».
+  // Admin : uniquement l’URL courante ouvre Menu & allergènes.
   const serviceId =
-    pathnameServiceId ?? (isServiceHome ? null : rememberedServiceId) ?? null;
+    pathnameServiceId ??
+    (role === "ADMIN" || isServiceHome ? null : rememberedServiceId) ??
+    null;
   const showEndServiceButton = pathnameServiceId != null;
 
   const serviceNavItems: NavItem[] = serviceId

@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { rememberActiveServiceId } from "@/lib/activeService";
 
 type Props = {
   className?: string;
@@ -55,6 +56,7 @@ export function EndServiceButton({ className, compact = false }: Props) {
             <AlertDialogAction
               onClick={() => {
                 setOpen(false);
+                rememberActiveServiceId(null);
                 router.push("/service");
               }}
             >

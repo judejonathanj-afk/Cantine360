@@ -7,7 +7,7 @@ export function isServiceSessionPathname(pathname: string): boolean {
   return activeServiceIdFromPathname(pathname) != null;
 }
 
-/** Conservé pendant l’onglet pour que Menu & Service restent après un refresh RSC hors `/service/[id]`. */
+/** Conservé pendant l’onglet (cuisine) pour Menu & Service après un passage dashboard. */
 export const ACTIVE_SERVICE_STORAGE_KEY = "cantine360.activeServiceId";
 
 export function readRememberedServiceId(): string | null {
