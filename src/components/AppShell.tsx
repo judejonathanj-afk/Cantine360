@@ -13,6 +13,7 @@ import {
   Users,
   ClipboardList,
   GraduationCap,
+  Recycle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
   initialServiceId?: string | null;
+  antiWasteModeEnabled?: boolean;
   children: React.ReactNode;
 };
 
@@ -107,6 +109,7 @@ export function AppShell({
   role,
   establishmentLabel,
   initialServiceId = null,
+  antiWasteModeEnabled = false,
   children,
 }: Props) {
   const pathname = usePathname();
@@ -179,6 +182,14 @@ export function AppShell({
       ]
     : [NAV[0]];
 
+  const antiWasteNav: NavItem | null = antiWasteModeEnabled
+    ? {
+        href: "/antigaspillage",
+        label: "Antigaspillage",
+        icon: Recycle,
+      }
+    : null;
+
   const navItems: NavItem[] =
     role === "ADMIN"
       ? [
@@ -190,11 +201,16 @@ export function AppShell({
             icon: GraduationCap,
           },
           ...serviceNavItems,
+          ...(antiWasteNav ? [antiWasteNav] : []),
           { href: "/exports", label: "Exports", icon: FileDown },
         ]
       : serviceId
-        ? [...serviceNavItems, NAV[1]]
-        : serviceNavItems;
+        ? [
+            ...serviceNavItems,
+            NAV[1],
+            ...(antiWasteNav ? [antiWasteNav] : []),
+          ]
+        : [...serviceNavItems, ...(antiWasteNav ? [antiWasteNav] : [])];
 
   return (
     <div

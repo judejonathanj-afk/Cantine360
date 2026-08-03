@@ -57,6 +57,11 @@ model Establishment {
   /** Jour du mois (1–31) pour la rentrée scolaire. */
   ecoSchoolYearStartDay   Int @default(1)
 
+  /** Mode Antigaspillage : activé uniquement par l’admin établissement. */
+  antiWasteModeEnabled Boolean @default(false)
+  /** Objectif déchets (g / 100 assiettes) si le mode Antigaspillage est actif. */
+  antiWasteTargetGPer100 Float?
+
   schools           School[]
   groups            Group[]
   students          Student[]
