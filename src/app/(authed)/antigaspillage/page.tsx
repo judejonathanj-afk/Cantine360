@@ -68,7 +68,10 @@ export default async function AntiWastePage({
     },
   });
 
-  const perDayRows = buildDashboardDayDetailRows(services, []);
+  const perDayRows = buildDashboardDayDetailRows(services, {
+    levelFilter: "all",
+    students: [],
+  });
 
   let totalWasteWeightG = 0;
   let totalWasteMaternelleG = 0;

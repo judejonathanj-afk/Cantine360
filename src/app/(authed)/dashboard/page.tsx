@@ -255,11 +255,28 @@ export default async function DashboardPage({
       }),
     ]);
     services = servicesResult;
-    wideServices = wide;
+    wideServices = wide.map((s) => ({
+      date: s.date,
+      mealType: s.mealType,
+      wasteWeightG: s.wasteWeightG,
+      metrics: s.metrics.map((m) => ({
+        presentCount: m.presentCount,
+        servedCount: m.servedCount,
+        rabCount: m.rabCount,
+        refusedCount: m.refusedCount,
+        leftoversCount: m.leftoversCount,
+        group: m.group
+          ? {
+              id: m.group.id,
+              name: m.group.name,
+              school: m.group.school,
+              level:
+                m.group.level === "MATERNELLE" ? ("MATERNELLE" as const) : ("PRIMAIRE" as const),
+            }
+          : undefined,
+      })),
+    }));
     dashboardStudents = studentRows;
-    pulseRows = servicesToCantinePulseRows(
-      wide.filter((s) => s.date.getTime() >= pulseRangeStart.getTime()),
-    );
   } catch (e) {
     if (e instanceof Prisma.PrismaClientInitializationError) {
       return <DbSetupHint code="INIT" />;
