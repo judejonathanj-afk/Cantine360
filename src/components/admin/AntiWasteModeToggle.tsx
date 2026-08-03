@@ -50,10 +50,13 @@ export function AntiWasteModeToggle({
       setEnabled(nextEnabled);
       setMsg(
         nextEnabled
-          ? "Mode Antigaspillage activé — le bouton apparaît dans la navigation."
+          ? "Mode Antigaspillage activé — rechargement du menu…"
           : "Mode Antigaspillage désactivé.",
       );
-      router.refresh();
+      // Recharge pour que le layout serve le nouveau bouton de navigation.
+      window.setTimeout(() => {
+        window.location.reload();
+      }, 400);
     } catch {
       setMsg("Réseau indisponible.");
     } finally {
@@ -70,9 +73,9 @@ export function AntiWasteModeToggle({
             Mode Antigaspillage
           </div>
           <p className="mt-1 text-sm leading-relaxed text-emerald-950/80 sm:text-base">
-            Réservé à l’admin : activez ce mode pour afficher le bouton{" "}
-            <strong className="font-semibold">Antigaspillage</strong> (cuisine et admin) —
-            vue dédiée déchets, g/100 assiettes et objectif.
+            <strong className="font-semibold">Étape 1 :</strong> activez l’interrupteur à droite.
+            Ensuite le bouton <strong className="font-semibold">Antigaspillage</strong> apparaît
+            dans le menu en haut (admin et cuisine).
           </p>
         </div>
         <button
@@ -82,14 +85,16 @@ export function AntiWasteModeToggle({
           disabled={busy}
           onClick={() => void save(!enabled)}
           className={cn(
-            "relative h-9 w-16 shrink-0 rounded-full transition-colors disabled:opacity-60",
-            enabled ? "bg-emerald-600" : "bg-zinc-300",
+            "relative h-10 w-[4.5rem] shrink-0 rounded-full border-2 transition-colors disabled:opacity-60",
+            enabled
+              ? "border-emerald-800 bg-emerald-600"
+              : "border-zinc-400 bg-zinc-200",
           )}
         >
           <span
             className={cn(
-              "absolute top-1 h-7 w-7 rounded-full bg-white shadow transition-transform",
-              enabled ? "left-8" : "left-1",
+              "absolute top-0.5 h-8 w-8 rounded-full bg-white shadow transition-transform",
+              enabled ? "left-8" : "left-0.5",
             )}
           />
           <span className="sr-only">
@@ -97,6 +102,19 @@ export function AntiWasteModeToggle({
           </span>
         </button>
       </div>
+
+      <p
+        className={cn(
+          "mt-3 rounded-xl px-3 py-2 text-sm font-semibold",
+          enabled
+            ? "bg-emerald-700 text-white"
+            : "bg-white text-emerald-950 ring-1 ring-emerald-300",
+        )}
+      >
+        {enabled
+          ? "Activé — cherchez « Antigaspillage » dans la barre de menu."
+          : "Désactivé — basculez l’interrupteur pour afficher le bouton."}
+      </p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1 space-y-1.5">

@@ -258,6 +258,11 @@ export function AdminGroupsClient({
         </p>
       </div>
 
+      <AntiWasteModeToggle
+        initialEnabled={antiWaste.antiWasteModeEnabled}
+        initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
+      />
+
       <CsvImportZone
         onColor
         title="Importer des classes (CSV)"
@@ -353,11 +358,6 @@ export function AdminGroupsClient({
           </div>
         </form>
       </div>
-
-      <AntiWasteModeToggle
-        initialEnabled={antiWaste.antiWasteModeEnabled}
-        initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
-      />
 
       <EstablishmentEcoObjectivesForm
         initialRestes={establishmentEco.ecoRestesServisTargetPct}
