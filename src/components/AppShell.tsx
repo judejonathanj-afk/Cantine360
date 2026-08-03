@@ -182,13 +182,24 @@ export function AppShell({
       ]
     : [NAV[0]];
 
-  const antiWasteNav: NavItem | null = antiWasteModeEnabled
-    ? {
-        href: "/antigaspillage",
-        label: "Antigaspillage",
-        icon: Recycle,
-      }
-    : null;
+  const antiWasteNav: NavItem | null =
+    role === "ADMIN"
+      ? {
+          href: antiWasteModeEnabled
+            ? "/antigaspillage"
+            : "/admin/groups#anti-waste",
+          label: "Antigaspillage",
+          icon: Recycle,
+          isActive: (p: string) =>
+            p === "/antigaspillage" || p.startsWith("/antigaspillage/"),
+        }
+      : antiWasteModeEnabled
+        ? {
+            href: "/antigaspillage",
+            label: "Antigaspillage",
+            icon: Recycle,
+          }
+        : null;
 
   const navItems: NavItem[] =
     role === "ADMIN"

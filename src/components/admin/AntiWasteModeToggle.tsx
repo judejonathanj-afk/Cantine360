@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,15 @@ export function AntiWasteModeToggle({
   );
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#anti-waste") return;
+    document.getElementById("anti-waste")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
 
   async function save(nextEnabled: boolean) {
     setBusy(true);
@@ -63,7 +72,10 @@ export function AntiWasteModeToggle({
   }
 
   return (
-    <div className="rounded-2xl border-2 border-emerald-800/80 bg-emerald-50/80 p-4 sm:p-5">
+    <div
+      id="anti-waste"
+      className="scroll-mt-24 rounded-2xl border-2 border-emerald-800/80 bg-emerald-50/80 p-4 sm:p-5"
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 text-base font-semibold text-emerald-950 sm:text-lg">
@@ -71,9 +83,8 @@ export function AntiWasteModeToggle({
             Mode Antigaspillage
           </div>
           <p className="mt-1 text-sm leading-relaxed text-emerald-950/80 sm:text-base">
-            <strong className="font-semibold">Étape 1 :</strong> activez l’interrupteur à droite.
-            Ensuite le bouton <strong className="font-semibold">Antigaspillage</strong> apparaît
-            dans le menu en haut (admin et cuisine).
+            Activez l’interrupteur pour ouvrir la vue Antigaspillage (admin + cuisine).
+            Tant que c’est désactivé, le menu admin mène ici pour l’activer.
           </p>
         </div>
         <button
