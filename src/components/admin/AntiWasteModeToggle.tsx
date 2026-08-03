@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ export function AntiWasteModeToggle({
   initialEnabled: boolean;
   initialTargetGPer100: number | null;
 }) {
-  const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
   const [target, setTarget] = useState(
     initialTargetGPer100 != null ? String(initialTargetGPer100) : "",
