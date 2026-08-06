@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Leaf, ArrowRight } from "lucide-react";
+import { Leaf, ArrowRight, Download } from "lucide-react";
 import { groupCardColorForIndex } from "@/lib/groupCardColors";
 import { Button } from "@/components/ui/button";
+import { CantineWasteInfographic } from "@/components/CantineWasteInfographic";
 
 function LandscapeTree({
   x,
@@ -159,6 +160,19 @@ export function LandingPage() {
                     plus responsable.
                   </p>
                 </div>
+
+                <div className="mt-8 space-y-3">
+                  <CantineWasteInfographic />
+                  <a
+                    href="/gaspillage-alimentaire-scolaire.zip"
+                    download
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                  >
+                    <Download className="h-4 w-4 shrink-0" aria-hidden />
+                    Télécharger la fiche (ZIP)
+                  </a>
+                </div>
+
                 <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                   <Button
                     asChild
