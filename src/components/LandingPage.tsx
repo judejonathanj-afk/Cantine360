@@ -30,7 +30,15 @@ function LandscapeTree({
   );
 }
 
-function LandscapeBush({ x, baseY = 219, w = 14 }: { x: number; baseY?: number; w?: number }) {
+function LandscapeBush({
+  x,
+  baseY = 219,
+  w = 14,
+}: {
+  x: number;
+  baseY?: number;
+  w?: number;
+}) {
   return (
     <g transform={`translate(${x} ${baseY})`}>
       <ellipse cx="0" cy="-3" rx={w / 2} ry="4" className="fill-primary/18" />
@@ -101,7 +109,11 @@ function LandingHeroWatermark() {
       {[...text].map((char, i) => {
         const color = groupCardColorForIndex(colorIndex++);
         return (
-          <span key={`${char}-${i}`} style={{ color }} className="inline-block opacity-40">
+          <span
+            key={`${char}-${i}`}
+            style={{ color }}
+            className="inline-block opacity-40"
+          >
             {char}
           </span>
         );
@@ -138,42 +150,51 @@ export function LandingPage() {
           >
             <LandingHeroWatermark />
           </div>
+
           <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-10 pt-24 sm:px-6 sm:pb-12 sm:pt-28 lg:px-8 lg:pb-14 lg:pt-32">
-            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+            {/* Bandeau paysage */}
+            <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-12 xl:gap-14">
               <div className="min-w-0">
-                <h1 className="text-pretty text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-[1.85rem] lg:leading-snug xl:text-4xl xl:leading-snug">
-                  Cantine360 soutient une cantine scolaire plus écologique :
-                  réduire le gaspillage, préserver les ressources et piloter les
-                  repas au quotidien.
+                <p className="text-sm font-semibold uppercase tracking-[0.14em] text-primary">
+                  Cantine scolaire
+                </p>
+                <h1 className="mt-3 text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-[2.35rem] lg:leading-[1.15]">
+                  Moins de gaspillage.
+                  <span className="mt-1 block text-primary">
+                    Un service mieux piloté, chaque jour.
+                  </span>
                 </h1>
-                <div className="mt-5 max-w-xl space-y-4 text-pretty text-xl leading-relaxed text-foreground sm:text-[1.2rem]">
-                  <p>
-                    Cantine360 ne se limite pas au comptage des restes : il aide à
-                    produire et servir juste ce qu&apos;il faut, repas après repas.
-                    Sur la durée, moins de surproduction limite le gaspillage
-                    alimentaire, la charge des déchets organiques et la pression sur
-                    les ressources (agriculture, eau, énergie, logistique).
-                  </p>
-                  <p>
-                    C&apos;est une démarche mesurable, progressive et réplicable dans
-                    chaque établissement — au service d&apos;une cantine plus sobre et
-                    plus responsable.
-                  </p>
-                </div>
-
-                <div className="mt-8 space-y-3">
-                  <CantineWasteInfographic />
-                  <a
-                    href="/gaspillage-alimentaire-scolaire.zip"
-                    download
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
-                  >
-                    <Download className="h-4 w-4 shrink-0" aria-hidden />
-                    Télécharger la fiche (ZIP)
-                  </a>
-                </div>
-
-                <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+                <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-foreground/90 sm:text-xl">
+                  Cantine360 relie la cuisine et l&apos;administration : saisie du
+                  déjeuner, pesées des déchets (maternelle / primaire), menus et
+                  allergènes, tableaux de bord sur 7 ou 30 jours — pour produire et
+                  servir juste ce qu&apos;il faut.
+                </p>
+                <ul className="mt-6 grid max-w-xl gap-2.5 text-base text-foreground sm:grid-cols-2 sm:text-[1.05rem]">
+                  {[
+                    "Service terrain, y compris hors ligne",
+                    "Déchets mat. / prim. + g / 100 assiettes",
+                    "Dashboard cuisine et admin",
+                    "Mode Antigaspillage (admin)",
+                  ].map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2 rounded-xl border border-primary/15 bg-primary/5 px-3 py-2.5"
+                    >
+                      <Leaf
+                        className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                        aria-hidden
+                      />
+                      <span className="leading-snug">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
+                  Le mode Antigaspillage, activé par l&apos;admin, regroupe
+                  objectif, alertes et tendances pour décider plus vite — et
+                  ajuster demain la production.
+                </p>
+                <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                   <Button
                     asChild
                     size="lg"
@@ -184,25 +205,51 @@ export function LandingPage() {
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <p className="text-sm text-muted-foreground sm:max-w-[14rem]">
+                  <p className="text-sm text-muted-foreground sm:max-w-[16rem]">
                     Code établissement et code accès (cuisine ou admin), fournis
                     par votre administration.
                   </p>
                 </div>
               </div>
 
-              <div className="relative w-full lg:max-w-none">
-                <div className="relative aspect-[5/4] w-full overflow-hidden rounded-2xl border border-border/40 bg-muted shadow-xl shadow-primary/10 ring-1 ring-black/5 sm:aspect-[4/3] lg:aspect-[4/5] lg:max-h-[min(72vh,42rem)]">
+              <div className="relative w-full min-w-0">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border/40 bg-muted shadow-xl shadow-primary/10 ring-1 ring-black/5 sm:aspect-[3/2]">
                   <Image
                     src="/hero-cantine.png"
                     alt="Préparation en cuisine de cantine : légumes frais et bacs de service"
                     fill
-                    className="object-cover object-[center_42%]"
+                    className="object-cover object-[center_40%]"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     priority
                   />
                 </div>
+                <p className="mt-3 text-center text-sm text-muted-foreground lg:text-left">
+                  Du plateau à la pesée : des chiffres utiles pour moins jeter.
+                </p>
               </div>
+            </div>
+
+            <div className="mt-12 space-y-3 lg:mt-16">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                    Pourquoi agir contre le gaspillage ?
+                  </h2>
+                  <p className="mt-1 max-w-2xl text-sm text-muted-foreground sm:text-base">
+                    Une fiche claire pour sensibiliser l&apos;équipe et la
+                    commission — à consulter ici ou à télécharger.
+                  </p>
+                </div>
+                <a
+                  href="/gaspillage-alimentaire-scolaire.zip"
+                  download
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/5 px-3.5 py-2 text-sm font-semibold text-primary hover:bg-primary/10"
+                >
+                  <Download className="h-4 w-4 shrink-0" aria-hidden />
+                  Télécharger la fiche (ZIP)
+                </a>
+              </div>
+              <CantineWasteInfographic />
             </div>
           </div>
 
