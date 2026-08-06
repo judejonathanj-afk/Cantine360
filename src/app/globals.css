@@ -41,6 +41,12 @@
   --sidebar-accent-foreground: oklch(0.25 0.03 155);
   --sidebar-border: oklch(0.88 0.02 155);
   --sidebar-ring: oklch(0.55 0.15 155);
+  --sky: oklch(0.82 0.09 230);
+  --sky-foreground: oklch(0.3 0.08 250);
+  --grape: oklch(0.68 0.12 300);
+  --grape-foreground: oklch(0.98 0.01 300);
+  --sun: oklch(0.85 0.13 90);
+  --sun-foreground: oklch(0.35 0.09 80);
 }
 
 .dark {
@@ -85,6 +91,7 @@
 @theme inline {
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-display: var(--font-fredoka), ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -108,6 +115,12 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-sky: var(--sky);
+  --color-sky-foreground: var(--sky-foreground);
+  --color-grape: var(--grape);
+  --color-grape-foreground: var(--grape-foreground);
+  --color-sun: var(--sun);
+  --color-sun-foreground: var(--sun-foreground);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -134,4 +147,103 @@
   body {
     @apply bg-background text-foreground;
   }
+  .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+/* Landing Cantine360 — animations */
+@keyframes c360-drift {
+  from {
+    transform: translateX(-12%);
+  }
+  to {
+    transform: translateX(112%);
+  }
+}
+
+@keyframes c360-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-22px) rotate(12deg);
+  }
+}
+
+@keyframes c360-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.c360-cloud {
+  animation: c360-drift linear infinite;
+  will-change: transform;
+}
+
+.c360-leaf {
+  animation: c360-float ease-in-out infinite;
+  will-change: transform;
+}
+
+.c360-sun {
+  animation: c360-spin 90s linear infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal[data-dir='left'] {
+  transform: translateX(-56px);
+}
+.reveal[data-dir='right'] {
+  transform: translateX(56px);
+}
+.reveal[data-dir='scale'] {
+  transform: scale(0.9);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c360-cloud,
+  .c360-leaf,
+  .c360-sun {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Accueil : palette un peu plus claire / verdoyante, isolée du reste de l'app */
+.landing-root {
+  --background: oklch(0.985 0.012 145);
+  --foreground: oklch(0.24 0.03 155);
+  --card: oklch(0.995 0.006 145);
+  --card-foreground: oklch(0.24 0.03 155);
+  --primary: oklch(0.55 0.13 152);
+  --primary-foreground: oklch(0.99 0.01 145);
+  --secondary: oklch(0.94 0.03 150);
+  --secondary-foreground: oklch(0.33 0.06 152);
+  --muted: oklch(0.95 0.02 150);
+  --muted-foreground: oklch(0.48 0.03 155);
+  --accent: oklch(0.9 0.05 150);
+  --accent-foreground: oklch(0.3 0.06 152);
+  --border: oklch(0.88 0.03 150);
+  --input: oklch(0.88 0.03 150);
+  --ring: oklch(0.55 0.13 152);
+  color: var(--foreground);
+  background-color: var(--background);
 }
