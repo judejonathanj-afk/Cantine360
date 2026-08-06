@@ -193,13 +193,7 @@ export function AppShell({
           isActive: (p: string) =>
             p === "/antigaspillage" || p.startsWith("/antigaspillage/"),
         }
-      : antiWasteModeEnabled
-        ? {
-            href: "/antigaspillage",
-            label: "Antigaspillage",
-            icon: Recycle,
-          }
-        : null;
+      : null;
 
   const navItems: NavItem[] =
     role === "ADMIN"

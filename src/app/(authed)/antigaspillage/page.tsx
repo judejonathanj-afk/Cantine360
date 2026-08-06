@@ -14,13 +14,14 @@ export default async function AntiWastePage({
 }) {
   const session = await getServerSession();
   if (!session) redirect("/login");
+  if (session.role !== "ADMIN") redirect("/dashboard");
 
   const antiWaste = await getEstablishmentAntiWasteSettings(
     db,
     session.establishmentId,
   );
   if (!antiWaste.antiWasteModeEnabled) {
-    redirect(session.role === "ADMIN" ? "/admin/groups" : "/dashboard");
+    redirect("/admin/groups");
   }
 
   const sp = await searchParams;

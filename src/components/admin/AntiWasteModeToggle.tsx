@@ -83,7 +83,7 @@ export function AntiWasteModeToggle({
             Mode Antigaspillage
           </div>
           <p className="mt-1 text-sm leading-relaxed text-emerald-950/80 sm:text-base">
-            Activez l’interrupteur pour ouvrir la vue Antigaspillage (admin + cuisine).
+            Activez l’interrupteur pour ouvrir la vue Antigaspillage côté admin.
             Tant que c’est désactivé, le menu admin mène ici pour l’activer.
           </p>
         </div>
@@ -121,8 +121,8 @@ export function AntiWasteModeToggle({
         )}
       >
         {enabled
-          ? "Activé — cherchez « Antigaspillage » dans la barre de menu."
-          : "Désactivé — basculez l’interrupteur pour afficher le bouton."}
+          ? "Activé — cherchez « Antigaspillage » dans la barre de menu admin."
+          : "Désactivé — basculez l’interrupteur pour afficher le bouton admin."}
       </p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
