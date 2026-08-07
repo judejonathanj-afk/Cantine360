@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
+import {
+  CANTINE_PLUS_MIDNIGHT,
+  CANTINE_PLUS_MIDNIGHT_BORDER,
+} from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
 type DayRow = {
@@ -50,14 +53,14 @@ export function AntiWastePanels({
   chartRows: WastePerDayRowInput[];
 }) {
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
-  const toneClass =
+  const statusAccent =
     status.tone === "ok"
-      ? "border-emerald-300 bg-emerald-50 text-emerald-950"
+      ? "border-emerald-400/60 bg-emerald-500/15 text-emerald-100"
       : status.tone === "watch"
-        ? "border-amber-300 bg-amber-50 text-amber-950"
+        ? "border-amber-400/60 bg-amber-500/15 text-amber-100"
         : status.tone === "alert"
-          ? "border-red-300 bg-red-50 text-red-950"
-          : "border-zinc-200 bg-zinc-50 text-zinc-800";
+          ? "border-red-400/60 bg-red-500/15 text-red-100"
+          : "border-white/15 bg-white/5 text-white/90";
 
   return (
     <div className="space-y-8">
@@ -71,80 +74,89 @@ export function AntiWastePanels({
       </div>
 
       <div
-        className={cn(
-          "rounded-2xl border-2 px-4 py-3 text-sm font-medium sm:text-base",
-          toneClass,
-        )}
-        role="status"
+        className="space-y-4 rounded-2xl border p-4 shadow-md sm:p-5"
+        style={{
+          backgroundColor: CANTINE_PLUS_MIDNIGHT,
+          borderColor: CANTINE_PLUS_MIDNIGHT_BORDER,
+        }}
       >
-        {status.label}
-        {wasteGramsPer100Served != null ? (
-          <span className="mt-1 block text-lg font-bold sm:text-xl">
-            {wasteGramsPer100Served.toLocaleString("fr-FR", {
-              maximumFractionDigits: 1,
-            })}{" "}
-            g / 100 assiettes
-          </span>
-        ) : null}
-      </div>
+        <div
+          className={cn(
+            "rounded-2xl border-2 px-4 py-3 text-sm font-medium sm:text-base",
+            statusAccent,
+          )}
+          role="status"
+        >
+          {status.label}
+          {wasteGramsPer100Served != null ? (
+            <span className="mt-1 block text-lg font-bold text-white sm:text-xl">
+              {wasteGramsPer100Served.toLocaleString("fr-FR", {
+                maximumFractionDigits: 1,
+              })}{" "}
+              g / 100 assiettes
+            </span>
+          ) : null}
+        </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          {
-            label: "Déchets total",
-            value:
-              totalWasteWeightG > 0
-                ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
-                : "—",
-            sub:
-              totalWasteMaternelleG > 0 || totalWastePrimaireG > 0
-                ? `Mat. ${Math.round(totalWasteMaternelleG).toLocaleString("fr-FR")} g · Prim. ${Math.round(totalWastePrimaireG).toLocaleString("fr-FR")} g`
-                : undefined,
-          },
-          {
-            label: "Taux RAB",
-            value: rabRatePct,
-          },
-          {
-            label: "Pesées saisies",
-            value: `${servicesWithWaste} / ${servicesCount}`,
-            sub:
-              missingWeighCount > 0
-                ? `${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`
-                : "Toutes les pesées sont saisies",
-          },
-          {
-            label: "Jours au-dessus objectif",
-            value:
-              targetGPer100 != null
-                ? String(
-                    perDayRows.filter(
-                      (r) =>
-                        r.wasteGramsPer100 != null &&
-                        r.wasteGramsPer100 > targetGPer100,
-                    ).length,
-                  )
-                : "—",
-            sub:
-              streakAboveTarget >= 3
-                ? `Alerte : ${streakAboveTarget} jours de suite`
-                : targetGPer100 != null
-                  ? `Objectif ${targetGPer100.toLocaleString("fr-FR")} g / 100`
-                  : "Définir l’objectif (admin)",
-          },
-        ].map((kpi) => (
-          <Card key={kpi.label} className="border-emerald-200/80 shadow-sm">
-            <CardContent className="space-y-1 p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              label: "Déchets total",
+              value:
+                totalWasteWeightG > 0
+                  ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
+                  : "—",
+              sub:
+                totalWasteMaternelleG > 0 || totalWastePrimaireG > 0
+                  ? `Mat. ${Math.round(totalWasteMaternelleG).toLocaleString("fr-FR")} g · Prim. ${Math.round(totalWastePrimaireG).toLocaleString("fr-FR")} g`
+                  : undefined,
+            },
+            {
+              label: "Taux RAB",
+              value: rabRatePct,
+            },
+            {
+              label: "Pesées saisies",
+              value: `${servicesWithWaste} / ${servicesCount}`,
+              sub:
+                missingWeighCount > 0
+                  ? `${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`
+                  : "Toutes les pesées sont saisies",
+            },
+            {
+              label: "Jours au-dessus objectif",
+              value:
+                targetGPer100 != null
+                  ? String(
+                      perDayRows.filter(
+                        (r) =>
+                          r.wasteGramsPer100 != null &&
+                          r.wasteGramsPer100 > targetGPer100,
+                      ).length,
+                    )
+                  : "—",
+              sub:
+                streakAboveTarget >= 3
+                  ? `Alerte : ${streakAboveTarget} jours de suite`
+                  : targetGPer100 != null
+                    ? `Objectif ${targetGPer100.toLocaleString("fr-FR")} g / 100`
+                    : "Définir l’objectif (admin)",
+            },
+          ].map((kpi) => (
+            <div
+              key={kpi.label}
+              className="rounded-xl border border-white/10 bg-white/5 p-4 shadow-sm"
+            >
+              <p className="text-xs font-medium uppercase tracking-wide text-white/55">
                 {kpi.label}
               </p>
-              <p className="text-2xl font-bold text-zinc-900">{kpi.value}</p>
+              <p className="mt-1 text-2xl font-bold text-white">{kpi.value}</p>
               {kpi.sub ? (
-                <p className="text-sm text-zinc-600">{kpi.sub}</p>
+                <p className="mt-1 text-sm text-white/65">{kpi.sub}</p>
               ) : null}
-            </CardContent>
-          </Card>
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       {streakAboveTarget >= 3 || missingWeighCount > 0 ? (
