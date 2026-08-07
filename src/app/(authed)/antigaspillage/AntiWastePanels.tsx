@@ -82,20 +82,24 @@ export function AntiWastePanels({
       >
         <div
           className={cn(
-            "rounded-2xl border-2 px-4 py-3 text-sm font-medium sm:text-base",
+            "rounded-2xl border-2 px-4 py-4 sm:px-5 sm:py-5",
             statusAccent,
           )}
           role="status"
         >
-          {status.label}
-          {wasteGramsPer100Served != null ? (
-            <span className="mt-1 block text-lg font-bold text-white sm:text-xl">
-              {wasteGramsPer100Served.toLocaleString("fr-FR", {
-                maximumFractionDigits: 1,
-              })}{" "}
-              g / 100 assiettes
-            </span>
-          ) : null}
+          <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
+            Lecture g / 100 assiettes
+          </p>
+          <p className="mt-1 text-lg font-bold leading-snug text-white sm:text-xl">
+            {status.title}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
+            {status.detail}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-white/70 sm:text-base">
+            <span className="font-semibold text-white/90">Que faire : </span>
+            {status.hint}
+          </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
