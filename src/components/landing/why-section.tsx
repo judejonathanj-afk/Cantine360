@@ -1,4 +1,4 @@
-import { Download, Trash2, Wallet, Utensils, Scale, Recycle } from "lucide-react";
+import { Trash2, Wallet, Utensils, Scale, Recycle } from "lucide-react";
 import { Reveal } from "./reveal";
 
 const actions = [
@@ -19,26 +19,14 @@ const actions = [
 export function WhySection() {
   return (
     <section id="pourquoi" className="mx-auto max-w-6xl px-5 py-16">
-      <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-        <Reveal direction="left" className="max-w-2xl">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-balance md:text-4xl">
-            Pourquoi agir contre le gaspillage ?
-          </h2>
-          <p className="mt-3 text-lg text-muted-foreground text-pretty">
-            Une fiche claire pour sensibiliser l&apos;équipe et la commission —
-            à consulter ici ou à télécharger.
-          </p>
-        </Reveal>
-        <Reveal direction="right">
-          <a
-            href="/gaspillage-alimentaire-scolaire.zip"
-            download
-            className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/5 px-5 py-2.5 text-sm font-bold text-primary transition-all hover:-translate-y-0.5 hover:bg-primary/10"
-          >
-            <Download className="size-4" /> Télécharger la fiche (ZIP)
-          </a>
-        </Reveal>
-      </div>
+      <Reveal direction="left" className="max-w-2xl">
+        <h2 className="font-display text-3xl font-bold tracking-tight text-balance md:text-4xl">
+          Pourquoi agir contre le gaspillage ?
+        </h2>
+        <p className="mt-3 text-lg text-muted-foreground text-pretty">
+          Une fiche claire pour sensibiliser l&apos;équipe et la commission.
+        </p>
+      </Reveal>
 
       <Reveal direction="scale" delay={80} className="mt-8">
         <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-grape to-grape/80 p-8 text-grape-foreground shadow-2xl md:p-12">
