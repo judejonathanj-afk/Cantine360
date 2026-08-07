@@ -11,8 +11,11 @@ import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
 import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
+import { AntiWasteServiceBanner } from "@/components/service/AntiWasteServiceBanner";
 import { ServiceInfoGrid } from "@/components/service/ServiceInfoGrid";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
+import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
+import { getAntiWasteKitchenAdvice } from "@/server/getAntiWasteKitchenAdvice";
 
 export default async function ServicePage({
   params,
@@ -41,6 +44,11 @@ export default async function ServicePage({
   if (!hasFilledMenu) {
     redirect(`/service/${serviceId}/menu`);
   }
+
+  const antiWaste = await getEstablishmentAntiWasteSettings(
+    db,
+    session.establishmentId,
+  );
 
   const allergenSummary = await getServiceAllergenSummary(
     db,
@@ -82,8 +90,28 @@ export default async function ServicePage({
     classCards.map((card) => [card.groupId, card.level]),
   );
 
+  const kitchenAdvice = antiWaste.antiWasteModeEnabled
+    ? await getAntiWasteKitchenAdvice({
+        db,
+        establishmentId: session.establishmentId,
+        serviceId,
+        serviceDate: service.date,
+        mealType: service.mealType,
+        menuItems,
+        metrics: classCards.map((c) => ({
+          presentCount: c.presentCount,
+          servedCount: c.servedCount,
+          rabCount: c.rabCount,
+          level: c.level,
+        })),
+        targetGPer100: antiWaste.antiWasteTargetGPer100,
+      })
+    : null;
+
   return (
     <div className="space-y-6">
+      {kitchenAdvice ? <AntiWasteServiceBanner advice={kitchenAdvice} /> : null}
+
       <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1 space-y-3">
           <h1 className="w-full">
@@ -166,4 +194,3 @@ export default async function ServicePage({
     </div>
   );
 }
-
