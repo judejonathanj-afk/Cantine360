@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
@@ -64,15 +62,6 @@ export function AntiWastePanels({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap gap-2">
-        <Button variant={days === 7 ? "default" : "outline"} asChild>
-          <Link href="/antigaspillage?days=7">7 jours</Link>
-        </Button>
-        <Button variant={days === 30 ? "default" : "outline"} asChild>
-          <Link href="/antigaspillage?days=30">30 jours</Link>
-        </Button>
-      </div>
-
       <div
         className="space-y-4 rounded-2xl border p-4 shadow-md sm:p-5"
         style={{

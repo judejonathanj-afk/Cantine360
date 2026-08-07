@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Recycle } from "lucide-react";
 import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
@@ -8,6 +9,7 @@ import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
+import { cn } from "@/lib/utils";
 
 function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
@@ -166,6 +168,30 @@ export default async function AntiWastePage({
   return (
     <div className="space-y-6">
       <AntiWastePageHeader days={days} />
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href="/antigaspillage?days=7"
+          className={cn(
+            "inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
+            days === 7
+              ? "bg-emerald-700 text-white"
+              : "border border-emerald-300 bg-white text-emerald-950 hover:bg-emerald-50",
+          )}
+        >
+          7 jours
+        </Link>
+        <Link
+          href="/antigaspillage?days=30"
+          className={cn(
+            "inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
+            days === 30
+              ? "bg-emerald-700 text-white"
+              : "border border-emerald-300 bg-white text-emerald-950 hover:bg-emerald-50",
+          )}
+        >
+          30 jours
+        </Link>
+      </div>
       {toggle}
       <AntiWastePanels
         days={days}
