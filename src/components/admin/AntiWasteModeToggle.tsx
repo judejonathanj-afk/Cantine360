@@ -72,18 +72,18 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className="scroll-mt-24 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/70 shadow-sm"
+      className="scroll-mt-24 overflow-hidden rounded-2xl border border-amber-300 bg-amber-100 shadow-sm"
     >
       <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-600 text-white">
             <Leaf className="h-5 w-5" aria-hidden />
           </span>
           <div className="min-w-0">
-            <p className="text-base font-bold text-emerald-950 sm:text-lg">
+            <p className="text-base font-bold text-amber-950 sm:text-lg">
               Activation du mode
             </p>
-            <p className="text-sm text-emerald-900/75">
+            <p className="text-sm text-amber-950/75">
               {enabled
                 ? "Activé — vue commission visible ci-dessous"
                 : "Désactivé — basculez pour afficher les indicateurs"}
@@ -116,10 +116,10 @@ export function AntiWasteModeToggle({
         </button>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-emerald-200/80 bg-white/50 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
+      <div className="flex flex-col gap-3 border-t border-amber-300/80 bg-amber-50/80 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
         <label
           htmlFor="anti-waste-target"
-          className="shrink-0 text-sm font-medium text-emerald-950"
+          className="shrink-0 text-sm font-medium text-amber-950"
         >
           Objectif (g / 100 assiettes)
         </label>
@@ -131,14 +131,14 @@ export function AntiWasteModeToggle({
             placeholder="ex. 80"
             value={target}
             onChange={(e) => setTarget(e.target.value)}
-            className="h-9 max-w-[12rem] border-emerald-200 bg-white"
+            className="h-9 max-w-[12rem] border-amber-300 bg-white"
           />
           <Button
             type="button"
             disabled={busy}
             variant="outline"
             size="sm"
-            className="border-emerald-700 text-emerald-900 hover:bg-emerald-100"
+            className="border-amber-700 text-amber-950 hover:bg-amber-200"
             onClick={() => void save(enabled)}
           >
             {busy ? "…" : "Enregistrer l’objectif"}
@@ -152,7 +152,7 @@ export function AntiWasteModeToggle({
                 msg.includes("valide") ||
                 msg.includes("Réseau")
                 ? "text-red-700"
-                : "text-emerald-800",
+                : "text-amber-900",
             )}
           >
             {msg}
