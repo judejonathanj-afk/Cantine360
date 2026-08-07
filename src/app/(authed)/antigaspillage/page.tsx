@@ -18,10 +18,14 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
       <h1 className="mt-3 text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
         Mode Antigaspillage
       </h1>
-      <p className="mt-1 max-w-2xl text-sm text-emerald-900/80 sm:text-base">
+      <p className="mt-2 max-w-2xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
+        Objectif g / 100 assiettes, alertes et tendances pour décider plus vite
+        — et ajuster demain la production.
+      </p>
+      <p className="mt-1.5 max-w-2xl text-sm text-emerald-900/70 sm:text-base">
         {days != null
-          ? `Vue commission — déchets, g / 100 assiettes, pesées et tendance sur ${days} jours.`
-          : "Activez le mode pour suivre déchets, objectif et tendances en commission."}
+          ? `Vue commission — déchets, pesées et évolution sur ${days} jours.`
+          : "Activez le mode ci-dessous pour afficher la vue commission."}
       </p>
     </header>
   );
