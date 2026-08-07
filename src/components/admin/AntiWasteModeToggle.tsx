@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -57,10 +56,9 @@ export function AntiWasteModeToggle({
       setEnabled(nextEnabled);
       setMsg(
         nextEnabled
-          ? "Mode Antigaspillage activé — affichage de la vue…"
-          : "Mode Antigaspillage désactivé.",
+          ? "Mode activé — affichage de la vue…"
+          : "Mode désactivé.",
       );
-      // Recharge pour que le layout serve le nouveau bouton de navigation.
       window.setTimeout(() => {
         window.location.reload();
       }, 400);
@@ -74,19 +72,25 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className="scroll-mt-24 rounded-2xl border-2 border-emerald-800/80 bg-emerald-50/80 p-4 sm:p-5"
+      className="scroll-mt-24 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/70 shadow-sm"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 text-base font-semibold text-emerald-950 sm:text-lg">
-            <Leaf className="h-5 w-5 shrink-0 text-emerald-700" aria-hidden />
-            Mode Antigaspillage
+      <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white">
+            <Leaf className="h-5 w-5" aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <p className="text-base font-bold text-emerald-950 sm:text-lg">
+              Activation du mode
+            </p>
+            <p className="text-sm text-emerald-900/75">
+              {enabled
+                ? "Activé — vue commission visible ci-dessous"
+                : "Désactivé — basculez pour afficher les indicateurs"}
+            </p>
           </div>
-          <p className="mt-1 text-sm leading-relaxed text-emerald-950/80 sm:text-base">
-            Activez l’interrupteur pour afficher la vue commission (déchets,
-            g / 100 assiettes, tendances) sur cette page.
-          </p>
         </div>
+
         <button
           type="button"
           role="switch"
@@ -94,7 +98,7 @@ export function AntiWasteModeToggle({
           disabled={busy}
           onClick={() => void save(!enabled)}
           className={cn(
-            "relative h-10 w-[4.5rem] shrink-0 rounded-full border-2 transition-colors disabled:opacity-60",
+            "relative h-10 w-[4.5rem] shrink-0 self-end rounded-full border-2 transition-colors disabled:opacity-60 sm:self-auto",
             enabled
               ? "border-emerald-800 bg-emerald-600"
               : "border-zinc-400 bg-zinc-200",
@@ -112,24 +116,14 @@ export function AntiWasteModeToggle({
         </button>
       </div>
 
-      <p
-        className={cn(
-          "mt-3 rounded-xl px-3 py-2 text-sm font-semibold",
-          enabled
-            ? "bg-emerald-700 text-white"
-            : "bg-white text-emerald-950 ring-1 ring-emerald-300",
-        )}
-      >
-        {enabled
-          ? "Activé — la vue commission est disponible ci-dessous."
-          : "Désactivé — basculez l’interrupteur pour afficher les indicateurs."}
-      </p>
-
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <Label htmlFor="anti-waste-target" className="text-emerald-950">
-            Objectif (g / 100 assiettes)
-          </Label>
+      <div className="flex flex-col gap-3 border-t border-emerald-200/80 bg-white/50 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
+        <label
+          htmlFor="anti-waste-target"
+          className="shrink-0 text-sm font-medium text-emerald-950"
+        >
+          Objectif (g / 100 assiettes)
+        </label>
+        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center">
           <Input
             id="anti-waste-target"
             type="text"
@@ -137,32 +131,34 @@ export function AntiWasteModeToggle({
             placeholder="ex. 80"
             value={target}
             onChange={(e) => setTarget(e.target.value)}
-            className="border-emerald-200 bg-white"
+            className="h-9 max-w-[12rem] border-emerald-200 bg-white"
           />
+          <Button
+            type="button"
+            disabled={busy}
+            variant="outline"
+            size="sm"
+            className="border-emerald-700 text-emerald-900 hover:bg-emerald-100"
+            onClick={() => void save(enabled)}
+          >
+            {busy ? "…" : "Enregistrer l’objectif"}
+          </Button>
         </div>
-        <Button
-          type="button"
-          disabled={busy}
-          variant="outline"
-          className="border-emerald-700 text-emerald-900 hover:bg-emerald-100"
-          onClick={() => void save(enabled)}
-        >
-          {busy ? "…" : "Enregistrer l’objectif"}
-        </Button>
+        {msg ? (
+          <p
+            className={cn(
+              "text-sm sm:ml-auto",
+              msg.includes("impossible") ||
+                msg.includes("valide") ||
+                msg.includes("Réseau")
+                ? "text-red-700"
+                : "text-emerald-800",
+            )}
+          >
+            {msg}
+          </p>
+        ) : null}
       </div>
-
-      {msg ? (
-        <p
-          className={cn(
-            "mt-3 text-sm",
-            msg.includes("impossible") || msg.includes("valide") || msg.includes("Réseau")
-              ? "text-red-700"
-              : "text-emerald-900",
-          )}
-        >
-          {msg}
-        </p>
-      ) : null}
     </div>
   );
 }

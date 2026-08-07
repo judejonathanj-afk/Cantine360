@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Leaf } from "lucide-react";
 import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -7,6 +8,28 @@ import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
+
+function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
+  return (
+    <header className="space-y-1">
+      <div className="flex items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
+          <Leaf className="h-6 w-6" aria-hidden />
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
+            Mode Antigaspillage
+          </h1>
+          <p className="mt-0.5 text-sm text-emerald-900/80 sm:text-base">
+            {days != null
+              ? `Vue commission — déchets, g / 100 assiettes, pesées et tendance sur ${days} jours.`
+              : "Activez le mode pour suivre déchets, objectif et tendances en commission."}
+          </p>
+        </div>
+      </div>
+    </header>
+  );
+}
 
 export default async function AntiWastePage({
   searchParams,
@@ -30,7 +53,12 @@ export default async function AntiWastePage({
   );
 
   if (!antiWaste.antiWasteModeEnabled) {
-    return <div className="space-y-8">{toggle}</div>;
+    return (
+      <div className="space-y-6">
+        <AntiWastePageHeader />
+        {toggle}
+      </div>
+    );
   }
 
   const sp = await searchParams;
@@ -134,7 +162,8 @@ export default async function AntiWastePage({
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      <AntiWastePageHeader days={days} />
       {toggle}
       <AntiWastePanels
         days={days}

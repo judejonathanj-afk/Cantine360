@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Leaf, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
@@ -61,23 +61,6 @@ export function AntiWastePanels({
 
   return (
     <div className="space-y-8">
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-5 sm:px-6 sm:py-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-700 text-white">
-            <Leaf className="h-6 w-6" aria-hidden />
-          </span>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
-              Mode Antigaspillage
-            </h1>
-            <p className="mt-1 text-sm text-emerald-900/80 sm:text-base">
-              Vue commission — déchets, g / 100 assiettes, pesées et tendance sur{" "}
-              {days} jours.
-            </p>
-          </div>
-        </div>
-      </div>
-
       <div className="flex flex-wrap gap-2">
         <Button variant={days === 7 ? "default" : "outline"} asChild>
           <Link href="/antigaspillage?days=7">7 jours</Link>
