@@ -12,12 +12,14 @@ import { AntiWastePanels } from "./AntiWastePanels";
 function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
     <header className="flex flex-col items-center text-center">
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
-        <Recycle className="h-6 w-6" aria-hidden />
-      </span>
-      <h1 className="mt-3 text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
-        Mode Antigaspillage
-      </h1>
+      <div className="flex items-center justify-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
+          <Recycle className="h-6 w-6" aria-hidden />
+        </span>
+        <h1 className="text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
+          Mode Antigaspillage
+        </h1>
+      </div>
       <p className="mt-2 max-w-2xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
         Objectif g / 100 assiettes, alertes et tendances pour décider plus vite
         — et ajuster demain la production.
