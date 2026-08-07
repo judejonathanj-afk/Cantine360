@@ -1,6 +1,5 @@
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
-import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { getEstablishmentEcoSettings } from "@/server/establishmentEco";
 import { getGroupsForAdmin } from "@/server/groupsForAdmin";
 import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
@@ -12,11 +11,10 @@ export default async function AdminGroupsPage() {
   if (!session) redirect("/login");
   if (session.role !== "ADMIN") redirect("/service");
 
-  const [groups, schools, establishmentEco, antiWaste] = await Promise.all([
+  const [groups, schools, establishmentEco] = await Promise.all([
     getGroupsForAdmin(db, session.establishmentId),
     getSchoolsForAdmin(db, session.establishmentId),
     getEstablishmentEcoSettings(db, session.establishmentId),
-    getEstablishmentAntiWasteSettings(db, session.establishmentId),
   ]);
 
   return (
@@ -32,7 +30,6 @@ export default async function AdminGroupsPage() {
           ecoSchoolYearStartDay: 1,
         }
       }
-      antiWaste={antiWaste}
     />
   );
 }

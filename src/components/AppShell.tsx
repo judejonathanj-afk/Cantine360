@@ -30,7 +30,6 @@ type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
   initialServiceId?: string | null;
-  antiWasteModeEnabled?: boolean;
   children: React.ReactNode;
 };
 
@@ -109,7 +108,6 @@ export function AppShell({
   role,
   establishmentLabel,
   initialServiceId = null,
-  antiWasteModeEnabled = false,
   children,
 }: Props) {
   const pathname = usePathname();
@@ -185,9 +183,7 @@ export function AppShell({
   const antiWasteNav: NavItem | null =
     role === "ADMIN"
       ? {
-          href: antiWasteModeEnabled
-            ? "/antigaspillage"
-            : "/admin/groups#anti-waste",
+          href: "/antigaspillage",
           label: "Antigaspillage",
           icon: Recycle,
           isActive: (p: string) =>

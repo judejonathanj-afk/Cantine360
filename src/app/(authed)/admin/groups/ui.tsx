@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { Trash2, Target } from "lucide-react";
-import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
@@ -18,7 +17,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { EstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import type { EstablishmentEcoSettings } from "@/server/establishmentEco";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 
@@ -53,12 +51,10 @@ export function AdminGroupsClient({
   initialGroups,
   initialSchools,
   establishmentEco,
-  antiWaste,
 }: {
   initialGroups: Group[];
   initialSchools: School[];
   establishmentEco: EstablishmentEcoSettings;
-  antiWaste: EstablishmentAntiWasteSettings;
 }) {
   const [groups, setGroups] = useState<Group[]>(initialGroups);
   const [schools, setSchools] = useState<School[]>(initialSchools);
@@ -257,11 +253,6 @@ export function AdminGroupsClient({
           sur chaque carte permet une cible propre à la classe.
         </p>
       </div>
-
-      <AntiWasteModeToggle
-        initialEnabled={antiWaste.antiWasteModeEnabled}
-        initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
-      />
 
       <CsvImportZone
         onColor

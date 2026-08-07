@@ -57,7 +57,7 @@ export function AntiWasteModeToggle({
       setEnabled(nextEnabled);
       setMsg(
         nextEnabled
-          ? "Mode Antigaspillage activé — rechargement du menu…"
+          ? "Mode Antigaspillage activé — affichage de la vue…"
           : "Mode Antigaspillage désactivé.",
       );
       // Recharge pour que le layout serve le nouveau bouton de navigation.
@@ -83,8 +83,8 @@ export function AntiWasteModeToggle({
             Mode Antigaspillage
           </div>
           <p className="mt-1 text-sm leading-relaxed text-emerald-950/80 sm:text-base">
-            Activez l’interrupteur pour ouvrir la vue Antigaspillage côté admin.
-            Tant que c’est désactivé, le menu admin mène ici pour l’activer.
+            Activez l’interrupteur pour afficher la vue commission (déchets,
+            g / 100 assiettes, tendances) sur cette page.
           </p>
         </div>
         <button
@@ -121,8 +121,8 @@ export function AntiWasteModeToggle({
         )}
       >
         {enabled
-          ? "Activé — cherchez « Antigaspillage » dans la barre de menu admin."
-          : "Désactivé — basculez l’interrupteur pour afficher le bouton admin."}
+          ? "Activé — la vue commission est disponible ci-dessous."
+          : "Désactivé — basculez l’interrupteur pour afficher les indicateurs."}
       </p>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">

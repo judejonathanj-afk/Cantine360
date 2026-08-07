@@ -5,6 +5,7 @@ import { getServerSession } from "@/server/auth";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
+import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
 
 export default async function AntiWastePage({
@@ -20,8 +21,16 @@ export default async function AntiWastePage({
     db,
     session.establishmentId,
   );
+
+  const toggle = (
+    <AntiWasteModeToggle
+      initialEnabled={antiWaste.antiWasteModeEnabled}
+      initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
+    />
+  );
+
   if (!antiWaste.antiWasteModeEnabled) {
-    redirect("/admin/groups");
+    return <div className="space-y-8">{toggle}</div>;
   }
 
   const sp = await searchParams;
@@ -125,29 +134,32 @@ export default async function AntiWastePage({
   }));
 
   return (
-    <AntiWastePanels
-      days={days}
-      targetGPer100={antiWaste.antiWasteTargetGPer100}
-      totalWasteWeightG={totalWasteWeightG}
-      totalWasteMaternelleG={totalWasteMaternelleG}
-      totalWastePrimaireG={totalWastePrimaireG}
-      wasteGramsPer100Served={wasteGramsPer100Served}
-      rabRatePct={rabRatePct}
-      servicesCount={services.length}
-      servicesWithWaste={servicesWithWaste}
-      missingWeighCount={missingWeighCount}
-      streakAboveTarget={streakAboveTarget}
-      perDayRows={perDayRows.map((r) => ({
-        date: r.date,
-        wasteWeightG: r.wasteWeightG,
-        wasteWeightMaternelleG: r.wasteWeightMaternelleG,
-        wasteWeightPrimaireG: r.wasteWeightPrimaireG,
-        wasteGramsPer100: r.wasteGramsPer100,
-        rabRatePct: r.rabRatePct,
-        weighLabel: r.weighLabel,
-        wasteDelta: r.wasteDelta,
-      }))}
-      chartRows={chartRows}
-    />
+    <div className="space-y-8">
+      {toggle}
+      <AntiWastePanels
+        days={days}
+        targetGPer100={antiWaste.antiWasteTargetGPer100}
+        totalWasteWeightG={totalWasteWeightG}
+        totalWasteMaternelleG={totalWasteMaternelleG}
+        totalWastePrimaireG={totalWastePrimaireG}
+        wasteGramsPer100Served={wasteGramsPer100Served}
+        rabRatePct={rabRatePct}
+        servicesCount={services.length}
+        servicesWithWaste={servicesWithWaste}
+        missingWeighCount={missingWeighCount}
+        streakAboveTarget={streakAboveTarget}
+        perDayRows={perDayRows.map((r) => ({
+          date: r.date,
+          wasteWeightG: r.wasteWeightG,
+          wasteWeightMaternelleG: r.wasteWeightMaternelleG,
+          wasteWeightPrimaireG: r.wasteWeightPrimaireG,
+          wasteGramsPer100: r.wasteGramsPer100,
+          rabRatePct: r.rabRatePct,
+          weighLabel: r.weighLabel,
+          wasteDelta: r.wasteDelta,
+        }))}
+        chartRows={chartRows}
+      />
+    </div>
   );
 }
