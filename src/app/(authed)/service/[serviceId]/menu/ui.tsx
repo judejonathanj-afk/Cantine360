@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Recycle } from "lucide-react";
 import { EU14_ALLERGENS, allergenButtonLabel } from "@/lib/allergens";
 import { resolveGrammageSuggestion } from "@/lib/antiWasteGrammageSuggestion";
+import type { DishWasteHistory } from "@/lib/antiWasteGrammageSuggestion";
 
 type Category = "STARTER" | "MAIN" | "DESSERT" | "OTHER";
 type Item = {
@@ -47,13 +48,15 @@ export function MenuEditor({
   initialItems,
   dishImpact = {},
   antiWasteModeEnabled = false,
-  grammageHistoryByLabel = {},
+  dishWasteHistoryByLabel = {},
+  targetGPer100 = null,
 }: {
   serviceId: string;
   initialItems: Item[];
   dishImpact?: Record<string, number>;
   antiWasteModeEnabled?: boolean;
-  grammageHistoryByLabel?: Record<string, number>;
+  dishWasteHistoryByLabel?: Record<string, DishWasteHistory>;
+  targetGPer100?: number | null;
 }) {
   const router = useRouter();
   const [items, setItems] = useState<Item[]>(() => initializeMenuItems(initialItems));
@@ -129,8 +132,9 @@ export function MenuEditor({
         {antiWasteModeEnabled ? (
           <>
             {" "}
-            Le mode Antigaspillage propose un grammage à droite de chaque case — cliquez pour
-            l&apos;appliquer.
+            Le mode Antigaspillage propose un grammage à droite selon
+            l&apos;intitulé du plat et le gaspillage constaté les fois
+            précédentes — cliquez pour l&apos;appliquer.
           </>
         ) : null}
       </p>
@@ -164,7 +168,8 @@ export function MenuEditor({
                 ? resolveGrammageSuggestion({
                     category: it.category,
                     label: it.label,
-                    historyByLabel: grammageHistoryByLabel,
+                    historyByLabel: dishWasteHistoryByLabel,
+                    targetGPer100,
                   })
                 : null;
               return (

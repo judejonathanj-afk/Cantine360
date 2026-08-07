@@ -6,7 +6,7 @@ import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
-import { getGrammageHistoryByLabel } from "@/server/getGrammageHistoryByLabel";
+import { getDishWasteHistoryByLabel } from "@/server/getGrammageHistoryByLabel";
 import { MenuEditor } from "./ui";
 
 export default async function ServiceMenuPage({
@@ -44,8 +44,8 @@ export default async function ServiceMenuPage({
     getEstablishmentAntiWasteSettings(db, session.establishmentId),
   ]);
 
-  const grammageHistoryByLabel = antiWaste.antiWasteModeEnabled
-    ? await getGrammageHistoryByLabel(db, session.establishmentId, serviceId)
+  const dishWasteHistoryByLabel = antiWaste.antiWasteModeEnabled
+    ? await getDishWasteHistoryByLabel(db, session.establishmentId, serviceId)
     : {};
 
   const dishImpact = new Map(
@@ -82,7 +82,8 @@ export default async function ServiceMenuPage({
         initialItems={initialItems}
         dishImpact={Object.fromEntries(dishImpact)}
         antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
-        grammageHistoryByLabel={grammageHistoryByLabel}
+        dishWasteHistoryByLabel={dishWasteHistoryByLabel}
+        targetGPer100={antiWaste.antiWasteTargetGPer100}
       />
     </div>
   );
