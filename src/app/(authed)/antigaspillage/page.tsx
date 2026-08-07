@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Leaf } from "lucide-react";
+import { Recycle } from "lucide-react";
 import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -11,22 +11,18 @@ import { AntiWastePanels } from "./AntiWastePanels";
 
 function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
-    <header className="space-y-1">
-      <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
-          <Leaf className="h-6 w-6" aria-hidden />
-        </span>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
-            Mode Antigaspillage
-          </h1>
-          <p className="mt-0.5 text-sm text-emerald-900/80 sm:text-base">
-            {days != null
-              ? `Vue commission — déchets, g / 100 assiettes, pesées et tendance sur ${days} jours.`
-              : "Activez le mode pour suivre déchets, objectif et tendances en commission."}
-          </p>
-        </div>
-      </div>
+    <header className="flex flex-col items-center text-center">
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
+        <Recycle className="h-6 w-6" aria-hidden />
+      </span>
+      <h1 className="mt-3 text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
+        Mode Antigaspillage
+      </h1>
+      <p className="mt-1 max-w-2xl text-sm text-emerald-900/80 sm:text-base">
+        {days != null
+          ? `Vue commission — déchets, g / 100 assiettes, pesées et tendance sur ${days} jours.`
+          : "Activez le mode pour suivre déchets, objectif et tendances en commission."}
+      </p>
     </header>
   );
 }
