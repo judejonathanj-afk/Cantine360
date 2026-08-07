@@ -34,7 +34,7 @@ export function AntiWasteModeToggle({
     const trimmed = target.trim().replace(",", ".");
     const parsedTarget = trimmed === "" ? null : Number(trimmed);
     if (parsedTarget != null && (!Number.isFinite(parsedTarget) || parsedTarget < 0)) {
-      setMsg("Objectif g / 100 assiettes : nombre valide requis.");
+      setMsg("Objectif : entrez un nombre valide (ex. 80).");
       setBusy(false);
       return;
     }
@@ -111,23 +111,41 @@ export function AntiWasteModeToggle({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-amber-300/80 bg-amber-50/80 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
-        <label
-          htmlFor="anti-waste-target"
-          className="shrink-0 text-sm font-medium text-amber-950"
-        >
-          Objectif (g / 100 assiettes)
-        </label>
-        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center">
-          <Input
-            id="anti-waste-target"
-            type="text"
-            inputMode="decimal"
-            placeholder="ex. 80"
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            className="h-9 max-w-[12rem] border-amber-300 bg-white"
-          />
+      <div className="space-y-3 border-t border-amber-300/80 bg-amber-50/80 px-4 py-4 sm:px-6">
+        <div>
+          <label
+            htmlFor="anti-waste-target"
+            className="text-sm font-bold text-amber-950 sm:text-base"
+          >
+            Objectif de déchets à ne pas dépasser
+          </label>
+          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-amber-950/80">
+            Indiquez combien de grammes de déchets vous acceptez{" "}
+            <strong className="font-semibold">pour 100 assiettes servies</strong>
+            . Exemple : <strong className="font-semibold">80</strong> signifie
+            « pas plus de 80 g jetés pour 100 repas » (soit 0,8 kg). Ce seuil
+            colore ensuite le suivi en vert, orange ou rouge.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <Input
+              id="anti-waste-target"
+              type="text"
+              inputMode="decimal"
+              placeholder="ex. 80"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className="h-10 w-28 border-amber-300 bg-white text-base tabular-nums"
+              aria-describedby="anti-waste-target-hint"
+            />
+            <span
+              id="anti-waste-target-hint"
+              className="text-sm font-medium text-amber-950/80"
+            >
+              g / 100 assiettes
+            </span>
+          </div>
           <Button
             type="button"
             disabled={busy}
@@ -138,21 +156,21 @@ export function AntiWasteModeToggle({
           >
             {busy ? "…" : "Enregistrer l’objectif"}
           </Button>
+          {msg ? (
+            <p
+              className={cn(
+                "text-sm",
+                msg.includes("impossible") ||
+                  msg.includes("valide") ||
+                  msg.includes("Réseau")
+                  ? "text-red-700"
+                  : "text-amber-900",
+              )}
+            >
+              {msg}
+            </p>
+          ) : null}
         </div>
-        {msg ? (
-          <p
-            className={cn(
-              "text-sm sm:ml-auto",
-              msg.includes("impossible") ||
-                msg.includes("valide") ||
-                msg.includes("Réseau")
-                ? "text-red-700"
-                : "text-amber-900",
-            )}
-          >
-            {msg}
-          </p>
-        ) : null}
       </div>
     </div>
   );
