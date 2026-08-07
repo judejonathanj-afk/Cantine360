@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -76,9 +75,29 @@ export function AntiWasteModeToggle({
     >
       <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-600 text-white">
-            <Leaf className="h-5 w-5" aria-hidden />
-          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={enabled}
+            disabled={busy}
+            onClick={() => void save(!enabled)}
+            className={cn(
+              "relative h-10 w-[4.5rem] shrink-0 rounded-full border-2 transition-colors disabled:opacity-60",
+              enabled
+                ? "border-emerald-800 bg-emerald-600"
+                : "border-zinc-400 bg-zinc-200",
+            )}
+          >
+            <span
+              className={cn(
+                "absolute top-0.5 h-8 w-8 rounded-full bg-white shadow transition-transform",
+                enabled ? "left-8" : "left-0.5",
+              )}
+            />
+            <span className="sr-only">
+              {enabled ? "Désactiver" : "Activer"} le mode Antigaspillage
+            </span>
+          </button>
           <div className="min-w-0">
             <p className="text-base font-bold text-amber-950 sm:text-lg">
               Activation du mode
@@ -90,30 +109,6 @@ export function AntiWasteModeToggle({
             </p>
           </div>
         </div>
-
-        <button
-          type="button"
-          role="switch"
-          aria-checked={enabled}
-          disabled={busy}
-          onClick={() => void save(!enabled)}
-          className={cn(
-            "relative h-10 w-[4.5rem] shrink-0 self-end rounded-full border-2 transition-colors disabled:opacity-60 sm:self-auto",
-            enabled
-              ? "border-emerald-800 bg-emerald-600"
-              : "border-zinc-400 bg-zinc-200",
-          )}
-        >
-          <span
-            className={cn(
-              "absolute top-0.5 h-8 w-8 rounded-full bg-white shadow transition-transform",
-              enabled ? "left-8" : "left-0.5",
-            )}
-          />
-          <span className="sr-only">
-            {enabled ? "Désactiver" : "Activer"} le mode Antigaspillage
-          </span>
-        </button>
       </div>
 
       <div className="flex flex-col gap-3 border-t border-amber-300/80 bg-amber-50/80 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
