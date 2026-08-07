@@ -79,15 +79,15 @@ export function Hero() {
             <div className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-xl">
               <Image
                 src="/cantine-hero.png"
-                alt="Cuisine scolaire : une main gantée dresse des plateaux repas près d'une balance à déchets"
-                width={900}
-                height={720}
-                className="h-full w-full object-cover"
+                alt="Enfants de primaire déjeunant à la cantine scolaire"
+                width={1536}
+                height={1024}
+                className="aspect-[4/3] h-full w-full object-cover object-center"
                 priority
               />
             </div>
             <figcaption className="mt-3 text-center text-sm text-muted-foreground">
-              Du plateau à la pesée : des chiffres utiles pour moins jeter.
+              La cantine primaire : produire juste, servir juste, jeter moins.
             </figcaption>
           </figure>
         </Reveal>
