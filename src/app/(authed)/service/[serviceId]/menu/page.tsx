@@ -5,6 +5,8 @@ import { getServerSession } from "@/server/auth";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
+import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
+import { getGrammageHistoryByLabel } from "@/server/getGrammageHistoryByLabel";
 import { MenuEditor } from "./ui";
 
 export default async function ServiceMenuPage({
@@ -37,11 +39,14 @@ export default async function ServiceMenuPage({
         grammageG: i.grammageG,
       }));
 
-  const allergenSummary = await getServiceAllergenSummary(
-    db,
-    session.establishmentId,
-    serviceId,
-  );
+  const [allergenSummary, antiWaste] = await Promise.all([
+    getServiceAllergenSummary(db, session.establishmentId, serviceId),
+    getEstablishmentAntiWasteSettings(db, session.establishmentId),
+  ]);
+
+  const grammageHistoryByLabel = antiWaste.antiWasteModeEnabled
+    ? await getGrammageHistoryByLabel(db, session.establishmentId, serviceId)
+    : {};
 
   const dishImpact = new Map(
     allergenSummary?.dishes.map((d) => [`${d.category}:${d.label}`, d.affectedStudents]) ?? [],
@@ -76,8 +81,9 @@ export default async function ServiceMenuPage({
         serviceId={serviceId}
         initialItems={initialItems}
         dishImpact={Object.fromEntries(dishImpact)}
+        antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
+        grammageHistoryByLabel={grammageHistoryByLabel}
       />
     </div>
   );
 }
-

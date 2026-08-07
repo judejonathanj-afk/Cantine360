@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Recycle } from "lucide-react";
 import { EU14_ALLERGENS, allergenButtonLabel } from "@/lib/allergens";
+import { resolveGrammageSuggestion } from "@/lib/antiWasteGrammageSuggestion";
 
 type Category = "STARTER" | "MAIN" | "DESSERT" | "OTHER";
 type Item = {
@@ -44,10 +46,14 @@ export function MenuEditor({
   serviceId,
   initialItems,
   dishImpact = {},
+  antiWasteModeEnabled = false,
+  grammageHistoryByLabel = {},
 }: {
   serviceId: string;
   initialItems: Item[];
   dishImpact?: Record<string, number>;
+  antiWasteModeEnabled?: boolean;
+  grammageHistoryByLabel?: Record<string, number>;
 }) {
   const router = useRouter();
   const [items, setItems] = useState<Item[]>(() => initializeMenuItems(initialItems));
@@ -120,6 +126,13 @@ export function MenuEditor({
         <strong className="font-medium text-zinc-900">grammage (g/assiette)</strong>.{" "}
         <strong className="font-medium text-zinc-900">Enregistrez tout en bas</strong> une fois le
         menu complet.
+        {antiWasteModeEnabled ? (
+          <>
+            {" "}
+            Le mode Antigaspillage propose un grammage à droite de chaque case — cliquez pour
+            l&apos;appliquer.
+          </>
+        ) : null}
       </p>
 
       <div className="space-y-10">
@@ -147,6 +160,13 @@ export function MenuEditor({
           <div className="grid gap-3">
             {items.map((it, idx) => {
               if (it.category !== cat) return null;
+              const suggestion = antiWasteModeEnabled
+                ? resolveGrammageSuggestion({
+                    category: it.category,
+                    label: it.label,
+                    historyByLabel: grammageHistoryByLabel,
+                  })
+                : null;
               return (
                 <div
                   key={`${cat}-${idx}`}
@@ -173,25 +193,48 @@ export function MenuEditor({
                     </button>
                   </div>
 
-                  <label className="mt-4 block max-w-xs">
+                  <div className="mt-4">
                     <span className="text-sm font-medium text-zinc-900">
                       Grammage (g / assiette)
                     </span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={5000}
-                      value={it.grammageG ?? ""}
-                      onChange={(e) => {
-                        const raw = e.target.value.trim();
-                        update(idx, {
-                          grammageG: raw === "" ? null : Number(raw),
-                        });
-                      }}
-                      className="mt-2 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-                      placeholder="Ex: 120"
-                    />
-                  </label>
+                    <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-3">
+                      <input
+                        type="number"
+                        min={1}
+                        max={5000}
+                        value={it.grammageG ?? ""}
+                        onChange={(e) => {
+                          const raw = e.target.value.trim();
+                          update(idx, {
+                            grammageG: raw === "" ? null : Number(raw),
+                          });
+                        }}
+                        className="w-full max-w-xs rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+                        placeholder="Ex: 120"
+                      />
+                      {suggestion ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            update(idx, { grammageG: suggestion.grams })
+                          }
+                          className="flex min-w-[11rem] flex-col justify-center rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-left transition hover:border-emerald-500 hover:bg-emerald-100"
+                        >
+                          <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-800">
+                            <Recycle className="h-3.5 w-3.5" aria-hidden />
+                            Antigaspillage propose
+                          </span>
+                          <span className="mt-0.5 text-xl font-bold tabular-nums text-emerald-950">
+                            {suggestion.grams}{" "}
+                            <span className="text-sm font-semibold">g</span>
+                          </span>
+                          <span className="text-[11px] leading-snug text-emerald-900/75">
+                            {suggestion.sourceLabel} — cliquer pour appliquer
+                          </span>
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
 
                   <div className="mt-4">
                     <div className="text-sm font-medium text-zinc-900">Allergènes</div>
