@@ -190,6 +190,20 @@ export default async function ServicePage({
         initialWasteWeightG={service.wasteWeightG}
         initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
         initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
+        antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
+        servedCount={service.metrics.reduce((sum, m) => sum + m.servedCount, 0)}
+        rabCount={service.metrics.reduce((sum, m) => sum + m.rabCount, 0)}
+        refusedCount={service.metrics.reduce(
+          (sum, m) => sum + m.refusedCount,
+          0,
+        )}
+        targetGPer100={antiWaste.antiWasteTargetGPer100}
+        mainLabels={menuItems
+          .filter((i) => i.category === "MAIN" && i.label.trim())
+          .map((i) => i.label)}
+        allLabels={menuItems
+          .filter((i) => i.label.trim())
+          .map((i) => i.label)}
       />
     </div>
   );

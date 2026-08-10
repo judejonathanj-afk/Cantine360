@@ -14,6 +14,8 @@ import {
   removeQueuedWaste,
 } from "@/lib/offlineWasteQueue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { buildEndOfServiceBilanTips } from "@/lib/antiWasteEndOfServiceBilan";
+import { AntiWasteEndOfServiceBilan } from "@/components/service/AntiWasteEndOfServiceBilan";
 import { cn } from "@/lib/utils";
 
 function gramsToInput(grams: number | null): string {
@@ -53,12 +55,26 @@ export function ServiceWasteWeightPanel({
   initialWasteWeightG,
   initialWasteWeightMaternelleG,
   initialWasteWeightPrimaireG,
+  antiWasteModeEnabled = false,
+  servedCount = 0,
+  rabCount = 0,
+  refusedCount = 0,
+  targetGPer100 = null,
+  mainLabels = [],
+  allLabels = [],
   className,
 }: {
   serviceId: string;
   initialWasteWeightG: number | null;
   initialWasteWeightMaternelleG?: number | null;
   initialWasteWeightPrimaireG?: number | null;
+  antiWasteModeEnabled?: boolean;
+  servedCount?: number;
+  rabCount?: number;
+  refusedCount?: number;
+  targetGPer100?: number | null;
+  mainLabels?: string[];
+  allLabels?: string[];
   className?: string;
 }) {
   const online = useOnlineStatus();
@@ -195,6 +211,19 @@ export function ServiceWasteWeightPanel({
   }, [online, serviceId, invalidMat, invalidPrim, parsedMat, parsedPrim]);
 
   const parsedTotal = totalWasteFromLevels(parsedMat, parsedPrim);
+
+  const bilanTips =
+    antiWasteModeEnabled && savedAck && totalSaved > 0
+      ? buildEndOfServiceBilanTips({
+          wasteWeightG: totalSaved,
+          served: servedCount,
+          rab: rabCount,
+          refused: refusedCount,
+          targetGPer100,
+          mainLabels,
+          allLabels,
+        })
+      : [];
 
   const statusMessage = invalidMat || invalidPrim ? (
     "Saisissez un nombre de grammes valide"
@@ -338,6 +367,9 @@ export function ServiceWasteWeightPanel({
             </p>
           ) : null}
         </div>
+        {bilanTips.length > 0 ? (
+          <AntiWasteEndOfServiceBilan tips={bilanTips} />
+        ) : null}
         <p className="flex items-center justify-center gap-1.5 text-sm text-zinc-600 sm:text-base">
           {statusMessage}
         </p>

@@ -1,9 +1,10 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Recycle } from "lucide-react";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
+import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 import {
   CANTINE_PLUS_MIDNIGHT,
   CANTINE_PLUS_MIDNIGHT_BORDER,
@@ -35,6 +36,7 @@ export function AntiWastePanels({
   streakAboveTarget,
   perDayRows,
   chartRows,
+  riskyDishes = [],
 }: {
   days: 7 | 30;
   targetGPer100: number | null;
@@ -49,6 +51,7 @@ export function AntiWastePanels({
   streakAboveTarget: number;
   perDayRows: DayRow[];
   chartRows: WastePerDayRowInput[];
+  riskyDishes?: RiskyDishRow[];
 }) {
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
   const statusAccent =
@@ -171,6 +174,76 @@ export function AntiWastePanels({
           </div>
         </div>
       ) : null}
+
+      <section className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50/40 shadow-sm">
+        <div className="flex items-start gap-3 border-b border-amber-200/80 px-4 py-3 sm:px-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-600 text-white">
+            <Recycle className="h-5 w-5" aria-hidden />
+          </span>
+          <div>
+            <h2 className="text-lg font-bold text-amber-950">
+              Plats à risque
+            </h2>
+            <p className="mt-0.5 text-sm text-amber-950/75">
+              Plats (surtout plats principaux) associés aux jours à plus fort
+              gaspillage sur {days} jours. La pesée est globale : le g / 100 du
+              jour est lié aux plats du menu ce jour-là.
+            </p>
+          </div>
+        </div>
+        {riskyDishes.length === 0 ? (
+          <p className="px-4 py-5 text-sm text-amber-950/70 sm:px-5">
+            Pas encore assez de menus + pesées sur la période pour classer les
+            plats.
+          </p>
+        ) : (
+          <ul className="divide-y divide-amber-200/70">
+            {riskyDishes.map((dish, i) => (
+              <li
+                key={`${dish.label}-${i}`}
+                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 sm:px-5"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-amber-950">
+                    <span className="mr-2 tabular-nums text-amber-800/70">
+                      #{i + 1}
+                    </span>
+                    {dish.label}
+                  </p>
+                  <p className="text-xs text-amber-900/70">
+                    {dish.serviceCount} service
+                    {dish.serviceCount > 1 ? "s" : ""} avec ce plat
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold tabular-nums text-amber-950">
+                    {dish.avgWasteGPer100.toLocaleString("fr-FR", {
+                      maximumFractionDigits: 0,
+                    })}{" "}
+                    <span className="text-sm font-semibold">g / 100</span>
+                  </p>
+                  <p
+                    className={cn(
+                      "text-xs font-semibold",
+                      dish.vsTarget === "above"
+                        ? "text-red-700"
+                        : dish.vsTarget === "ok"
+                          ? "text-emerald-700"
+                          : "text-amber-800/70",
+                    )}
+                  >
+                    {dish.vsTarget === "above"
+                      ? "Au-dessus de l’objectif"
+                      : dish.vsTarget === "ok"
+                        ? "Sous l’objectif"
+                        : "Sans objectif"}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <WasteEvolutionChart days={days} perDayRows={chartRows} />
 

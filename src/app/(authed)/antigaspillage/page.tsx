@@ -7,6 +7,7 @@ import { getServerSession } from "@/server/auth";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
+import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
 import { cn } from "@/lib/utils";
@@ -165,6 +166,29 @@ export default async function AntiWastePage({
     served: r.served,
   }));
 
+  const riskyDishes = buildRiskyDishesRanking(
+    services.map((s) => {
+      const dayServed = s.metrics.reduce((sum, m) => sum + m.servedCount, 0);
+      const matG = wasteWeightForLevel(s, "MATERNELLE") ?? 0;
+      const primG = wasteWeightForLevel(s, "PRIMAIRE") ?? 0;
+      const waste =
+        (s.wasteWeightG ?? 0) > 0 ? (s.wasteWeightG ?? 0) : matG + primG;
+      const items = s.menu?.items ?? [];
+      return {
+        wasteGramsPer100:
+          dayServed > 0 && waste > 0 ? (waste / dayServed) * 100 : null,
+        menuLabels: items
+          .filter((i) => i.label.trim().length > 0)
+          .map((i) => i.label),
+        mainLabels: items
+          .filter((i) => i.category === "MAIN" && i.label.trim().length > 0)
+          .map((i) => i.label),
+      };
+    }),
+    target,
+    { limit: 8, preferMain: true },
+  );
+
   return (
     <div className="space-y-6">
       <AntiWastePageHeader days={days} />
@@ -216,6 +240,7 @@ export default async function AntiWastePage({
           wasteDelta: r.wasteDelta,
         }))}
         chartRows={chartRows}
+        riskyDishes={riskyDishes}
       />
     </div>
   );
