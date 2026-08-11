@@ -184,7 +184,7 @@ export function AppShell({
     role === "ADMIN"
       ? {
           href: "/antigaspillage",
-          label: "Antigaspillage",
+          label: "Anti-gaspillage",
           icon: Recycle,
           isActive: (p: string) =>
             p === "/antigaspillage" || p.startsWith("/antigaspillage/"),
@@ -201,8 +201,8 @@ export function AppShell({
             label: "Élèves & allergènes",
             icon: GraduationCap,
           },
-          ...serviceNavItems,
           ...(antiWasteNav ? [antiWasteNav] : []),
+          ...serviceNavItems,
           { href: "/exports", label: "Exports", icon: FileDown },
         ]
       : serviceId
