@@ -156,8 +156,8 @@ export function AntiWastePanels({
       </div>
 
       {streakAboveTarget >= 3 || missingWeighCount > 0 ? (
-        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <div className="flex items-start gap-3 overflow-hidden rounded-2xl border border-rose-300/70 bg-gradient-to-r from-rose-600 to-orange-500 px-4 py-3.5 text-sm text-white shadow-md">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-white" aria-hidden />
           <div className="space-y-1">
             {streakAboveTarget >= 3 ? (
               <p>
@@ -175,72 +175,126 @@ export function AntiWastePanels({
         </div>
       ) : null}
 
-      <section className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50/40 shadow-sm">
-        <div className="flex items-start gap-3 border-b border-amber-200/80 px-4 py-3 sm:px-5">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-600 text-white">
-            <Recycle className="h-5 w-5" aria-hidden />
-          </span>
-          <div>
-            <h2 className="text-lg font-bold text-amber-950">
-              Plats à risque
-            </h2>
-            <p className="mt-0.5 text-sm text-amber-950/75">
-              Plats (surtout plats principaux) associés aux jours à plus fort
-              gaspillage sur {days} jours. La pesée est globale : le g / 100 du
-              jour est lié aux plats du menu ce jour-là.
-            </p>
+      <section className="overflow-hidden rounded-2xl border border-rose-200/80 bg-white shadow-md ring-1 ring-rose-100">
+        <div className="relative overflow-hidden bg-gradient-to-br from-rose-600 via-rose-500 to-orange-500 px-4 py-5 text-white sm:px-6 sm:py-6">
+          <div
+            className="pointer-events-none absolute -right-8 -top-10 h-36 w-36 rounded-full bg-white/15 blur-2xl"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -bottom-12 left-1/3 h-28 w-28 rounded-full bg-orange-300/30 blur-2xl"
+            aria-hidden
+          />
+          <div className="relative flex items-start gap-3">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 shadow-inner ring-1 ring-white/30 backdrop-blur-sm">
+              <Recycle className="h-6 w-6" aria-hidden />
+            </span>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
+                Plats à risque
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
+                Classement des plats liés aux jours à plus fort gaspillage sur{" "}
+                {days} jours — pour décider quoi ajuster demain.
+              </p>
+            </div>
           </div>
         </div>
+
         {riskyDishes.length === 0 ? (
-          <p className="px-4 py-5 text-sm text-amber-950/70 sm:px-5">
+          <p className="px-4 py-8 text-center text-sm text-zinc-500 sm:px-6">
             Pas encore assez de menus + pesées sur la période pour classer les
             plats.
           </p>
         ) : (
-          <ul className="divide-y divide-amber-200/70">
-            {riskyDishes.map((dish, i) => (
-              <li
-                key={`${dish.label}-${i}`}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 sm:px-5"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-amber-950">
-                    <span className="mr-2 tabular-nums text-amber-800/70">
-                      #{i + 1}
+          <ul className="space-y-3 p-4 sm:p-5">
+            {riskyDishes.map((dish, i) => {
+              const maxG = riskyDishes[0]?.avgWasteGPer100 || 1;
+              const barPct = Math.max(
+                8,
+                Math.round((dish.avgWasteGPer100 / maxG) * 100),
+              );
+              const rankTone =
+                i === 0
+                  ? "from-rose-600 to-orange-500 text-white shadow-rose-200"
+                  : i === 1
+                    ? "from-orange-500 to-amber-400 text-white shadow-orange-100"
+                    : i === 2
+                      ? "from-[#2f6b69] to-teal-500 text-white shadow-teal-100"
+                      : "from-zinc-200 to-zinc-100 text-zinc-700";
+              return (
+                <li
+                  key={`${dish.label}-${i}`}
+                  className={cn(
+                    "relative overflow-hidden rounded-2xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md",
+                    i === 0
+                      ? "border-rose-300 ring-1 ring-rose-200"
+                      : "border-zinc-200",
+                  )}
+                >
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <span
+                      className={cn(
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-lg font-black tabular-nums shadow-md",
+                        rankTone,
+                      )}
+                    >
+                      {i + 1}
                     </span>
-                    {dish.label}
-                  </p>
-                  <p className="text-xs text-amber-900/70">
-                    {dish.serviceCount} service
-                    {dish.serviceCount > 1 ? "s" : ""} avec ce plat
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold tabular-nums text-amber-950">
-                    {dish.avgWasteGPer100.toLocaleString("fr-FR", {
-                      maximumFractionDigits: 0,
-                    })}{" "}
-                    <span className="text-sm font-semibold">g / 100</span>
-                  </p>
-                  <p
-                    className={cn(
-                      "text-xs font-semibold",
-                      dish.vsTarget === "above"
-                        ? "text-red-700"
-                        : dish.vsTarget === "ok"
-                          ? "text-emerald-700"
-                          : "text-amber-800/70",
-                    )}
-                  >
-                    {dish.vsTarget === "above"
-                      ? "Au-dessus de l’objectif"
-                      : dish.vsTarget === "ok"
-                        ? "Sous l’objectif"
-                        : "Sans objectif"}
-                  </p>
-                </div>
-              </li>
-            ))}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="truncate text-base font-bold capitalize text-zinc-900 sm:text-lg">
+                            {dish.label}
+                          </p>
+                          <p className="mt-0.5 text-xs font-medium text-zinc-500 sm:text-sm">
+                            {dish.serviceCount} service
+                            {dish.serviceCount > 1 ? "s" : ""} avec ce plat
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-black tabular-nums tracking-tight text-rose-600 sm:text-3xl">
+                            {dish.avgWasteGPer100.toLocaleString("fr-FR", {
+                              maximumFractionDigits: 0,
+                            })}
+                            <span className="ml-1 text-sm font-bold text-rose-500/80">
+                              g / 100
+                            </span>
+                          </p>
+                          <p
+                            className={cn(
+                              "mt-0.5 inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide",
+                              dish.vsTarget === "above"
+                                ? "bg-rose-100 text-rose-700"
+                                : dish.vsTarget === "ok"
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-zinc-100 text-zinc-600",
+                            )}
+                          >
+                            {dish.vsTarget === "above"
+                              ? "Au-dessus objectif"
+                              : dish.vsTarget === "ok"
+                                ? "Sous objectif"
+                                : "Sans objectif"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-rose-100">
+                        <div
+                          className={cn(
+                            "h-full rounded-full bg-gradient-to-r transition-[width]",
+                            i === 0
+                              ? "from-rose-600 to-orange-400"
+                              : "from-rose-400 to-orange-300",
+                          )}
+                          style={{ width: `${barPct}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
