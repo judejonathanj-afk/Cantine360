@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Recycle } from "lucide-react";
 import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -9,6 +8,7 @@ import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
+import { StopWasteCircleBadge } from "@/components/dashboard/StopWasteCircleBadge";
 import { AntiWastePanels } from "./AntiWastePanels";
 import { cn } from "@/lib/utils";
 
@@ -16,9 +16,7 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
     <header className="flex flex-col items-center text-center">
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-md">
-          <Recycle className="h-7 w-7" aria-hidden />
-        </span>
+        <StopWasteCircleBadge className="h-20 w-20 sm:h-24 sm:w-24" />
         <h1
           className="inline-flex flex-col items-center justify-center rounded-[2.25rem] bg-[#65c495] px-8 py-4 text-white shadow-[0_8px_24px_rgba(101,196,149,0.45)] sm:rounded-[2.75rem] sm:px-10 sm:py-5"
           style={{
