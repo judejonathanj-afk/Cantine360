@@ -208,7 +208,7 @@ export default function DashboardPanels({
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3 rounded-2xl border border-yellow-100 bg-yellow-50 px-4 py-5 sm:px-6 sm:py-6">
+      <div className="space-y-3 rounded-2xl border border-violet-300/50 bg-[#b491ca] px-4 py-5 sm:px-6 sm:py-6">
         <div>
           <div className="flex items-center gap-3 sm:gap-4">
             {isKitchen ? (
