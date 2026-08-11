@@ -64,7 +64,7 @@ export function AntiWastePanels({
           : "border-white/15 bg-white/5 text-white/90";
 
   return (
-    <div className="space-y-8">
+    <div className="mt-8 space-y-8 sm:mt-10">
       <div
         className="space-y-4 rounded-2xl border p-4 shadow-md sm:p-5"
         style={{
