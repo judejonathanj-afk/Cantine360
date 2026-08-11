@@ -27,7 +27,7 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
             Mode
           </span>
           <span className="mt-1 text-3xl font-bold lowercase leading-none tracking-wide sm:text-4xl md:text-[2.75rem]">
-            anti-gaspillages
+            anti-gaspillage
           </span>
         </h1>
         <StopWasteCircleBadge className="h-28 w-28 sm:h-32 sm:w-32" />
