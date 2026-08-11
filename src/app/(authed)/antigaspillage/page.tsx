@@ -16,7 +16,6 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
     <header className="flex flex-col items-center text-center">
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
-        <StopWasteCircleBadge className="h-20 w-20 sm:h-24 sm:w-24" />
         <h1
           className="inline-flex flex-col items-center justify-center rounded-[2.25rem] bg-[#65c495] px-8 py-4 text-white shadow-[0_8px_24px_rgba(101,196,149,0.45)] sm:rounded-[2.75rem] sm:px-10 sm:py-5"
           style={{
@@ -24,13 +23,14 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
               "var(--font-fredoka), ui-rounded, system-ui, sans-serif",
           }}
         >
-          <span className="text-xl font-semibold lowercase leading-none tracking-wide sm:text-2xl">
-            mode
+          <span className="text-xl font-semibold leading-none tracking-wide sm:text-2xl">
+            Mode
           </span>
           <span className="mt-1 text-3xl font-bold lowercase leading-none tracking-wide sm:text-4xl md:text-[2.75rem]">
             anti-gaspillages
           </span>
         </h1>
+        <StopWasteCircleBadge className="h-28 w-28 sm:h-32 sm:w-32" />
       </div>
       <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
         Objectif g / 100 assiettes, alertes et tendances pour décider plus vite
