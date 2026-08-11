@@ -20,7 +20,7 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
           <Recycle className="h-7 w-7" aria-hidden />
         </span>
         <h1
-          className="inline-flex rotate-[-1.5deg] flex-col items-center justify-center rounded-[2.25rem] bg-[#65c495] px-8 py-4 text-white shadow-[0_8px_24px_rgba(101,196,149,0.45)] sm:rounded-[2.75rem] sm:px-10 sm:py-5"
+          className="inline-flex flex-col items-center justify-center rounded-[2.25rem] bg-[#65c495] px-8 py-4 text-white shadow-[0_8px_24px_rgba(101,196,149,0.45)] sm:rounded-[2.75rem] sm:px-10 sm:py-5"
           style={{
             fontFamily:
               "var(--font-fredoka), ui-rounded, system-ui, sans-serif",
