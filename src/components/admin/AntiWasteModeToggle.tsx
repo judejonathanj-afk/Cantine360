@@ -142,7 +142,7 @@ export function AntiWasteModeToggle({
               placeholder="ex. 80"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              className="h-10 w-28 border-[#2f6b69] bg-white text-base tabular-nums text-[#245554]"
+              className="h-10 w-28 border-[#3d8582] bg-white text-base tabular-nums text-[#2f6b69]"
               aria-describedby="anti-waste-target-hint"
             />
             <span

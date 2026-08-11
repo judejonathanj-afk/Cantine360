@@ -58,7 +58,7 @@ export function CantinePlusBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border border-[#2f6b69] bg-[#245554] px-3 py-1 shadow-sm ring-1 ring-white/10",
+        "inline-flex items-center rounded-full border border-[#3d8582] bg-[#2f6b69] px-3 py-1 shadow-sm ring-1 ring-white/10",
         className,
       )}
     >
