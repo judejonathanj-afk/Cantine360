@@ -15,15 +15,18 @@ import { cn } from "@/lib/utils";
 function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
     <header className="flex flex-col items-center text-center">
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-700 text-white shadow-sm">
           <Recycle className="h-6 w-6" aria-hidden />
         </span>
-        <h1 className="text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
-          Mode Antigaspillage
+        <h1
+          className="inline-block rounded-[2rem] bg-[#65c495] px-6 py-3 text-2xl font-bold lowercase leading-none tracking-wide text-white shadow-md sm:rounded-[2.5rem] sm:px-8 sm:py-3.5 sm:text-3xl md:text-4xl"
+          style={{ fontFamily: "var(--font-fredoka), ui-rounded, system-ui, sans-serif" }}
+        >
+          mode anti gaspillage
         </h1>
       </div>
-      <p className="mt-2 max-w-2xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
+      <p className="mt-3 max-w-2xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
         Objectif g / 100 assiettes, alertes et tendances pour décider plus vite
         — et ajuster demain la production.
       </p>
