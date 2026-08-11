@@ -355,50 +355,61 @@ export function AntiWastePanels({
 
       <WasteEvolutionChart days={days} perDayRows={chartRows} />
 
-      <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-        <div className="border-b border-zinc-100 px-4 py-3">
-          <h2 className="text-lg font-bold text-zinc-900">Jour par jour</h2>
+      <div className="overflow-hidden rounded-2xl border border-sky-200 bg-sky-50/60 shadow-md ring-1 ring-sky-100">
+        <div className="border-b border-sky-200/80 bg-gradient-to-r from-sky-500 to-sky-400 px-4 py-4 text-white sm:px-5">
+          <h2 className="text-lg font-bold tracking-tight sm:text-xl">
+            Détail jour par jour
+          </h2>
+          <p className="mt-0.5 text-sm text-sky-50/95">
+            Pesées, g / 100, RAB et variation des déchets pour chaque service
+            sur {days} jours.
+          </p>
         </div>
-        <div className="max-h-[28rem] overflow-auto">
+        <div className="max-h-[28rem] overflow-auto bg-white/80">
           <table className="w-full min-w-[40rem] text-left text-sm">
-            <thead className="sticky top-0 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500">
+            <thead className="sticky top-0 bg-sky-100/90 text-xs uppercase tracking-wide text-sky-800 backdrop-blur-sm">
               <tr>
-                <th className="px-3 py-2 font-medium">Date</th>
-                <th className="px-3 py-2 font-medium">Déchets</th>
-                <th className="px-3 py-2 font-medium">Mat. / Prim.</th>
-                <th className="px-3 py-2 font-medium">g / 100</th>
-                <th className="px-3 py-2 font-medium">RAB %</th>
-                <th className="px-3 py-2 font-medium">Pesée</th>
-                <th className="px-3 py-2 font-medium">Δ déchets</th>
+                <th className="px-3 py-2.5 font-semibold">Date</th>
+                <th className="px-3 py-2.5 font-semibold">Déchets</th>
+                <th className="px-3 py-2.5 font-semibold">Mat. / Prim.</th>
+                <th className="px-3 py-2.5 font-semibold">g / 100</th>
+                <th className="px-3 py-2.5 font-semibold">RAB %</th>
+                <th className="px-3 py-2.5 font-semibold">Pesée</th>
+                <th className="px-3 py-2.5 font-semibold">Δ déchets</th>
               </tr>
             </thead>
             <tbody>
               {[...perDayRows].reverse().map((row) => (
-                <tr key={row.date} className="border-t border-zinc-100">
-                  <td className="px-3 py-2 font-medium text-zinc-900">{row.date}</td>
-                  <td className="px-3 py-2">
+                <tr
+                  key={row.date}
+                  className="border-t border-sky-100 hover:bg-sky-50/70"
+                >
+                  <td className="px-3 py-2 font-medium text-sky-950">
+                    {row.date}
+                  </td>
+                  <td className="px-3 py-2 text-sky-950">
                     {row.wasteWeightG > 0
                       ? `${Math.round(row.wasteWeightG).toLocaleString("fr-FR")} g`
                       : "—"}
                   </td>
-                  <td className="px-3 py-2 text-zinc-600">
+                  <td className="px-3 py-2 text-sky-800/80">
                     {Math.round(row.wasteWeightMaternelleG).toLocaleString("fr-FR")} /{" "}
                     {Math.round(row.wasteWeightPrimaireG).toLocaleString("fr-FR")} g
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 text-sky-950">
                     {row.wasteGramsPer100 != null
                       ? row.wasteGramsPer100.toLocaleString("fr-FR", {
                           maximumFractionDigits: 1,
                         })
                       : "—"}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 text-sky-950">
                     {row.rabRatePct != null
                       ? `${row.rabRatePct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %`
                       : "—"}
                   </td>
-                  <td className="px-3 py-2">{row.weighLabel}</td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 text-sky-900">{row.weighLabel}</td>
+                  <td className="px-3 py-2 text-sky-950">
                     {row.wasteDelta == null
                       ? "—"
                       : `${row.wasteDelta > 0 ? "+" : ""}${Math.round(row.wasteDelta).toLocaleString("fr-FR")}`}
