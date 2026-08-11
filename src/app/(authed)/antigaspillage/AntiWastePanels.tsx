@@ -261,8 +261,15 @@ export function AntiWastePanels({
             plats.
           </p>
         ) : (
-          <ul className="space-y-3 p-4 sm:p-5">
-            {riskyDishes.map((dish, i) => {
+          <div
+            className={cn(
+              "p-4 sm:p-5",
+              riskyDishes.length >= 3 &&
+                "max-h-[22rem] overflow-y-auto overscroll-contain pr-3 sm:max-h-[24rem]",
+            )}
+          >
+            <ul className="space-y-3">
+              {riskyDishes.map((dish, i) => {
               const maxG = riskyDishes[0]?.avgWasteGPer100 || 1;
               const barPct = Math.max(
                 8,
@@ -349,7 +356,8 @@ export function AntiWastePanels({
                 </li>
               );
             })}
-          </ul>
+            </ul>
+          </div>
         )}
       </section>
 
