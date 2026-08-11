@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
     <header className="flex flex-col items-center text-center">
-      <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
+      <div className="relative flex w-full items-center justify-center">
         <h1
           className="inline-flex flex-col items-center justify-center rounded-[2.25rem] bg-[#65c495] px-8 py-4 text-white shadow-[0_8px_24px_rgba(101,196,149,0.45)] sm:rounded-[2.75rem] sm:px-10 sm:py-5"
           style={{
@@ -30,7 +30,7 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
             anti-gaspillage
           </span>
         </h1>
-        <StopWasteCircleBadge className="h-28 w-28 sm:h-32 sm:w-32" />
+        <StopWasteCircleBadge className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 sm:h-32 sm:w-32" />
       </div>
       <p className="mt-4 max-w-3xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
         {days != null
