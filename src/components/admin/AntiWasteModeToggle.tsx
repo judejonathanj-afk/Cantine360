@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+const TARGET_MAX = 5000;
+
 export function AntiWasteModeToggle({
   initialEnabled,
   initialTargetGPer100,
+  schemaReady = true,
 }: {
   initialEnabled: boolean;
   initialTargetGPer100: number | null;
+  schemaReady?: boolean;
 }) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [target, setTarget] = useState(
@@ -18,6 +22,14 @@ export function AntiWasteModeToggle({
   );
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const savingRef = useRef(false);
+
+  useEffect(() => {
+    setEnabled(initialEnabled);
+    setTarget(
+      initialTargetGPer100 != null ? String(initialTargetGPer100) : "",
+    );
+  }, [initialEnabled, initialTargetGPer100]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -29,12 +41,26 @@ export function AntiWasteModeToggle({
   }, []);
 
   async function save(nextEnabled: boolean) {
+    if (savingRef.current || busy) return;
+    if (!schemaReady) {
+      setMsg(
+        "Base non à jour — exécutez npm run prisma:deploy avant d’activer le mode.",
+      );
+      return;
+    }
+    savingRef.current = true;
     setBusy(true);
     setMsg(null);
     const trimmed = target.trim().replace(",", ".");
     const parsedTarget = trimmed === "" ? null : Number(trimmed);
-    if (parsedTarget != null && (!Number.isFinite(parsedTarget) || parsedTarget < 0)) {
-      setMsg("Objectif : entrez un nombre valide (ex. 80).");
+    if (
+      parsedTarget != null &&
+      (!Number.isFinite(parsedTarget) ||
+        parsedTarget < 0 ||
+        parsedTarget > TARGET_MAX)
+    ) {
+      setMsg(`Objectif : nombre entre 0 et ${TARGET_MAX} (ex. 80).`);
+      savingRef.current = false;
       setBusy(false);
       return;
     }
@@ -50,20 +76,23 @@ export function AntiWasteModeToggle({
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         setMsg(data.error ?? "Enregistrement impossible.");
+        savingRef.current = false;
+        setBusy(false);
         return;
       }
       setEnabled(nextEnabled);
       setMsg(
         nextEnabled
-          ? "Mode activé — affichage de la vue…"
-          : "Mode désactivé.",
+          ? "Mode activé — actualisation…"
+          : "Mode désactivé — actualisation…",
       );
-      window.setTimeout(() => {
-        window.location.reload();
-      }, 400);
+      // Garder busy=true jusqu’au reload pour éviter un double PATCH.
+      window.location.assign(
+        nextEnabled ? "/antigaspillage#anti-waste" : "/antigaspillage",
+      );
     } catch {
       setMsg("Réseau indisponible.");
-    } finally {
+      savingRef.current = false;
       setBusy(false);
     }
   }
@@ -73,13 +102,20 @@ export function AntiWasteModeToggle({
       id="anti-waste"
       className="scroll-mt-24 overflow-hidden rounded-2xl border-2 border-sky-400 bg-sky-600 shadow-md"
     >
+      {!schemaReady ? (
+        <p className="border-b border-amber-300/40 bg-amber-500/90 px-4 py-2.5 text-sm font-semibold text-amber-950 sm:px-6">
+          Colonnes Anti-gaspillage absentes de la base — déployez la migration (
+          <code className="rounded bg-amber-100 px-1">npm run prisma:deploy</code>
+          ) avant d’activer le mode.
+        </p>
+      ) : null}
       <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
             role="switch"
             aria-checked={enabled}
-            disabled={busy}
+            disabled={busy || !schemaReady}
             onClick={() => void save(!enabled)}
             className={cn(
               "relative h-10 w-[4.5rem] shrink-0 rounded-full border-2 transition-colors disabled:opacity-60",
@@ -95,7 +131,7 @@ export function AntiWasteModeToggle({
               )}
             />
             <span className="sr-only">
-              {enabled ? "Désactiver" : "Activer"} le mode Antigaspillage
+              {enabled ? "Désactiver" : "Activer"} le mode Anti-gaspillage
             </span>
           </button>
           <div className="min-w-0">
@@ -137,6 +173,7 @@ export function AntiWasteModeToggle({
               inputMode="decimal"
               placeholder="ex. 80"
               value={target}
+              disabled={busy || !schemaReady}
               onChange={(e) => setTarget(e.target.value)}
               className="h-10 w-28 border-sky-300 bg-white text-base tabular-nums text-sky-900"
               aria-describedby="anti-waste-target-hint"
@@ -150,7 +187,7 @@ export function AntiWasteModeToggle({
           </div>
           <Button
             type="button"
-            disabled={busy}
+            disabled={busy || !schemaReady}
             variant="outline"
             size="sm"
             className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
@@ -164,7 +201,12 @@ export function AntiWasteModeToggle({
                 "text-sm",
                 msg.includes("impossible") ||
                   msg.includes("valide") ||
-                  msg.includes("Réseau")
+                  msg.includes("Réseau") ||
+                  msg.includes("Base") ||
+                  msg.includes("colonnes") ||
+                  msg.includes("introuvable") ||
+                  msg.includes("Déployez") ||
+                  msg.includes("prisma")
                   ? "text-red-300"
                   : "text-emerald-200",
               )}

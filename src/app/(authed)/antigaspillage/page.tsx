@@ -59,6 +59,7 @@ export default async function AntiWastePage({
     <AntiWasteModeToggle
       initialEnabled={antiWaste.antiWasteModeEnabled}
       initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
+      schemaReady={antiWaste.schemaReady}
     />
   );
 

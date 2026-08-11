@@ -3,6 +3,8 @@ import type { PrismaClient } from "@/generated/prisma/client";
 export type EstablishmentAntiWasteSettings = {
   antiWasteModeEnabled: boolean;
   antiWasteTargetGPer100: number | null;
+  /** true si les colonnes DB manquent (migration non déployée). */
+  schemaReady: boolean;
 };
 
 type AntiWasteRow = {
@@ -33,16 +35,27 @@ export async function getEstablishmentAntiWasteSettings(
     `;
     const r = rows[0];
     if (!r) {
-      return { antiWasteModeEnabled: false, antiWasteTargetGPer100: null };
+      return {
+        antiWasteModeEnabled: false,
+        antiWasteTargetGPer100: null,
+        schemaReady: true,
+      };
     }
     return {
       antiWasteModeEnabled: Boolean(r.antiWasteModeEnabled),
       antiWasteTargetGPer100:
-        r.antiWasteTargetGPer100 == null ? null : Number(r.antiWasteTargetGPer100),
+        r.antiWasteTargetGPer100 == null
+          ? null
+          : Number(r.antiWasteTargetGPer100),
+      schemaReady: true,
     };
   } catch (e) {
     if (!isMissingAntiWasteColumns(e)) throw e;
-    return { antiWasteModeEnabled: false, antiWasteTargetGPer100: null };
+    return {
+      antiWasteModeEnabled: false,
+      antiWasteTargetGPer100: null,
+      schemaReady: false,
+    };
   }
 }
 
@@ -53,9 +66,10 @@ export async function updateEstablishmentAntiWasteSettings(
     antiWasteModeEnabled: boolean;
     antiWasteTargetGPer100?: number | null;
   },
-): Promise<void> {
+): Promise<{ updated: boolean }> {
+  let count = 0;
   if (data.antiWasteTargetGPer100 !== undefined) {
-    await db.$executeRaw`
+    count = await db.$executeRaw`
       UPDATE "Establishment"
       SET
         "antiWasteModeEnabled" = ${data.antiWasteModeEnabled},
@@ -63,13 +77,14 @@ export async function updateEstablishmentAntiWasteSettings(
         "updatedAt" = NOW()
       WHERE "id" = ${establishmentId}
     `;
-    return;
+  } else {
+    count = await db.$executeRaw`
+      UPDATE "Establishment"
+      SET
+        "antiWasteModeEnabled" = ${data.antiWasteModeEnabled},
+        "updatedAt" = NOW()
+      WHERE "id" = ${establishmentId}
+    `;
   }
-  await db.$executeRaw`
-    UPDATE "Establishment"
-    SET
-      "antiWasteModeEnabled" = ${data.antiWasteModeEnabled},
-      "updatedAt" = NOW()
-    WHERE "id" = ${establishmentId}
-  `;
+  return { updated: Number(count) > 0 };
 }

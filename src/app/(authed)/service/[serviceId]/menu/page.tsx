@@ -45,7 +45,12 @@ export default async function ServiceMenuPage({
   ]);
 
   const dishWasteHistoryByLabel = antiWaste.antiWasteModeEnabled
-    ? await getDishWasteHistoryByLabel(db, session.establishmentId, serviceId)
+    ? await getDishWasteHistoryByLabel(
+        db,
+        session.establishmentId,
+        serviceId,
+        service.mealType,
+      )
     : {};
 
   const dishImpact = new Map(

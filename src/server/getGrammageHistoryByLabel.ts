@@ -1,16 +1,17 @@
-import type { PrismaClient } from "@/generated/prisma/client";
+import { MealType, type PrismaClient } from "@/generated/prisma/client";
 import { normalizeDishLabel } from "@/lib/antiWasteKitchenAdvice";
 import type { DishWasteHistory } from "@/lib/antiWasteGrammageSuggestion";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 
 /**
  * Historique par intitulé : grammage moyen + gaspillage (g/100)
- * les jours où ce plat était au menu.
+ * les jours où ce plat était au menu (même type de repas, même établissement).
  */
 export async function getDishWasteHistoryByLabel(
   db: PrismaClient,
   establishmentId: string,
   excludeServiceId: string,
+  mealType: MealType = MealType.LUNCH,
 ): Promise<Record<string, DishWasteHistory>> {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -19,6 +20,7 @@ export async function getDishWasteHistoryByLabel(
   const services = await db.service.findMany({
     where: {
       establishmentId,
+      mealType,
       id: { not: excludeServiceId },
       date: { gte: start },
       menu: { isNot: null },
@@ -108,11 +110,13 @@ export async function getGrammageHistoryByLabel(
   db: PrismaClient,
   establishmentId: string,
   excludeServiceId: string,
+  mealType?: MealType,
 ): Promise<Record<string, number>> {
   const full = await getDishWasteHistoryByLabel(
     db,
     establishmentId,
     excludeServiceId,
+    mealType,
   );
   const out: Record<string, number> = {};
   for (const [k, v] of Object.entries(full)) {

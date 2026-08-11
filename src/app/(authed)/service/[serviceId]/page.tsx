@@ -45,16 +45,10 @@ export default async function ServicePage({
     redirect(`/service/${serviceId}/menu`);
   }
 
-  const antiWaste = await getEstablishmentAntiWasteSettings(
-    db,
-    session.establishmentId,
-  );
-
-  const allergenSummary = await getServiceAllergenSummary(
-    db,
-    session.establishmentId,
-    serviceId,
-  );
+  const [antiWaste, allergenSummary] = await Promise.all([
+    getEstablishmentAntiWasteSettings(db, session.establishmentId),
+    getServiceAllergenSummary(db, session.establishmentId, serviceId),
+  ]);
   const summaryByGroup = new Map(
     allergenSummary?.groups.map((g) => [g.groupId, g]) ?? [],
   );

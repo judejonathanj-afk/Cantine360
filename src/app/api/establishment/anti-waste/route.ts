@@ -20,7 +20,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json(
       {
         error:
-          "Seul l’administrateur de l’établissement peut activer le mode Antigaspillage.",
+          "Seul l’administrateur de l’établissement peut activer le mode Anti-gaspillage.",
       },
       { status: 403 },
     );
@@ -29,19 +29,33 @@ export async function PATCH(req: Request) {
   const json = await req.json().catch(() => null);
   const parsed = PatchSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Données invalides" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Données invalides (objectif entre 0 et 5000 g / 100)." },
+      { status: 400 },
+    );
   }
 
   try {
-    await updateEstablishmentAntiWasteSettings(db, session.establishmentId, {
-      antiWasteModeEnabled: parsed.data.antiWasteModeEnabled,
-      ...(parsed.data.antiWasteTargetGPer100 !== undefined && {
-        antiWasteTargetGPer100: parsed.data.antiWasteTargetGPer100,
-      }),
-    });
-    revalidatePath("/admin/groups");
-    revalidatePath("/dashboard");
+    const { updated } = await updateEstablishmentAntiWasteSettings(
+      db,
+      session.establishmentId,
+      {
+        antiWasteModeEnabled: parsed.data.antiWasteModeEnabled,
+        ...(parsed.data.antiWasteTargetGPer100 !== undefined && {
+          antiWasteTargetGPer100: parsed.data.antiWasteTargetGPer100,
+        }),
+      },
+    );
+    if (!updated) {
+      return NextResponse.json(
+        { error: "Établissement introuvable." },
+        { status: 404 },
+      );
+    }
+    // Invalider la vue commission + les pages service / menu (bandeau cuisine).
     revalidatePath("/antigaspillage");
+    revalidatePath("/service", "layout");
+    revalidatePath("/dashboard");
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("[api/establishment/anti-waste]", e);
@@ -49,7 +63,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json(
         {
           error:
-            "Les colonnes Antigaspillage ne sont pas encore sur cette base. Exécutez : npm run prisma:deploy",
+            "Les colonnes Anti-gaspillage ne sont pas encore sur cette base. Exécutez : npm run prisma:deploy",
         },
         { status: 503 },
       );
