@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Recycle } from "lucide-react";
+import { AlertTriangle, Download, Recycle } from "lucide-react";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
@@ -9,6 +9,7 @@ import {
   CANTINE_PLUS_MIDNIGHT,
   CANTINE_PLUS_MIDNIGHT_BORDER,
 } from "@/lib/cantinePlusTheme";
+import { unparseCsvSemicolon } from "@/lib/csvExport";
 import { cn } from "@/lib/utils";
 
 type DayRow = {
@@ -81,6 +82,126 @@ export function AntiWastePanels({
         ? "border-emerald-900/15 bg-white text-zinc-950 shadow-lg shadow-emerald-700/20"
         : "border-white/25 bg-white/95 text-zinc-950 shadow-lg shadow-black/20";
 
+  function downloadSynthesisCsv() {
+    const summaryRows: Record<string, unknown>[] = [
+      {
+        Section: "Synthèse",
+        Indicateur: "Période (jours)",
+        Valeur: days,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Lecture g / 100",
+        Valeur: status.title,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Détail",
+        Valeur: status.detail,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Que faire",
+        Valeur: status.hint,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Objectif g / 100",
+        Valeur: targetGPer100 ?? "",
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Déchets total (g)",
+        Valeur: totalWasteWeightG > 0 ? Math.round(totalWasteWeightG) : "",
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Déchets maternelle (g)",
+        Valeur:
+          totalWasteMaternelleG > 0 ? Math.round(totalWasteMaternelleG) : "",
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Déchets primaire (g)",
+        Valeur: totalWastePrimaireG > 0 ? Math.round(totalWastePrimaireG) : "",
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Taux RAB",
+        Valeur: rabRatePct,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Pesées saisies",
+        Valeur: `${servicesWithWaste} / ${servicesCount}`,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Services sans pesée",
+        Valeur: missingWeighCount,
+      },
+      {
+        Section: "Synthèse",
+        Indicateur: "Jours au-dessus objectif",
+        Valeur:
+          targetGPer100 != null
+            ? perDayRows.filter(
+                (r) =>
+                  r.wasteGramsPer100 != null &&
+                  r.wasteGramsPer100 > targetGPer100,
+              ).length
+            : "",
+      },
+    ];
+
+    const dayRows = [...perDayRows].reverse().map((row) => ({
+      Section: "Jour par jour",
+      Date: row.date,
+      "Déchets (g)":
+        row.wasteWeightG > 0 ? Math.round(row.wasteWeightG) : "",
+      "Mat. (g)": Math.round(row.wasteWeightMaternelleG),
+      "Prim. (g)": Math.round(row.wasteWeightPrimaireG),
+      "g / 100":
+        row.wasteGramsPer100 != null
+          ? Number(row.wasteGramsPer100.toFixed(1))
+          : "",
+      "RAB %":
+        row.rabRatePct != null ? Number(row.rabRatePct.toFixed(1)) : "",
+      Pesée: row.weighLabel,
+      "Δ déchets":
+        row.wasteDelta == null
+          ? ""
+          : `${row.wasteDelta > 0 ? "+" : ""}${Math.round(row.wasteDelta)}`,
+    }));
+
+    const dishRows = riskyDishes.map((dish, i) => ({
+      Section: "Plats à risque",
+      Rang: i + 1,
+      Plat: dish.label,
+      "Services avec ce plat": dish.serviceCount,
+      "Moy. g / 100": Number(dish.avgWasteGPer100.toFixed(0)),
+      "Vs objectif":
+        dish.vsTarget === "above"
+          ? "Au-dessus"
+          : dish.vsTarget === "ok"
+            ? "Sous objectif"
+            : "Sans objectif",
+    }));
+
+    const csv = unparseCsvSemicolon([
+      ...summaryRows,
+      ...dayRows,
+      ...dishRows,
+    ]);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `synthese-anti-gaspillage-${days}j.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="mt-8 space-y-8 sm:mt-10">
       <div
@@ -90,14 +211,24 @@ export function AntiWastePanels({
           borderColor: CANTINE_PLUS_MIDNIGHT_BORDER,
         }}
       >
-        <div>
-          <h2 className="text-lg font-bold tracking-tight text-white sm:text-xl">
-            Synthèse Antigaspillage
-          </h2>
-          <p className="mt-0.5 text-sm text-white/70">
-            Lecture g / 100, déchets, RAB et pesées sur {days} jours — pour
-            piloter la commission.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold tracking-tight text-white sm:text-xl">
+              Synthèse Anti-gaspillage
+            </h2>
+            <p className="mt-0.5 text-sm text-white/70">
+              Lecture g / 100, déchets, RAB et pesées sur {days} jours — pour
+              piloter la commission.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={downloadSynthesisCsv}
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-white/25 bg-white/15 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-white/25"
+          >
+            <Download className="h-4 w-4" aria-hidden />
+            Télécharger
+          </button>
         </div>
 
         <div
