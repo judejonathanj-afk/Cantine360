@@ -32,14 +32,10 @@ function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
         </h1>
         <StopWasteCircleBadge className="h-28 w-28 sm:h-32 sm:w-32" />
       </div>
-      <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
-        Objectif g / 100 assiettes, alertes et tendances pour décider plus vite
-        — et ajuster demain la production.
-      </p>
-      <p className="mt-1.5 max-w-2xl text-sm text-emerald-900/70 sm:text-base">
+      <p className="mt-4 max-w-3xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
         {days != null
-          ? `Vue commission — déchets, pesées et évolution sur ${days} jours.`
-          : "Activez le mode ci-dessous pour afficher la vue commission."}
+          ? `Le mode anti-gaspillage aide la cuisine et la commission à réduire les restes : vous fixez un objectif en grammes pour 100 assiettes, puis cette page montre la synthèse (g / 100, déchets, RAB, pesées), les plats à risque, l’évolution et le détail jour par jour sur ${days} jours — pour ajuster demain portions et production.`
+          : "Le mode anti-gaspillage aide la cuisine et la commission à réduire les restes : fixez un objectif en grammes pour 100 assiettes, puis activez le mode ci-dessous pour afficher la synthèse, les plats à risque, l’évolution et le détail jour par jour."}
       </p>
     </header>
   );
