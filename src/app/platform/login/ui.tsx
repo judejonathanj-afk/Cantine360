@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Leaf } from "lucide-react";
+import { ChefHat } from "lucide-react";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -49,7 +49,7 @@ export function PlatformLoginClient() {
         className="absolute top-6 left-6 z-20 flex items-center gap-3 sm:top-8 sm:left-8"
       >
         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
-          <Leaf className="h-5 w-5" aria-hidden />
+          <ChefHat className="h-5 w-5" aria-hidden />
         </span>
         <span className="text-lg font-bold tracking-tight text-foreground">Cantine360</span>
       </Link>

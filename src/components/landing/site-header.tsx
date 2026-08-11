@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Leaf, ArrowRight } from "lucide-react";
+import { ChefHat, ArrowRight } from "lucide-react";
 
 export function SiteHeader() {
   return (
@@ -7,7 +7,7 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
         <Link href="/" className="flex items-center gap-2.5">
           <span className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-            <Leaf className="size-5" />
+            <ChefHat className="size-5" />
           </span>
           <span className="font-display text-2xl font-bold tracking-tight text-foreground">
             Cantine<span className="text-primary">360</span>

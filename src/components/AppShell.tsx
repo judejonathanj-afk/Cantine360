@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
-  Leaf,
   Utensils,
   BarChart3,
   FileDown,
@@ -233,7 +232,7 @@ export function AppShell({
             className="flex min-w-0 max-w-[45%] shrink items-center gap-2 sm:max-w-[14rem] sm:gap-3 md:max-w-[16rem]"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
-              <Leaf className="h-5 w-5" />
+              <ChefHat className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex flex-col">
               <span className="truncate text-lg font-bold text-foreground">Cantine360</span>

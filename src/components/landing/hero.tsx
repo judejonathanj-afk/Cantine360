@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { WifiOff, Scale, LayoutDashboard, Sparkles, Leaf } from "lucide-react";
+import { WifiOff, Scale, LayoutDashboard, Sparkles, ChefHat } from "lucide-react";
 import { Reveal } from "./reveal";
 
 const features = [
@@ -27,7 +27,7 @@ export function Hero() {
         <div>
           <Reveal direction="left">
             <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-primary">
-              <Leaf className="size-4" /> Cantine scolaire
+              <ChefHat className="size-4" /> Cantine scolaire
             </p>
           </Reveal>
 

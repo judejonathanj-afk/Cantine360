@@ -1,4 +1,4 @@
-import { Leaf } from "lucide-react";
+import { ChefHat } from "lucide-react";
 import { AnimatedBackground } from "@/components/landing/animated-background";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Hero } from "@/components/landing/hero";
@@ -16,7 +16,7 @@ export function LandingPage() {
       </main>
       <footer className="relative mx-auto flex max-w-6xl flex-col items-center gap-2 px-5 py-10 text-center text-sm text-muted-foreground">
         <span className="flex items-center gap-2 font-display text-lg font-bold text-foreground">
-          <Leaf className="size-5 text-primary" /> Cantine360
+          <ChefHat className="size-5 text-primary" /> Cantine360
         </span>
         <p>
           Moins de gaspillage, un service mieux piloté — chaque jour, dans

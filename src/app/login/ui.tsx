@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, Eye, EyeOff, Leaf } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -128,7 +128,7 @@ export function LoginClient() {
           <CardHeader className="space-y-3 px-8 sm:px-10">
             <CardTitle className="flex items-center gap-3 text-3xl font-bold tracking-tight text-primary">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                <Leaf className="h-6 w-6" aria-hidden />
+                <ChefHat className="h-6 w-6" aria-hidden />
               </span>
               Cantine360
             </CardTitle>
