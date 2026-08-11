@@ -90,6 +90,16 @@ export function AntiWastePanels({
           borderColor: CANTINE_PLUS_MIDNIGHT_BORDER,
         }}
       >
+        <div>
+          <h2 className="text-lg font-bold tracking-tight text-white sm:text-xl">
+            Synthèse Antigaspillage
+          </h2>
+          <p className="mt-0.5 text-sm text-white/70">
+            Lecture g / 100, déchets, RAB et pesées sur {days} jours — pour
+            piloter la commission.
+          </p>
+        </div>
+
         <div
           className={cn(
             "relative overflow-hidden rounded-2xl bg-gradient-to-br px-4 py-3 shadow-lg sm:px-5 sm:py-3.5",
