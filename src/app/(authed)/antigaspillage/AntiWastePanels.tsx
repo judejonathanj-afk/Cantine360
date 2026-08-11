@@ -54,14 +54,32 @@ export function AntiWastePanels({
   riskyDishes?: RiskyDishRow[];
 }) {
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
-  const statusAccent =
+  const statusShell =
     status.tone === "ok"
-      ? "border-emerald-400/60 bg-emerald-500/15 text-emerald-100"
+      ? "from-emerald-500 via-emerald-400 to-teal-400"
       : status.tone === "watch"
-        ? "border-amber-400/60 bg-amber-500/15 text-amber-100"
+        ? "from-amber-400 via-yellow-400 to-orange-400"
         : status.tone === "alert"
-          ? "border-red-400/60 bg-red-500/15 text-red-100"
-          : "border-white/15 bg-white/5 text-white/90";
+          ? "from-rose-600 via-rose-500 to-orange-500"
+          : "from-slate-500 via-slate-400 to-zinc-400";
+  const statusText =
+    status.tone === "watch" || status.tone === "ok"
+      ? "text-zinc-950"
+      : "text-white";
+  const statusMuted =
+    status.tone === "watch" || status.tone === "ok"
+      ? "text-zinc-800"
+      : "text-white/90";
+  const statusBadge =
+    status.tone === "watch" || status.tone === "ok"
+      ? "bg-zinc-950/10 text-zinc-900 ring-zinc-950/15"
+      : "bg-white/20 text-white ring-white/25";
+  const actionBox =
+    status.tone === "watch"
+      ? "border-zinc-950/15 bg-white text-zinc-950 shadow-lg shadow-amber-700/20"
+      : status.tone === "ok"
+        ? "border-emerald-900/15 bg-white text-zinc-950 shadow-lg shadow-emerald-700/20"
+        : "border-white/25 bg-white/95 text-zinc-950 shadow-lg shadow-black/20";
 
   return (
     <div className="mt-8 space-y-8 sm:mt-10">
@@ -74,24 +92,54 @@ export function AntiWastePanels({
       >
         <div
           className={cn(
-            "rounded-2xl border-2 px-4 py-4 sm:px-5 sm:py-5",
-            statusAccent,
+            "relative overflow-hidden rounded-2xl bg-gradient-to-br p-5 shadow-xl sm:p-6",
+            statusShell,
+            statusText,
           )}
           role="status"
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
-            Lecture g / 100 assiettes
-          </p>
-          <p className="mt-1 text-lg font-bold leading-snug text-white sm:text-xl">
-            {status.title}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
-            {status.detail}
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-white/70 sm:text-base">
-            <span className="font-semibold text-white/90">Que faire : </span>
-            {status.hint}
-          </p>
+          <div
+            className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/30 blur-2xl"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -bottom-16 left-1/4 h-32 w-32 rounded-full bg-white/20 blur-2xl"
+            aria-hidden
+          />
+          <div className="relative">
+            <p
+              className={cn(
+                "inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ring-1",
+                statusBadge,
+              )}
+            >
+              Lecture g / 100 assiettes
+            </p>
+            <p className="mt-3 text-balance text-2xl font-black leading-tight tracking-tight sm:text-3xl">
+              {status.title}
+            </p>
+            <p
+              className={cn(
+                "mt-3 max-w-3xl text-base font-medium leading-relaxed sm:text-lg",
+                statusMuted,
+              )}
+            >
+              {status.detail}
+            </p>
+            <div
+              className={cn(
+                "mt-4 rounded-2xl border px-4 py-3.5 sm:px-5",
+                actionBox,
+              )}
+            >
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-rose-600">
+                Que faire
+              </p>
+              <p className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
+                {status.hint}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
