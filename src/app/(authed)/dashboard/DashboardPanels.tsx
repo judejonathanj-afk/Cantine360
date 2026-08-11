@@ -214,14 +214,14 @@ export default function DashboardPanels({
             {isKitchen ? (
               <DashboardProfileAvatar establishmentId={establishmentId} />
             ) : null}
-            <h1 className="text-balance text-2xl font-bold tracking-tight text-emerald-950 sm:text-3xl">
+            <h1 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-3xl">
               {isKitchen
                 ? "Tableau de bord cuisine"
                 : "Bienvenue sur votre tableau de bord"}
               {schoolNames.length === 1 ? (
                 <>
                   <span aria-hidden> — </span>
-                  <span className="text-emerald-950">{schoolNames[0]}</span>
+                  <span className="text-white">{schoolNames[0]}</span>
                 </>
               ) : null}
             </h1>
