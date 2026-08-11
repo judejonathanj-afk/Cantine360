@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
 export function AntiWasteModeToggle({
@@ -71,7 +72,10 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className="scroll-mt-24 overflow-hidden rounded-2xl border border-amber-300 bg-amber-100 shadow-sm"
+      className={cn(
+        "scroll-mt-24 overflow-hidden rounded-2xl border-2 shadow-md",
+        cantinePlusShellClass,
+      )}
     >
       <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-3">
@@ -84,8 +88,8 @@ export function AntiWasteModeToggle({
             className={cn(
               "relative h-10 w-[4.5rem] shrink-0 rounded-full border-2 transition-colors disabled:opacity-60",
               enabled
-                ? "border-emerald-800 bg-emerald-600"
-                : "border-zinc-400 bg-zinc-200",
+                ? "border-emerald-300 bg-emerald-500"
+                : "border-white/40 bg-white/20",
             )}
           >
             <span
@@ -99,10 +103,10 @@ export function AntiWasteModeToggle({
             </span>
           </button>
           <div className="min-w-0">
-            <p className="text-base font-bold text-amber-950 sm:text-lg">
+            <p className="text-base font-bold text-white sm:text-lg">
               Activation du mode
             </p>
-            <p className="text-sm text-amber-950/75">
+            <p className="text-sm text-white/75">
               {enabled
                 ? "Activé — vue commission visible ci-dessous"
                 : "Désactivé — basculez pour afficher les indicateurs"}
@@ -111,20 +115,22 @@ export function AntiWasteModeToggle({
         </div>
       </div>
 
-      <div className="space-y-3 border-t border-amber-300/80 bg-amber-50/80 px-4 py-4 sm:px-6">
+      <div className="space-y-3 border-t border-white/15 bg-black/15 px-4 py-4 sm:px-6">
         <div>
           <label
             htmlFor="anti-waste-target"
-            className="text-sm font-bold text-amber-950 sm:text-base"
+            className="text-sm font-bold text-white sm:text-base"
           >
             Objectif de déchets à ne pas dépasser
           </label>
-          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-amber-950/80">
+          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-white/80">
             Indiquez combien de grammes de déchets vous acceptez{" "}
-            <strong className="font-semibold">pour 100 assiettes servies</strong>
-            . Exemple : <strong className="font-semibold">80</strong> signifie
-            « pas plus de 80 g jetés pour 100 repas » (soit 0,8 kg). Ce seuil
-            colore ensuite le suivi en vert, orange ou rouge.
+            <strong className="font-semibold text-white">
+              pour 100 assiettes servies
+            </strong>
+            . Exemple : <strong className="font-semibold text-white">80</strong>{" "}
+            signifie « pas plus de 80 g jetés pour 100 repas » (soit 0,8 kg). Ce
+            seuil colore ensuite le suivi en vert, orange ou rouge.
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
@@ -136,12 +142,12 @@ export function AntiWasteModeToggle({
               placeholder="ex. 80"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              className="h-10 w-28 border-amber-300 bg-white text-base tabular-nums"
+              className="h-10 w-28 border-[#2f6b69] bg-white text-base tabular-nums text-[#245554]"
               aria-describedby="anti-waste-target-hint"
             />
             <span
               id="anti-waste-target-hint"
-              className="text-sm font-medium text-amber-950/80"
+              className="text-sm font-medium text-white/80"
             >
               g / 100 assiettes
             </span>
@@ -151,7 +157,7 @@ export function AntiWasteModeToggle({
             disabled={busy}
             variant="outline"
             size="sm"
-            className="border-amber-700 text-amber-950 hover:bg-amber-200"
+            className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
             onClick={() => void save(enabled)}
           >
             {busy ? "…" : "Enregistrer l’objectif"}
@@ -163,8 +169,8 @@ export function AntiWasteModeToggle({
                 msg.includes("impossible") ||
                   msg.includes("valide") ||
                   msg.includes("Réseau")
-                  ? "text-red-700"
-                  : "text-amber-900",
+                  ? "text-red-300"
+                  : "text-emerald-200",
               )}
             >
               {msg}
