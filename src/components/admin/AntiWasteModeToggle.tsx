@@ -100,7 +100,7 @@ export function AntiWasteModeToggle({
           </button>
           <div className="min-w-0">
             <p className="text-base font-bold text-white sm:text-lg">
-              Activation du mode anti gaspi
+              Activation du mode anti-gaspillages
             </p>
             <p className="text-sm text-white/75">
               {enabled
