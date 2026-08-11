@@ -92,35 +92,31 @@ export function AntiWastePanels({
       >
         <div
           className={cn(
-            "relative overflow-hidden rounded-2xl bg-gradient-to-br p-5 shadow-xl sm:p-6",
+            "relative overflow-hidden rounded-2xl bg-gradient-to-br px-4 py-3 shadow-lg sm:px-5 sm:py-3.5",
             statusShell,
             statusText,
           )}
           role="status"
         >
           <div
-            className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/30 blur-2xl"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -bottom-16 left-1/4 h-32 w-32 rounded-full bg-white/20 blur-2xl"
+            className="pointer-events-none absolute -right-10 -top-12 h-28 w-28 rounded-full bg-white/25 blur-2xl"
             aria-hidden
           />
           <div className="relative">
             <p
               className={cn(
-                "inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ring-1",
+                "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] ring-1",
                 statusBadge,
               )}
             >
               Lecture g / 100 assiettes
             </p>
-            <p className="mt-3 text-balance text-2xl font-black leading-tight tracking-tight sm:text-3xl">
+            <p className="mt-1.5 text-balance text-lg font-black leading-snug tracking-tight sm:text-xl">
               {status.title}
             </p>
             <p
               className={cn(
-                "mt-3 max-w-3xl text-base font-medium leading-relaxed sm:text-lg",
+                "mt-1.5 max-w-3xl text-sm font-medium leading-snug sm:text-[15px]",
                 statusMuted,
               )}
             >
@@ -128,14 +124,14 @@ export function AntiWastePanels({
             </p>
             <div
               className={cn(
-                "mt-4 rounded-2xl border px-4 py-3.5 sm:px-5",
+                "mt-2.5 rounded-xl border px-3 py-2 sm:px-3.5",
                 actionBox,
               )}
             >
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-rose-600">
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-rose-600">
                 Que faire
               </p>
-              <p className="mt-1.5 text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
+              <p className="mt-0.5 text-sm font-semibold leading-snug text-zinc-900 sm:text-[15px]">
                 {status.hint}
               </p>
             </div>
