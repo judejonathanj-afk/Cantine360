@@ -1,4 +1,4 @@
-import { Recycle, Baby, GraduationCap, Lightbulb } from "lucide-react";
+import { AlertTriangle, Recycle, Baby, GraduationCap, Lightbulb } from "lucide-react";
 import type { AntiWasteKitchenAdvice } from "@/lib/antiWasteKitchenAdvice";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +14,45 @@ export function AntiWasteServiceBanner({
         ? "border-emerald-300 bg-emerald-50 text-emerald-950"
         : "border-sky-200 bg-sky-50 text-sky-950";
 
+  const alert = advice.riskyDishAlert ?? null;
+
   return (
     <section
       aria-label="Aide Antigaspillage pour le service"
       className="overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 shadow-sm"
     >
+      {alert ? (
+        <div
+          className="border-b border-rose-300/60 bg-gradient-to-r from-rose-600 to-orange-500 px-4 py-3.5 text-white sm:px-5"
+          role="alert"
+        >
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/20 ring-1 ring-white/30">
+              <AlertTriangle className="h-5 w-5" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-white/90">
+                Alerte du jour — plat à risque n°{alert.rank}
+              </p>
+              <p className="mt-1 text-base font-bold leading-snug sm:text-lg">
+                « {alert.label} » revient aujourd’hui
+                <span className="font-semibold text-white/90">
+                  {" "}
+                  (~
+                  {alert.avgWasteGPer100.toLocaleString("fr-FR", {
+                    maximumFractionDigits: 0,
+                  })}{" "}
+                  g / 100 en moyenne)
+                </span>
+              </p>
+              <p className="mt-1.5 text-sm leading-snug text-white/95">
+                {alert.tip}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-center gap-2 border-b border-emerald-100 px-4 py-3 sm:px-5">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-700 text-white">
           <Recycle className="h-4 w-4" aria-hidden />

@@ -39,6 +39,13 @@ export type AntiWasteKitchenAdvice = {
   tip: string;
   tipTone: "info" | "watch" | "ok";
   matchedDish: string | null;
+  /** Alerte matin si le plat du jour est dans le classement à risque. */
+  riskyDishAlert?: {
+    rank: number;
+    label: string;
+    avgWasteGPer100: number;
+    tip: string;
+  } | null;
 };
 
 export function normalizeDishLabel(label: string): string {

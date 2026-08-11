@@ -6,6 +6,10 @@ import {
   type LevelMetricInput,
   type PastServiceInsightInput,
 } from "@/lib/antiWasteKitchenAdvice";
+import {
+  buildRiskyDishesRanking,
+  buildTodayRiskyDishAlert,
+} from "@/lib/antiWasteRiskyDishes";
 import { totalGrammagePerPlate } from "@/lib/serviceGrammage";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 
@@ -95,7 +99,7 @@ export async function getAntiWasteKitchenAdvice(input: {
   }));
 
   const perPlateBase = totalGrammagePerPlate(input.menuItems);
-  return buildAntiWasteKitchenAdvice({
+  const advice = buildAntiWasteKitchenAdvice({
     perPlateBase: perPlateBase > 0 ? perPlateBase : null,
     metrics: levelMetrics,
     currentLabels,
@@ -103,4 +107,27 @@ export async function getAntiWasteKitchenAdvice(input: {
     pastServices,
     targetGPer100: input.targetGPer100,
   });
+
+  const ranking = buildRiskyDishesRanking(
+    pastServices.map((s) => ({
+      wasteGramsPer100:
+        s.served > 0 && s.wasteWeightG > 0
+          ? (s.wasteWeightG / s.served) * 100
+          : null,
+      menuLabels: s.menuLabels,
+      mainLabels: s.mainLabels,
+    })),
+    input.targetGPer100,
+    { limit: 8, preferMain: true },
+  );
+
+  return {
+    ...advice,
+    riskyDishAlert: buildTodayRiskyDishAlert(
+      ranking,
+      currentMainLabels,
+      currentLabels,
+      { topN: 5 },
+    ),
+  };
 }

@@ -13,6 +13,13 @@ export type RiskyDishRow = {
   vsTarget: "above" | "ok" | "unknown";
 };
 
+export type TodayRiskyDishAlert = {
+  rank: number;
+  label: string;
+  avgWasteGPer100: number;
+  tip: string;
+};
+
 /**
  * Classe les plats associés aux jours à fort gaspillage (g / 100).
  * Attribution : le g/100 du jour est lié à chaque plat du menu ce jour-là
@@ -77,4 +84,44 @@ export function buildRiskyDishesRanking(
       return b.serviceCount - a.serviceCount;
     })
     .slice(0, limit);
+}
+
+/**
+ * Si un plat du menu du jour est dans le classement « plats à risque »,
+ * renvoie une alerte portions pour le service.
+ */
+export function buildTodayRiskyDishAlert(
+  ranking: RiskyDishRow[],
+  currentMainLabels: string[],
+  currentMenuLabels: string[],
+  options?: { topN?: number },
+): TodayRiskyDishAlert | null {
+  const topN = options?.topN ?? 5;
+  const top = ranking.slice(0, topN);
+  if (top.length === 0) return null;
+
+  const candidates =
+    currentMainLabels.length > 0 ? currentMainLabels : currentMenuLabels;
+
+  for (const raw of candidates) {
+    const key = normalizeDishLabel(raw);
+    if (!key) continue;
+    const hitIndex = top.findIndex((row) => {
+      const rk = normalizeDishLabel(row.label);
+      return rk === key || rk.includes(key) || key.includes(rk);
+    });
+    if (hitIndex < 0) continue;
+    const hit = top[hitIndex]!;
+    const g = hit.avgWasteGPer100.toLocaleString("fr-FR", {
+      maximumFractionDigits: 0,
+    });
+    const label = raw.trim() || hit.label;
+    return {
+      rank: hitIndex + 1,
+      label,
+      avgWasteGPer100: hit.avgWasteGPer100,
+      tip: `Plat à risque n°${hitIndex + 1} (« ${label} », ~${g} g / 100 en moyenne) — portions plus petites dès le premier service, surtout en maternelle, et proposer le RAB.`,
+    };
+  }
+  return null;
 }
