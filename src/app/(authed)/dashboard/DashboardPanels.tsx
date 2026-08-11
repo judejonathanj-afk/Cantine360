@@ -208,41 +208,43 @@ export default function DashboardPanels({
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3 rounded-2xl border border-violet-300/50 bg-[#b491ca] px-4 py-5 sm:px-6 sm:py-6">
+      <div className="space-y-3 rounded-2xl border border-violet-800/25 bg-[#b491ca] px-4 py-5 text-violet-950 sm:px-6 sm:py-6">
         <div>
           <div className="flex items-center gap-3 sm:gap-4">
             {isKitchen ? (
               <DashboardProfileAvatar establishmentId={establishmentId} />
             ) : null}
-            <h1 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <h1 className="text-balance text-2xl font-bold tracking-tight text-violet-950 sm:text-3xl">
               {isKitchen
                 ? "Tableau de bord cuisine"
                 : "Bienvenue sur votre tableau de bord"}
               {schoolNames.length === 1 ? (
                 <>
                   <span aria-hidden> — </span>
-                  <span className="text-emerald-700">{schoolNames[0]}</span>
+                  <span className="text-violet-950">{schoolNames[0]}</span>
                 </>
               ) : null}
             </h1>
           </div>
           {schoolNames.length > 1 ? (
-            <p className="mt-1 text-sm text-zinc-700 sm:text-base">
-              <span className="font-medium text-zinc-600">Écoles suivies : </span>
+            <p className="mt-1 text-sm text-violet-950 sm:text-base">
+              <span className="font-medium text-violet-950/85">
+                Écoles suivies :{" "}
+              </span>
               {schoolNames.map((name, index) => (
                 <span key={name}>
                   {index > 0 ? (
-                    <span aria-hidden className="text-zinc-400">
+                    <span aria-hidden className="text-violet-900/70">
                       {" "}
                       ·{" "}
                     </span>
                   ) : null}
-                  <span className="font-semibold text-emerald-700">{name}</span>
+                  <span className="font-bold text-violet-950">{name}</span>
                 </span>
               ))}
             </p>
           ) : null}
-          <p className="mt-1 text-muted-foreground">
+          <p className="mt-1 font-medium text-violet-950/90">
             Indicateurs sur les {days} derniers jours
             {levelFilter !== "all"
               ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
@@ -250,7 +252,7 @@ export default function DashboardPanels({
           </p>
         </div>
 
-        <p className="text-base font-semibold leading-snug text-zinc-900 sm:text-lg">
+        <p className="text-base font-semibold leading-snug text-violet-950 sm:text-lg">
           {isKitchen
             ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
             : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
