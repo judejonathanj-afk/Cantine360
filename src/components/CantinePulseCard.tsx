@@ -433,7 +433,7 @@ export function CantinePulseCard({
 
   return (
     <Card
-      className="overflow-hidden border-[#1a2d4a] bg-[#0a1628] text-white shadow-md ring-1 ring-[#1a2d4a] transition-shadow hover:shadow-lg"
+      className="overflow-hidden border-[#2f6b69] bg-[#245554] text-white shadow-md ring-1 ring-[#2f6b69] transition-shadow hover:shadow-lg"
     >
       <div className={cn("h-1.5 w-full shrink-0", s.topBar)} aria-hidden />
       <CardContent className="space-y-5 p-6 pt-4">

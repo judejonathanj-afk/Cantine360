@@ -1,9 +1,9 @@
-/** Bleu nuit — fond de marque Cantine + (bandeau titre). */
-export const CANTINE_PLUS_MIDNIGHT = "#0a1628";
-export const CANTINE_PLUS_MIDNIGHT_BORDER = "#1a2d4a";
+/** Teal nuit — fond de marque Cantine + (bandeau titre). */
+export const CANTINE_PLUS_MIDNIGHT = "#245554";
+export const CANTINE_PLUS_MIDNIGHT_BORDER = "#2f6b69";
 
 export const cantinePlusShellClass =
-  "border-[#1a2d4a] bg-[#0a1628]";
+  "border-[#2f6b69] bg-[#245554]";
 
 /** Cartes graphiques Cantine + — fond blanc. */
 export const cantinePlusChartCardClass =
