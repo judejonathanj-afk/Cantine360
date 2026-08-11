@@ -17,6 +17,7 @@ import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
+import { StopWasteApple } from "@/components/dashboard/StopWasteApple";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -208,55 +209,59 @@ export default function DashboardPanels({
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3 rounded-2xl border border-emerald-900/20 bg-[#80ca4e] px-4 py-5 text-emerald-950 sm:px-6 sm:py-6">
-        <div>
-          <div className="flex items-center gap-3 sm:gap-4">
-            {isKitchen ? (
-              <DashboardProfileAvatar establishmentId={establishmentId} />
-            ) : null}
-            <h1 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-3xl">
-              {isKitchen
-                ? "Tableau de bord cuisine"
-                : "Bienvenue sur votre tableau de bord"}
-              {schoolNames.length === 1 ? (
-                <>
-                  <span aria-hidden> — </span>
-                  <span className="text-white">{schoolNames[0]}</span>
-                </>
+      <div className="flex items-center gap-4 rounded-2xl border border-emerald-900/20 bg-[#80ca4e] px-4 py-5 text-emerald-950 sm:gap-6 sm:px-6 sm:py-6">
+        <div className="min-w-0 flex-1 space-y-3">
+          <div>
+            <div className="flex items-center gap-3 sm:gap-4">
+              {isKitchen ? (
+                <DashboardProfileAvatar establishmentId={establishmentId} />
               ) : null}
-            </h1>
-          </div>
-          {schoolNames.length > 1 ? (
-            <p className="mt-1 text-sm text-emerald-950 sm:text-base">
-              <span className="font-medium text-emerald-950/85">
-                Écoles suivies :{" "}
-              </span>
-              {schoolNames.map((name, index) => (
-                <span key={name}>
-                  {index > 0 ? (
-                    <span aria-hidden className="text-emerald-900/70">
-                      {" "}
-                      ·{" "}
-                    </span>
-                  ) : null}
-                  <span className="font-bold text-emerald-950">{name}</span>
+              <h1 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                {isKitchen
+                  ? "Tableau de bord cuisine"
+                  : "Bienvenue sur votre tableau de bord"}
+                {schoolNames.length === 1 ? (
+                  <>
+                    <span aria-hidden> — </span>
+                    <span className="text-white">{schoolNames[0]}</span>
+                  </>
+                ) : null}
+              </h1>
+            </div>
+            {schoolNames.length > 1 ? (
+              <p className="mt-1 text-sm text-emerald-950 sm:text-base">
+                <span className="font-medium text-emerald-950/85">
+                  Écoles suivies :{" "}
                 </span>
-              ))}
+                {schoolNames.map((name, index) => (
+                  <span key={name}>
+                    {index > 0 ? (
+                      <span aria-hidden className="text-emerald-900/70">
+                        {" "}
+                        ·{" "}
+                      </span>
+                    ) : null}
+                    <span className="font-bold text-emerald-950">{name}</span>
+                  </span>
+                ))}
+              </p>
+            ) : null}
+            <p className="mt-1 font-medium text-emerald-950/90">
+              Indicateurs sur les {days} derniers jours
+              {levelFilter !== "all"
+                ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
+                : ""}
             </p>
-          ) : null}
-          <p className="mt-1 font-medium text-emerald-950/90">
-            Indicateurs sur les {days} derniers jours
-            {levelFilter !== "all"
-              ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
-              : ""}
+          </div>
+
+          <p className="text-base font-semibold leading-snug text-emerald-950 sm:text-lg">
+            {isKitchen
+              ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
+              : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
           </p>
         </div>
 
-        <p className="text-base font-semibold leading-snug text-emerald-950 sm:text-lg">
-          {isKitchen
-            ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
-            : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
-        </p>
+        <StopWasteApple className="hidden h-24 w-auto sm:block sm:h-28 md:h-32" />
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
