@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
 export function AntiWasteModeToggle({
@@ -72,10 +71,7 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className={cn(
-        "scroll-mt-24 overflow-hidden rounded-2xl border-2 shadow-md",
-        cantinePlusShellClass,
-      )}
+      className="scroll-mt-24 overflow-hidden rounded-2xl border-2 border-sky-400 bg-sky-600 shadow-md"
     >
       <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
         <div className="flex min-w-0 items-center gap-3">
@@ -104,7 +100,7 @@ export function AntiWasteModeToggle({
           </button>
           <div className="min-w-0">
             <p className="text-base font-bold text-white sm:text-lg">
-              Activation du mode
+              Activation du mode anti gaspi
             </p>
             <p className="text-sm text-white/75">
               {enabled
@@ -142,7 +138,7 @@ export function AntiWasteModeToggle({
               placeholder="ex. 80"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              className="h-10 w-28 border-[#3d8582] bg-white text-base tabular-nums text-[#2f6b69]"
+              className="h-10 w-28 border-sky-300 bg-white text-base tabular-nums text-sky-900"
               aria-describedby="anti-waste-target-hint"
             />
             <span
