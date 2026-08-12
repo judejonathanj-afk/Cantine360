@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ export function AntiWasteModeToggle({
   initialTargetGPer100: number | null;
   schemaReady?: boolean;
 }) {
+  const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
   const [target, setTarget] = useState(
     initialTargetGPer100 != null ? String(initialTargetGPer100) : "",
@@ -76,22 +78,19 @@ export function AntiWasteModeToggle({
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         setMsg(data.error ?? "Enregistrement impossible.");
-        savingRef.current = false;
-        setBusy(false);
         return;
       }
       setEnabled(nextEnabled);
       setMsg(
         nextEnabled
-          ? "Mode activé — actualisation…"
-          : "Mode désactivé — actualisation…",
+          ? "Mode activé — vue commission mise à jour."
+          : "Mode désactivé.",
       );
-      // Garder busy=true jusqu’au reload pour éviter un double PATCH.
-      window.location.assign(
-        nextEnabled ? "/antigaspillage#anti-waste" : "/antigaspillage",
-      );
+      // Soft refresh : évite le blocage « actualisation… » si on est déjà sur la page.
+      router.refresh();
     } catch {
       setMsg("Réseau indisponible.");
+    } finally {
       savingRef.current = false;
       setBusy(false);
     }
