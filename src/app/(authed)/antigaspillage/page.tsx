@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -9,9 +8,8 @@ import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
-import { StopWasteCircleBadge } from "@/components/dashboard/StopWasteCircleBadge";
 import { AntiWastePanels } from "./AntiWastePanels";
-import { cn } from "@/lib/utils";
+import { Leaf } from "lucide-react";
 
 const MENU_CATEGORY_FR: Record<string, string> = {
   STARTER: "Entrée",
@@ -54,32 +52,27 @@ function formatMissingWeighDate(date: Date): string {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
+function AntiWasteOffHeader() {
   return (
-    <header className="flex flex-col items-center text-center">
-      <div className="relative flex w-full items-center justify-center">
-        <h1
-          className="inline-flex flex-col items-center justify-center rounded-[2.25rem] bg-[#65c495] px-8 py-4 text-white shadow-[0_8px_24px_rgba(101,196,149,0.45)] sm:rounded-[2.75rem] sm:px-10 sm:py-5"
-          style={{
-            fontFamily:
-              "var(--font-fredoka), ui-rounded, system-ui, sans-serif",
-          }}
-        >
-          <span className="text-xl font-semibold leading-none tracking-wide sm:text-2xl">
-            Mode
-          </span>
-          <span className="mt-1 text-3xl font-bold lowercase leading-none tracking-wide sm:text-4xl md:text-[2.75rem]">
-            anti-gaspillage
-          </span>
-        </h1>
-        <StopWasteCircleBadge className="absolute right-0 top-1/2 h-28 w-28 -translate-y-1/2 sm:h-32 sm:w-32" />
+    <div className="anti-waste-dash flex items-start gap-3">
+      <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+        <Leaf className="size-5" aria-hidden />
       </div>
-      <p className="mt-4 max-w-3xl text-base font-medium leading-relaxed text-emerald-950/90 sm:text-lg">
-        {days != null
-          ? `Le mode anti-gaspillage aide la cuisine et la commission à réduire les restes : vous fixez un objectif en grammes pour 100 assiettes, puis cette page montre la synthèse (g / 100, déchets, RAB, pesées), les plats à risque, l’évolution et le détail jour par jour sur ${days} jours — pour ajuster demain portions et production.`
-          : "Le mode anti-gaspillage aide la cuisine et la commission à réduire les restes : fixez un objectif en grammes pour 100 assiettes, puis activez le mode ci-dessous pour afficher la synthèse, les plats à risque, l’évolution et le détail jour par jour."}
-      </p>
-    </header>
+      <div className="max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+          Cantine 360
+        </p>
+        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+          Mode anti-gaspillage
+        </h1>
+        <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
+          Le mode anti-gaspillage aide la cuisine et la commission à réduire les
+          restes : fixez un objectif en grammes pour 100 assiettes, puis activez
+          le mode ci-dessous pour afficher la synthèse, les plats à risque,
+          l’évolution et le détail jour par jour.
+        </p>
+      </div>
+    </div>
   );
 }
 
@@ -97,19 +90,15 @@ export default async function AntiWastePage({
     session.establishmentId,
   );
 
-  const toggle = (
-    <AntiWasteModeToggle
-      initialEnabled={antiWaste.antiWasteModeEnabled}
-      initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
-      schemaReady={antiWaste.schemaReady}
-    />
-  );
-
   if (!antiWaste.antiWasteModeEnabled) {
     return (
       <div className="space-y-6">
-        <AntiWastePageHeader />
-        {toggle}
+        <AntiWasteOffHeader />
+        <AntiWasteModeToggle
+          initialEnabled={antiWaste.antiWasteModeEnabled}
+          initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
+          schemaReady={antiWaste.schemaReady}
+        />
       </div>
     );
   }
@@ -256,59 +245,33 @@ export default async function AntiWastePage({
   );
 
   return (
-    <div className="space-y-6">
-      <AntiWastePageHeader days={days} />
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/antigaspillage?days=7"
-          className={cn(
-            "inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
-            days === 7
-              ? "bg-emerald-700 text-white"
-              : "border border-emerald-300 bg-white text-emerald-950 hover:bg-emerald-50",
-          )}
-        >
-          7 jours
-        </Link>
-        <Link
-          href="/antigaspillage?days=30"
-          className={cn(
-            "inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
-            days === 30
-              ? "bg-emerald-700 text-white"
-              : "border border-emerald-300 bg-white text-emerald-950 hover:bg-emerald-50",
-          )}
-        >
-          30 jours
-        </Link>
-      </div>
-      {toggle}
-      <AntiWastePanels
-        days={days}
-        targetGPer100={antiWaste.antiWasteTargetGPer100}
-        totalWasteWeightG={totalWasteWeightG}
-        totalWasteMaternelleG={totalWasteMaternelleG}
-        totalWastePrimaireG={totalWastePrimaireG}
-        wasteGramsPer100Served={wasteGramsPer100Served}
-        rabRatePct={rabRatePct}
-        servicesCount={services.length}
-        servicesWithWaste={servicesWithWaste}
-        missingWeighCount={missingWeighCount}
-        missingWeighServices={missingWeighServices}
-        streakAboveTarget={streakAboveTarget}
-        perDayRows={perDayRows.map((r) => ({
-          date: r.date,
-          wasteWeightG: r.wasteWeightG,
-          wasteWeightMaternelleG: r.wasteWeightMaternelleG,
-          wasteWeightPrimaireG: r.wasteWeightPrimaireG,
-          wasteGramsPer100: r.wasteGramsPer100,
-          rabRatePct: r.rabRatePct,
-          weighLabel: r.weighLabel,
-          wasteDelta: r.wasteDelta,
-        }))}
-        chartRows={chartRows}
-        riskyDishes={riskyDishes}
-      />
-    </div>
+    <AntiWastePanels
+      days={days}
+      targetGPer100={antiWaste.antiWasteTargetGPer100}
+      modeEnabled={antiWaste.antiWasteModeEnabled}
+      schemaReady={antiWaste.schemaReady}
+      totalWasteWeightG={totalWasteWeightG}
+      totalWasteMaternelleG={totalWasteMaternelleG}
+      totalWastePrimaireG={totalWastePrimaireG}
+      wasteGramsPer100Served={wasteGramsPer100Served}
+      rabRatePct={rabRatePct}
+      servicesCount={services.length}
+      servicesWithWaste={servicesWithWaste}
+      missingWeighCount={missingWeighCount}
+      missingWeighServices={missingWeighServices}
+      streakAboveTarget={streakAboveTarget}
+      perDayRows={perDayRows.map((r) => ({
+        date: r.date,
+        wasteWeightG: r.wasteWeightG,
+        wasteWeightMaternelleG: r.wasteWeightMaternelleG,
+        wasteWeightPrimaireG: r.wasteWeightPrimaireG,
+        wasteGramsPer100: r.wasteGramsPer100,
+        rabRatePct: r.rabRatePct,
+        weighLabel: r.weighLabel,
+        wasteDelta: r.wasteDelta,
+      }))}
+      chartRows={chartRows}
+      riskyDishes={riskyDishes}
+    />
   );
 }

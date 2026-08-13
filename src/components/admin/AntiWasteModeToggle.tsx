@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ArrowRight, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TARGET_MAX = 5000;
@@ -13,10 +11,13 @@ export function AntiWasteModeToggle({
   initialEnabled,
   initialTargetGPer100,
   schemaReady = true,
+  compact = false,
 }: {
   initialEnabled: boolean;
   initialTargetGPer100: number | null;
   schemaReady?: boolean;
+  /** Sans carte externe (déjà dans la grille hero). */
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -26,7 +27,6 @@ export function AntiWasteModeToggle({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const savingRef = useRef(false);
-  /** Évite qu’un refresh RSC périmé écrase un état déjà confirmé en base. */
   const pendingServerEnabled = useRef<boolean | null>(null);
 
   useEffect(() => {
@@ -34,7 +34,6 @@ export function AntiWasteModeToggle({
       pendingServerEnabled.current != null &&
       initialEnabled !== pendingServerEnabled.current
     ) {
-      // Props encore stale après le PATCH — on garde l’état confirmé.
       return;
     }
     pendingServerEnabled.current = null;
@@ -122,68 +121,55 @@ export function AntiWasteModeToggle({
     }
   }
 
-  return (
-    <div
-      id="anti-waste"
-      className="scroll-mt-24 overflow-hidden rounded-2xl border-2 border-sky-400 bg-sky-600 shadow-md"
-    >
+  const body = (
+    <>
       {!schemaReady ? (
-        <p className="border-b border-amber-300/40 bg-amber-500/90 px-4 py-2.5 text-sm font-semibold text-amber-950 sm:px-6">
-          Colonnes Anti-gaspillage absentes de la base — déployez la migration (
+        <p className="rounded-xl border border-amber-300/50 bg-amber-50 px-4 py-2.5 text-sm font-semibold text-amber-950">
+          Colonnes Anti-gaspillage absentes — déployez{" "}
           <code className="rounded bg-amber-100 px-1">npm run prisma:deploy</code>
-          ) avant d’activer le mode.
+          .
         </p>
       ) : null}
-      <div className="flex items-center justify-between gap-4 px-4 py-4 sm:gap-6 sm:px-6 sm:py-4">
-        <div className="min-w-0 flex-1 text-left">
-          <p className="text-base font-bold text-white sm:text-lg">
-            Activation du mode anti-gaspillage
+
+      <div className="flex items-start justify-between gap-4 rounded-2xl bg-secondary/60 p-5">
+        <div>
+          <p className="font-display text-base font-semibold">
+            Activation du mode
           </p>
-          <p className="text-sm text-white/75">
+          <p className="mt-1 text-sm text-muted-foreground">
             {enabled
-              ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle"
-              : "Désactivé — basculez pour afficher les indicateurs"}
+              ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
+              : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
           </p>
-          <p className="mt-1 text-xs text-white/60">
-            Réglage indépendant : n’affecte pas les autres établissements /
-            comptes.
+          <p className="mt-1 text-xs text-muted-foreground/80">
+            Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <ArrowRight
-            className="hidden h-6 w-6 text-white/80 sm:block"
-            aria-hidden
-          />
-          <button
-            type="button"
-            role="switch"
-            aria-checked={enabled}
-            disabled={busy || !schemaReady}
-            onClick={() => void save(!enabled)}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-label="Activation du mode anti-gaspillage"
+          disabled={busy || !schemaReady}
+          onClick={() => void save(!enabled)}
+          className={cn(
+            "relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60",
+            enabled ? "bg-primary" : "bg-muted-foreground/30",
+          )}
+        >
+          <span
             className={cn(
-              "relative h-10 w-[4.5rem] shrink-0 rounded-full border-2 transition-colors disabled:opacity-60",
-              enabled
-                ? "border-emerald-300 bg-emerald-500"
-                : "border-white/40 bg-white/20",
+              "absolute top-1 size-5 rounded-full bg-background shadow-sm transition-all",
+              enabled ? "left-6" : "left-1",
             )}
-          >
-            <span
-              className={cn(
-                "absolute top-0.5 h-8 w-8 rounded-full bg-white shadow transition-transform",
-                enabled ? "left-8" : "left-0.5",
-              )}
-            />
-            <span className="sr-only">
-              {enabled ? "Désactiver" : "Activer"} le mode Anti-gaspillage
-            </span>
-          </button>
-        </div>
+          />
+        </button>
       </div>
 
       {msg ? (
         <p
           className={cn(
-            "border-t border-white/15 px-4 py-2.5 text-sm sm:px-6",
+            "text-sm",
             msg.includes("impossible") ||
               msg.includes("valide") ||
               msg.includes("Réseau") ||
@@ -192,8 +178,8 @@ export function AntiWasteModeToggle({
               msg.includes("introuvable") ||
               msg.includes("Déployez") ||
               msg.includes("prisma")
-              ? "bg-black/20 text-red-300"
-              : "bg-black/20 text-emerald-200",
+              ? "text-destructive"
+              : "text-primary",
           )}
         >
           {msg}
@@ -201,57 +187,112 @@ export function AntiWasteModeToggle({
       ) : null}
 
       {enabled ? (
-        <div className="space-y-3 border-t border-white/15 bg-black/15 px-4 py-4 sm:px-6">
-          <div>
-            <label
-              htmlFor="anti-waste-target"
-              className="text-sm font-bold text-white sm:text-base"
-            >
-              Objectif de déchets à ne pas dépasser
-            </label>
-            <p className="mt-1 max-w-3xl text-sm leading-relaxed text-white/80">
-              Indiquez combien de grammes de déchets vous acceptez{" "}
-              <strong className="font-semibold text-white">
-                pour 100 assiettes servies
-              </strong>
-              . Exemple : <strong className="font-semibold text-white">80</strong>{" "}
-              signifie « pas plus de 80 g jetés pour 100 repas » (soit 0,8 kg). Ce
-              seuil colore ensuite le suivi en vert, orange ou rouge.
+        <div className="rounded-2xl border border-border p-5">
+          <div className="flex items-center gap-2">
+            <Target className="size-4 text-primary" aria-hidden />
+            <p className="font-display text-base font-semibold">
+              Objectif à ne pas dépasser
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-            <div className="flex min-w-0 items-center gap-2">
-              <Input
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            Grammes de déchets acceptés{" "}
+            <span className="font-medium text-foreground">
+              pour 100 assiettes servies
+            </span>
+            . Ex. <span className="font-medium text-foreground">80</span> = pas
+            plus de 0,8 kg jetés pour 100 repas.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+              <input
                 id="anti-waste-target"
-                type="text"
                 inputMode="decimal"
-                placeholder="ex. 80"
                 value={target}
                 disabled={busy || !schemaReady}
                 onChange={(e) => setTarget(e.target.value)}
-                className="h-10 w-28 border-sky-300 bg-white text-base tabular-nums text-sky-900"
-                aria-describedby="anti-waste-target-hint"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+                    void save(enabled);
+                  }
+                }}
+                placeholder="ex. 80"
+                className="w-20 bg-transparent text-lg font-semibold outline-none placeholder:font-normal placeholder:text-muted-foreground"
+                aria-label="Objectif en grammes pour 100 assiettes"
               />
-              <span
-                id="anti-waste-target-hint"
-                className="text-sm font-medium text-white/80"
-              >
-                g / 100 assiettes
-              </span>
+              <span className="text-sm text-muted-foreground">g / 100</span>
             </div>
-            <Button
+            <button
               type="button"
               disabled={busy || !schemaReady}
-              variant="outline"
-              size="sm"
-              className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
               onClick={() => void save(enabled)}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
             >
-              {busy ? "…" : "Enregistrer l’objectif"}
-            </Button>
+              {busy ? "…" : "Enregistrer"}
+              <ArrowRight className="size-4" aria-hidden />
+            </button>
+            {initialTargetGPer100 != null || target.trim() !== "" ? (
+              <button
+                type="button"
+                disabled={busy || !schemaReady}
+                onClick={() => {
+                  setTarget("");
+                  void (async () => {
+                    if (savingRef.current || busy) return;
+                    savingRef.current = true;
+                    setBusy(true);
+                    setMsg(null);
+                    try {
+                      const res = await fetch("/api/establishment/anti-waste", {
+                        method: "PATCH",
+                        headers: { "content-type": "application/json" },
+                        body: JSON.stringify({
+                          antiWasteModeEnabled: enabled,
+                          antiWasteTargetGPer100: null,
+                        }),
+                      });
+                      const data = (await res.json().catch(() => ({}))) as {
+                        error?: string;
+                      };
+                      if (!res.ok) {
+                        setMsg(data.error ?? "Enregistrement impossible.");
+                        return;
+                      }
+                      setTarget("");
+                      setMsg("Objectif effacé.");
+                      router.refresh();
+                    } catch {
+                      setMsg("Réseau indisponible.");
+                    } finally {
+                      savingRef.current = false;
+                      setBusy(false);
+                    }
+                  })();
+                }}
+                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+              >
+                Effacer
+              </button>
+            ) : null}
           </div>
         </div>
       ) : null}
+    </>
+  );
+
+  if (compact) {
+    return (
+      <div id="anti-waste" className="flex scroll-mt-24 flex-col gap-5">
+        {body}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      id="anti-waste"
+      className="scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-[0_24px_60px_-30px_rgb(20_60_40/0.25)] sm:p-8"
+    >
+      <div className="flex flex-col gap-5">{body}</div>
     </div>
   );
 }
