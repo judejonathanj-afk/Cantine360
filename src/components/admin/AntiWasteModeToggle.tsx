@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -133,8 +134,26 @@ export function AntiWasteModeToggle({
           ) avant d’activer le mode.
         </p>
       ) : null}
-      <div className="flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6 sm:py-4">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="flex items-center justify-between gap-4 px-4 py-4 sm:gap-6 sm:px-6 sm:py-4">
+        <div className="min-w-0 flex-1 text-left">
+          <p className="text-base font-bold text-white sm:text-lg">
+            Activation du mode anti-gaspillage
+          </p>
+          <p className="text-sm text-white/75">
+            {enabled
+              ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle"
+              : "Désactivé — basculez pour afficher les indicateurs"}
+          </p>
+          <p className="mt-1 text-xs text-white/60">
+            Réglage indépendant : n’affecte pas les autres établissements /
+            comptes.
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <ArrowRight
+            className="hidden h-6 w-6 text-white/80 sm:block"
+            aria-hidden
+          />
           <button
             type="button"
             role="switch"
@@ -158,20 +177,6 @@ export function AntiWasteModeToggle({
               {enabled ? "Désactiver" : "Activer"} le mode Anti-gaspillage
             </span>
           </button>
-          <div className="min-w-0">
-            <p className="text-base font-bold text-white sm:text-lg">
-              Activation du mode anti-gaspillage
-            </p>
-            <p className="text-sm text-white/75">
-              {enabled
-                ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle"
-                : "Désactivé — basculez pour afficher les indicateurs"}
-            </p>
-            <p className="mt-1 text-xs text-white/60">
-              Réglage indépendant : n’affecte pas les autres établissements /
-              comptes.
-            </p>
-          </div>
         </div>
       </div>
 
