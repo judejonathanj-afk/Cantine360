@@ -1,6 +1,8 @@
 "use client";
 
-import { AlertTriangle, Download, Recycle } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { AlertTriangle, ChevronDown, Download, Recycle } from "lucide-react";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
@@ -23,6 +25,14 @@ type DayRow = {
   wasteDelta: number | null;
 };
 
+export type MissingWeighServiceRow = {
+  id: string;
+  dateLabel: string;
+  mealLabel: string;
+  menuSummary: string;
+  servedCount: number;
+};
+
 export function AntiWastePanels({
   days,
   targetGPer100,
@@ -34,6 +44,7 @@ export function AntiWastePanels({
   servicesCount,
   servicesWithWaste,
   missingWeighCount,
+  missingWeighServices = [],
   streakAboveTarget,
   perDayRows,
   chartRows,
@@ -49,11 +60,13 @@ export function AntiWastePanels({
   servicesCount: number;
   servicesWithWaste: number;
   missingWeighCount: number;
+  missingWeighServices?: MissingWeighServiceRow[];
   streakAboveTarget: number;
   perDayRows: DayRow[];
   chartRows: WastePerDayRowInput[];
   riskyDishes?: RiskyDishRow[];
 }) {
+  const [missingWeighOpen, setMissingWeighOpen] = useState(false);
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
   const statusShell =
     status.tone === "ok"
@@ -341,22 +354,80 @@ export function AntiWastePanels({
       </div>
 
       {streakAboveTarget >= 3 || missingWeighCount > 0 ? (
-        <div className="flex items-start gap-3 overflow-hidden rounded-2xl border border-rose-300/70 bg-gradient-to-r from-rose-600 to-orange-500 px-4 py-3.5 text-sm text-white shadow-md">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-white" aria-hidden />
-          <div className="space-y-1">
-            {streakAboveTarget >= 3 ? (
-              <p>
-                <strong className="font-semibold">{streakAboveTarget} jours de suite</strong>{" "}
-                au-dessus de l’objectif g / 100.
-              </p>
-            ) : null}
-            {missingWeighCount > 0 ? (
-              <p>
-                <strong className="font-semibold">{missingWeighCount}</strong> service
-                {missingWeighCount > 1 ? "s" : ""} sans pesée sur la période.
-              </p>
-            ) : null}
+        <div className="overflow-hidden rounded-2xl border border-rose-300/70 bg-gradient-to-r from-rose-600 to-orange-500 text-sm text-white shadow-md">
+          <div className="flex items-start gap-3 px-4 py-3.5">
+            <AlertTriangle
+              className="mt-0.5 h-5 w-5 shrink-0 text-white"
+              aria-hidden
+            />
+            <div className="min-w-0 flex-1 space-y-1">
+              {streakAboveTarget >= 3 ? (
+                <p>
+                  <strong className="font-semibold">
+                    {streakAboveTarget} jours de suite
+                  </strong>{" "}
+                  au-dessus de l’objectif g / 100.
+                </p>
+              ) : null}
+              {missingWeighCount > 0 ? (
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p>
+                    <strong className="font-semibold">{missingWeighCount}</strong>{" "}
+                    service
+                    {missingWeighCount > 1 ? "s" : ""} sans pesée sur la période.
+                  </p>
+                  {missingWeighServices.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => setMissingWeighOpen((v) => !v)}
+                      className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/35 transition hover:bg-white/30"
+                      aria-expanded={missingWeighOpen}
+                    >
+                      {missingWeighOpen ? "Voir moins" : "Voir plus"}
+                      <ChevronDown
+                        className={cn(
+                          "h-3.5 w-3.5 transition-transform",
+                          missingWeighOpen && "rotate-180",
+                        )}
+                        aria-hidden
+                      />
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
           </div>
+
+          {missingWeighOpen && missingWeighServices.length > 0 ? (
+            <div className="border-t border-white/25 bg-black/15 px-4 py-3">
+              <ul className="max-h-64 space-y-2 overflow-y-auto overscroll-contain pr-1">
+                {missingWeighServices.map((s) => (
+                  <li key={s.id}>
+                    <Link
+                      href={`/service/${s.id}`}
+                      className="block rounded-xl bg-white/15 px-3 py-2.5 ring-1 ring-white/20 transition hover:bg-white/25"
+                    >
+                      <p className="font-semibold text-white">
+                        {s.dateLabel}
+                        <span className="font-medium text-white/85">
+                          {" "}
+                          · {s.mealLabel}
+                        </span>
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-white/90">
+                        {s.menuSummary}
+                      </p>
+                      <p className="mt-1 text-xs text-white/75">
+                        {s.servedCount > 0
+                          ? `${s.servedCount.toLocaleString("fr-FR")} assiette${s.servedCount > 1 ? "s" : ""} servie${s.servedCount > 1 ? "s" : ""} · pesée manquante`
+                          : "Pesée manquante"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

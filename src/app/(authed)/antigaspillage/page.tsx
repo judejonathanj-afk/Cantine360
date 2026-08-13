@@ -7,10 +7,52 @@ import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWas
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
+import { mealTypeLabelFr } from "@/lib/mealType";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { StopWasteCircleBadge } from "@/components/dashboard/StopWasteCircleBadge";
 import { AntiWastePanels } from "./AntiWastePanels";
 import { cn } from "@/lib/utils";
+
+const MENU_CATEGORY_FR: Record<string, string> = {
+  STARTER: "Entrée",
+  MAIN: "Plat",
+  DESSERT: "Dessert",
+  OTHER: "Autre",
+};
+
+function formatMissingWeighMenu(
+  items: { category: string; label: string }[],
+): string {
+  const filled = items.filter((i) => i.label.trim().length > 0);
+  if (filled.length === 0) return "Menu non renseigné";
+
+  const byCat = new Map<string, string>();
+  for (const item of filled) {
+    const key = MENU_CATEGORY_FR[item.category] ?? item.category;
+    if (!byCat.has(key)) byCat.set(key, item.label.trim());
+  }
+
+  const order = ["Entrée", "Plat", "Dessert", "Autre"];
+  const parts: string[] = [];
+  for (const cat of order) {
+    const label = byCat.get(cat);
+    if (label) parts.push(`${cat} : ${label}`);
+  }
+  for (const [cat, label] of byCat) {
+    if (!order.includes(cat)) parts.push(`${cat} : ${label}`);
+  }
+  return parts.join(" · ");
+}
+
+function formatMissingWeighDate(date: Date): string {
+  const label = new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Paris",
+  }).format(date);
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
 
 function AntiWastePageHeader({ days }: { days?: 7 | 30 }) {
   return (
@@ -86,6 +128,7 @@ export default async function AntiWastePage({
     },
     orderBy: [{ date: "asc" }],
     select: {
+      id: true,
       date: true,
       mealType: true,
       wasteWeightG: true,
@@ -155,6 +198,23 @@ export default async function AntiWastePage({
   }).format(served > 0 ? rab / served : 0);
 
   const missingWeighCount = Math.max(0, services.length - servicesWithWaste);
+  const missingWeighServices = services
+    .filter((s) => {
+      const matG = wasteWeightForLevel(s, "MATERNELLE") ?? 0;
+      const primG = wasteWeightForLevel(s, "PRIMAIRE") ?? 0;
+      return !((s.wasteWeightG ?? 0) > 0 || matG > 0 || primG > 0);
+    })
+    .map((s) => {
+      const servedCount = s.metrics.reduce((sum, m) => sum + m.servedCount, 0);
+      return {
+        id: s.id,
+        dateLabel: formatMissingWeighDate(s.date),
+        mealLabel: mealTypeLabelFr(s.mealType),
+        menuSummary: formatMissingWeighMenu(s.menu?.items ?? []),
+        servedCount,
+      };
+    })
+    .reverse();
 
   const target = antiWaste.antiWasteTargetGPer100;
   let streakAboveTarget = 0;
@@ -234,6 +294,7 @@ export default async function AntiWastePage({
         servicesCount={services.length}
         servicesWithWaste={servicesWithWaste}
         missingWeighCount={missingWeighCount}
+        missingWeighServices={missingWeighServices}
         streakAboveTarget={streakAboveTarget}
         perDayRows={perDayRows.map((r) => ({
           date: r.date,

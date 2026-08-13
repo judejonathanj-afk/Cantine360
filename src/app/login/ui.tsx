@@ -53,7 +53,7 @@ function LoginDecorPanel({
 }
 
 export function LoginClient() {
-  const [slug, setSlug] = useState("demo");
+  const [slug, setSlug] = useState("");
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState<string | null>(null);
