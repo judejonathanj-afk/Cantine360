@@ -266,66 +266,64 @@ export function AntiWastePanels({
     <div className="anti-waste-dash relative space-y-6">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-8 -z-10 h-[420px] bg-gradient-to-b from-primary/8 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-primary/8 to-transparent"
       />
 
-      <section className="aw-reveal">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-              <Leaf className="size-5" aria-hidden />
-            </div>
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                Cantine 360
-              </p>
-              <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
-                Mode anti-gaspillage
-              </h1>
-              <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
-                Le mode anti-gaspillage aide la cuisine et la commission à
-                réduire les restes : fixez un objectif en grammes pour 100
-                assiettes, puis suivez la synthèse, les plats à risque,
-                l’évolution et le détail jour par jour sur {days} jours.
-              </p>
-            </div>
+      <section className="aw-reveal space-y-6">
+        <div className="flex items-start gap-3">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <Leaf className="size-5" aria-hidden />
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex rounded-full border border-border bg-card p-1">
-              {(
-                [
-                  { key: 7 as const, label: "7 jours" },
-                  { key: 30 as const, label: "30 jours" },
-                ] as const
-              ).map((o) => (
-                <Link
-                  key={o.key}
-                  href={`/antigaspillage?days=${o.key}`}
-                  aria-pressed={days === o.key}
-                  className={cn(
-                    "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                    days === o.key
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {o.label}
-                </Link>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={downloadSynthesisCsv}
-              className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <Download className="size-4" aria-hidden />
-              Télécharger
-            </button>
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              Cantine 360
+            </p>
+            <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+              Mode anti-gaspillage
+            </h1>
+            <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
+              Le mode anti-gaspillage aide la cuisine et la commission à réduire
+              les restes : fixez un objectif en grammes pour 100 assiettes, puis
+              activez le mode ci-dessous pour afficher la synthèse, les plats à
+              risque, l’évolution et le détail jour par jour.
+            </p>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-px overflow-hidden rounded-3xl border border-border bg-border shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)] lg:grid-cols-[1.05fr_1.35fr]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="inline-flex rounded-full border border-border bg-card p-1">
+            {(
+              [
+                { key: 7 as const, label: "7 jours" },
+                { key: 30 as const, label: "30 jours" },
+              ] as const
+            ).map((o) => (
+              <Link
+                key={o.key}
+                href={`/antigaspillage?days=${o.key}`}
+                aria-pressed={days === o.key}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  days === o.key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {o.label}
+              </Link>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={downloadSynthesisCsv}
+            className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <Download className="size-4" aria-hidden />
+            Télécharger
+          </button>
+        </div>
+
+        <div className="grid gap-px overflow-hidden rounded-3xl border border-border bg-border shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)] lg:grid-cols-[1.05fr_1.35fr]">
           <div className="flex flex-col items-center justify-center gap-5 bg-card px-6 py-10">
             <AntiWasteGauge
               value={gaugeValue}
@@ -340,11 +338,26 @@ export function AntiWastePanels({
             >
               <span className="size-2 rounded-full bg-current" aria-hidden />
               {wasteGramsPer100Served == null || wasteGramsPer100Served <= 0
-                ? status.label
-                : gaugeStatusLabel[gaugeStatus]}
+                ? "Pas encore de pesée"
+                : targetGPer100 == null || targetGPer100 <= 0
+                  ? "Sans objectif"
+                  : gaugeStatusLabel[gaugeStatus]}
             </div>
             <p className="max-w-xs text-balance text-center text-sm leading-relaxed text-muted-foreground">
-              {status.detail}
+              {wasteGramsPer100Served != null && wasteGramsPer100Served > 0 ? (
+                <>
+                  Pour 100 repas servis, environ{" "}
+                  <span className="font-semibold text-foreground">
+                    {(wasteGramsPer100Served / 1000).toLocaleString("fr-FR", {
+                      maximumFractionDigits: 2,
+                    })}{" "}
+                    kg
+                  </span>{" "}
+                  de nourriture ont été jetés sur la période.
+                </>
+              ) : (
+                status.detail
+              )}
             </p>
           </div>
 

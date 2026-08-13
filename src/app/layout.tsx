@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fredoka, Geist, Geist_Mono, Nunito } from "next/font/google";
+import { Bricolage_Grotesque, Fredoka, Geist, Geist_Mono, Nunito } from "next/font/google";
 import { ClientProviders } from "@/components/ClientProviders";
 import "./globals.css";
 
@@ -25,6 +25,11 @@ const nunito = Nunito({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-bricolage",
+});
+
 export const metadata: Metadata = {
   title: "Cantine360 (Pilote)",
   description: "Pilote cuisine: suivi par service/groupe, menus, KPI, exports.",
@@ -38,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} ${nunito.variable} h-full bg-background antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} ${nunito.variable} ${bricolage.variable} h-full bg-background antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
