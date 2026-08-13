@@ -180,75 +180,78 @@ export function AntiWasteModeToggle({
         </div>
       </div>
 
-      <div className="space-y-3 border-t border-white/15 bg-black/15 px-4 py-4 sm:px-6">
-        <div>
-          <label
-            htmlFor="anti-waste-target"
-            className="text-sm font-bold text-white sm:text-base"
-          >
-            Objectif de déchets à ne pas dépasser
-          </label>
-          <p className="mt-1 max-w-3xl text-sm leading-relaxed text-white/80">
-            Indiquez combien de grammes de déchets vous acceptez{" "}
-            <strong className="font-semibold text-white">
-              pour 100 assiettes servies
-            </strong>
-            . Exemple : <strong className="font-semibold text-white">80</strong>{" "}
-            signifie « pas plus de 80 g jetés pour 100 repas » (soit 0,8 kg). Ce
-            seuil colore ensuite le suivi en vert, orange ou rouge.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <Input
-              id="anti-waste-target"
-              type="text"
-              inputMode="decimal"
-              placeholder="ex. 80"
-              value={target}
-              disabled={busy || !schemaReady}
-              onChange={(e) => setTarget(e.target.value)}
-              className="h-10 w-28 border-sky-300 bg-white text-base tabular-nums text-sky-900"
-              aria-describedby="anti-waste-target-hint"
-            />
-            <span
-              id="anti-waste-target-hint"
-              className="text-sm font-medium text-white/80"
+      {msg ? (
+        <p
+          className={cn(
+            "border-t border-white/15 px-4 py-2.5 text-sm sm:px-6",
+            msg.includes("impossible") ||
+              msg.includes("valide") ||
+              msg.includes("Réseau") ||
+              msg.includes("Base") ||
+              msg.includes("colonnes") ||
+              msg.includes("introuvable") ||
+              msg.includes("Déployez") ||
+              msg.includes("prisma")
+              ? "bg-black/20 text-red-300"
+              : "bg-black/20 text-emerald-200",
+          )}
+        >
+          {msg}
+        </p>
+      ) : null}
+
+      {enabled ? (
+        <div className="space-y-3 border-t border-white/15 bg-black/15 px-4 py-4 sm:px-6">
+          <div>
+            <label
+              htmlFor="anti-waste-target"
+              className="text-sm font-bold text-white sm:text-base"
             >
-              g / 100 assiettes
-            </span>
-          </div>
-          <Button
-            type="button"
-            disabled={busy || !schemaReady}
-            variant="outline"
-            size="sm"
-            className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-            onClick={() => void save(enabled)}
-          >
-            {busy ? "…" : "Enregistrer l’objectif"}
-          </Button>
-          {msg ? (
-            <p
-              className={cn(
-                "text-sm",
-                msg.includes("impossible") ||
-                  msg.includes("valide") ||
-                  msg.includes("Réseau") ||
-                  msg.includes("Base") ||
-                  msg.includes("colonnes") ||
-                  msg.includes("introuvable") ||
-                  msg.includes("Déployez") ||
-                  msg.includes("prisma")
-                  ? "text-red-300"
-                  : "text-emerald-200",
-              )}
-            >
-              {msg}
+              Objectif de déchets à ne pas dépasser
+            </label>
+            <p className="mt-1 max-w-3xl text-sm leading-relaxed text-white/80">
+              Indiquez combien de grammes de déchets vous acceptez{" "}
+              <strong className="font-semibold text-white">
+                pour 100 assiettes servies
+              </strong>
+              . Exemple : <strong className="font-semibold text-white">80</strong>{" "}
+              signifie « pas plus de 80 g jetés pour 100 repas » (soit 0,8 kg). Ce
+              seuil colore ensuite le suivi en vert, orange ou rouge.
             </p>
-          ) : null}
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <Input
+                id="anti-waste-target"
+                type="text"
+                inputMode="decimal"
+                placeholder="ex. 80"
+                value={target}
+                disabled={busy || !schemaReady}
+                onChange={(e) => setTarget(e.target.value)}
+                className="h-10 w-28 border-sky-300 bg-white text-base tabular-nums text-sky-900"
+                aria-describedby="anti-waste-target-hint"
+              />
+              <span
+                id="anti-waste-target-hint"
+                className="text-sm font-medium text-white/80"
+              >
+                g / 100 assiettes
+              </span>
+            </div>
+            <Button
+              type="button"
+              disabled={busy || !schemaReady}
+              variant="outline"
+              size="sm"
+              className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              onClick={() => void save(enabled)}
+            >
+              {busy ? "…" : "Enregistrer l’objectif"}
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
