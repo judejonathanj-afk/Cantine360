@@ -66,15 +66,22 @@ export function LoginClient() {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    const digitsOnly = pin.replace(/\D/g, "");
+    if (digitsOnly.length === 0) {
+      setError("Le code accès doit contenir uniquement des chiffres.");
+      setBusy(false);
+      return;
+    }
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           slug: normalizeEstablishmentSlug(slug),
-          pin: pin.replace(/\D/g, ""),
+          pin: digitsOnly,
           ...(nextPath ? { next: nextPath } : {}),
         }),
+        signal: AbortSignal.timeout(25_000),
       });
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as
@@ -87,8 +94,15 @@ export function LoginClient() {
       // Nouvelle session = service fermé (pas de Menu & allergènes résiduel).
       rememberActiveServiceId(null);
       window.location.assign(data.redirectTo);
-    } catch {
-      setError("Réseau indisponible. Réessayez dans un instant.");
+    } catch (err) {
+      const timedOut =
+        err instanceof DOMException &&
+        (err.name === "TimeoutError" || err.name === "AbortError");
+      setError(
+        timedOut
+          ? "Connexion trop longue (serveur froid). Réessayez une fois."
+          : "Réseau indisponible. Réessayez dans un instant.",
+      );
     } finally {
       setBusy(false);
     }
@@ -135,9 +149,10 @@ export function LoginClient() {
             <CardDescription className="text-base leading-relaxed">
               Code établissement, puis le code{" "}
               <strong className="text-foreground">cuisine</strong> ou{" "}
-              <strong className="text-foreground">admin</strong> (deux codes
-              distincts). Après un changement de code sur la plateforme,
-              déconnectez-vous puis reconnectez-vous.
+              <strong className="text-foreground">admin</strong> (chiffres
+              uniquement, deux codes distincts). La première connexion peut
+              prendre quelques secondes. Après un changement de code sur la
+              plateforme, déconnectez-vous puis reconnectez-vous.
             </CardDescription>
           </CardHeader>
           <CardContent className="px-8 pb-2 sm:px-10">
@@ -202,7 +217,7 @@ export function LoginClient() {
                   busy || slug.trim().length === 0 || pin.trim().length === 0
                 }
               >
-                {busy ? "Connexion..." : "Se connecter"}
+                {busy ? "Connexion… (patientez)" : "Se connecter"}
               </Button>
             </form>
           </CardContent>
