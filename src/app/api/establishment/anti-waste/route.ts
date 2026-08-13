@@ -36,7 +36,8 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { updated } = await updateEstablishmentAntiWasteSettings(
+    // Strictement l’établissement de la session — jamais un autre compte.
+    const saved = await updateEstablishmentAntiWasteSettings(
       db,
       session.establishmentId,
       {
@@ -46,17 +47,20 @@ export async function PATCH(req: Request) {
         }),
       },
     );
-    if (!updated) {
+    if (!saved) {
       return NextResponse.json(
         { error: "Établissement introuvable." },
         { status: 404 },
       );
     }
-    // Invalider la vue commission + les pages service / menu (bandeau cuisine).
     revalidatePath("/antigaspillage");
     revalidatePath("/service", "layout");
     revalidatePath("/dashboard");
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      antiWasteModeEnabled: saved.antiWasteModeEnabled,
+      antiWasteTargetGPer100: saved.antiWasteTargetGPer100,
+    });
   } catch (e) {
     console.error("[api/establishment/anti-waste]", e);
     if (isMissingAntiWasteColumns(e)) {

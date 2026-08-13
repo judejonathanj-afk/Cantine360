@@ -7,11 +7,6 @@ export type EstablishmentAntiWasteSettings = {
   schemaReady: boolean;
 };
 
-type AntiWasteRow = {
-  antiWasteModeEnabled: boolean;
-  antiWasteTargetGPer100: number | null;
-};
-
 export function isMissingAntiWasteColumns(e: unknown): boolean {
   if (typeof e === "object" && e !== null && "code" in e) {
     if (String((e as { code: unknown }).code) === "P2022") return true;
@@ -22,33 +17,44 @@ export function isMissingAntiWasteColumns(e: unknown): boolean {
   );
 }
 
+function mapSettings(row: {
+  antiWasteModeEnabled: boolean;
+  antiWasteTargetGPer100: number | null;
+}): EstablishmentAntiWasteSettings {
+  return {
+    antiWasteModeEnabled: Boolean(row.antiWasteModeEnabled),
+    antiWasteTargetGPer100:
+      row.antiWasteTargetGPer100 == null
+        ? null
+        : Number(row.antiWasteTargetGPer100),
+    schemaReady: true,
+  };
+}
+
+/**
+ * Lit le mode Anti-gaspillage **de cet établissement uniquement**.
+ * Persiste en base jusqu’à désactivation manuelle.
+ */
 export async function getEstablishmentAntiWasteSettings(
   db: PrismaClient,
   establishmentId: string,
 ): Promise<EstablishmentAntiWasteSettings> {
   try {
-    const rows = await db.$queryRaw<AntiWasteRow[]>`
-      SELECT "antiWasteModeEnabled", "antiWasteTargetGPer100"
-      FROM "Establishment"
-      WHERE "id" = ${establishmentId}
-      LIMIT 1
-    `;
-    const r = rows[0];
-    if (!r) {
+    const row = await db.establishment.findUnique({
+      where: { id: establishmentId },
+      select: {
+        antiWasteModeEnabled: true,
+        antiWasteTargetGPer100: true,
+      },
+    });
+    if (!row) {
       return {
         antiWasteModeEnabled: false,
         antiWasteTargetGPer100: null,
         schemaReady: true,
       };
     }
-    return {
-      antiWasteModeEnabled: Boolean(r.antiWasteModeEnabled),
-      antiWasteTargetGPer100:
-        r.antiWasteTargetGPer100 == null
-          ? null
-          : Number(r.antiWasteTargetGPer100),
-      schemaReady: true,
-    };
+    return mapSettings(row);
   } catch (e) {
     if (!isMissingAntiWasteColumns(e)) throw e;
     return {
@@ -59,6 +65,9 @@ export async function getEstablishmentAntiWasteSettings(
   }
 }
 
+/**
+ * Met à jour uniquement l’établissement `establishmentId` (pas les autres comptes).
+ */
 export async function updateEstablishmentAntiWasteSettings(
   db: PrismaClient,
   establishmentId: string,
@@ -66,25 +75,31 @@ export async function updateEstablishmentAntiWasteSettings(
     antiWasteModeEnabled: boolean;
     antiWasteTargetGPer100?: number | null;
   },
-): Promise<{ updated: boolean }> {
-  let count = 0;
-  if (data.antiWasteTargetGPer100 !== undefined) {
-    count = await db.$executeRaw`
-      UPDATE "Establishment"
-      SET
-        "antiWasteModeEnabled" = ${data.antiWasteModeEnabled},
-        "antiWasteTargetGPer100" = ${data.antiWasteTargetGPer100},
-        "updatedAt" = NOW()
-      WHERE "id" = ${establishmentId}
-    `;
-  } else {
-    count = await db.$executeRaw`
-      UPDATE "Establishment"
-      SET
-        "antiWasteModeEnabled" = ${data.antiWasteModeEnabled},
-        "updatedAt" = NOW()
-      WHERE "id" = ${establishmentId}
-    `;
+): Promise<EstablishmentAntiWasteSettings | null> {
+  try {
+    const row = await db.establishment.update({
+      where: { id: establishmentId },
+      data: {
+        antiWasteModeEnabled: data.antiWasteModeEnabled,
+        ...(data.antiWasteTargetGPer100 !== undefined && {
+          antiWasteTargetGPer100: data.antiWasteTargetGPer100,
+        }),
+      },
+      select: {
+        antiWasteModeEnabled: true,
+        antiWasteTargetGPer100: true,
+      },
+    });
+    return mapSettings(row);
+  } catch (e) {
+    if (
+      typeof e === "object" &&
+      e !== null &&
+      "code" in e &&
+      String((e as { code: unknown }).code) === "P2025"
+    ) {
+      return null;
+    }
+    throw e;
   }
-  return { updated: Number(count) > 0 };
 }

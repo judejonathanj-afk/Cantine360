@@ -25,8 +25,18 @@ export function AntiWasteModeToggle({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const savingRef = useRef(false);
+  /** Évite qu’un refresh RSC périmé écrase un état déjà confirmé en base. */
+  const pendingServerEnabled = useRef<boolean | null>(null);
 
   useEffect(() => {
+    if (
+      pendingServerEnabled.current != null &&
+      initialEnabled !== pendingServerEnabled.current
+    ) {
+      // Props encore stale après le PATCH — on garde l’état confirmé.
+      return;
+    }
+    pendingServerEnabled.current = null;
     setEnabled(initialEnabled);
     setTarget(
       initialTargetGPer100 != null ? String(initialTargetGPer100) : "",
@@ -75,18 +85,33 @@ export function AntiWasteModeToggle({
           antiWasteTargetGPer100: parsedTarget,
         }),
       });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        antiWasteModeEnabled?: boolean;
+        antiWasteTargetGPer100?: number | null;
+      };
       if (!res.ok) {
         setMsg(data.error ?? "Enregistrement impossible.");
         return;
       }
-      setEnabled(nextEnabled);
+      const confirmedEnabled =
+        typeof data.antiWasteModeEnabled === "boolean"
+          ? data.antiWasteModeEnabled
+          : nextEnabled;
+      pendingServerEnabled.current = confirmedEnabled;
+      setEnabled(confirmedEnabled);
+      if (data.antiWasteTargetGPer100 !== undefined) {
+        setTarget(
+          data.antiWasteTargetGPer100 != null
+            ? String(data.antiWasteTargetGPer100)
+            : "",
+        );
+      }
       setMsg(
-        nextEnabled
-          ? "Mode activé — vue commission mise à jour."
-          : "Mode désactivé.",
+        confirmedEnabled
+          ? "Mode activé pour cet établissement — reste actif jusqu’à désactivation."
+          : "Mode désactivé pour cet établissement.",
       );
-      // Soft refresh : évite le blocage « actualisation… » si on est déjà sur la page.
       router.refresh();
     } catch {
       setMsg("Réseau indisponible.");
@@ -139,8 +164,12 @@ export function AntiWasteModeToggle({
             </p>
             <p className="text-sm text-white/75">
               {enabled
-                ? "Activé — vue commission visible ci-dessous"
+                ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle"
                 : "Désactivé — basculez pour afficher les indicateurs"}
+            </p>
+            <p className="mt-1 text-xs text-white/60">
+              Réglage indépendant : n’affecte pas les autres établissements /
+              comptes.
             </p>
           </div>
         </div>
