@@ -97,7 +97,7 @@ export function AntiWasteLineChart({
           <h2 className="font-display text-lg font-bold tracking-tight">
             Évolution des déchets
           </h2>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-sm font-medium text-foreground/80">
             Poids des déchets par jour et grammes pour 100 assiettes servies —
             pour repérer quel jour ça augmente ({days} jours).
           </p>

@@ -136,12 +136,12 @@ export function AntiWasteModeToggle({
           <p className="font-display text-base font-semibold">
             Activation du mode
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm font-medium text-foreground/80">
             {enabled
               ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
               : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground/80">
+          <p className="mt-1 text-xs font-medium text-foreground/70">
             Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
@@ -194,12 +194,12 @@ export function AntiWasteModeToggle({
               Objectif à ne pas dépasser
             </p>
           </div>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-sm leading-relaxed font-medium text-foreground/80">
             Grammes de déchets acceptés{" "}
-            <span className="font-medium text-foreground">
+            <span className="font-semibold text-foreground">
               pour 100 assiettes servies
             </span>
-            . Ex. <span className="font-medium text-foreground">80</span> = pas
+            . Ex. <span className="font-semibold text-foreground">80</span> = pas
             plus de 0,8 kg jetés pour 100 repas.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-3">

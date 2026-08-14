@@ -251,19 +251,19 @@
 /* Anti-gaspillage — thème isolé (design anti-gaspillage-dashboard) */
 .anti-waste-dash {
   --background: oklch(0.982 0.01 140);
-  --foreground: oklch(0.24 0.03 158);
+  --foreground: oklch(0.14 0.02 158);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.03 158);
+  --card-foreground: oklch(0.14 0.02 158);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.03 158);
+  --popover-foreground: oklch(0.14 0.02 158);
   --primary: oklch(0.46 0.086 158);
   --primary-foreground: oklch(0.985 0.01 140);
   --secondary: oklch(0.955 0.014 150);
-  --secondary-foreground: oklch(0.32 0.05 158);
+  --secondary-foreground: oklch(0.2 0.04 158);
   --muted: oklch(0.955 0.012 150);
-  --muted-foreground: oklch(0.52 0.025 155);
+  --muted-foreground: oklch(0.32 0.03 155);
   --accent: oklch(0.93 0.03 150);
-  --accent-foreground: oklch(0.32 0.05 158);
+  --accent-foreground: oklch(0.2 0.04 158);
   --border: oklch(0.9 0.016 150);
   --input: oklch(0.9 0.016 150);
   --ring: oklch(0.46 0.086 158);

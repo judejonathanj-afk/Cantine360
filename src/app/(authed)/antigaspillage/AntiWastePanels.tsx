@@ -281,7 +281,7 @@ export function AntiWastePanels({
             <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
               Mode anti-gaspillage
             </h1>
-            <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-pretty text-sm leading-relaxed text-foreground/85">
               Le mode anti-gaspillage aide la cuisine et la commission à réduire
               les restes : fixez un objectif en grammes pour 100 assiettes, puis
               activez le mode ci-dessous pour afficher la synthèse, les plats à
@@ -343,7 +343,7 @@ export function AntiWastePanels({
                   ? "Sans objectif"
                   : gaugeStatusLabel[gaugeStatus]}
             </div>
-            <p className="max-w-xs text-balance text-center text-sm leading-relaxed text-muted-foreground">
+            <p className="max-w-xs text-balance text-center text-sm leading-relaxed text-foreground/85">
               {wasteGramsPer100Served != null && wasteGramsPer100Served > 0 ? (
                 <>
                   Pour 100 repas servis, environ{" "}
@@ -382,15 +382,15 @@ export function AntiWastePanels({
               style={{ animationDelay: `${160 + i * 70}ms` }}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <span className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
                   {t.label}
                 </span>
                 <Icon className={cn("size-4", t.accent)} aria-hidden />
               </div>
-              <p className="mt-3 font-display text-3xl font-bold tracking-tight">
+              <p className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground">
                 {t.value}
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">{t.sub}</p>
+              <p className="mt-1 text-sm font-medium text-foreground/75">{t.sub}</p>
             </div>
           );
         })}
@@ -490,7 +490,7 @@ export function AntiWastePanels({
               <h2 className="font-display text-lg font-bold tracking-tight">
                 Plats à risque
               </h2>
-              <p className="mt-0.5 text-sm text-muted-foreground">
+              <p className="mt-0.5 text-sm font-medium text-foreground/80">
                 Les plats liés aux jours de plus fort gaspillage sur {days}{" "}
                 jours — pour décider quoi ajuster demain.
               </p>
@@ -576,14 +576,14 @@ export function AntiWastePanels({
 
       <div className="aw-reveal overflow-hidden rounded-3xl border border-border bg-card">
         <div className="flex items-start gap-3 border-b border-border p-6">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/12 text-primary">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
             <CalendarDays className="size-5" aria-hidden />
           </div>
           <div>
-            <h2 className="font-display text-lg font-bold tracking-tight">
+            <h2 className="font-display text-lg font-bold tracking-tight text-foreground">
               Détail jour par jour
             </h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">
+            <p className="mt-0.5 text-sm font-medium text-foreground/80">
               Pesées, g / 100, RAB et variation des déchets pour chaque
               service.
             </p>
@@ -593,7 +593,7 @@ export function AntiWastePanels({
         <div className="max-h-[28rem] overflow-auto">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
-              <tr className="sticky top-0 z-10 border-b border-border bg-card text-left text-xs uppercase tracking-wider text-muted-foreground">
+              <tr className="sticky top-0 z-10 border-b border-border bg-card text-left text-xs uppercase tracking-wider text-foreground/75">
                 <th className="px-3 py-3.5 pl-6 font-semibold">Date</th>
                 <th className="px-3 py-3.5 font-semibold">Déchets</th>
                 <th className="px-3 py-3.5 font-semibold">Mat. / Prim.</th>

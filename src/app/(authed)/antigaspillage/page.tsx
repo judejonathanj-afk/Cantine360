@@ -65,7 +65,7 @@ function AntiWasteOffHeader() {
         <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
           Mode anti-gaspillage
         </h1>
-        <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 text-pretty text-sm leading-relaxed text-foreground/85">
           Le mode anti-gaspillage aide la cuisine et la commission à réduire les
           restes : fixez un objectif en grammes pour 100 assiettes, puis activez
           le mode ci-dessous pour afficher la synthèse, les plats à risque,
