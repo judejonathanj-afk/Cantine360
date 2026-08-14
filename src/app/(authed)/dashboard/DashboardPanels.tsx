@@ -525,7 +525,7 @@ export default function DashboardPanels({
               : "Menus, pesées et écarts par jour de service."
           }
         />
-        <div className="overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-3">
+        <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
             <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
           ) : (
