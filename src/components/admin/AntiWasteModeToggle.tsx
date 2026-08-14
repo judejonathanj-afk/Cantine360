@@ -131,17 +131,20 @@ export function AntiWasteModeToggle({
         </p>
       ) : null}
 
-      <div className="flex items-start justify-between gap-4 rounded-2xl bg-secondary/60 p-5">
+      <div
+        className="flex items-start justify-between gap-4 rounded-2xl p-5 text-zinc-950"
+        style={{ backgroundColor: "#DFA42D" }}
+      >
         <div>
-          <p className="font-display text-base font-semibold">
+          <p className="font-display text-base font-semibold text-zinc-950">
             Activation du mode
           </p>
-          <p className="mt-1 text-sm font-medium text-foreground/80">
+          <p className="mt-1 text-sm font-medium text-zinc-900/85">
             {enabled
               ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
               : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
           </p>
-          <p className="mt-1 text-xs font-medium text-foreground/70">
+          <p className="mt-1 text-xs font-medium text-zinc-900/75">
             Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
