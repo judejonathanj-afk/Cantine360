@@ -481,8 +481,8 @@ export function AntiWastePanels({
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-violet-300 bg-violet-100">
-          <div className="flex items-start gap-3 border-b border-violet-300/70 bg-violet-200/60 p-6">
+        <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
+          <div className="flex items-start gap-3 border-b border-violet-200 bg-violet-100 p-6">
             <div className="flex size-10 items-center justify-center rounded-xl bg-violet-600 text-white">
               <Flame className="size-5" aria-hidden />
             </div>
@@ -510,7 +510,7 @@ export function AntiWastePanels({
                 return (
                   <li
                     key={`${d.label}-${i}`}
-                    className="rounded-2xl border border-violet-200/80 bg-white p-4 transition-colors hover:border-violet-300"
+                    className="rounded-2xl border border-border bg-white p-4 transition-colors hover:border-violet-300"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-3">
@@ -574,8 +574,8 @@ export function AntiWastePanels({
         <AntiWasteLineChart days={days} points={chartPoints} />
       </div>
 
-      <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-sky-300 bg-sky-100">
-        <div className="flex items-start gap-3 border-b border-sky-300/70 bg-sky-200/60 p-6">
+      <div className="aw-reveal overflow-hidden rounded-3xl border border-border bg-card">
+        <div className="flex items-start gap-3 border-b border-sky-200 bg-sky-100 p-6">
           <div className="flex size-10 items-center justify-center rounded-xl bg-sky-600 text-white">
             <CalendarDays className="size-5" aria-hidden />
           </div>
@@ -590,10 +590,10 @@ export function AntiWastePanels({
           </div>
         </div>
 
-        <div className="max-h-[28rem] overflow-auto bg-white/70">
+        <div className="max-h-[28rem] overflow-auto bg-white">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
-              <tr className="sticky top-0 z-10 border-b border-sky-200 bg-sky-100 text-left text-xs uppercase tracking-wider text-foreground/75">
+              <tr className="sticky top-0 z-10 border-b border-border bg-card text-left text-xs uppercase tracking-wider text-foreground/75">
                 <th className="px-3 py-3.5 pl-6 font-semibold">Date</th>
                 <th className="px-3 py-3.5 font-semibold">Déchets</th>
                 <th className="px-3 py-3.5 font-semibold">Mat. / Prim.</th>
@@ -611,7 +611,7 @@ export function AntiWastePanels({
                 return (
                   <tr
                     key={r.date}
-                    className="border-b border-sky-100 transition-colors last:border-0 hover:bg-sky-50/80"
+                    className="border-b border-border/60 transition-colors last:border-0 hover:bg-secondary/50"
                   >
                     <td className="py-3.5 pl-6 font-medium">
                       {formatDayLabelFr(r.date)}

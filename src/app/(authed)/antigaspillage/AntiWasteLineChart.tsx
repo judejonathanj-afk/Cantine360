@@ -88,8 +88,8 @@ export function AntiWasteLineChart({
   }
 
   return (
-    <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-emerald-300 bg-emerald-100">
-      <div className="flex items-start gap-3 border-b border-emerald-300/70 bg-emerald-200/60 p-6">
+    <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
+      <div className="flex items-start gap-3 border-b border-emerald-200 bg-emerald-100 p-6">
         <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
           <LineChart className="size-5" aria-hidden />
         </div>
