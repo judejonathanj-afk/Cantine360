@@ -604,7 +604,7 @@ export default function DashboardPanels({
               : "Détail complet par service — présents, servis, RAB, refus et déchets."
           }
         />
-        <div className="overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-3">
+        <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
             <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
           ) : (
