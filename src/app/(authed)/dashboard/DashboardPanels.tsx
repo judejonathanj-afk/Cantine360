@@ -82,11 +82,11 @@ function StatCard({
         </span>
       </div>
       <div className="mt-4">
-        <div className="text-sm font-medium text-muted-foreground">{label}</div>
-        <div className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-foreground tabular-nums">
+        <div className="text-sm font-semibold text-black">{label}</div>
+        <div className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-black tabular-nums">
           {value}
         </div>
-        <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+        <div className="mt-1 text-xs font-medium text-black/90">{sub}</div>
       </div>
     </div>
   );
@@ -109,7 +109,7 @@ function FilterSegmentLink({
         "rounded-xl px-3.5 py-1.5 text-sm font-medium transition-all",
         active
           ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
-          : "text-muted-foreground hover:text-foreground",
+          : "text-black/80 hover:text-black",
       )}
     >
       {children}
@@ -298,11 +298,11 @@ export default function DashboardPanels({
             <a
               href={`/api/exports/commission-bilan?year=${exportYear}`}
               download
-              className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card/70 px-3.5 py-2 text-sm font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:bg-secondary"
+              className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card/70 px-3.5 py-2 text-sm font-medium text-black shadow-sm backdrop-blur transition-colors hover:bg-secondary"
             >
               <FileSpreadsheet className="size-4 text-primary" />
               Bilan commission
-              <span className="text-muted-foreground">(CSV)</span>
+              <span className="text-black/70">(CSV)</span>
             </a>
           ) : null}
           <button
@@ -382,10 +382,10 @@ export default function DashboardPanels({
               <TriangleAlert className="size-5" />
             </span>
             <div>
-              <h3 className="font-display text-base font-bold text-foreground">
+              <h3 className="font-display text-base font-bold text-black">
                 Lecture déchets &amp; refus
               </h3>
-              <p className="mt-1 text-sm leading-relaxed text-foreground/80">
+              <p className="mt-1 text-sm leading-relaxed text-black/90">
                 {wasteGramsPer100Served != null ? (
                   <>
                     Taux actuel{" "}
@@ -526,11 +526,11 @@ export default function DashboardPanels({
         />
         <div className="overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
-            <p className="p-4 text-sm text-muted-foreground">Pas de données.</p>
+            <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
               <table className="min-w-full text-sm">
-                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-bold text-black shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
                   <tr>
                     <th className="px-3 py-2.5">Date</th>
                     <th className="px-3 py-2.5">g / 100</th>
@@ -543,7 +543,7 @@ export default function DashboardPanels({
                     <th className="px-3 py-2.5">Δ déchets</th>
                   </tr>
                 </thead>
-                <tbody className="text-foreground">
+                <tbody className="font-medium text-black">
                   {perDayRows.map((row) => (
                     <tr
                       key={`ctx-${row.date}`}
@@ -604,11 +604,11 @@ export default function DashboardPanels({
         />
         <div className="overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
-            <p className="p-4 text-sm text-muted-foreground">Pas de données.</p>
+            <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
               <table className="min-w-full text-sm">
-                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-bold text-black shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
                   <tr>
                     <th className="px-3 py-2.5">Date</th>
                     <th className="px-3 py-2.5">Présents</th>
@@ -628,7 +628,7 @@ export default function DashboardPanels({
                     </th>
                   </tr>
                 </thead>
-                <tbody className="text-foreground">
+                <tbody className="font-medium text-black">
                   {perDayRows.map((row) => (
                     <tr key={row.date} className="border-t border-border/60">
                       <td className="px-3 py-2.5 font-medium whitespace-nowrap">
@@ -685,7 +685,7 @@ export default function DashboardPanels({
       </section>
 
       {!isKitchen ? (
-        <footer className="flex items-center justify-center gap-2 pt-2 text-xs text-muted-foreground">
+        <footer className="flex items-center justify-center gap-2 pt-2 text-xs font-medium text-black/80">
           <ClipboardList className="size-3.5" />
           Fonctions Cantine+ · inclus dans Cantine360
         </footer>

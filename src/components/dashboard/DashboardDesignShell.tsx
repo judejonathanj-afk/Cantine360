@@ -7,11 +7,13 @@ export function DashboardSectionHeading({
   title,
   hint,
   trailing,
+  lineClassName = "bg-yellow-400",
 }: {
   icon: LucideIcon;
   title: string;
   hint?: string;
   trailing?: ReactNode;
+  lineClassName?: string;
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-center gap-4">
@@ -19,14 +21,18 @@ export function DashboardSectionHeading({
         <Icon className="size-4" />
       </div>
       <div className="min-w-0">
-        <h2 className="font-display text-xl font-bold tracking-tight text-foreground">
+        <h2 className="font-display text-xl font-bold tracking-tight text-black">
           {title}
         </h2>
-        {hint ? (
-          <p className="text-sm text-muted-foreground">{hint}</p>
-        ) : null}
+        {hint ? <p className="text-sm font-medium text-black/85">{hint}</p> : null}
       </div>
-      <div className="ml-1 h-px min-w-[2rem] flex-1 bg-gradient-to-r from-border to-transparent" />
+      <div
+        aria-hidden
+        className={cn(
+          "ml-1 h-1 min-h-1 min-w-[2.5rem] flex-1 rounded-full",
+          lineClassName,
+        )}
+      />
       {trailing}
     </div>
   );
@@ -69,12 +75,12 @@ export function DashboardInsightCard({
         </span>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-display text-base font-bold text-foreground">
+            <h3 className="font-display text-base font-bold text-black">
               {title}
             </h3>
             {level ? <DashboardLevelPill level={level} /> : null}
           </div>
-          <div className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <div className="mt-1 text-sm font-medium leading-relaxed text-black/90">
             {description}
           </div>
         </div>
