@@ -518,6 +518,7 @@ export default function DashboardPanels({
         <DashboardSectionHeading
           icon={Layers}
           title="Contexte du service"
+          lineClassName="dashboard-section-line--red"
           hint={
             levelFilter !== "all"
               ? `Menus, pesées et écarts — ${schoolLevelLabelFr(levelFilter)}.`
