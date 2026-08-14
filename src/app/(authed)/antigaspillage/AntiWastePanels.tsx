@@ -483,7 +483,7 @@ export function AntiWastePanels({
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
           <div className="flex items-start gap-3 border-b border-border p-6">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-[color:var(--aw-coral)]/12 text-[color:var(--aw-coral)]">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
               <Flame className="size-5" aria-hidden />
             </div>
             <div>
