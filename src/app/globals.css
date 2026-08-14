@@ -248,6 +248,54 @@
   background-color: var(--background);
 }
 
+/* Dashboard — thème isolé (design cantine-dashboard) */
+.dashboard-v2 {
+  --dash-ink: oklch(0.3 0.045 178);
+  --dash-ink-fg: oklch(0.96 0.02 150);
+  --dash-ink-muted: oklch(0.75 0.03 165);
+  --dash-accent: oklch(0.83 0.12 82);
+  --font-display: var(--font-bricolage), var(--font-fredoka), ui-sans-serif, system-ui,
+    sans-serif;
+  --primary: oklch(0.62 0.13 159);
+  --primary-foreground: oklch(0.99 0.01 150);
+  --secondary: oklch(0.95 0.03 158);
+  --secondary-foreground: oklch(0.34 0.05 165);
+  --muted: oklch(0.965 0.01 155);
+  --muted-foreground: oklch(0.52 0.03 165);
+  --accent: oklch(0.83 0.12 82);
+  --accent-foreground: oklch(0.32 0.05 80);
+  --destructive: oklch(0.62 0.2 22);
+  --border: oklch(0.9 0.012 155);
+  --background: oklch(0.985 0.008 150);
+  --foreground: oklch(0.22 0.03 168);
+  --card: oklch(1 0 0);
+  --chart-1: oklch(0.62 0.13 159);
+  --chart-2: oklch(0.6 0.09 205);
+  --chart-3: oklch(0.8 0.14 72);
+  --chart-4: oklch(0.62 0.2 22);
+  --chart-5: oklch(0.55 0.13 285);
+  color: var(--foreground);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(60% 55% at 12% 0%, oklch(0.62 0.13 159 / 0.14) 0%, transparent 60%),
+    radial-gradient(55% 50% at 100% 8%, oklch(0.83 0.12 82 / 0.12) 0%, transparent 55%),
+    radial-gradient(70% 60% at 50% 100%, oklch(0.6 0.09 205 / 0.1) 0%, transparent 60%);
+  border-radius: 1.5rem;
+  padding: 1rem 0.75rem 2rem;
+  margin: -0.5rem -0.25rem 0;
+}
+
+@media (min-width: 640px) {
+  .dashboard-v2 {
+    padding: 1.5rem 1.25rem 2.5rem;
+    margin: -0.75rem -0.5rem 0;
+  }
+}
+
+.dashboard-v2 .font-display {
+  font-family: var(--font-display);
+}
+
 /* Anti-gaspillage — thème isolé (design anti-gaspillage-dashboard) */
 .anti-waste-dash {
   --background: oklch(0.982 0.01 140);

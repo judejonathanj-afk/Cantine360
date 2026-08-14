@@ -52,14 +52,106 @@ type Props = {
   days: 7 | 30;
   perDayRows: MealFlowDayInput[];
   level?: SchoolLevel;
+  /** Sans carte / en-tête (ex. InsightCard du dashboard). */
+  embedded?: boolean;
 };
 
-export function MealFlowChart({ days, perDayRows, level }: Props) {
+export function MealFlowChart({
+  days,
+  perDayRows,
+  level,
+  embedded = false,
+}: Props) {
   const series = useMemo(() => buildMealFlowSeries(perDayRows), [perDayRows]);
   const hasData = series.some(
     (p) => p.present > 0 || p.served > 0 || p.rab > 0 || p.refused > 0,
   );
   const levelLabel = level ? schoolLevelLabelFr(level) : null;
+
+  const empty = (
+    <p className={cn("text-sm text-muted-foreground", !embedded && "mt-5 px-6")}>
+      Pas encore de compteurs saisis sur la période — ouvrez un service et
+      renseignez présents / servis / RAB / refus pour voir le flux ici.
+    </p>
+  );
+
+  const plot = !hasData ? (
+    empty
+  ) : (
+    <ChartContainer
+      config={chartConfig}
+      className={cn(cantinePlusChartPlotClass, embedded && "aspect-auto h-[260px] w-full")}
+    >
+      <ComposedChart
+        data={series}
+        margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+      >
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis
+          dataKey="label"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+          minTickGap={24}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          allowDecimals={false}
+          width={40}
+        />
+        <ChartTooltip
+          content={(tooltipProps) => (
+            <ChartTooltipContent
+              active={tooltipProps.active}
+              payload={tooltipProps.payload}
+              label={tooltipProps.label}
+              coordinate={tooltipProps.coordinate}
+              accessibilityLayer={tooltipProps.accessibilityLayer}
+              activeIndex={tooltipProps.activeIndex}
+            />
+          )}
+        />
+        <ChartLegend content={<ChartLegendContent />} />
+        <Line
+          type="monotone"
+          dataKey="present"
+          stroke="var(--color-present)"
+          strokeWidth={2.5}
+          dot={{ r: 3, fill: "var(--color-present)" }}
+          activeDot={{ r: 5 }}
+        />
+        <Line
+          type="monotone"
+          dataKey="served"
+          stroke="var(--color-served)"
+          strokeWidth={2.5}
+          dot={{ r: 3, fill: "var(--color-served)" }}
+          activeDot={{ r: 5 }}
+        />
+        <Line
+          type="monotone"
+          dataKey="rab"
+          stroke="var(--color-rab)"
+          strokeWidth={2}
+          strokeDasharray="5 4"
+          dot={{ r: 2.5, fill: "var(--color-rab)" }}
+          activeDot={{ r: 4 }}
+        />
+        <Line
+          type="monotone"
+          dataKey="refused"
+          stroke="var(--color-refused)"
+          strokeWidth={2}
+          strokeDasharray="5 4"
+          dot={{ r: 2.5, fill: "var(--color-refused)" }}
+          activeDot={{ r: 4 }}
+        />
+      </ComposedChart>
+    </ChartContainer>
+  );
+
+  if (embedded) return plot;
 
   return (
     <Card
@@ -119,82 +211,7 @@ export function MealFlowChart({ days, perDayRows, level }: Props) {
             </div>
           </div>
         </header>
-
-        {!hasData ? (
-          <p className="mt-5 px-6 text-sm text-muted-foreground">
-            Pas encore de compteurs saisis sur la période — ouvrez un service et
-            renseignez présents / servis / RAB / refus pour voir le flux ici.
-          </p>
-        ) : (
-          <ChartContainer config={chartConfig} className={cantinePlusChartPlotClass}>
-            <ComposedChart
-              data={series}
-              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={24}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                width={40}
-              />
-              <ChartTooltip
-                content={(tooltipProps) => (
-                  <ChartTooltipContent
-                    active={tooltipProps.active}
-                    payload={tooltipProps.payload}
-                    label={tooltipProps.label}
-                    coordinate={tooltipProps.coordinate}
-                    accessibilityLayer={tooltipProps.accessibilityLayer}
-                    activeIndex={tooltipProps.activeIndex}
-                  />
-                )}
-              />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Line
-                type="monotone"
-                dataKey="present"
-                stroke="var(--color-present)"
-                strokeWidth={2.5}
-                dot={{ r: 3, fill: "var(--color-present)" }}
-                activeDot={{ r: 5 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="served"
-                stroke="var(--color-served)"
-                strokeWidth={2.5}
-                dot={{ r: 3, fill: "var(--color-served)" }}
-                activeDot={{ r: 5 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="rab"
-                stroke="var(--color-rab)"
-                strokeWidth={2}
-                strokeDasharray="5 4"
-                dot={{ r: 2.5, fill: "var(--color-rab)" }}
-                activeDot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="refused"
-                stroke="var(--color-refused)"
-                strokeWidth={2}
-                strokeDasharray="5 4"
-                dot={{ r: 2.5, fill: "var(--color-refused)" }}
-                activeDot={{ r: 4 }}
-              />
-            </ComposedChart>
-          </ChartContainer>
-        )}
+        {plot}
       </CardContent>
     </Card>
   );

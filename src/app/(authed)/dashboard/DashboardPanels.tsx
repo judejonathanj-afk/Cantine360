@@ -1,23 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import {
+  Ban,
+  ClipboardList,
+  Download,
+  FileSpreadsheet,
+  GitCompareArrows,
+  Layers,
+  Repeat2,
+  Table as TableIcon,
+  Trash2,
+  TriangleAlert,
+  Users,
+  Utensils,
+  UtensilsCrossed,
+  type LucideIcon,
+} from "lucide-react";
 import { motion } from "framer-motion";
-import { Download } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
-import { CantinePlusSection } from "@/components/dashboard/CantinePlusSection";
+import { DashboardHeroBanner } from "@/components/dashboard/DashboardHeroBanner";
+import {
+  DashboardInsightCard,
+  DashboardSectionHeading,
+} from "@/components/dashboard/DashboardDesignShell";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
-import { GROUP_CARD_COLORS } from "@/lib/groupCardColors";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
-import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
-import { StopWasteApple } from "@/components/dashboard/StopWasteApple";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -31,33 +45,75 @@ type Totals = {
 
 type DashboardDayRow = DashboardDayDetailRow;
 
-function SectionHeading({
-  title,
-  lineClassName,
-  titleClassName,
-  trailing,
+type Tone = "primary" | "teal" | "amber" | "coral" | "ink";
+
+const toneMap: Record<Tone, string> = {
+  primary: "text-primary bg-primary/10 ring-primary/15",
+  teal: "text-[color:var(--chart-2)] bg-[color:var(--chart-2)]/10 ring-[color:var(--chart-2)]/15",
+  amber:
+    "text-[color:var(--accent-foreground)] bg-[color:var(--accent)]/25 ring-[color:var(--accent)]/40",
+  coral: "text-destructive bg-destructive/10 ring-destructive/15",
+  ink: "text-[color:var(--dash-ink)] bg-[color:var(--dash-ink)]/10 ring-[color:var(--dash-ink)]/15",
+};
+
+function StatCard({
+  icon: Icon,
+  tone,
+  label,
+  value,
+  sub,
 }: {
-  title: ReactNode;
-  lineClassName: string;
-  titleClassName?: string;
-  trailing?: ReactNode;
+  icon: LucideIcon;
+  tone: Tone;
+  label: string;
+  value: string;
+  sub: string;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <h2
-        className={cn(
-          "shrink-0 text-xl font-bold tracking-tight text-foreground sm:text-2xl",
-          titleClassName,
-        )}
-      >
-        {title}
-      </h2>
-      <div
-        aria-hidden
-        className={cn("h-1 min-h-1 min-w-[2.5rem] flex-1 rounded-full", lineClassName)}
-      />
-      {trailing}
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/5">
+      <div className="flex items-start justify-between">
+        <span
+          className={cn(
+            "flex size-10 items-center justify-center rounded-xl ring-1",
+            toneMap[tone],
+          )}
+        >
+          <Icon className="size-5" />
+        </span>
+      </div>
+      <div className="mt-4">
+        <div className="text-sm font-medium text-muted-foreground">{label}</div>
+        <div className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-foreground tabular-nums">
+          {value}
+        </div>
+        <div className="mt-1 text-xs text-muted-foreground">{sub}</div>
+      </div>
     </div>
+  );
+}
+
+function FilterSegmentLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "rounded-xl px-3.5 py-1.5 text-sm font-medium transition-all",
+        active
+          ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
+          : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {children}
+    </Link>
   );
 }
 
@@ -135,6 +191,8 @@ export default function DashboardPanels({
   const isKitchen = role === "KITCHEN";
   const chartLevels =
     levelFilter === "all" ? SCHOOL_LEVELS : ([levelFilter] as SchoolLevel[]);
+  const gridCols =
+    chartLevels.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
 
   function formatDelta(value: number | null) {
     if (value == null) return "—";
@@ -143,62 +201,12 @@ export default function DashboardPanels({
     return `${sign}${value.toLocaleString("fr-FR")}`;
   }
 
-  const kpis = [
-    {
-      label: "Élèves présents",
-      value: totals.present.toLocaleString("fr-FR"),
-    },
-    {
-      label: "Servis",
-      value: totals.served.toLocaleString("fr-FR"),
-      sub: `vs présents : ${servedVsPresentPct}`,
-    },
-    {
-      label: "RAB",
-      value: totals.rab.toLocaleString("fr-FR"),
-      sub: `vs servis : ${rabRatePct}`,
-    },
-    {
-      label: "Refus",
-      value: totals.refused.toLocaleString("fr-FR"),
-      sub: `taux : ${refusalRatePct}`,
-    },
-    {
-      label: "Déchets",
-      value:
-        totalWasteWeightG > 0
-          ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
-          : "—",
-      sub: (() => {
-        const parts: string[] = [];
-        if (
-          levelFilter === "all" &&
-          (totalWasteMaternelleG > 0 || totalWastePrimaireG > 0)
-        ) {
-          if (totalWasteMaternelleG > 0) {
-            parts.push(
-              `Mat. ${Math.round(totalWasteMaternelleG).toLocaleString("fr-FR")} g`,
-            );
-          }
-          if (totalWastePrimaireG > 0) {
-            parts.push(
-              `Prim. ${Math.round(totalWastePrimaireG).toLocaleString("fr-FR")} g`,
-            );
-          }
-        }
-        if (wasteGramsPer100Served != null) {
-          parts.push(
-            `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100 assiettes`,
-          );
-        } else if (parts.length === 0 && servicesWithWaste > 0) {
-          parts.push(
-            `${servicesWithWaste} service${servicesWithWaste > 1 ? "s" : ""} saisi${servicesWithWaste > 1 ? "s" : ""}`,
-          );
-        }
-        return parts.length > 0 ? parts.join(" · ") : "saisir en fin de service";
-      })(),
-    },
-  ];
+  function daysHref(nextDays: 7 | 30) {
+    const params = new URLSearchParams();
+    params.set("days", String(nextDays));
+    if (levelFilter !== "all") params.set("level", levelFilter);
+    return `/dashboard?${params.toString()}`;
+  }
 
   function levelHref(level: "all" | SchoolLevel) {
     const params = new URLSearchParams();
@@ -207,478 +215,481 @@ export default function DashboardPanels({
     return `/dashboard?${params.toString()}`;
   }
 
+  const wasteSub = (() => {
+    const parts: string[] = [];
+    if (
+      levelFilter === "all" &&
+      (totalWasteMaternelleG > 0 || totalWastePrimaireG > 0)
+    ) {
+      if (totalWasteMaternelleG > 0) {
+        parts.push(
+          `Mat. ${Math.round(totalWasteMaternelleG).toLocaleString("fr-FR")} g`,
+        );
+      }
+      if (totalWastePrimaireG > 0) {
+        parts.push(
+          `Prim. ${Math.round(totalWastePrimaireG).toLocaleString("fr-FR")} g`,
+        );
+      }
+    }
+    if (wasteGramsPer100Served != null) {
+      parts.push(
+        `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100 assiettes`,
+      );
+    } else if (parts.length === 0 && servicesWithWaste > 0) {
+      parts.push(
+        `${servicesWithWaste} service${servicesWithWaste > 1 ? "s" : ""} saisi${servicesWithWaste > 1 ? "s" : ""}`,
+      );
+    }
+    return parts.length > 0 ? parts.join(" · ") : "saisir en fin de service";
+  })();
+
+  const showWasteAlert =
+    !isKitchen &&
+    (totalWasteWeightG > 0 || totals.refused > 0 || totals.rab > 0);
+
   return (
-    <div className="space-y-8">
-      <div className="flex items-center gap-4 rounded-2xl border border-emerald-900/20 bg-[#80ca4e] px-4 py-5 text-emerald-950 sm:gap-6 sm:px-6 sm:py-6">
-        <div className="min-w-0 flex-1 space-y-3">
-          <div>
-            <div className="flex items-center gap-3 sm:gap-4">
-              {isKitchen ? (
-                <DashboardProfileAvatar establishmentId={establishmentId} />
-              ) : null}
-              <h1 className="text-balance text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                {isKitchen
-                  ? "Tableau de bord cuisine"
-                  : "Bienvenue sur votre tableau de bord"}
-                {schoolNames.length === 1 ? (
-                  <>
-                    <span aria-hidden> — </span>
-                    <span className="text-white">{schoolNames[0]}</span>
-                  </>
-                ) : null}
-              </h1>
-            </div>
-            {schoolNames.length > 1 ? (
-              <p className="mt-1 text-sm text-emerald-950 sm:text-base">
-                <span className="font-medium text-emerald-950/85">
-                  Écoles suivies :{" "}
-                </span>
-                {schoolNames.map((name, index) => (
-                  <span key={name}>
-                    {index > 0 ? (
-                      <span aria-hidden className="text-emerald-900/70">
-                        {" "}
-                        ·{" "}
-                      </span>
-                    ) : null}
-                    <span className="font-bold text-emerald-950">{name}</span>
-                  </span>
-                ))}
-              </p>
-            ) : null}
-            <p className="mt-1 font-medium text-emerald-950/90">
-              Indicateurs sur les {days} derniers jours
-              {levelFilter !== "all"
-                ? ` — ${schoolLevelLabelFr(levelFilter).toLowerCase()}`
-                : ""}
-            </p>
-          </div>
+    <div className="dashboard-v2 space-y-8">
+      <DashboardHeroBanner
+        schoolNames={schoolNames}
+        days={days}
+        isKitchen={isKitchen}
+        establishmentId={establishmentId}
+      />
 
-          <p className="text-base font-semibold leading-snug text-emerald-950 sm:text-lg">
-            {isKitchen
-              ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
-              : `Aperçu — chiffres clés du déjeuner, note Cantine +, évolution des déchets et détail jour par jour sur les ${days} derniers jours.`}
-          </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <div
+          role="group"
+          aria-label="Période"
+          className="inline-flex items-center gap-1 rounded-2xl border border-border bg-card/70 p-1 shadow-sm backdrop-blur"
+        >
+          <FilterSegmentLink href={daysHref(7)} active={days === 7}>
+            7 jours
+          </FilterSegmentLink>
+          <FilterSegmentLink href={daysHref(30)} active={days === 30}>
+            30 jours
+          </FilterSegmentLink>
         </div>
 
-        <StopWasteApple className="hidden h-24 w-auto sm:block sm:h-28 md:h-32" />
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <div className="flex flex-wrap gap-2">
-          <Button variant={days === 7 ? "default" : "outline"} asChild>
-            <Link
-              href={`/dashboard?days=7${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
-            >
-              7 jours
-            </Link>
-          </Button>
-          <Button variant={days === 30 ? "default" : "outline"} asChild>
-            <Link
-              href={`/dashboard?days=30${levelFilter !== "all" ? `&level=${levelFilter}` : ""}`}
-            >
-              30 jours
-            </Link>
-          </Button>
+        <div
+          role="group"
+          aria-label="Niveau"
+          className="inline-flex items-center gap-1 rounded-2xl border border-border bg-card/70 p-1 shadow-sm backdrop-blur"
+        >
+          <FilterSegmentLink href={levelHref("all")} active={levelFilter === "all"}>
+            Tous niveaux
+          </FilterSegmentLink>
+          <FilterSegmentLink
+            href={levelHref("MATERNELLE")}
+            active={levelFilter === "MATERNELLE"}
+          >
+            Maternelle
+          </FilterSegmentLink>
+          <FilterSegmentLink
+            href={levelHref("PRIMAIRE")}
+            active={levelFilter === "PRIMAIRE"}
+          >
+            Primaire
+          </FilterSegmentLink>
         </div>
-        <div className="flex flex-wrap gap-2 sm:justify-end">
-          <Button variant={levelFilter === "all" ? "default" : "outline"} asChild>
-            <Link href={levelHref("all")}>Tous niveaux</Link>
-          </Button>
-          <Button
-            variant={levelFilter === "MATERNELLE" ? "default" : "outline"}
-            asChild
-          >
-            <Link href={levelHref("MATERNELLE")}>Maternelle</Link>
-          </Button>
-          <Button
-            variant={levelFilter === "PRIMAIRE" ? "default" : "outline"}
-            asChild
-          >
-            <Link href={levelHref("PRIMAIRE")}>Primaire</Link>
-          </Button>
+
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isKitchen ? (
-            <Button variant="outline" asChild>
-              <a
-                href={`/api/exports/commission-bilan?year=${exportYear}`}
-                download
-                className="inline-flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" aria-hidden />
-                Bilan commission (CSV)
-              </a>
-            </Button>
+            <a
+              href={`/api/exports/commission-bilan?year=${exportYear}`}
+              download
+              className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card/70 px-3.5 py-2 text-sm font-medium text-foreground shadow-sm backdrop-blur transition-colors hover:bg-secondary"
+            >
+              <FileSpreadsheet className="size-4 text-primary" />
+              Bilan commission
+              <span className="text-muted-foreground">(CSV)</span>
+            </a>
           ) : null}
+          <button
+            type="button"
+            disabled={perDayRows.length === 0}
+            onClick={() =>
+              downloadSuiviJourPdf(perDayRows, {
+                days,
+                levelFilter,
+                isKitchen,
+              })
+            }
+            className="inline-flex items-center gap-2 rounded-2xl bg-[color:var(--dash-ink)] px-3.5 py-2 text-sm font-semibold text-[color:var(--dash-ink-fg)] shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download className="size-4" />
+            PDF
+          </button>
         </div>
       </div>
 
-      <div
-        className={
-          isKitchen
-            ? "grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5"
-            : "grid grid-cols-2 items-stretch gap-1.5 sm:grid-cols-3 sm:gap-2 lg:grid-cols-5"
-        }
-      >
-        {kpis.map((item, i) => (
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        {[
+          {
+            icon: Users,
+            tone: "ink" as const,
+            label: "Élèves présents",
+            value: totals.present.toLocaleString("fr-FR"),
+            sub: "sur la période",
+          },
+          {
+            icon: UtensilsCrossed,
+            tone: "primary" as const,
+            label: "Assiettes servies",
+            value: totals.served.toLocaleString("fr-FR"),
+            sub: `vs présents : ${servedVsPresentPct}`,
+          },
+          {
+            icon: Repeat2,
+            tone: "teal" as const,
+            label: "RAB",
+            value: totals.rab.toLocaleString("fr-FR"),
+            sub: `vs servis : ${rabRatePct}`,
+          },
+          {
+            icon: Ban,
+            tone: "coral" as const,
+            label: "Refus",
+            value: totals.refused.toLocaleString("fr-FR"),
+            sub: `taux : ${refusalRatePct}`,
+          },
+          {
+            icon: Trash2,
+            tone: "amber" as const,
+            label: "Déchets (poids)",
+            value:
+              totalWasteWeightG > 0
+                ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
+                : "—",
+            sub: wasteSub,
+          },
+        ].map((item, i) => (
           <motion.div
             key={item.label}
-            className="flex h-full flex-col"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 * i }}
           >
-            <p className="mb-1.5 text-center text-sm font-bold leading-tight text-zinc-900 sm:mb-2 sm:text-base">
-              {item.label}
-            </p>
-            <Card className="h-full w-full flex-1 gap-0 rounded-xl border-2 border-emerald-600 bg-card/50 py-0 shadow-none backdrop-blur-sm dark:border-emerald-500">
-              <CardContent className="flex h-full flex-col justify-center p-1.5 sm:p-2.5 sm:px-3">
-                <p className="text-xl font-bold tabular-nums leading-none tracking-tight text-foreground sm:text-2xl">
-                  {item.value}
-                </p>
-                <p className="mt-0.5 min-h-[2rem] line-clamp-2 text-[11px] leading-snug text-muted-foreground sm:min-h-[2.25rem] sm:text-xs">
-                  {"sub" in item && item.sub ? (
-                    <span className="!font-bold">{item.sub}</span>
-                  ) : (
-                    <span className="invisible select-none" aria-hidden>
-                      —
-                    </span>
-                  )}
-                </p>
-              </CardContent>
-            </Card>
+            <StatCard {...item} />
           </motion.div>
         ))}
       </div>
 
-      {isKitchen ? (
-        <div className="space-y-8 sm:space-y-10">
-          <div className="space-y-3">
-            <SectionHeading title="Flux du repas" lineClassName="bg-yellow-400" />
-            <div className="relative space-y-4 pl-8 sm:pl-10">
-              <div
-                aria-hidden
-                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
-              />
-              {chartLevels.map((level) => (
-                <MealFlowChart
-                  key={`meal-flow-${level}`}
-                  days={days}
-                  level={level}
-                  perDayRows={mealFlowByLevel[level]}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="space-y-3">
-            <SectionHeading
-              title="Évolution des déchets"
-              lineClassName="bg-emerald-500"
-            />
-            <div className="relative space-y-4 pl-8 sm:pl-10">
-              <div
-                aria-hidden
-                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
-              />
-              {chartLevels.map((level) => (
-                <WasteEvolutionChart
-                  key={`waste-${level}`}
-                  days={days}
-                  level={level}
-                  perDayRows={wasteByLevel[level]}
-                />
-              ))}
+      {showWasteAlert ? (
+        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--accent)]/40 bg-gradient-to-r from-[color:var(--accent)]/15 to-[color:var(--accent)]/5 p-5 shadow-sm">
+          <div className="flex items-start gap-4">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[color:var(--accent)]/30 text-[color:var(--accent-foreground)] ring-1 ring-[color:var(--accent)]/40">
+              <TriangleAlert className="size-5" />
+            </span>
+            <div>
+              <h3 className="font-display text-base font-bold text-foreground">
+                Lecture déchets &amp; refus
+              </h3>
+              <p className="mt-1 text-sm leading-relaxed text-foreground/80">
+                {wasteGramsPer100Served != null ? (
+                  <>
+                    Taux actuel{" "}
+                    <b className="font-semibold">
+                      {wasteGramsPer100Served.toLocaleString("fr-FR", {
+                        maximumFractionDigits: 1,
+                      })}{" "}
+                      g / 100 assiettes
+                    </b>
+                    .{" "}
+                  </>
+                ) : null}
+                Refus sur la période :{" "}
+                <b className="font-semibold">
+                  {totals.refused.toLocaleString("fr-FR")}
+                </b>
+                . RAB :{" "}
+                <b className="font-semibold">
+                  {totals.rab.toLocaleString("fr-FR")} assiettes
+                </b>{" "}
+                ({rabRatePct} des servis).
+              </p>
             </div>
           </div>
         </div>
-      ) : (
-        <CantinePlusSection>
-          <CantinePulseCard
-            rows={pulseRows}
-            wasteRows={pulseWasteRows}
-            mealType="LUNCH"
-            days={days}
-            showBrandTitle={false}
-            levelFilter={levelFilter}
-            eco={
-              eco
-                ? {
-                    groups: eco.groups,
-                    periodTitle: eco.periodTitle,
-                    restesParen: eco.restesParen,
-                    priorPhrase: eco.priorPhrase,
-                  }
-                : null
-            }
+      ) : null}
+
+      {!isKitchen ? (
+        <CantinePulseCard
+          rows={pulseRows}
+          wasteRows={pulseWasteRows}
+          mealType="LUNCH"
+          days={days}
+          showBrandTitle
+          levelFilter={levelFilter}
+          eco={
+            eco
+              ? {
+                  groups: eco.groups,
+                  periodTitle: eco.periodTitle,
+                  restesParen: eco.restesParen,
+                  priorPhrase: eco.priorPhrase,
+                }
+              : null
+          }
+        />
+      ) : null}
+
+      <section>
+        <DashboardSectionHeading
+          icon={Utensils}
+          title="Flux du repas"
+          hint="Présents → servis → RAB / refus, jour par jour."
+        />
+        <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
+          {chartLevels.map((level) => (
+            <DashboardInsightCard
+              key={`meal-flow-${level}`}
+              icon={Utensils}
+              title="Flux du repas"
+              level={schoolLevelLabelFr(level)}
+              description="Le parcours du repas en un coup d'œil — utile pour voir si l'écart présents / servis se creuse."
+            >
+              <MealFlowChart
+                days={days}
+                level={level}
+                perDayRows={mealFlowByLevel[level]}
+                embedded
+              />
+            </DashboardInsightCard>
+          ))}
+        </div>
+      </section>
+
+      {!isKitchen ? (
+        <section>
+          <DashboardSectionHeading
+            icon={GitCompareArrows}
+            title="Taux du cycle"
+            hint={`Taux de service, RAB et refus sur ${days} jours.`}
           />
-          <div className="space-y-3">
-            <SectionHeading title="Flux du repas" lineClassName="bg-yellow-400" />
-            <div className="relative space-y-4 pl-8 sm:pl-10">
-              <div
-                aria-hidden
-                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-yellow-400"
-              />
-              {chartLevels.map((level) => (
-                <MealFlowChart
-                  key={`meal-flow-${level}`}
-                  days={days}
-                  level={level}
-                  perDayRows={mealFlowByLevel[level]}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="space-y-3">
-            <SectionHeading title="Taux du cycle" lineClassName="bg-zinc-900" />
-            <div className="relative space-y-4 pl-8 sm:pl-10">
-              <div
-                aria-hidden
-                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-zinc-900"
-              />
-              {chartLevels.map((level) => (
+          <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
+            {chartLevels.map((level) => (
+              <DashboardInsightCard
+                key={`level-rates-${level}`}
+                icon={GitCompareArrows}
+                title="Taux du cycle"
+                level={schoolLevelLabelFr(level)}
+                description="Service = servis / présents · RAB et refus = vs assiettes servies. Pour ajuster portions et menu."
+              >
                 <LevelComparisonChart
-                  key={`level-rates-${level}`}
                   days={days}
                   level={level}
                   totals={levelComparisonTotals[level]}
+                  embedded
                 />
-              ))}
-            </div>
+              </DashboardInsightCard>
+            ))}
           </div>
-          <div className="space-y-3">
-            <SectionHeading
-              title="Évolution des déchets"
-              lineClassName="bg-emerald-500"
-            />
-            <div className="relative space-y-4 pl-8 sm:pl-10">
-              <div
-                aria-hidden
-                className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-emerald-500"
-              />
-              {chartLevels.map((level) => (
-                <WasteEvolutionChart
-                  key={`waste-${level}`}
-                  days={days}
-                  level={level}
-                  perDayRows={wasteByLevel[level]}
-                />
-              ))}
-            </div>
-          </div>
-        </CantinePlusSection>
-      )}
+        </section>
+      ) : null}
 
-      <div className="space-y-3">
-        <SectionHeading
-          title="Suivi jour par jour"
-          lineClassName="bg-sky-500"
-          trailing={
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={perDayRows.length === 0}
-              className="shrink-0 gap-2"
-              onClick={() =>
-                downloadSuiviJourPdf(perDayRows, {
-                  days,
-                  levelFilter,
-                  isKitchen,
-                })
-              }
+      <section>
+        <DashboardSectionHeading
+          icon={Trash2}
+          title="Évolution des déchets"
+          hint="Poids des déchets et grammes pour 100 assiettes dans le temps."
+        />
+        <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
+          {chartLevels.map((level) => (
+            <DashboardInsightCard
+              key={`waste-${level}`}
+              icon={Trash2}
+              title="Évolution des déchets"
+              level={schoolLevelLabelFr(level)}
+              description="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Pour repérer quel jour les déchets augmentent."
             >
-              <Download className="h-4 w-4" aria-hidden />
-              Télécharger PDF
-            </Button>
+              <WasteEvolutionChart
+                days={days}
+                level={level}
+                perDayRows={wasteByLevel[level]}
+                embedded
+              />
+            </DashboardInsightCard>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <DashboardSectionHeading
+          icon={Layers}
+          title="Contexte du service"
+          hint={
+            levelFilter !== "all"
+              ? `Menus, pesées et écarts — ${schoolLevelLabelFr(levelFilter)}.`
+              : "Menus, pesées et écarts par jour de service."
           }
         />
-        <div className="relative space-y-4 pl-8 sm:pl-10">
-          <div
-            aria-hidden
-            className="absolute bottom-0 left-0 top-0 w-1 rounded-full bg-sky-500"
-          />
-          <div className="flex flex-col gap-4">
-        <Card
-          className="flex h-full flex-col border-border/50 backdrop-blur-sm"
-          style={{ backgroundColor: GROUP_CARD_COLORS[4] }}
-        >
-          <CardContent className="flex flex-1 flex-col p-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              {isKitchen ? "Aperçu du jour" : "Détails par service"}
-              {levelFilter !== "all" ? (
-                <>
-                  {" "}
-                  —{" "}
-                  <span className="text-emerald-700">
-                    {schoolLevelLabelFr(levelFilter)}
-                  </span>
-                </>
-              ) : null}
-            </h2>
-            {perDayRows.length === 0 ? (
-              <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
-            ) : (
-              <div className="mt-3 min-h-72 max-h-[28rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-80 sm:max-h-[32rem]">
-                <table className="min-w-full text-sm">
-                  <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
-                    <tr>
-                      <th className="py-2 pr-3">Date</th>
-                      <th className="py-2 pr-3">Présents</th>
-                      <th className="py-2 pr-3">Servis</th>
-                      <th className="py-2 pr-3">RAB</th>
-                      <th className="py-2 pr-3">RAB %</th>
-                      <th className="py-2 pr-3">Refus</th>
-                      <th className="py-2 pr-3">Refus %</th>
+        <div className="overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-3">
+          {perDayRows.length === 0 ? (
+            <p className="p-4 text-sm text-muted-foreground">Pas de données.</p>
+          ) : (
+            <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
+              <table className="min-w-full text-sm">
+                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                  <tr>
+                    <th className="px-3 py-2.5">Date</th>
+                    <th className="px-3 py-2.5">g / 100</th>
+                    <th className="px-3 py-2.5">Pesée</th>
+                    <th className="px-3 py-2.5">Écoles</th>
+                    <th className="px-3 py-2.5">Classes</th>
+                    <th className="px-3 py-2.5">Menu</th>
+                    <th className="px-3 py-2.5">Élèves concernés</th>
+                    <th className="px-3 py-2.5">Δ servis</th>
+                    <th className="px-3 py-2.5">Δ déchets</th>
+                  </tr>
+                </thead>
+                <tbody className="text-foreground">
+                  {perDayRows.map((row) => (
+                    <tr
+                      key={`ctx-${row.date}`}
+                      className="border-t border-border/60 align-top"
+                    >
+                      <td className="px-3 py-2.5 font-medium whitespace-nowrap">
+                        {row.date}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.wasteGramsPer100 != null
+                          ? row.wasteGramsPer100.toLocaleString("fr-FR", {
+                              maximumFractionDigits: 1,
+                            })
+                          : "—"}
+                      </td>
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        {row.weighLabel}
+                      </td>
+                      <td className="max-w-[10rem] px-3 py-2.5 text-xs leading-snug">
+                        {row.schools}
+                      </td>
+                      <td className="px-3 py-2.5">{row.classCount}</td>
+                      <td
+                        className="max-w-[14rem] px-3 py-2.5 text-xs leading-snug"
+                        title={row.menuSummary}
+                      >
+                        {row.menuSummary}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.concernedStudents > 0
+                          ? row.concernedStudents.toLocaleString("fr-FR")
+                          : "—"}
+                      </td>
+                      <td className="px-3 py-2.5 tabular-nums">
+                        {formatDelta(row.servedDelta)}
+                      </td>
+                      <td className="px-3 py-2.5 tabular-nums">
+                        {formatDelta(row.wasteDelta)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section>
+        <DashboardSectionHeading
+          icon={TableIcon}
+          title="Suivi jour par jour"
+          hint={
+            isKitchen
+              ? "Aperçu du jour — présents, servis, RAB, refus et déchets."
+              : "Détail complet par service — présents, servis, RAB, refus et déchets."
+          }
+        />
+        <div className="overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm sm:p-3">
+          {perDayRows.length === 0 ? (
+            <p className="p-4 text-sm text-muted-foreground">Pas de données.</p>
+          ) : (
+            <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
+              <table className="min-w-full text-sm">
+                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                  <tr>
+                    <th className="px-3 py-2.5">Date</th>
+                    <th className="px-3 py-2.5">Présents</th>
+                    <th className="px-3 py-2.5">Servis</th>
+                    <th className="px-3 py-2.5">RAB</th>
+                    <th className="px-3 py-2.5">RAB %</th>
+                    <th className="px-3 py-2.5">Refus</th>
+                    <th className="px-3 py-2.5">Refus %</th>
+                    {levelFilter === "all" ? (
+                      <>
+                        <th className="px-3 py-2.5">Déchets mat. (g)</th>
+                        <th className="px-3 py-2.5">Déchets prim. (g)</th>
+                      </>
+                    ) : null}
+                    <th className="px-3 py-2.5">
+                      Déchets{levelFilter === "all" ? " total" : ""} (g)
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-foreground">
+                  {perDayRows.map((row) => (
+                    <tr key={row.date} className="border-t border-border/60">
+                      <td className="px-3 py-2.5 font-medium whitespace-nowrap">
+                        {row.date}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.present.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.served.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.rab.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.rabRatePct != null
+                          ? `${row.rabRatePct.toLocaleString("fr-FR")} %`
+                          : "—"}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.refused.toLocaleString("fr-FR")}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {row.refusalRatePct != null
+                          ? `${row.refusalRatePct.toLocaleString("fr-FR")} %`
+                          : "—"}
+                      </td>
                       {levelFilter === "all" ? (
                         <>
-                          <th className="py-2 pr-3">Déchets mat. (g)</th>
-                          <th className="py-2 pr-3">Déchets prim. (g)</th>
+                          <td className="px-3 py-2.5">
+                            {row.wasteWeightMaternelleG > 0
+                              ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
+                              : "—"}
+                          </td>
+                          <td className="px-3 py-2.5">
+                            {row.wasteWeightPrimaireG > 0
+                              ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
+                              : "—"}
+                          </td>
                         </>
                       ) : null}
-                      <th className="py-2">
-                        Déchets{levelFilter === "all" ? " total" : ""} (g)
-                      </th>
+                      <td className="px-3 py-2.5">
+                        {row.wasteWeightG > 0
+                          ? row.wasteWeightG.toLocaleString("fr-FR")
+                          : "—"}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="text-foreground">
-                    {perDayRows.map((row) => (
-                      <tr key={row.date} className="border-t border-border/60">
-                        <td className="py-2 pr-3 font-medium whitespace-nowrap">
-                          {row.date}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.present.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.served.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.rab.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.rabRatePct != null
-                            ? `${row.rabRatePct.toLocaleString("fr-FR")} %`
-                            : "—"}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.refused.toLocaleString("fr-FR")}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.refusalRatePct != null
-                            ? `${row.refusalRatePct.toLocaleString("fr-FR")} %`
-                            : "—"}
-                        </td>
-                        {levelFilter === "all" ? (
-                          <>
-                            <td className="py-2 pr-3">
-                              {row.wasteWeightMaternelleG > 0
-                                ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
-                                : "—"}
-                            </td>
-                            <td className="py-2 pr-3">
-                              {row.wasteWeightPrimaireG > 0
-                                ? row.wasteWeightPrimaireG.toLocaleString("fr-FR")
-                                : "—"}
-                            </td>
-                          </>
-                        ) : null}
-                        <td className="py-2">
-                          {row.wasteWeightG > 0
-                            ? row.wasteWeightG.toLocaleString("fr-FR")
-                            : "—"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card
-          className="flex h-full flex-col border-border/50 backdrop-blur-sm"
-          style={{ backgroundColor: GROUP_CARD_COLORS[0] }}
-        >
-          <CardContent className="flex flex-1 flex-col p-6">
-            <h2 className="text-lg font-semibold text-foreground">
-              Contexte du service
-              {levelFilter !== "all" ? (
-                <>
-                  {" "}
-                  —{" "}
-                  <span className="text-emerald-700">
-                    {schoolLevelLabelFr(levelFilter)}
-                  </span>
-                </>
-              ) : null}
-            </h2>
-            {perDayRows.length === 0 ? (
-              <p className="mt-2 text-sm text-muted-foreground">Pas de données.</p>
-            ) : (
-              <div className="mt-3 min-h-72 max-h-[28rem] flex-1 overflow-y-auto overflow-x-auto rounded-xl border border-black/10 bg-white pr-1 [scrollbar-gutter:stable] sm:min-h-80 sm:max-h-[32rem]">
-                <table className="min-w-full text-sm">
-                  <thead className="sticky top-0 z-10 bg-white text-left text-xs font-semibold text-muted-foreground shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
-                    <tr>
-                      <th className="py-2 pr-3">Date</th>
-                      <th className="py-2 pr-3">g / 100</th>
-                      <th className="py-2 pr-3">Pesée</th>
-                      <th className="py-2 pr-3">Écoles</th>
-                      <th className="py-2 pr-3">Classes</th>
-                      <th className="py-2 pr-3">Menu</th>
-                      <th className="py-2 pr-3">Élèves concernés</th>
-                      <th className="py-2 pr-3">Δ servis</th>
-                      <th className="py-2">Δ déchets</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-foreground">
-                    {perDayRows.map((row) => (
-                      <tr
-                        key={`ctx-${row.date}`}
-                        className="border-t border-border/60 align-top"
-                      >
-                        <td className="py-2 pr-3 font-medium whitespace-nowrap">
-                          {row.date}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.wasteGramsPer100 != null
-                            ? row.wasteGramsPer100.toLocaleString("fr-FR", {
-                                maximumFractionDigits: 1,
-                              })
-                            : "—"}
-                        </td>
-                        <td className="py-2 pr-3 whitespace-nowrap">{row.weighLabel}</td>
-                        <td className="max-w-[10rem] py-2 pr-3 text-xs leading-snug">
-                          {row.schools}
-                        </td>
-                        <td className="py-2 pr-3">{row.classCount}</td>
-                        <td
-                          className="max-w-[14rem] py-2 pr-3 text-xs leading-snug"
-                          title={row.menuSummary}
-                        >
-                          {row.menuSummary}
-                        </td>
-                        <td className="py-2 pr-3">
-                          {row.concernedStudents > 0
-                            ? row.concernedStudents.toLocaleString("fr-FR")
-                            : "—"}
-                        </td>
-                        <td className="py-2 pr-3 tabular-nums">
-                          {formatDelta(row.servedDelta)}
-                        </td>
-                        <td className="py-2 tabular-nums">
-                          {formatDelta(row.wasteDelta)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
+
+      {!isKitchen ? (
+        <footer className="flex items-center justify-center gap-2 pt-2 text-xs text-muted-foreground">
+          <ClipboardList className="size-3.5" />
+          Fonctions Cantine+ · inclus dans Cantine360
+        </footer>
+      ) : null}
     </div>
   );
 }

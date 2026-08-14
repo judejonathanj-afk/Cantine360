@@ -45,9 +45,15 @@ type Props = {
   days: 7 | 30;
   perDayRows: WastePerDayRowInput[];
   level?: SchoolLevel;
+  embedded?: boolean;
 };
 
-export function WasteEvolutionChart({ days, perDayRows, level }: Props) {
+export function WasteEvolutionChart({
+  days,
+  perDayRows,
+  level,
+  embedded = false,
+}: Props) {
   const series = useMemo(
     () => buildWasteEvolutionSeries(perDayRows),
     [perDayRows],
@@ -56,6 +62,97 @@ export function WasteEvolutionChart({ days, perDayRows, level }: Props) {
   const useBars = days === 7;
   const hasWasteData = series.some((p) => p.wasteWeightG > 0);
   const levelLabel = level ? schoolLevelLabelFr(level) : null;
+
+  const plot =
+    series.length === 0 || !hasWasteData ? (
+      <p className={cn("text-sm text-muted-foreground", !embedded && "mt-5 px-6")}>
+        Pas encore de poids déchets saisi sur la période — renseignez-le en fin
+        de service pour voir l&apos;évolution ici.
+      </p>
+    ) : (
+      <ChartContainer
+        config={chartConfig}
+        className={cn(
+          cantinePlusChartPlotClass,
+          embedded && "aspect-auto h-[260px] w-full",
+        )}
+      >
+        <ComposedChart
+          data={series}
+          margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+        >
+          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <XAxis
+            dataKey="label"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            minTickGap={24}
+          />
+          <YAxis
+            yAxisId="grams"
+            tickLine={false}
+            axisLine={false}
+            allowDecimals={false}
+            width={44}
+            tickFormatter={(v) => `${v} g`}
+          />
+          <YAxis
+            yAxisId="ratio"
+            orientation="right"
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(v) => `${v} g`}
+            width={44}
+            domain={[0, "auto"]}
+          />
+          <ChartTooltip
+            content={(tooltipProps) => (
+              <ChartTooltipContent
+                active={tooltipProps.active}
+                payload={tooltipProps.payload}
+                label={tooltipProps.label}
+                coordinate={tooltipProps.coordinate}
+                accessibilityLayer={tooltipProps.accessibilityLayer}
+                activeIndex={tooltipProps.activeIndex}
+              />
+            )}
+          />
+          <ChartLegend content={<ChartLegendContent />} />
+          {useBars ? (
+            <Bar
+              yAxisId="grams"
+              dataKey="wasteWeightG"
+              fill="var(--color-wasteWeightG)"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={36}
+            />
+          ) : (
+            <Line
+              yAxisId="grams"
+              type="monotone"
+              dataKey="wasteWeightG"
+              stroke="var(--color-wasteWeightG)"
+              strokeWidth={2}
+              dot={{ r: 3, fill: "var(--color-wasteWeightG)" }}
+              activeDot={{ r: 5 }}
+            />
+          )}
+          <Line
+            yAxisId="ratio"
+            type="monotone"
+            dataKey="gramsPer100Served"
+            stroke="var(--color-gramsPer100Served)"
+            strokeWidth={1.5}
+            strokeDasharray="5 5"
+            dot={false}
+            connectNulls
+          />
+        </ComposedChart>
+      </ChartContainer>
+    );
+
+  if (embedded) return plot;
 
   return (
     <Card
@@ -123,88 +220,7 @@ export function WasteEvolutionChart({ days, perDayRows, level }: Props) {
             </div>
           </div>
         </header>
-
-        {series.length === 0 || !hasWasteData ? (
-          <p className="mt-5 px-6 text-sm text-muted-foreground">
-            Pas encore de poids déchets saisi sur la période — renseignez-le en
-            fin de service pour voir l&apos;évolution ici.
-          </p>
-        ) : (
-          <ChartContainer config={chartConfig} className={cantinePlusChartPlotClass}>
-            <ComposedChart
-              data={series}
-              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={24}
-              />
-              <YAxis
-                yAxisId="grams"
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                width={44}
-                tickFormatter={(v) => `${v} g`}
-              />
-              <YAxis
-                yAxisId="ratio"
-                orientation="right"
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(v) => `${v} g`}
-                width={44}
-                domain={[0, "auto"]}
-              />
-              <ChartTooltip
-                content={(tooltipProps) => (
-                  <ChartTooltipContent
-                    active={tooltipProps.active}
-                    payload={tooltipProps.payload}
-                    label={tooltipProps.label}
-                    coordinate={tooltipProps.coordinate}
-                    accessibilityLayer={tooltipProps.accessibilityLayer}
-                    activeIndex={tooltipProps.activeIndex}
-                  />
-                )}
-              />
-              <ChartLegend content={<ChartLegendContent />} />
-              {useBars ? (
-                <Bar
-                  yAxisId="grams"
-                  dataKey="wasteWeightG"
-                  fill="var(--color-wasteWeightG)"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={36}
-                />
-              ) : (
-                <Line
-                  yAxisId="grams"
-                  type="monotone"
-                  dataKey="wasteWeightG"
-                  stroke="var(--color-wasteWeightG)"
-                  strokeWidth={2}
-                  dot={{ r: 3, fill: "var(--color-wasteWeightG)" }}
-                  activeDot={{ r: 5 }}
-                />
-              )}
-              <Line
-                yAxisId="ratio"
-                type="monotone"
-                dataKey="gramsPer100Served"
-                stroke="var(--color-gramsPer100Served)"
-                strokeWidth={1.5}
-                strokeDasharray="5 5"
-                dot={false}
-                connectNulls
-              />
-            </ComposedChart>
-          </ChartContainer>
-        )}
+        {plot}
       </CardContent>
     </Card>
   );

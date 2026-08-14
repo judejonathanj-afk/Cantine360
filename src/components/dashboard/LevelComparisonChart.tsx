@@ -47,9 +47,15 @@ type Props = {
   days: 7 | 30;
   level: SchoolLevel;
   totals: LevelMealTotals;
+  embedded?: boolean;
 };
 
-export function LevelComparisonChart({ days, level, totals }: Props) {
+export function LevelComparisonChart({
+  days,
+  level,
+  totals,
+  embedded = false,
+}: Props) {
   const theme = LEVEL_CHART[level];
   const levelLabel = schoolLevelLabelFr(level);
   const series = useMemo(() => buildLevelRateBars(totals), [totals]);
@@ -61,6 +67,66 @@ export function LevelComparisonChart({ days, level, totals }: Props) {
       color: theme.color,
     },
   } satisfies ChartConfig;
+
+  const plot = !hasData ? (
+    <p className={cn("text-sm text-muted-foreground", !embedded && "mt-5 px-6")}>
+      Pas encore de compteurs {levelLabel.toLowerCase()} sur la période —
+      saisissez les présents / servis / RAB / refus pour voir les taux ici.
+    </p>
+  ) : (
+    <ChartContainer
+      config={chartConfig}
+      className={cn(cantinePlusChartPlotClass, embedded && "aspect-auto h-[260px] w-full")}
+    >
+      <BarChart
+        data={series}
+        margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+      >
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis
+          dataKey="metric"
+          tickLine={false}
+          axisLine={false}
+          tickMargin={8}
+        />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          allowDecimals={false}
+          width={44}
+          tickFormatter={(v) => `${v} %`}
+          domain={[0, "auto"]}
+        />
+        <ChartTooltip
+          content={(tooltipProps) => (
+            <ChartTooltipContent
+              active={tooltipProps.active}
+              payload={tooltipProps.payload}
+              label={tooltipProps.label}
+              coordinate={tooltipProps.coordinate}
+              accessibilityLayer={tooltipProps.accessibilityLayer}
+              activeIndex={tooltipProps.activeIndex}
+              formatter={(value) =>
+                typeof value === "number"
+                  ? `${value.toLocaleString("fr-FR", {
+                      maximumFractionDigits: 1,
+                    })} %`
+                  : value
+              }
+            />
+          )}
+        />
+        <Bar
+          dataKey="rate"
+          fill="var(--color-rate)"
+          radius={[4, 4, 0, 0]}
+          maxBarSize={64}
+        />
+      </BarChart>
+    </ChartContainer>
+  );
+
+  if (embedded) return plot;
 
   return (
     <Card
@@ -133,61 +199,7 @@ export function LevelComparisonChart({ days, level, totals }: Props) {
             </div>
           </div>
         </header>
-
-        {!hasData ? (
-          <p className="mt-5 px-6 text-sm text-muted-foreground">
-            Pas encore de compteurs {levelLabel.toLowerCase()} sur la période —
-            saisissez les présents / servis / RAB / refus pour voir les taux ici.
-          </p>
-        ) : (
-          <ChartContainer config={chartConfig} className={cantinePlusChartPlotClass}>
-            <BarChart
-              data={series}
-              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="metric"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                width={44}
-                tickFormatter={(v) => `${v} %`}
-                domain={[0, "auto"]}
-              />
-              <ChartTooltip
-                content={(tooltipProps) => (
-                  <ChartTooltipContent
-                    active={tooltipProps.active}
-                    payload={tooltipProps.payload}
-                    label={tooltipProps.label}
-                    coordinate={tooltipProps.coordinate}
-                    accessibilityLayer={tooltipProps.accessibilityLayer}
-                    activeIndex={tooltipProps.activeIndex}
-                    formatter={(value) =>
-                      typeof value === "number"
-                        ? `${value.toLocaleString("fr-FR", {
-                            maximumFractionDigits: 1,
-                          })} %`
-                        : value
-                    }
-                  />
-                )}
-              />
-              <Bar
-                dataKey="rate"
-                fill="var(--color-rate)"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={64}
-              />
-            </BarChart>
-          </ChartContainer>
-        )}
+        {plot}
       </CardContent>
     </Card>
   );

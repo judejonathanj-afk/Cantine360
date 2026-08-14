@@ -1,0 +1,85 @@
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+export function DashboardSectionHeading({
+  icon: Icon,
+  title,
+  hint,
+  trailing,
+}: {
+  icon: LucideIcon;
+  title: string;
+  hint?: string;
+  trailing?: ReactNode;
+}) {
+  return (
+    <div className="mb-5 flex flex-wrap items-center gap-4">
+      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+        <Icon className="size-4" />
+      </div>
+      <div className="min-w-0">
+        <h2 className="font-display text-xl font-bold tracking-tight text-foreground">
+          {title}
+        </h2>
+        {hint ? (
+          <p className="text-sm text-muted-foreground">{hint}</p>
+        ) : null}
+      </div>
+      <div className="ml-1 h-px min-w-[2rem] flex-1 bg-gradient-to-r from-border to-transparent" />
+      {trailing}
+    </div>
+  );
+}
+
+export function DashboardLevelPill({ level }: { level: string }) {
+  const isMaternelle = level.toLowerCase() === "maternelle";
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1",
+        isMaternelle
+          ? "bg-sky-500/10 text-sky-700 ring-sky-500/20"
+          : "bg-primary/10 text-primary ring-primary/20",
+      )}
+    >
+      {level}
+    </span>
+  );
+}
+
+export function DashboardInsightCard({
+  icon: Icon,
+  title,
+  level,
+  description,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  level?: string;
+  description: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="flex flex-col gap-3 border-b border-border/70 bg-secondary/40 p-5 sm:flex-row sm:items-start sm:gap-4">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+          <Icon className="size-5" />
+        </span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-display text-base font-bold text-foreground">
+              {title}
+            </h3>
+            {level ? <DashboardLevelPill level={level} /> : null}
+          </div>
+          <div className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {description}
+          </div>
+        </div>
+      </div>
+      <div className="p-4 sm:p-5">{children}</div>
+    </div>
+  );
+}
