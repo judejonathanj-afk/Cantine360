@@ -309,6 +309,18 @@
   background-color: #f5c518;
 }
 
+.dashboard-v2 .dashboard-section-line--blue {
+  background-color: #0ea5e9;
+}
+
+.dashboard-v2 .dashboard-section-line--emerald {
+  background-color: #10b981;
+}
+
+.dashboard-v2 .dashboard-section-line--ink {
+  background-color: #18181b;
+}
+
 .dashboard-v2 .text-muted-foreground {
   color: #000000;
 }

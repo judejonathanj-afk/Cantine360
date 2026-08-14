@@ -596,6 +596,7 @@ export default function DashboardPanels({
         <DashboardSectionHeading
           icon={TableIcon}
           title="Suivi jour par jour"
+          lineClassName="dashboard-section-line--blue"
           hint={
             isKitchen
               ? "Aperçu du jour — présents, servis, RAB, refus et déchets."
