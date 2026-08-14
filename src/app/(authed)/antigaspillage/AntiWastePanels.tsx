@@ -481,9 +481,9 @@ export function AntiWastePanels({
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-violet-200 bg-violet-50">
-          <div className="flex items-start gap-3 border-b border-violet-200/80 p-6">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-200 text-violet-800">
+        <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-violet-300 bg-violet-100">
+          <div className="flex items-start gap-3 border-b border-violet-300/70 bg-violet-200/60 p-6">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-600 text-white">
               <Flame className="size-5" aria-hidden />
             </div>
             <div>
@@ -574,9 +574,9 @@ export function AntiWastePanels({
         <AntiWasteLineChart days={days} points={chartPoints} />
       </div>
 
-      <div className="aw-reveal overflow-hidden rounded-3xl border border-sky-200 bg-sky-50">
-        <div className="flex items-start gap-3 border-b border-sky-200/80 p-6">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-sky-200 text-sky-800">
+      <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-sky-300 bg-sky-100">
+        <div className="flex items-start gap-3 border-b border-sky-300/70 bg-sky-200/60 p-6">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-sky-600 text-white">
             <CalendarDays className="size-5" aria-hidden />
           </div>
           <div>
