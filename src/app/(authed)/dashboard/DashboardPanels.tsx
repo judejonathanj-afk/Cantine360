@@ -447,6 +447,9 @@ export default function DashboardPanels({
               icon={Utensils}
               title="Flux du repas"
               level={schoolLevelLabelFr(level)}
+              headerClassName={
+                level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
+              }
               description="Le parcours du repas en un coup d'œil — utile pour voir si l'écart présents / servis se creuse."
             >
               <MealFlowChart
@@ -474,6 +477,9 @@ export default function DashboardPanels({
                 icon={GitCompareArrows}
                 title="Taux du cycle"
                 level={schoolLevelLabelFr(level)}
+                headerClassName={
+                  level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
+                }
                 description="Service = servis / présents · RAB et refus = vs assiettes servies. Pour ajuster portions et menu."
               >
                 <LevelComparisonChart
