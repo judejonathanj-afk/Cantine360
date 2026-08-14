@@ -7,7 +7,7 @@ export function DashboardSectionHeading({
   title,
   hint,
   trailing,
-  lineClassName = "bg-yellow-400",
+  lineClassName,
 }: {
   icon: LucideIcon;
   title: string;
@@ -16,24 +16,25 @@ export function DashboardSectionHeading({
   lineClassName?: string;
 }) {
   return (
-    <div className="mb-5 flex flex-wrap items-center gap-4">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-        <Icon className="size-4" />
-      </div>
-      <div className="min-w-0">
-        <h2 className="font-display text-xl font-bold tracking-tight text-black">
+    <div className="mb-5">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+          <Icon className="size-4" />
+        </div>
+        <h2 className="shrink-0 font-display text-xl font-bold tracking-tight text-black sm:text-2xl">
           {title}
         </h2>
-        {hint ? <p className="text-sm font-medium text-black/85">{hint}</p> : null}
+        <div
+          aria-hidden
+          className={cn("dashboard-section-line", lineClassName)}
+        />
+        {trailing}
       </div>
-      <div
-        aria-hidden
-        className={cn(
-          "ml-1 h-1 min-h-1 min-w-[2.5rem] flex-1 rounded-full",
-          lineClassName,
-        )}
-      />
-      {trailing}
+      {hint ? (
+        <p className="mt-1 pl-12 text-sm font-semibold text-black sm:pl-[3.25rem]">
+          {hint}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -80,7 +81,7 @@ export function DashboardInsightCard({
             </h3>
             {level ? <DashboardLevelPill level={level} /> : null}
           </div>
-          <div className="mt-1 text-sm font-medium leading-relaxed text-black/90">
+          <div className="mt-1 text-sm font-semibold leading-relaxed text-black">
             {description}
           </div>
         </div>

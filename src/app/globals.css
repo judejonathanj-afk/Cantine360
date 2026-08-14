@@ -261,16 +261,16 @@
   --secondary: oklch(0.95 0.03 158);
   --secondary-foreground: oklch(0.34 0.05 165);
   --muted: oklch(0.965 0.01 155);
-  --muted-foreground: #171717;
+  --muted-foreground: #000000;
   --accent: oklch(0.83 0.12 82);
   --accent-foreground: oklch(0.32 0.05 80);
   --destructive: oklch(0.62 0.2 22);
   --border: oklch(0.9 0.012 155);
   --background: oklch(0.985 0.008 150);
-  --foreground: #0a0a0a;
+  --foreground: #000000;
   --card: oklch(1 0 0);
-  --card-foreground: #0a0a0a;
-  --secondary-foreground: #0a0a0a;
+  --card-foreground: #000000;
+  --secondary-foreground: #000000;
   --chart-1: oklch(0.62 0.13 159);
   --chart-2: oklch(0.6 0.09 205);
   --chart-3: oklch(0.8 0.14 72);
@@ -298,8 +298,31 @@
   font-family: var(--font-display);
 }
 
-.dashboard-v2 .text-muted-foreground {
-  color: #171717;
+/* Ligne jaune face aux titres de section — style forcé (évite purge Tailwind) */
+.dashboard-v2 .dashboard-section-line {
+  margin-left: 0.25rem;
+  height: 4px;
+  min-height: 4px;
+  min-width: 2.5rem;
+  flex: 1 1 2.5rem;
+  border-radius: 9999px;
+  background-color: #f5c518;
+}
+
+.dashboard-v2 .text-muted-foreground,
+.dashboard-v2 .text-foreground,
+.dashboard-v2 .text-black\/85,
+.dashboard-v2 .text-black\/90,
+.dashboard-v2 .text-black\/80,
+.dashboard-v2 .text-black\/70 {
+  color: #000000;
+}
+
+/* Textes hors bandeau hero sombre */
+.dashboard-v2
+  > :not(section:first-child)
+  :where(h2, h3, h4, p, th, td, label, li) {
+  color: #000000;
 }
 
 /* Anti-gaspillage — thème isolé (design anti-gaspillage-dashboard) */
