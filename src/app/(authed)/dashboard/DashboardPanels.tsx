@@ -501,6 +501,9 @@ export default function DashboardPanels({
               icon={Trash2}
               title="Évolution des déchets"
               level={schoolLevelLabelFr(level)}
+              headerClassName={
+                level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
+              }
               description="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Pour repérer quel jour les déchets augmentent."
             >
               <WasteEvolutionChart

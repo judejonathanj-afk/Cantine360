@@ -61,16 +61,23 @@ export function DashboardInsightCard({
   level,
   description,
   children,
+  headerClassName,
 }: {
   icon: LucideIcon;
   title: string;
   level?: string;
   description: ReactNode;
   children: ReactNode;
+  headerClassName?: string;
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-      <div className="flex flex-col gap-3 border-b border-border/70 bg-secondary/40 p-5 sm:flex-row sm:items-start sm:gap-4">
+      <div
+        className={cn(
+          "flex flex-col gap-3 border-b border-border/70 bg-secondary/40 p-5 sm:flex-row sm:items-start sm:gap-4",
+          headerClassName,
+        )}
+      >
         <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
           <Icon className="size-5" />
         </span>
