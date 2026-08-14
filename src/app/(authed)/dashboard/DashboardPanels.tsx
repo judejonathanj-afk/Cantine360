@@ -531,7 +531,7 @@ export default function DashboardPanels({
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
               <table className="min-w-full text-sm">
-                <thead className="sticky top-0 z-10 bg-card text-left text-xs font-bold text-black shadow-[0_1px_0_0_rgba(0,0,0,0.08)]">
+                <thead className="sticky top-0 z-10 border-b-[3px] border-[#c2185b] bg-card text-left text-xs font-bold text-black">
                   <tr>
                     <th className="px-3 py-2.5">Date</th>
                     <th className="px-3 py-2.5">g / 100</th>
