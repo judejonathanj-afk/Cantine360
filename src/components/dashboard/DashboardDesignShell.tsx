@@ -44,10 +44,10 @@ export function DashboardLevelPill({ level }: { level: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1",
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ring-2 ring-black",
         isMaternelle
-          ? "bg-sky-500/10 text-sky-700 ring-sky-500/20"
-          : "bg-primary/10 text-primary ring-primary/20",
+          ? "bg-sky-500/15 text-sky-900"
+          : "bg-primary/15 text-emerald-900",
       )}
     >
       {level}
