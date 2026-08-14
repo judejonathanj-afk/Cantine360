@@ -86,7 +86,7 @@ function StatCard({
         <div className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-black tabular-nums">
           {value}
         </div>
-        <div className="mt-1 text-xs font-medium text-black/90">{sub}</div>
+        <div className="mt-1 text-xs font-semibold text-black">{sub}</div>
       </div>
     </div>
   );

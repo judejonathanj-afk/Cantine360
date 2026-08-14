@@ -309,19 +309,7 @@
   background-color: #f5c518;
 }
 
-.dashboard-v2 .text-muted-foreground,
-.dashboard-v2 .text-foreground,
-.dashboard-v2 .text-black\/85,
-.dashboard-v2 .text-black\/90,
-.dashboard-v2 .text-black\/80,
-.dashboard-v2 .text-black\/70 {
-  color: #000000;
-}
-
-/* Textes hors bandeau hero sombre */
-.dashboard-v2
-  > :not(section:first-child)
-  :where(h2, h3, h4, p, th, td, label, li) {
+.dashboard-v2 .text-muted-foreground {
   color: #000000;
 }
 
