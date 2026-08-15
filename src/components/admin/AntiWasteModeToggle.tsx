@@ -131,17 +131,20 @@ export function AntiWasteModeToggle({
         </p>
       ) : null}
 
-      <div className="flex items-start justify-between gap-4 rounded-2xl bg-black p-5 text-white">
+      <div
+        className="flex items-start justify-between gap-4 rounded-2xl p-5 text-zinc-950"
+        style={{ backgroundColor: "#B9F2D0" }}
+      >
         <div>
-          <p className="font-display text-base font-semibold text-white">
+          <p className="font-display text-base font-semibold text-zinc-950">
             Activation du mode
           </p>
-          <p className="mt-1 text-sm font-medium text-white/85">
+          <p className="mt-1 text-sm font-medium text-zinc-900/85">
             {enabled
               ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
               : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
           </p>
-          <p className="mt-1 text-xs font-medium text-white/75">
+          <p className="mt-1 text-xs font-medium text-zinc-900/75">
             Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
@@ -154,7 +157,7 @@ export function AntiWasteModeToggle({
           onClick={() => void save(!enabled)}
           className={cn(
             "relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60",
-            enabled ? "bg-primary" : "bg-white/25",
+            enabled ? "bg-primary" : "bg-zinc-900/25",
           )}
         >
           <span
@@ -187,23 +190,26 @@ export function AntiWasteModeToggle({
       ) : null}
 
       {enabled ? (
-        <div className="rounded-2xl border border-white/20 bg-black p-5">
+        <div
+          className="rounded-2xl border border-emerald-900/15 p-5 text-zinc-950"
+          style={{ backgroundColor: "#B9F2D0" }}
+        >
           <div className="flex items-center gap-2">
-            <Target className="size-4 text-emerald-400" aria-hidden />
-            <p className="font-display text-base font-semibold text-white">
+            <Target className="size-4 text-emerald-800" aria-hidden />
+            <p className="font-display text-base font-semibold text-zinc-950">
               Objectif à ne pas dépasser
             </p>
           </div>
-          <p className="mt-1 text-sm leading-relaxed font-medium text-white/85">
+          <p className="mt-1 text-sm leading-relaxed font-medium text-zinc-900/85">
             Grammes de déchets acceptés{" "}
-            <span className="font-semibold text-white">
+            <span className="font-semibold text-zinc-950">
               pour 100 assiettes servies
             </span>
-            . Ex. <span className="font-semibold text-white">80</span> = pas plus
-            de 0,8 kg jetés pour 100 repas.
+            . Ex. <span className="font-semibold text-zinc-950">80</span> = pas
+            plus de 0,8 kg jetés pour 100 repas.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-3 py-2 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-400/30">
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-900/20 bg-white/70 px-3 py-2 focus-within:border-emerald-700 focus-within:ring-2 focus-within:ring-emerald-700/25">
               <input
                 id="anti-waste-target"
                 inputMode="decimal"
@@ -216,10 +222,10 @@ export function AntiWasteModeToggle({
                   }
                 }}
                 placeholder="ex. 80"
-                className="w-20 bg-transparent text-lg font-semibold text-white outline-none placeholder:font-normal placeholder:text-white/45"
+                className="w-20 bg-transparent text-lg font-semibold text-zinc-950 outline-none placeholder:font-normal placeholder:text-zinc-500"
                 aria-label="Objectif en grammes pour 100 assiettes"
               />
-              <span className="text-sm text-white/70">g / 100</span>
+              <span className="text-sm text-zinc-700">g / 100</span>
             </div>
             <button
               type="button"
@@ -268,7 +274,7 @@ export function AntiWasteModeToggle({
                     }
                   })();
                 }}
-                className="text-sm font-medium text-white/70 underline-offset-4 hover:text-white hover:underline"
+                className="text-sm font-medium text-zinc-800 underline-offset-4 hover:underline"
               >
                 Effacer
               </button>
