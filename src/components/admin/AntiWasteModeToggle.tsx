@@ -131,20 +131,17 @@ export function AntiWasteModeToggle({
         </p>
       ) : null}
 
-      <div
-        className="flex items-start justify-between gap-4 rounded-2xl p-5 text-zinc-950"
-        style={{ backgroundColor: "#DFA42D" }}
-      >
+      <div className="flex items-start justify-between gap-4 rounded-2xl bg-black p-5 text-white">
         <div>
-          <p className="font-display text-base font-semibold text-zinc-950">
+          <p className="font-display text-base font-semibold text-white">
             Activation du mode
           </p>
-          <p className="mt-1 text-sm font-medium text-zinc-900/85">
+          <p className="mt-1 text-sm font-medium text-white/85">
             {enabled
               ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
               : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
           </p>
-          <p className="mt-1 text-xs font-medium text-zinc-900/75">
+          <p className="mt-1 text-xs font-medium text-white/75">
             Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
@@ -157,12 +154,12 @@ export function AntiWasteModeToggle({
           onClick={() => void save(!enabled)}
           className={cn(
             "relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60",
-            enabled ? "bg-primary" : "bg-muted-foreground/30",
+            enabled ? "bg-primary" : "bg-white/25",
           )}
         >
           <span
             className={cn(
-              "absolute top-1 size-5 rounded-full bg-background shadow-sm transition-all",
+              "absolute top-1 size-5 rounded-full bg-white shadow-sm transition-all",
               enabled ? "left-6" : "left-1",
             )}
           />
@@ -181,8 +178,8 @@ export function AntiWasteModeToggle({
               msg.includes("introuvable") ||
               msg.includes("Déployez") ||
               msg.includes("prisma")
-              ? "text-destructive"
-              : "text-primary",
+              ? "text-rose-300"
+              : "text-emerald-300",
           )}
         >
           {msg}
@@ -190,23 +187,23 @@ export function AntiWasteModeToggle({
       ) : null}
 
       {enabled ? (
-        <div className="rounded-2xl border border-border p-5">
+        <div className="rounded-2xl border border-white/20 bg-black p-5">
           <div className="flex items-center gap-2">
-            <Target className="size-4 text-primary" aria-hidden />
-            <p className="font-display text-base font-semibold">
+            <Target className="size-4 text-emerald-400" aria-hidden />
+            <p className="font-display text-base font-semibold text-white">
               Objectif à ne pas dépasser
             </p>
           </div>
-          <p className="mt-1 text-sm leading-relaxed font-medium text-foreground/80">
+          <p className="mt-1 text-sm leading-relaxed font-medium text-white/85">
             Grammes de déchets acceptés{" "}
-            <span className="font-semibold text-foreground">
+            <span className="font-semibold text-white">
               pour 100 assiettes servies
             </span>
-            . Ex. <span className="font-semibold text-foreground">80</span> = pas
-            plus de 0,8 kg jetés pour 100 repas.
+            . Ex. <span className="font-semibold text-white">80</span> = pas plus
+            de 0,8 kg jetés pour 100 repas.
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-input bg-background px-3 py-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+            <div className="flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-3 py-2 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-400/30">
               <input
                 id="anti-waste-target"
                 inputMode="decimal"
@@ -219,10 +216,10 @@ export function AntiWasteModeToggle({
                   }
                 }}
                 placeholder="ex. 80"
-                className="w-20 bg-transparent text-lg font-semibold outline-none placeholder:font-normal placeholder:text-muted-foreground"
+                className="w-20 bg-transparent text-lg font-semibold text-white outline-none placeholder:font-normal placeholder:text-white/45"
                 aria-label="Objectif en grammes pour 100 assiettes"
               />
-              <span className="text-sm text-muted-foreground">g / 100</span>
+              <span className="text-sm text-white/70">g / 100</span>
             </div>
             <button
               type="button"
@@ -271,7 +268,7 @@ export function AntiWasteModeToggle({
                     }
                   })();
                 }}
-                className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
+                className="text-sm font-medium text-white/70 underline-offset-4 hover:text-white hover:underline"
               >
                 Effacer
               </button>
@@ -284,7 +281,10 @@ export function AntiWasteModeToggle({
 
   if (compact) {
     return (
-      <div id="anti-waste" className="flex scroll-mt-24 flex-col gap-5">
+      <div
+        id="anti-waste"
+        className="flex scroll-mt-24 flex-col gap-5 rounded-3xl bg-black p-5 sm:p-6"
+      >
         {body}
       </div>
     );
@@ -293,7 +293,7 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className="scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-[0_24px_60px_-30px_rgb(20_60_40/0.25)] sm:p-8"
+      className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/10 bg-black p-6 shadow-[0_24px_60px_-30px_rgb(0_0_0/0.55)] sm:p-8"
     >
       <div className="flex flex-col gap-5">{body}</div>
     </div>

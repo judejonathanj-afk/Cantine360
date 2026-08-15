@@ -451,6 +451,13 @@ export function CantinePulseCard({
               RAB <span className="text-white/90">(assiettes adaptées ou resservies)</span> et
               déchets (poids) — {periodLabel}
             </p>
+            <p className="mx-auto mt-2 max-w-2xl text-pretty text-sm leading-relaxed text-white/90 sm:text-base">
+              Cantine+ suit le repas du quotidien : elle calcule une{" "}
+              <span className="font-semibold text-white">note sur 100</span>, met en
+              avant le RAB et le poids des déchets, et affiche les tendances pour
+              aider cuisine et direction à{" "}
+              <span className="font-semibold text-white">réduire le gaspillage</span>.
+            </p>
             {levelLabel ? (
               <p className="mt-1 text-sm font-semibold text-emerald-300 sm:text-base">
                 {levelLabel}
