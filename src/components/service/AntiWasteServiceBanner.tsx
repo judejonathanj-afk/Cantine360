@@ -4,8 +4,11 @@ import { cn } from "@/lib/utils";
 
 export function AntiWasteServiceBanner({
   advice,
+  asConclusion = false,
 }: {
   advice: AntiWasteKitchenAdvice;
+  /** Affiché après enregistrement des déchets — conclusion de service. */
+  asConclusion?: boolean;
 }) {
   const tipClass =
     advice.tipTone === "watch"
@@ -18,9 +21,19 @@ export function AntiWasteServiceBanner({
 
   return (
     <section
-      aria-label="Aide Antigaspillage pour le service"
+      aria-label={
+        asConclusion
+          ? "Conclusion Antigaspillage — service enregistré"
+          : "Aide Antigaspillage pour le service"
+      }
       className="overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 shadow-sm"
     >
+      {asConclusion ? (
+        <div className="border-b border-emerald-200 bg-emerald-800 px-4 py-3 text-center text-sm font-semibold text-white sm:px-5 sm:text-base">
+          Service enregistré — conclusion Antigaspillage
+        </div>
+      ) : null}
+
       {alert ? (
         <div
           className="border-b border-rose-300/60 bg-gradient-to-r from-rose-600 to-orange-500 px-4 py-3.5 text-white sm:px-5"
@@ -62,7 +75,9 @@ export function AntiWasteServiceBanner({
             Portions du jour — mode Antigaspillage
           </p>
           <p className="text-xs text-emerald-900/70 sm:text-sm">
-            Repères mat. / prim. pour adapter le service aux enfants
+            {asConclusion
+              ? "Repères mat. / prim. pour la prochaine fois"
+              : "Repères mat. / prim. pour adapter le service aux enfants"}
             {advice.totalPlannedKgLabel
               ? ` · ~${advice.totalPlannedKgLabel} au total`
               : null}

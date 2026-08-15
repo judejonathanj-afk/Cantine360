@@ -11,7 +11,6 @@ import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
 import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
-import { AntiWasteServiceBanner } from "@/components/service/AntiWasteServiceBanner";
 import { ServiceInfoGrid } from "@/components/service/ServiceInfoGrid";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
@@ -104,8 +103,6 @@ export default async function ServicePage({
 
   return (
     <div className="space-y-6">
-      {kitchenAdvice ? <AntiWasteServiceBanner advice={kitchenAdvice} /> : null}
-
       <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1 space-y-3">
           <h1 className="w-full">
@@ -185,6 +182,7 @@ export default async function ServicePage({
         initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
         initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
         antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
+        kitchenAdvice={kitchenAdvice}
         servedCount={service.metrics.reduce((sum, m) => sum + m.servedCount, 0)}
         rabCount={service.metrics.reduce((sum, m) => sum + m.rabCount, 0)}
         refusedCount={service.metrics.reduce(

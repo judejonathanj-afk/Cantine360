@@ -15,7 +15,9 @@ import {
 } from "@/lib/offlineWasteQueue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { buildEndOfServiceBilanTips } from "@/lib/antiWasteEndOfServiceBilan";
+import type { AntiWasteKitchenAdvice } from "@/lib/antiWasteKitchenAdvice";
 import { AntiWasteEndOfServiceBilan } from "@/components/service/AntiWasteEndOfServiceBilan";
+import { AntiWasteServiceBanner } from "@/components/service/AntiWasteServiceBanner";
 import { cn } from "@/lib/utils";
 
 function gramsToInput(grams: number | null): string {
@@ -56,6 +58,7 @@ export function ServiceWasteWeightPanel({
   initialWasteWeightMaternelleG,
   initialWasteWeightPrimaireG,
   antiWasteModeEnabled = false,
+  kitchenAdvice = null,
   servedCount = 0,
   rabCount = 0,
   refusedCount = 0,
@@ -69,6 +72,7 @@ export function ServiceWasteWeightPanel({
   initialWasteWeightMaternelleG?: number | null;
   initialWasteWeightPrimaireG?: number | null;
   antiWasteModeEnabled?: boolean;
+  kitchenAdvice?: AntiWasteKitchenAdvice | null;
   servedCount?: number;
   rabCount?: number;
   refusedCount?: number;
@@ -225,6 +229,11 @@ export function ServiceWasteWeightPanel({
         })
       : [];
 
+  const showPortionsConclusion =
+    antiWasteModeEnabled &&
+    kitchenAdvice != null &&
+    (savedAck || totalSaved > 0);
+
   const statusMessage = invalidMat || invalidPrim ? (
     "Saisissez un nombre de grammes valide"
   ) : status === "offline" ? (
@@ -243,11 +252,9 @@ export function ServiceWasteWeightPanel({
   );
 
   return (
+    <div className={cn("space-y-6", className)}>
     <div
-      className={cn(
-        "overflow-hidden rounded-2xl border border-zinc-300 shadow-md",
-        className,
-      )}
+      className="overflow-hidden rounded-2xl border border-zinc-300 shadow-md"
     >
       <div className="relative overflow-hidden border-b border-white/20 bg-zinc-800 px-4 py-4 text-center sm:px-6 sm:py-5">
         <div
@@ -374,6 +381,11 @@ export function ServiceWasteWeightPanel({
           {statusMessage}
         </p>
       </div>
+    </div>
+
+    {showPortionsConclusion && kitchenAdvice ? (
+      <AntiWasteServiceBanner advice={kitchenAdvice} asConclusion />
+    ) : null}
     </div>
   );
 }
