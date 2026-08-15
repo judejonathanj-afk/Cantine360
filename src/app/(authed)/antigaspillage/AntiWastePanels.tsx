@@ -97,6 +97,12 @@ export function AntiWastePanels({
   riskyDishes?: RiskyDishRow[];
 }) {
   const [missingWeighOpen, setMissingWeighOpen] = useState(false);
+  const [riskyDishesOpen, setRiskyDishesOpen] = useState(false);
+  const RISKY_PREVIEW = 3;
+  const riskyDishesVisible = riskyDishesOpen
+    ? riskyDishes
+    : riskyDishes.slice(0, RISKY_PREVIEW);
+  const riskyDishesCanExpand = riskyDishes.length > RISKY_PREVIEW;
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
   const gaugeValue = wasteGramsPer100Served ?? 0;
   const gaugeStatus = gaugeStatusFromTone(
@@ -482,19 +488,38 @@ export function AntiWastePanels({
 
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
-          <div className="flex items-start gap-3 border-b border-violet-200 bg-violet-100 p-6">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-violet-600 text-white">
-              <Flame className="size-5" aria-hidden />
+          <div className="flex items-start justify-between gap-3 border-b border-violet-200 bg-violet-100 p-6">
+            <div className="flex min-w-0 items-start gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white">
+                <Flame className="size-5" aria-hidden />
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-display text-lg font-bold tracking-tight">
+                  Plats à risque
+                </h2>
+                <p className="mt-0.5 text-sm font-medium text-foreground/80">
+                  Les plats liés aux jours de plus fort gaspillage sur {days}{" "}
+                  jours — pour décider quoi ajuster demain.
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="font-display text-lg font-bold tracking-tight">
-                Plats à risque
-              </h2>
-              <p className="mt-0.5 text-sm font-medium text-foreground/80">
-                Les plats liés aux jours de plus fort gaspillage sur {days}{" "}
-                jours — pour décider quoi ajuster demain.
-              </p>
-            </div>
+            {riskyDishesCanExpand ? (
+              <button
+                type="button"
+                onClick={() => setRiskyDishesOpen((v) => !v)}
+                aria-expanded={riskyDishesOpen}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-violet-400/50 bg-white/70 px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
+              >
+                {riskyDishesOpen ? "Voir moins" : "Voir plus"}
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 transition-transform",
+                    riskyDishesOpen && "rotate-180",
+                  )}
+                  aria-hidden
+                />
+              </button>
+            ) : null}
           </div>
 
           {riskyDishes.length === 0 ? (
@@ -503,8 +528,13 @@ export function AntiWastePanels({
               les plats.
             </p>
           ) : (
-            <ul className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
-              {riskyDishes.map((d, i) => {
+            <ul
+              className={cn(
+                "flex flex-1 flex-col gap-3 overflow-y-auto p-4 [scrollbar-gutter:stable]",
+                riskyDishesOpen ? "max-h-[28rem]" : "max-h-[18rem]",
+              )}
+            >
+              {riskyDishesVisible.map((d, i) => {
                 const pct = Math.max((d.avgWasteGPer100 / maxRiskG) * 100, 3);
                 const rank = i + 1;
                 return (
