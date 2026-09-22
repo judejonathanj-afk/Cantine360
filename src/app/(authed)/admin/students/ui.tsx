@@ -406,11 +406,11 @@ export function AdminStudentsClient({
               {bucket.students.length} élève
               {bucket.students.length > 1 ? "s" : ""}
             </p>
-            <div className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white">
+            <div className="grid gap-3">
               {bucket.students.map((s) => (
                 <div
                   key={s.id}
-                  className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-start sm:justify-between"
+                  className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-3.5 shadow-sm sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div className="min-w-0">
                     <div className="font-semibold text-zinc-900">
