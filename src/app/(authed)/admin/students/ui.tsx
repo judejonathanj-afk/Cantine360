@@ -426,7 +426,7 @@ export function AdminStudentsClient({
                         {s.allergens.map((a) => (
                           <span
                             key={a}
-                            className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900"
+                            className="rounded-full border-2 border-zinc-900 bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900"
                           >
                             {a}
                           </span>
@@ -440,7 +440,7 @@ export function AdminStudentsClient({
                         type="button"
                         onClick={() => void toggleDiet(s, "noPork")}
                         className={[
-                          "rounded-full px-2 py-0.5 text-xs font-semibold",
+                          "rounded-full border-2 border-zinc-900 px-2 py-0.5 text-xs font-semibold",
                           s.noPork
                             ? "bg-sky-800 text-white"
                             : "bg-zinc-100 text-zinc-600",
@@ -452,7 +452,7 @@ export function AdminStudentsClient({
                         type="button"
                         onClick={() => void toggleDiet(s, "vegetarian")}
                         className={[
-                          "rounded-full px-2 py-0.5 text-xs font-semibold",
+                          "rounded-full border-2 border-zinc-900 px-2 py-0.5 text-xs font-semibold",
                           s.vegetarian
                             ? "bg-emerald-800 text-white"
                             : "bg-zinc-100 text-zinc-600",
@@ -468,7 +468,7 @@ export function AdminStudentsClient({
                         rows={2}
                         maxLength={500}
                         onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                        className="mt-2 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:border-zinc-900 focus:bg-white"
+                        className="mt-2 w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
                         placeholder="Consignes parents (sinon : à ne pas servir — allergie)"
                       />
                     ) : null}
@@ -478,7 +478,7 @@ export function AdminStudentsClient({
                       type="button"
                       onClick={() => toggleActive(s)}
                       className={[
-                        "rounded-full px-3 py-1 text-xs font-semibold",
+                        "rounded-full border-2 border-zinc-900 px-3 py-1 text-xs font-semibold",
                         s.active
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-zinc-100 text-zinc-700",
