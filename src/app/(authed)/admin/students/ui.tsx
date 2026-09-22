@@ -413,10 +413,12 @@ export function AdminStudentsClient({
                   className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-3.5 shadow-sm sm:flex-row sm:items-start sm:justify-between"
                 >
                   <div className="min-w-0">
-                    <div className="font-semibold text-zinc-900">
-                      {s.firstName} {s.lastName}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex rounded-lg border-2 border-zinc-900 bg-white px-2.5 py-0.5 font-semibold text-zinc-900">
+                        {s.firstName} {s.lastName}
+                      </span>
                       {!s.active ? (
-                        <span className="ml-2 text-xs font-medium text-zinc-500">(inactif)</span>
+                        <span className="text-xs font-medium text-zinc-500">(inactif)</span>
                       ) : null}
                     </div>
                     {s.allergens.length > 0 ? (
