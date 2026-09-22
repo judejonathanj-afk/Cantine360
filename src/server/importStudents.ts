@@ -1,6 +1,7 @@
 import Papa from "papaparse";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { parseAllergenTokens } from "@/lib/allergenMatch";
+import { parseOuiNon, withDietFlags } from "@/lib/dietaryRegime";
 
 export type ImportStudentRow = {
   school: string;
@@ -9,6 +10,8 @@ export type ImportStudentRow = {
   lastName: string;
   allergensRaw: string;
   allergenNotes: string;
+  noPork: boolean;
+  vegetarian: boolean;
 };
 
 const SCHOOL_HEADERS = new Set(["ecole", "école", "school", "etablissement", "établissement"]);
@@ -26,6 +29,20 @@ const NOTES_HEADERS = new Set([
   "notesallergenes",
   "detail",
   "details",
+]);
+const NO_PORK_HEADERS = new Set([
+  "sans_porc",
+  "sansporc",
+  "sans porc",
+  "sans-porc",
+  "no_pork",
+  "nopork",
+]);
+const VEGETARIAN_HEADERS = new Set([
+  "vegetarien",
+  "vegetarian",
+  "vege",
+  "veggie",
 ]);
 
 function normalizeHeader(h: string): string {
@@ -63,6 +80,8 @@ export function parseStudentsImportCsv(text: string): {
   const lastIdx = pickColumn(first, LAST_HEADERS);
   const allergenIdx = pickColumn(first, ALLERGEN_HEADERS);
   const notesIdx = pickColumn(first, NOTES_HEADERS);
+  const noPorkIdx = pickColumn(first, NO_PORK_HEADERS);
+  const vegetarianIdx = pickColumn(first, VEGETARIAN_HEADERS);
   const hasHeader =
     schoolIdx !== null &&
     classIdx !== null &&
@@ -90,13 +109,30 @@ export function parseStudentsImportCsv(text: string): {
     const allergensRaw = String(row[aIdx] ?? "").trim();
     const allergenNotes =
       nIdx != null ? String(row[nIdx] ?? "").trim() : "";
+    const noPork =
+      hasHeader && noPorkIdx != null
+        ? parseOuiNon(String(row[noPorkIdx] ?? ""))
+        : false;
+    const vegetarian =
+      hasHeader && vegetarianIdx != null
+        ? parseOuiNon(String(row[vegetarianIdx] ?? ""))
+        : false;
 
     if (!school && !className && !firstName && !lastName) continue;
     if (!school || !className || !firstName || !lastName) {
       errors.push(`Ligne ${lineNo} : école, classe, prénom et nom requis.`);
       continue;
     }
-    rows.push({ school, className, firstName, lastName, allergensRaw, allergenNotes });
+    rows.push({
+      school,
+      className,
+      firstName,
+      lastName,
+      allergensRaw,
+      allergenNotes,
+      noPork,
+      vegetarian,
+    });
   }
 
   return { rows, errors };
@@ -162,19 +198,28 @@ export async function importStudentsForEstablishment(
       if (existing) {
         await db.student.update({
           where: { id: existing.id },
-          data: { allergens, allergenNotes, active: true },
+        await db.student.update({
+          where: { id: existing.id },
+          data: withDietFlags(
+            { allergens, allergenNotes, active: true },
+            { noPork: row.noPork, vegetarian: row.vegetarian },
+          ),
+        });
         });
         studentsUpdated++;
       } else {
         await db.student.create({
-          data: {
-            firstName: row.firstName,
-            lastName: row.lastName,
-            allergens,
-            allergenNotes,
-            groupId: group.id,
-            establishmentId,
-          },
+          data: withDietFlags(
+            {
+              firstName: row.firstName,
+              lastName: row.lastName,
+              allergens,
+              allergenNotes,
+              groupId: group.id,
+              establishmentId,
+            },
+            { noPork: row.noPork, vegetarian: row.vegetarian },
+          ),
         });
         studentsCreated++;
       }

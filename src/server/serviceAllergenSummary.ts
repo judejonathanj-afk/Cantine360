@@ -6,12 +6,14 @@ import {
   dishesAffectingStudent,
   studentAffectedByMenu,
 } from "@/lib/allergenMatch";
+import { countDietForDish, dietConflictsWithMenu } from "@/lib/dietaryRegime";
+import { withDietSelect } from "@/lib/dietaryRegime";
 
-function isMissingAllergenNotesColumn(e: unknown): boolean {
+function isMissingOptionalStudentColumn(e: unknown, column: string): boolean {
   return (
     e instanceof Prisma.PrismaClientKnownRequestError &&
     e.code === "P2022" &&
-    String(e.message).includes("allergenNotes")
+    String(e.message).includes(column)
   );
 }
 
@@ -24,8 +26,12 @@ export type StudentAllergenRow = {
   schoolName: string;
   className: string;
   groupLabel: string;
+  noPork: boolean;
+  vegetarian: boolean;
   affectedByMenu: boolean;
   affectedDishes: string[];
+  dietAffectedByMenu: boolean;
+  dietDishes: string[];
 };
 
 export type GroupAllergenSummary = {
@@ -36,6 +42,9 @@ export type GroupAllergenSummary = {
   studentsTotal: number;
   studentsWithAllergens: number;
   affectedByMenu: number;
+  studentsNoPork: number;
+  studentsVegetarian: number;
+  dietAffectedByMenu: number;
   students: StudentAllergenRow[];
 };
 
@@ -43,7 +52,11 @@ export type DishAllergenSummary = {
   label: string;
   category: string;
   allergens: string[];
+  containsPork: boolean;
+  containsMeat: boolean;
   affectedStudents: number;
+  noPorkStudents: number;
+  vegetarianStudents: number;
 };
 
 export type ServiceAllergenSummary = {
@@ -52,6 +65,9 @@ export type ServiceAllergenSummary = {
   groups: GroupAllergenSummary[];
   dishes: DishAllergenSummary[];
   totalAffectedStudents: number;
+  totalNoPork: number;
+  totalVegetarian: number;
+  totalDietAffected: number;
 };
 
 export async function getServiceAllergenSummary(
@@ -94,39 +110,56 @@ export async function getServiceAllergenSummary(
     lastName: string;
     allergens: string[];
     allergenNotes: string | null;
+    noPork: boolean;
+    vegetarian: boolean;
     groupId: string;
     group: { name: string; school: { name: string } };
   }>;
 
+  const whereStudents = {
+    establishmentId,
+    active: true,
+    groupId: { in: groupIds },
+  };
+
   try {
     students = await db.student.findMany({
-      where: {
-        establishmentId,
-        active: true,
-        groupId: { in: groupIds },
-      },
-      select: {
+      where: whereStudents,
+      select: withDietSelect({
         ...studentSelectBase,
         allergenNotes: true,
-      },
+      }),
     });
   } catch (e) {
-    if (!isMissingAllergenNotesColumn(e)) throw e;
+    const msg = e instanceof Error ? e.message : String(e);
+    const missingOptional =
+      isMissingOptionalStudentColumn(e, "allergenNotes") ||
+      isMissingOptionalStudentColumn(e, "noPork") ||
+      isMissingOptionalStudentColumn(e, "vegetarian") ||
+      /(allergenNotes|noPork|vegetarian)/.test(msg);
+    if (!missingOptional) throw e;
     const rows = await db.student.findMany({
-      where: {
-        establishmentId,
-        active: true,
-        groupId: { in: groupIds },
-      },
+      where: whereStudents,
       select: studentSelectBase,
     });
-    students = rows.map((s) => ({ ...s, allergenNotes: null }));
+    students = rows.map((s) => ({
+      ...s,
+      allergenNotes: null,
+      noPork: false,
+      vegetarian: false,
+    }));
   }
 
   const menuItems = (service.menu?.items ?? []).map((i) => ({
     label: i.label,
     category: i.category,
     allergens: i.allergens,
+    containsPork: Boolean(
+      "containsPork" in i && (i as { containsPork?: boolean }).containsPork,
+    ),
+    containsMeat: Boolean(
+      "containsMeat" in i && (i as { containsMeat?: boolean }).containsMeat,
+    ),
   }));
 
   const menuAllergenSets = menuItems.map((i) => i.allergens);
@@ -147,6 +180,10 @@ export async function getServiceAllergenSummary(
 
     const studentRows: StudentAllergenRow[] = classStudents.map((s) => {
       const affected = studentAffectedByMenu(s.allergens, menuAllergenSets);
+      const diet = dietConflictsWithMenu(s, menuItems);
+      const dietDishes = [
+        ...new Set([...diet.noPorkDishes, ...diet.vegetarianDishes]),
+      ];
       return {
         id: s.id,
         firstName: s.firstName,
@@ -156,8 +193,12 @@ export async function getServiceAllergenSummary(
         schoolName,
         className,
         groupLabel,
+        noPork: s.noPork,
+        vegetarian: s.vegetarian,
         affectedByMenu: affected,
         affectedDishes: dishesAffectingStudent(s.allergens, menuItems),
+        dietAffectedByMenu: dietDishes.length > 0,
+        dietDishes,
       };
     });
 
@@ -172,21 +213,37 @@ export async function getServiceAllergenSummary(
       studentsTotal: studentRows.length,
       studentsWithAllergens: withAllergens.length,
       affectedByMenu: affected.length,
+      studentsNoPork: studentRows.filter((s) => s.noPork).length,
+      studentsVegetarian: studentRows.filter((s) => s.vegetarian).length,
+      dietAffectedByMenu: studentRows.filter((s) => s.dietAffectedByMenu).length,
       students: studentRows,
     };
   });
 
-  const dishes: DishAllergenSummary[] = menuItems.map((item) => ({
-    label: item.label,
-    category: item.category,
-    allergens: item.allergens,
-    affectedStudents: countStudentsAffectedByDish(students, item.allergens),
-  }));
+  const dishes: DishAllergenSummary[] = menuItems.map((item) => {
+    const diet = countDietForDish(students, item);
+    return {
+      label: item.label,
+      category: item.category,
+      allergens: item.allergens,
+      containsPork: item.containsPork,
+      containsMeat: item.containsMeat,
+      affectedStudents: countStudentsAffectedByDish(students, item.allergens),
+      noPorkStudents: diet.noPork,
+      vegetarianStudents: diet.vegetarian,
+    };
+  });
 
   const affectedIds = new Set<string>();
+  const noPorkIds = new Set<string>();
+  const vegetarianIds = new Set<string>();
+  const dietAffectedIds = new Set<string>();
   for (const g of groups) {
     for (const s of g.students) {
       if (s.affectedByMenu) affectedIds.add(s.id);
+      if (s.noPork) noPorkIds.add(s.id);
+      if (s.vegetarian) vegetarianIds.add(s.id);
+      if (s.dietAffectedByMenu) dietAffectedIds.add(s.id);
     }
   }
 
@@ -196,5 +253,8 @@ export async function getServiceAllergenSummary(
     groups,
     dishes,
     totalAffectedStudents: affectedIds.size,
+    totalNoPork: noPorkIds.size,
+    totalVegetarian: vegetarianIds.size,
+    totalDietAffected: dietAffectedIds.size,
   };
 }

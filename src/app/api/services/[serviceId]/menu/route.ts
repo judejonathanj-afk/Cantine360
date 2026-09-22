@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { MenuCategory } from "@/generated/prisma/client";
+import { withDietFlags } from "@/lib/dietaryRegime";
 
 const ItemSchema = z.object({
   id: z.string().optional(),
@@ -10,6 +11,8 @@ const ItemSchema = z.object({
   label: z.string().trim().min(1).max(160),
   allergens: z.array(z.string().trim().min(1)).max(30).default([]),
   grammageG: z.number().int().min(1).max(5000).nullable().optional(),
+  containsPork: z.boolean().optional().default(false),
+  containsMeat: z.boolean().optional().default(false),
 });
 
 const PutSchema = z.object({
@@ -57,18 +60,29 @@ export async function PUT(
     update: {},
   });
 
-  // Replace items (simple pilot approach)
   await db.menuItem.deleteMany({ where: { menuId: menu.id } });
   if (parsed.data.items.length > 0) {
-    await db.menuItem.createMany({
-      data: parsed.data.items.map((i) => ({
-        menuId: menu.id,
-        category: i.category as MenuCategory,
-        label: i.label,
-        allergens: i.allergens,
-        grammageG: i.grammageG ?? null,
-      })),
-    });
+    const base = parsed.data.items.map((i) => ({
+      menuId: menu.id,
+      category: i.category as MenuCategory,
+      label: i.label,
+      allergens: i.allergens,
+      grammageG: i.grammageG ?? null,
+    }));
+    try {
+      await db.menuItem.createMany({
+        data: parsed.data.items.map((i, idx) =>
+          withDietFlags(base[idx], {
+            containsPork: Boolean(i.containsPork),
+            containsMeat: Boolean(i.containsMeat) || Boolean(i.containsPork),
+          }),
+        ),
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      if (!msg.includes("containsPork") && !msg.includes("containsMeat")) throw e;
+      await db.menuItem.createMany({ data: base });
+    }
   }
 
   const updated = await db.menu.findUnique({

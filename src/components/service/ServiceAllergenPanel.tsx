@@ -74,30 +74,56 @@ export function GroupAllergenBadge({
   groupSummary: GroupAllergenSummary | undefined;
   hasMenu: boolean;
 }) {
-  if (!groupSummary || groupSummary.studentsWithAllergens === 0) return null;
+  if (!groupSummary) return null;
 
-  const { studentsWithAllergens, affectedByMenu } = groupSummary;
+  const { studentsWithAllergens, affectedByMenu, studentsNoPork, studentsVegetarian, dietAffectedByMenu } =
+    groupSummary;
+
+  if (studentsWithAllergens === 0 && studentsNoPork === 0 && studentsVegetarian === 0) {
+    return null;
+  }
 
   return (
-    <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm sm:text-base">
-      <AlertTriangle
-        className="h-5 w-5 shrink-0 text-yellow-500"
-        aria-hidden
-      />
-      <span>
-        <span>
-          {studentsWithAllergens} allergie{studentsWithAllergens > 1 ? "s" : ""}
-        </span>
-        {hasMenu ? (
-          <span className="font-medium text-zinc-600">
-            {" "}
-            ·{" "}
-            <span className={affectedByMenu > 0 ? "font-bold text-amber-900" : ""}>
-              {affectedByMenu} concerné{affectedByMenu > 1 ? "s" : ""} menu
+    <div className="mt-3 space-y-1.5">
+      {studentsWithAllergens > 0 ? (
+        <div className="flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm sm:text-base">
+          <AlertTriangle
+            className="h-5 w-5 shrink-0 text-yellow-500"
+            aria-hidden
+          />
+          <span>
+            <span>
+              {studentsWithAllergens} allergie{studentsWithAllergens > 1 ? "s" : ""}
             </span>
+            {hasMenu ? (
+              <span className="font-medium text-zinc-600">
+                {" "}
+                ·{" "}
+                <span className={affectedByMenu > 0 ? "font-bold text-amber-900" : ""}>
+                  {affectedByMenu} concerné{affectedByMenu > 1 ? "s" : ""} menu
+                </span>
+              </span>
+            ) : null}
           </span>
-        ) : null}
-      </span>
+        </div>
+      ) : null}
+      {studentsNoPork > 0 || studentsVegetarian > 0 ? (
+        <div className="flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm">
+          <span>
+            {studentsNoPork > 0 ? `${studentsNoPork} sans porc` : null}
+            {studentsNoPork > 0 && studentsVegetarian > 0 ? " · " : null}
+            {studentsVegetarian > 0
+              ? `${studentsVegetarian} végétarien${studentsVegetarian > 1 ? "s" : ""}`
+              : null}
+            {hasMenu && dietAffectedByMenu > 0 ? (
+              <span className="font-bold text-sky-900">
+                {" "}
+                · {dietAffectedByMenu} à adapter
+              </span>
+            ) : null}
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }

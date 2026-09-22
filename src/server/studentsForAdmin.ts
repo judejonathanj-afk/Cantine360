@@ -1,5 +1,6 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import { Prisma } from "@/generated/prisma/client";
+import { withDietSelect } from "@/lib/dietaryRegime";
 
 export type StudentAdminListRow = {
   id: string;
@@ -7,6 +8,8 @@ export type StudentAdminListRow = {
   lastName: string;
   allergens: string[];
   allergenNotes: string | null;
+  noPork: boolean;
+  vegetarian: boolean;
   active: boolean;
   groupId: string;
   className: string;
@@ -40,6 +43,8 @@ export async function getStudentsForAdmin(
     lastName: string;
     allergens: string[];
     allergenNotes: string | null;
+    noPork: boolean;
+    vegetarian: boolean;
     active: boolean;
     groupId: string;
     group: { name: string; schoolId: string; school: { name: string } };
@@ -54,21 +59,24 @@ export async function getStudentsForAdmin(
         { lastName: "asc" },
         { firstName: "asc" },
       ],
-      select: {
+      select: withDietSelect({
         ...selectBase,
         allergenNotes: true,
-      },
+      }),
     });
   } catch (e) {
-    if (
-      !(
-        e instanceof Prisma.PrismaClientKnownRequestError &&
+    const msg = e instanceof Error ? e.message : String(e);
+    const missingNotes =
+      (e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === "P2022" &&
-        String(e.message).includes("allergenNotes")
-      )
-    ) {
-      throw e;
-    }
+        msg.includes("allergenNotes")) ||
+      /allergenNotes/.test(msg) && /Unknown arg|does not exist/i.test(msg);
+    const missingDiet =
+      (e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2022" &&
+        (msg.includes("noPork") || msg.includes("vegetarian"))) ||
+      /(noPork|vegetarian)/.test(msg);
+    if (!missingNotes && !missingDiet) throw e;
     const fallback = await db.student.findMany({
       where: { establishmentId },
       orderBy: [
@@ -79,7 +87,12 @@ export async function getStudentsForAdmin(
       ],
       select: selectBase,
     });
-    rows = fallback.map((r) => ({ ...r, allergenNotes: null }));
+    rows = fallback.map((r) => ({
+      ...r,
+      allergenNotes: null,
+      noPork: false,
+      vegetarian: false,
+    }));
   }
 
   return rows.map((r) => ({
@@ -88,6 +101,8 @@ export async function getStudentsForAdmin(
     lastName: r.lastName,
     allergens: r.allergens,
     allergenNotes: r.allergenNotes,
+    noPork: r.noPork,
+    vegetarian: r.vegetarian,
     active: r.active,
     groupId: r.groupId,
     className: r.group.name,

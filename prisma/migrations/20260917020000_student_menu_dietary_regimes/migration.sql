@@ -1,0 +1,6 @@
+-- Régimes (sans porc / végétarien) ≠ allergènes UE-14
+ALTER TABLE "Student" ADD COLUMN IF NOT EXISTS "noPork" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Student" ADD COLUMN IF NOT EXISTS "vegetarian" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "MenuItem" ADD COLUMN IF NOT EXISTS "containsPork" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "MenuItem" ADD COLUMN IF NOT EXISTS "containsMeat" BOOLEAN NOT NULL DEFAULT false;

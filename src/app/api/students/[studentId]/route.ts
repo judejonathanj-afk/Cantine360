@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { EU14_ALLERGENS } from "@/lib/allergens";
+import { withDietFlags } from "@/lib/dietaryRegime";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 
@@ -10,6 +11,8 @@ const PatchSchema = z.object({
   groupId: z.string().trim().min(1).optional(),
   allergens: z.array(z.enum(EU14_ALLERGENS)).optional(),
   allergenNotes: z.string().trim().max(500).nullable().optional(),
+  noPork: z.boolean().optional(),
+  vegetarian: z.boolean().optional(),
   active: z.boolean().optional(),
 });
 
@@ -43,6 +46,8 @@ export async function PATCH(
     groupId?: string;
     allergens?: string[];
     allergenNotes?: string | null;
+    noPork?: boolean;
+    vegetarian?: boolean;
     active?: boolean;
   } = {};
 
@@ -53,6 +58,8 @@ export async function PATCH(
     const notes = parsed.data.allergenNotes?.trim() ?? "";
     data.allergenNotes = notes.length > 0 ? notes : null;
   }
+  if (parsed.data.noPork !== undefined) data.noPork = parsed.data.noPork;
+  if (parsed.data.vegetarian !== undefined) data.vegetarian = parsed.data.vegetarian;
   if (parsed.data.active !== undefined) data.active = parsed.data.active;
 
   if (parsed.data.groupId !== undefined) {
@@ -73,10 +80,37 @@ export async function PATCH(
   try {
     const student = await db.student.update({
       where: { id: studentId },
-      data,
+      data: withDietFlags(data, {}),
     });
-    return NextResponse.json({ student });
-  } catch {
+    return NextResponse.json({
+      student: {
+        ...student,
+        noPork:
+          "noPork" in student
+            ? Boolean((student as { noPork?: boolean }).noPork)
+            : Boolean(data.noPork),
+        vegetarian:
+          "vegetarian" in student
+            ? Boolean((student as { vegetarian?: boolean }).vegetarian)
+            : Boolean(data.vegetarian),
+      },
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/(noPork|vegetarian)/.test(msg)) {
+      const { noPork: _n, vegetarian: _v, ...rest } = data;
+      try {
+        const student = await db.student.update({
+          where: { id: studentId },
+          data: rest,
+        });
+        return NextResponse.json({
+          student: { ...student, noPork: false, vegetarian: false },
+        });
+      } catch {
+        /* fall through */
+      }
+    }
     return NextResponse.json({ error: "Mise à jour impossible" }, { status: 409 });
   }
 }

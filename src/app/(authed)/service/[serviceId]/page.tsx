@@ -7,6 +7,8 @@ import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { ServiceConcernedStudentsPanel } from "@/components/service/ServiceConcernedStudentsPanel";
+import { ServiceDietBanner } from "@/components/service/ServiceDietBanner";
+import { ServiceDietStudentsPanel } from "@/components/service/ServiceDietStudentsPanel";
 import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
@@ -142,6 +144,9 @@ export default async function ServicePage({
           <ServiceAllergenOverview summary={allergenSummary} />
         ) : null}
         {allergenSummary ? (
+          <ServiceDietBanner summary={allergenSummary} />
+        ) : null}
+        {allergenSummary ? (
           <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-900" />}>
             <ServiceConcernedStudentsPanel
               serviceId={serviceId}
@@ -151,6 +156,14 @@ export default async function ServicePage({
               className="col-span-full"
             />
           </Suspense>
+        ) : null}
+        {allergenSummary ? (
+          <ServiceDietStudentsPanel
+            groups={allergenSummary.groups}
+            hasMenu={allergenSummary.hasMenu}
+            groupLevelById={groupLevelById}
+            className="col-span-full"
+          />
         ) : null}
       </ServiceInfoGrid>
 

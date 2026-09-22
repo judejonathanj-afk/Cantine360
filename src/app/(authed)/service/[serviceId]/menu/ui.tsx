@@ -13,6 +13,8 @@ type Item = {
   label: string;
   allergens: string[];
   grammageG: number | null;
+  containsPork: boolean;
+  containsMeat: boolean;
 };
 
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -23,18 +25,30 @@ const CATEGORY_LABEL: Record<Category, string> = {
 };
 
 function emptyItem(category: Category): Item {
-  return { category, label: "", allergens: [], grammageG: null };
+  return {
+    category,
+    label: "",
+    allergens: [],
+    grammageG: null,
+    containsPork: false,
+    containsMeat: false,
+  };
 }
 
 const DEFAULT_CATEGORIES: Category[] = ["STARTER", "MAIN", "DESSERT"];
 
 /** Une fiche vierge par rubrique principale si le menu est neuf ou incomplet. */
 function initializeMenuItems(initialItems: Item[]): Item[] {
-  if (initialItems.length === 0) {
+  const withFlags = initialItems.map((item) => ({
+    ...item,
+    containsPork: Boolean(item.containsPork),
+    containsMeat: Boolean(item.containsMeat) || Boolean(item.containsPork),
+  }));
+  if (withFlags.length === 0) {
     return DEFAULT_CATEGORIES.map((category) => emptyItem(category));
   }
 
-  const items = [...initialItems];
+  const items = [...withFlags];
   for (const category of DEFAULT_CATEGORIES) {
     if (!items.some((i) => i.category === category)) {
       items.push(emptyItem(category));
@@ -125,7 +139,9 @@ export function MenuEditor({
         <strong className="font-medium text-zinc-900">🥘 plats</strong>,{" "}
         <strong className="font-medium text-zinc-900">🧁 desserts</strong> et la rubrique{" "}
         <strong className="font-medium text-zinc-900">autres</strong> si besoin, puis les
-        allergènes (<em>Gluten</em> = « Céréales contenant du gluten ») et le{" "}
+        allergènes (<em>Gluten</em> = « Céréales contenant du gluten »), les
+        drapeaux <strong className="font-medium text-zinc-900">porc / viande</strong>{" "}
+        (régimes, hors allergènes) et le{" "}
         <strong className="font-medium text-zinc-900">grammage (g/assiette)</strong>.{" "}
         <strong className="font-medium text-zinc-900">Enregistrez tout en bas</strong> une fois le
         menu complet.
@@ -278,6 +294,51 @@ export function MenuEditor({
                           </button>
                         );
                       })}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <div className="text-sm font-medium text-zinc-900">
+                      Régimes (hors allergènes)
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = !it.containsPork;
+                          update(idx, {
+                            containsPork: next,
+                            containsMeat: next ? true : it.containsMeat,
+                          });
+                        }}
+                        className={[
+                          "rounded-full px-3 py-1 text-xs font-semibold",
+                          it.containsPork
+                            ? "bg-sky-800 text-white"
+                            : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
+                        ].join(" ")}
+                      >
+                        Contient du porc
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          update(idx, {
+                            containsMeat: !it.containsMeat,
+                            containsPork: !it.containsMeat
+                              ? it.containsPork
+                              : false,
+                          })
+                        }
+                        className={[
+                          "rounded-full px-3 py-1 text-xs font-semibold",
+                          it.containsMeat
+                            ? "bg-emerald-800 text-white"
+                            : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
+                        ].join(" ")}
+                      >
+                        Contient de la viande
+                      </button>
                     </div>
                   </div>
                 </div>

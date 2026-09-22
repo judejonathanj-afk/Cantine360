@@ -1,7 +1,7 @@
-ecole;classe;prenom;nom;allergenes
-École Anne Frank;CP;Adam;Leroy;
-École Anne Frank;CP;Inès;Moreau;Lait
-École Anne Frank;CE1 A;Léa;Martin;Lait
+ecole;classe;prenom;nom;allergenes;sans_porc;vegetarien
+École Anne Frank;CP;Adam;Leroy;;oui;
+École Anne Frank;CP;Inès;Moreau;Lait;;
+École Anne Frank;CE1 A;Léa;Martin;Lait;;oui
 École Anne Frank;CE1 A;Noah;Dupont;Gluten,Lait
 École Anne Frank;CE1 A;Chloé;Garcia;
 École Anne Frank;CE1 B;Emma;Bernard;Œufs
@@ -16,7 +16,7 @@ ecole;classe;prenom;nom;allergenes
 École Anne Frank;CM2;Tom;Dupuis;Fruits à coque
 École Anne Frank;CM2;Sarah;Lambert;
 École Voltaire;CP;Lucas;Petit;Arachides
-École Voltaire;CP;Alice;Renard;
+École Voltaire;CP;Alice;Renard;;oui;oui
 École Voltaire;CE1;Nathan;Blanc;Gluten
 École Voltaire;CE1;Camille;Garnier;Lait
 École Voltaire;CE2;Ethan;Faure;

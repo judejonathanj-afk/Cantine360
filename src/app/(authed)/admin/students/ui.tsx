@@ -30,6 +30,8 @@ type Student = {
   lastName: string;
   allergens: string[];
   allergenNotes: string | null;
+  noPork: boolean;
+  vegetarian: boolean;
   active: boolean;
   groupId: string;
   className: string;
@@ -58,6 +60,8 @@ export function AdminStudentsClient({
   const [groupId, setGroupId] = useState(groups.find((g) => g.active)?.id ?? "");
   const [selectedAllergens, setSelectedAllergens] = useState<AllergenLabel[]>([]);
   const [allergenNotes, setAllergenNotes] = useState("");
+  const [noPork, setNoPork] = useState(false);
+  const [vegetarian, setVegetarian] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -133,6 +137,8 @@ export function AdminStudentsClient({
           groupId,
           allergens: selectedAllergens,
           allergenNotes: allergenNotes.trim() || null,
+          noPork,
+          vegetarian,
         }),
       });
       if (!res.ok) {
@@ -143,6 +149,8 @@ export function AdminStudentsClient({
       setLastName("");
       setSelectedAllergens([]);
       setAllergenNotes("");
+      setNoPork(false);
+      setVegetarian(false);
       await refresh();
     } finally {
       setBusy(false);
@@ -171,6 +179,19 @@ export function AdminStudentsClient({
       method: "PATCH",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ allergenNotes: next }),
+    });
+    if (!res.ok) await refresh();
+  }
+
+  async function toggleDiet(s: Student, field: "noPork" | "vegetarian") {
+    const next = !s[field];
+    setStudents((all) =>
+      all.map((x) => (x.id === s.id ? { ...x, [field]: next } : x)),
+    );
+    const res = await fetch(`/api/students/${s.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ [field]: next }),
     });
     if (!res.ok) await refresh();
   }
@@ -212,14 +233,24 @@ export function AdminStudentsClient({
         <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
           {students.length} élève{students.length > 1 ? "s" : ""} ·{" "}
           <span className="font-bold">{withAllergens}</span> avec allergène
-          {withAllergens > 1 ? "s" : ""} déclaré{withAllergens > 1 ? "s" : ""}
+          {withAllergens > 1 ? "s" : ""} déclaré{withAllergens > 1 ? "s" : ""} ·{" "}
+          <span className="font-bold">
+            {students.filter((s) => s.active && s.noPork).length}
+          </span>{" "}
+          sans porc ·{" "}
+          <span className="font-bold">
+            {students.filter((s) => s.active && s.vegetarian).length}
+          </span>{" "}
+          végétarien
+          {students.filter((s) => s.active && s.vegetarian).length > 1 ? "s" : ""}
         </p>
         <p className="w-full text-base leading-relaxed text-zinc-700 sm:text-lg">
-          Cette page enregistre la liste des <strong className="font-semibold text-zinc-900">élèves</strong>{" "}
-          et leurs <strong className="font-semibold text-zinc-900">allergènes</strong> par classe.
-          Importez un CSV (après avoir créé les classes) ou ajoutez un élève à la main. Ces données
-          alimentent ensuite le service cantine : alertes sur le menu du jour et liste nominative
-          des élèves concernés.
+          Cette page enregistre la liste des <strong className="font-semibold text-zinc-900">élèves</strong>
+          , leurs <strong className="font-semibold text-zinc-900">allergènes</strong> et les
+          régimes <strong className="font-semibold text-zinc-900">sans porc / végétarien</strong>{" "}
+          (hors allergie). Importez un CSV (après avoir créé les classes) ou ajoutez un élève à
+          la main. Ces données alimentent ensuite le service cantine : alertes sur le menu du
+          jour et liste nominative des élèves concernés.
         </p>
       </div>
 
@@ -234,7 +265,10 @@ export function AdminStudentsClient({
             <code className="rounded bg-white/15 px-1 text-white/90">nom</code>,{" "}
             <code className="rounded bg-white/15 px-1 text-white/90">allergenes</code>,{" "}
             <code className="rounded bg-white/15 px-1 text-white/90">consignes</code>{" "}
-            (optionnel). Importez d’abord les classes.
+            (optionnel),{" "}
+            <code className="rounded bg-white/15 px-1 text-white/90">sans_porc</code>,{" "}
+            <code className="rounded bg-white/15 px-1 text-white/90">vegetarien</code>{" "}
+            (oui/non). Importez d’abord les classes.
           </>
         }
         exampleHref="/test-import-eleves.csv"
@@ -304,6 +338,31 @@ export function AdminStudentsClient({
           </div>
         </div>
         <div className="mt-3">
+          <div className="text-xs font-medium text-zinc-700">Régimes (hors allergènes)</div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setNoPork((v) => !v)}
+              className={[
+                "rounded-full px-2.5 py-1 text-xs font-semibold",
+                noPork ? "bg-sky-800 text-white" : "bg-zinc-100 text-zinc-700",
+              ].join(" ")}
+            >
+              Sans porc
+            </button>
+            <button
+              type="button"
+              onClick={() => setVegetarian((v) => !v)}
+              className={[
+                "rounded-full px-2.5 py-1 text-xs font-semibold",
+                vegetarian ? "bg-emerald-800 text-white" : "bg-zinc-100 text-zinc-700",
+              ].join(" ")}
+            >
+              Végétarien
+            </button>
+          </div>
+        </div>
+        <div className="mt-3">
           <label className="text-xs font-medium text-zinc-700" htmlFor="allergen-notes">
             Consignes parents (affichées en cuisine)
           </label>
@@ -341,7 +400,10 @@ export function AdminStudentsClient({
             <p className="text-xs text-zinc-500">
               {bucket.students.filter((s) => s.allergens.length > 0).length} allergie
               {bucket.students.filter((s) => s.allergens.length > 0).length > 1 ? "s" : ""}{" "}
-              sur {bucket.students.length} élève
+              · {bucket.students.filter((s) => s.noPork).length} sans porc ·{" "}
+              {bucket.students.filter((s) => s.vegetarian).length} végétarien
+              {bucket.students.filter((s) => s.vegetarian).length > 1 ? "s" : ""} sur{" "}
+              {bucket.students.length} élève
               {bucket.students.length > 1 ? "s" : ""}
             </p>
             <div className="divide-y divide-zinc-100 rounded-2xl border border-zinc-200 bg-white">
@@ -371,6 +433,32 @@ export function AdminStudentsClient({
                     ) : (
                       <p className="mt-1 text-xs text-zinc-500">Aucun allergène déclaré</p>
                     )}
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => void toggleDiet(s, "noPork")}
+                        className={[
+                          "rounded-full px-2 py-0.5 text-xs font-semibold",
+                          s.noPork
+                            ? "bg-sky-800 text-white"
+                            : "bg-zinc-100 text-zinc-600",
+                        ].join(" ")}
+                      >
+                        Sans porc
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void toggleDiet(s, "vegetarian")}
+                        className={[
+                          "rounded-full px-2 py-0.5 text-xs font-semibold",
+                          s.vegetarian
+                            ? "bg-emerald-800 text-white"
+                            : "bg-zinc-100 text-zinc-600",
+                        ].join(" ")}
+                      >
+                        Végétarien
+                      </button>
+                    </div>
                     {s.allergens.length > 0 ? (
                       <textarea
                         defaultValue={s.allergenNotes ?? ""}

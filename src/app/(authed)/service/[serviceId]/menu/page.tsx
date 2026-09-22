@@ -37,6 +37,12 @@ export default async function ServiceMenuPage({
         label: i.label,
         allergens: i.allergens,
         grammageG: i.grammageG,
+        containsPork: Boolean(
+          "containsPork" in i && (i as { containsPork?: boolean }).containsPork,
+        ),
+        containsMeat: Boolean(
+          "containsMeat" in i && (i as { containsMeat?: boolean }).containsMeat,
+        ),
       }));
 
   const [allergenSummary, antiWaste] = await Promise.all([
