@@ -32,9 +32,6 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
         <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
           {formatStudentKitchenName(student.firstName, student.lastName)}
         </span>
-        <span className="rounded-full bg-[#0a1628] px-2 py-0.5 text-sm font-bold text-white">
-          Menu
-        </span>
         {student.noPork ? (
           <span className="rounded-full border-2 border-zinc-900 bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
             Sans porc
