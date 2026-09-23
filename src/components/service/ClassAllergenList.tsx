@@ -35,6 +35,16 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
         <span className="rounded-full bg-[#0a1628] px-2 py-0.5 text-sm font-bold text-white">
           Menu
         </span>
+        {student.noPork ? (
+          <span className="rounded-full border-2 border-zinc-900 bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
+            Sans porc
+          </span>
+        ) : null}
+        {student.vegetarian ? (
+          <span className="rounded-full border-2 border-zinc-900 bg-emerald-800 px-2 py-0.5 text-sm font-bold text-white">
+            Végétarien
+          </span>
+        ) : null}
       </div>
       <ul className="mt-2 space-y-1.5">
         {student.allergens.map((allergen) => (
