@@ -21,11 +21,11 @@ export function ServiceMealTitle({
 }: Props) {
   const meal = mealTypeLabel(mealType);
 
-  const sunClass = size === "lg" ? "h-12 w-12 sm:h-14 sm:w-14" : "h-7 w-7";
+  const sunClass = size === "lg" ? "h-8 w-8 sm:h-9 sm:w-9" : "h-7 w-7";
 
   const textClass =
     size === "lg"
-      ? "min-w-0 max-w-full text-2xl font-bold leading-tight tracking-tight text-balance sm:text-3xl md:text-4xl lg:text-5xl"
+      ? "min-w-0 max-w-full text-xl font-bold leading-tight tracking-tight text-balance sm:text-2xl"
       : "min-w-0 max-w-full text-sm font-medium md:text-base";
 
   return (
