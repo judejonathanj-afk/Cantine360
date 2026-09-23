@@ -1,32 +1,53 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  Sparkles,
-  Calendar,
-  Utensils,
-  Check,
-  ArrowRight,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CantineHero } from "@/components/service/CantineHero";
-import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
+import { ArrowRight, CalendarDays, Check, Sparkles, Utensils } from "lucide-react";
 import { SCHOOL_MEAL_TYPE } from "@/lib/mealType";
+import "./service-home.css";
+
+const palette = ["#8dc7f3", "#c58bdc", "#f4a23a", "#e87568", "#a5d7b5", "#f3d86b"];
 
 function todayYyyyMmDd() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function BrandMark() {
+  return (
+    <div className="brand-mark" aria-label="Service cantine">
+      {"SERVICE CANTINE".split("").map((letter, index) => (
+        <span key={`${letter}-${index}`} style={{ color: palette[index % palette.length] }}>
+          {letter === " " ? "\u00a0" : letter}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function DecorativeIllustration() {
+  return (
+    <div className="illustration" aria-hidden="true">
+      <div className="orbit orbit-one" />
+      <div className="orbit orbit-two" />
+      <div className="sun">
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="plate">
+        <div className="plate-food food-one" />
+        <div className="plate-food food-two" />
+        <div className="plate-food food-three" />
+      </div>
+    </div>
+  );
 }
 
 export default function ServiceHomeClient() {
@@ -35,18 +56,13 @@ export default function ServiceHomeClient() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const selectedDateObj = useMemo(
-    () => new Date(date + "T12:00:00"),
-    [date],
-  );
-
   const prettyDate = useMemo(() => {
     try {
-      return format(selectedDateObj, "EEEE d MMMM yyyy", { locale: fr });
+      return format(new Date(`${date}T12:00:00`), "EEEE d MMMM yyyy", { locale: fr });
     } catch {
       return date;
     }
-  }, [selectedDateObj, date]);
+  }, [date]);
 
   async function startService() {
     setBusy(true);
@@ -72,124 +88,88 @@ export default function ServiceHomeClient() {
   }
 
   return (
-    <div className="relative min-h-[calc(100dvh-5rem)] space-y-8 pb-12">
-      <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
-        <CantineHero />
-      </div>
+    <div className="service-home">
+      <div className="ambient ambient-top" />
+      <div className="ambient ambient-bottom" />
 
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-        <div className="grid gap-6 sm:grid-cols-2 sm:items-stretch">
-        <motion.div
-          className="h-full"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <Card className="h-full border-zinc-200 bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" />
-                Date du service
-              </CardTitle>
-              <CardDescription>
-                Sélectionnez la date du déjeuner à suivre
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground shadow-sm transition-all focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20"
-              />
-              <div className="rounded-xl border border-primary/15 bg-gradient-to-br from-primary/20 via-primary/12 to-primary/6 p-4">
-                <p className="text-sm text-muted-foreground">Date sélectionnée</p>
-                <p className="mt-1 text-lg font-semibold capitalize text-foreground">
-                  {prettyDate}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          className="h-full"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <Card className="h-full border-zinc-200 bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Utensils className="h-5 w-5 text-primary" />
-                Repas
-              </CardTitle>
-              <CardDescription>
-                Maternelle et primaire : suivi du <strong className="font-semibold text-foreground">déjeuner</strong> (midi) uniquement.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4 rounded-2xl border-2 border-primary bg-primary/5 p-6">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white">
-                  <ChildDrawnSun className="h-10 w-10" />
-                </div>
-                <div>
-                  <p className="text-lg font-semibold text-foreground">Déjeuner</p>
-                  <p className="text-sm text-muted-foreground">Service de midi — seul créneau suivi</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-3">
-        <Button
-          size="lg"
-          disabled={busy}
-          className="h-auto rounded-2xl border-2 border-amber-400 px-8 py-4 text-lg shadow-xl shadow-primary/25"
-          onClick={() => void startService()}
-        >
-          <Sparkles className="h-5 w-5" />
-          {busy ? "Ouverture…" : "Démarrer le service"}
-          <ArrowRight className="h-5 w-5" />
-        </Button>
-        {error ? (
-          <p className="rounded-xl bg-destructive/10 px-4 py-2 text-sm text-destructive">
-            {error}
+      <section className="hero-panel">
+        <DecorativeIllustration />
+        <div className="hero-content">
+          <div className="eyebrow">
+            <Sparkles aria-hidden="true" /> Réduisons le gaspillage ensemble
+          </div>
+          <BrandMark />
+          <p className="hero-copy">
+            Pour ouvrir un service, choisissez la <strong>date du déjeuner</strong>, puis «
+            Démarrer le service » pour saisir les groupes.
           </p>
-        ) : null}
-      </div>
+          <div className="hero-pills" aria-label="Fonctionnalités">
+            <span>Simple</span>
+            <span>Rapide</span>
+            <span>Anti-gaspi</span>
+          </div>
+        </div>
+      </section>
 
-      <AnimatePresence>
-        {success ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              className="mx-4 max-w-md rounded-3xl bg-card p-8 text-center shadow-2xl"
-            >
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Check className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-bold text-foreground">
-                Service ouvert
-              </h3>
-              <p className="mt-2 text-muted-foreground">
-                Redirection vers les groupes…
+      <section className="setup-grid" aria-label="Configuration du service">
+        <article className="setup-card date-card">
+          <div className="card-heading">
+            <div className="icon-box green">
+              <CalendarDays aria-hidden="true" />
+            </div>
+            <div>
+              <h2>Date du service</h2>
+              <p>Sélectionnez la date du déjeuner à suivre</p>
+            </div>
+          </div>
+          <label className="date-field">
+            <span className="sr-only">Date du déjeuner</span>
+            <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
+            <CalendarDays aria-hidden="true" />
+          </label>
+          <div className="selected-date">
+            <span>Date sélectionnée</span>
+            <strong>{prettyDate}</strong>
+          </div>
+        </article>
+
+        <article className="setup-card meal-card">
+          <div className="card-heading">
+            <div className="icon-box green">
+              <Utensils aria-hidden="true" />
+            </div>
+            <div>
+              <h2>Repas</h2>
+              <p>
+                Maternelle et primaire : suivi du <strong>déjeuner</strong> (midi) uniquement.
               </p>
-              <Badge variant="secondary" className="mt-4">
-                {prettyDate}
-              </Badge>
-            </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+            </div>
+          </div>
+          <div className="meal-option" role="status">
+            <div className="meal-icon">
+              <span>☀</span>
+            </div>
+            <div>
+              <strong>Déjeuner</strong>
+              <p>Service de midi — seul créneau suivi</p>
+            </div>
+            <Check className="check" aria-hidden="true" />
+          </div>
+        </article>
+      </section>
+
+      <button
+        type="button"
+        className={`start-button ${success ? "started" : ""}`}
+        disabled={busy}
+        onClick={() => void startService()}
+      >
+        {success ? <Check aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
+        {busy ? "Ouverture…" : success ? "Service prêt" : "Démarrer le service"}
+        <ArrowRight aria-hidden="true" />
+      </button>
+      {error ? <p className="home-error">{error}</p> : null}
+      <p className="footer-note">Un service à la fois, zéro gaspillage inutile.</p>
     </div>
   );
 }

@@ -216,15 +216,9 @@ export function AppShell({
     <div
       className={cn(
         "relative flex min-h-screen flex-1 flex-col pb-20 md:pb-0",
-        !isServiceHome && "bg-background",
+        isServiceHome ? "bg-[#f5f7f2]" : "bg-background",
       )}
     >
-      {isServiceHome ? (
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 top-16 bg-black"
-        />
-      ) : null}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
           <Link
@@ -281,8 +275,10 @@ export function AppShell({
 
       <main
         className={cn(
-          "relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8",
-          isServiceHome && "bg-transparent",
+          "relative z-10 mx-auto w-full flex-1",
+          isServiceHome
+            ? "max-w-none bg-[#f5f7f2] px-0 py-0"
+            : "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
         )}
       >
         {children}
