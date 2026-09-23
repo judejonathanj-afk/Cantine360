@@ -18,7 +18,9 @@ const CreateSchema = z.object({
 
 export async function GET() {
   const session = await getServerSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session || session.role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const students = await getStudentsForAdmin(db, session.establishmentId);
   return NextResponse.json({ students });
