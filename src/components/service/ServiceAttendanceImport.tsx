@@ -18,12 +18,13 @@ function formatFrenchDate(iso: string) {
 export function ServiceAttendanceImport({
   serviceId,
   presentTotal = 0,
-  kitchenMode = false,
+  showCsvImport = false,
   className,
 }: {
   serviceId: string;
   presentTotal?: number;
-  kitchenMode?: boolean;
+  /** Import Pronote / CSV : compte admin uniquement. */
+  showCsvImport?: boolean;
   className?: string;
 }) {
   const router = useRouter();
@@ -112,7 +113,7 @@ export function ServiceAttendanceImport({
     router.refresh();
   }
 
-  if (kitchenMode) {
+  if (!showCsvImport) {
     return (
       <div className={cn("w-full rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm", className)}>
         <Button

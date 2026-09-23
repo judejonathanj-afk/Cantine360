@@ -180,7 +180,7 @@ export default async function ServicePage({
         <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-100" />}>
           <ServiceMetricsSection
             serviceId={serviceId}
-            kitchenMode={session.role === "KITCHEN"}
+            showCsvImport={session.role === "ADMIN"}
             presentTotal={service.metrics.reduce((sum, m) => sum + m.presentCount, 0)}
             cards={classCards}
             hasMenu={allergenSummary?.hasMenu ?? false}

@@ -13,13 +13,13 @@ import type { SchoolLevel } from "@/lib/schoolLevel";
 
 export function ServiceMetricsSection({
   serviceId,
-  kitchenMode,
+  showCsvImport = false,
   presentTotal,
   cards,
   hasMenu,
 }: {
   serviceId: string;
-  kitchenMode: boolean;
+  showCsvImport?: boolean;
   presentTotal: number;
   cards: ServiceClassCard[];
   hasMenu: boolean;
@@ -89,7 +89,7 @@ export function ServiceMetricsSection({
       </div>
       <ServiceAttendanceImport
         serviceId={serviceId}
-        kitchenMode={kitchenMode}
+        showCsvImport={showCsvImport}
         presentTotal={presentTotal}
         className="w-full"
       />
