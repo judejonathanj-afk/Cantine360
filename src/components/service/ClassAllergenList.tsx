@@ -46,10 +46,22 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
       <ul className="mt-2 space-y-1.5">
         {student.allergens.map((allergen) => (
           <li key={allergen} className="text-base leading-snug text-zinc-800 sm:text-lg">
-            Allergène :{" "}
+            <strong className="font-bold text-zinc-950">Allergène</strong>
+            {" : "}
             <strong className="text-lg font-bold text-zinc-950 sm:text-xl">{allergen}</strong>
             {" "}
-            <span className="text-zinc-700">({detail})</span>
+            <span className="text-zinc-700">
+              (
+              {detail.startsWith("à ne pas servir") ? (
+                <>
+                  <strong className="font-bold text-zinc-950">à ne pas servir</strong>
+                  {detail.slice("à ne pas servir".length)}
+                </>
+              ) : (
+                detail
+              )}
+              )
+            </span>
           </li>
         ))}
       </ul>
