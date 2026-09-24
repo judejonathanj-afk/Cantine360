@@ -115,18 +115,18 @@ export function ServiceAttendanceImport({
 
   if (!showCsvImport) {
     return (
-      <div className={cn("w-full rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm", className)}>
+      <div className={cn("flex flex-col items-center gap-2", className)}>
         <Button
           type="button"
           variant="default"
           disabled={busy}
-          className="h-auto min-h-[3.25rem] w-full justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold sm:text-lg"
+          className="h-11 w-fit gap-2.5 rounded-full px-5 text-sm font-semibold shadow-sm"
           onClick={() => void copyPrevious()}
         >
-          <History className="h-5 w-5 shrink-0" aria-hidden />
           {busy ? "Chargement…" : "Reprendre les présents de la veille"}
+          <History className="h-4 w-4 shrink-0" aria-hidden />
         </Button>
-        <p className="mt-2 text-sm text-zinc-600">
+        <p className="max-w-md text-center text-sm text-zinc-600">
           Copie les effectifs du dernier déjeuner enregistré. Ajustez ensuite les classes avec
           absents ou sorties.
         </p>
