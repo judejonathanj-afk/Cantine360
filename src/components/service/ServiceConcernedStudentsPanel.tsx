@@ -20,6 +20,30 @@ function kitchenAllergenDetail(notes: string | null | undefined): string {
   return trimmed && trimmed.length > 0 ? trimmed : "à ne pas servir — allergie";
 }
 
+function KitchenAllergenPhrase({ detail }: { detail: string }) {
+  const prefix = "à ne pas servir";
+  if (!detail.startsWith(prefix)) return detail;
+  const rest = detail.slice(prefix.length);
+  const word = "allergie";
+  const at = rest.toLowerCase().indexOf(word);
+  if (at < 0) {
+    return (
+      <>
+        <strong className="font-bold text-zinc-950">{prefix}</strong>
+        {rest}
+      </>
+    );
+  }
+  return (
+    <>
+      <strong className="font-bold text-zinc-950">{prefix}</strong>
+      {rest.slice(0, at)}
+      <strong className="font-bold text-zinc-950">{rest.slice(at, at + word.length)}</strong>
+      {rest.slice(at + word.length)}
+    </>
+  );
+}
+
 export function ServiceConcernedStudentsPanel({
   serviceId,
   groups,
@@ -168,16 +192,7 @@ export function ServiceConcernedStudentsPanel({
                             </strong>{" "}
                             <span className="text-zinc-700">
                               (
-                              {detail.startsWith("à ne pas servir") ? (
-                                <>
-                                  <strong className="font-bold text-zinc-950">
-                                    à ne pas servir
-                                  </strong>
-                                  {detail.slice("à ne pas servir".length)}
-                                </>
-                              ) : (
-                                detail
-                              )}
+                              <KitchenAllergenPhrase detail={detail} />
                               )
                             </span>
                           </li>
