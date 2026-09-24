@@ -59,7 +59,7 @@ export function ServiceClassGrid({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 space-y-1">
                 <GroupNameBadge name={m.groupName} schoolName={m.schoolName} />
-                <p className="text-xs font-medium text-zinc-700/80">
+                <p className="inline-flex w-fit rounded-full border-2 border-zinc-900 bg-white px-2.5 py-0.5 text-xs font-bold text-zinc-950">
                   {schoolLevelLabelFr(m.level)}
                 </p>
               </div>
