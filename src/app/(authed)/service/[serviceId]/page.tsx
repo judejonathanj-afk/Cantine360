@@ -109,15 +109,18 @@ export default async function ServicePage({
         <ol className="mx-auto max-w-2xl list-decimal space-y-1.5 pl-5 text-left text-base leading-relaxed text-zinc-600 sm:text-lg">
           <li>
             <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
-            allergènes et grammage, puis présents par classe.
+            allergènes et grammage. Appuyez sur une{" "}
+            <strong className="font-semibold text-zinc-800">classe</strong> pour ouvrir le
+            compteur et saisir les présents.
           </li>
           <li>
-            <strong className="font-semibold text-zinc-900">Pendant / après</strong> — servis,
-            RAB et refus sur chaque classe.
+            <strong className="font-semibold text-zinc-900">Pendant / après</strong> — remplissez
+            servis, RAB et refus, puis{" "}
+            <strong className="font-semibold text-zinc-800">Enregistrer</strong>.
           </li>
           <li>
-            <strong className="font-semibold text-zinc-900">Fin de service</strong> — poids des
-            déchets en grammes, puis « Fin de service » en haut à droite.
+            <strong className="font-semibold text-zinc-900">Fin de service</strong> — saisissez le
+            poids des déchets en grammes, puis « Fin de service » en haut à droite.
           </li>
         </ol>
         <ServiceMealTitle
