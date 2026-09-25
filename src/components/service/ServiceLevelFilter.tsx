@@ -29,7 +29,7 @@ export function ServiceLevelFilter({
         disabled={primaireCount === 0}
         onClick={() => toggle("PRIMAIRE")}
         className={[
-          "min-w-[8.5rem] rounded-full px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+          "min-w-[8.5rem] rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100",
           value === "PRIMAIRE"
             ? "bg-emerald-600 text-white shadow-sm"
             : "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-300 hover:bg-emerald-200",
@@ -42,7 +42,7 @@ export function ServiceLevelFilter({
         disabled={maternelleCount === 0}
         onClick={() => toggle("MATERNELLE")}
         className={[
-          "min-w-[8.5rem] rounded-full px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+          "min-w-[8.5rem] rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100",
           value === "MATERNELLE"
             ? "bg-sky-600 text-white shadow-sm"
             : "bg-sky-100 text-sky-900 ring-1 ring-sky-300 hover:bg-sky-200",
