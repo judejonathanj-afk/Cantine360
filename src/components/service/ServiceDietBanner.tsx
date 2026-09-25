@@ -1,5 +1,5 @@
 import type { ServiceAllergenSummary } from "@/server/serviceAllergenSummary";
-import { Salad } from "lucide-react";
+import { ArrowDown, Salad } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,17 @@ export function ServiceDietBanner({
   const classesTouched = summary.groups.filter((g) => g.dietAffectedByMenu > 0);
 
   return (
-    <ServiceInsightCard
+    <div className="relative">
+      {summary.totalDietAffected > 0 ? (
+        <a
+          href="#regimes-a-adapter"
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-white shadow-md ring-2 ring-white transition hover:scale-105 hover:bg-red-700"
+          aria-label="Voir les régimes à adapter"
+        >
+          <ArrowDown className="h-5 w-5" aria-hidden />
+        </a>
+      ) : null}
+      <ServiceInsightCard
       tone="black"
       icon={Salad}
       title="Régimes — menu du jour"
@@ -54,5 +64,6 @@ export function ServiceDietBanner({
         <p>Les régimes sont enregistrés ; aucun plat du jour n’est signalé porc ou viande.</p>
       )}
     </ServiceInsightCard>
+    </div>
   );
 }

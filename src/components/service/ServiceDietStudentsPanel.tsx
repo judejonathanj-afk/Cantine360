@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
   Collapsible,
@@ -34,41 +34,56 @@ export function ServiceDietStudentsPanel({
   const total = dietGroups.reduce((n, g) => n + g.concerned.length, 0);
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    function openFromArrow() {
+      if (window.location.hash !== "#regimes-a-adapter") return;
+      setOpen(true);
+      document.getElementById("regimes-a-adapter")?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+    openFromArrow();
+    window.addEventListener("hashchange", openFromArrow);
+    return () => window.removeEventListener("hashchange", openFromArrow);
+  }, []);
+
   if (!hasMenu || total === 0) return null;
 
   return (
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      className={cn("group mx-auto w-full max-w-xl", className)}
+      id="regimes-a-adapter"
+      className={cn("group w-full scroll-mt-24", className)}
     >
-      <div className="flex flex-col overflow-hidden rounded-2xl border-2 border-sky-500 bg-sky-50 shadow-md">
+      <div className="flex flex-col overflow-hidden rounded-2xl border border-[#1a2d4a] bg-[#0a1628] shadow-md">
         <CollapsibleTrigger
           className={cn(
-            "flex w-full shrink-0 flex-col px-4 outline-none hover:bg-sky-100/80",
-            open ? "py-3.5" : "py-4",
+            "flex w-full shrink-0 flex-col px-4 outline-none hover:bg-white/10",
+            open ? "py-3.5" : "py-3",
           )}
         >
           <div className="relative flex items-center gap-3">
             <h2
               className={cn(
-                "flex-1 text-center font-bold leading-snug text-sky-950",
-                open ? "text-lg sm:text-xl" : "text-xl sm:text-2xl",
+                "flex-1 text-center font-bold leading-snug text-white",
+                open ? "text-lg sm:text-xl" : "text-base sm:text-lg",
               )}
             >
-              <span className="tabular-nums text-sky-700">{total}</span> Régimes à
+              <span className="tabular-nums text-yellow-300">{total}</span> Régimes à
               adapter
             </h2>
             <ChevronDown
               className={cn(
-                "shrink-0 text-sky-900/70 transition-transform",
+                "shrink-0 text-white/70 transition-transform",
                 open ? "h-5 w-5 rotate-180" : "h-5 w-5",
               )}
             />
           </div>
         </CollapsibleTrigger>
-        <CollapsibleContent className="flex min-h-0 flex-1 flex-col border-t border-sky-200 bg-sky-50 px-3 pb-3 pt-2 text-sky-950">
-          <p className="shrink-0 rounded-md border border-sky-200 bg-white/80 px-2 py-1 text-[10px] leading-snug">
+        <CollapsibleContent className="flex min-h-0 flex-1 flex-col border-t border-white/15 bg-[#0a1628] px-3 pb-3 pt-2 text-white">
+          <p className="shrink-0 rounded-md border border-white/20 bg-white/10 px-2 py-1 text-[10px] leading-snug">
             Hors allergènes UE-14 — alternative sans porc / végétarienne.
           </p>
           <ul className="mt-2 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[26rem]">

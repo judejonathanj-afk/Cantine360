@@ -134,18 +134,19 @@ export default async function ServicePage({
         {allergenSummary && session.role === "ADMIN" ? (
           <ServiceAllergenOverview summary={allergenSummary} />
         ) : null}
-        {allergenSummary ? (
+        {allergenSummary && allergenSummary.totalDietAffected > 0 ? (
+          <div className="flex flex-col gap-2 rounded-3xl border-2 border-zinc-900 p-2">
+            <ServiceDietBanner summary={allergenSummary} />
+            <ServiceDietStudentsPanel
+              groups={allergenSummary.groups}
+              hasMenu={allergenSummary.hasMenu}
+              groupLevelById={groupLevelById}
+            />
+          </div>
+        ) : allergenSummary ? (
           <ServiceDietBanner summary={allergenSummary} />
         ) : null}
         <ServiceGrammagePanel menuItems={menuItems} metrics={metricsGrammage} />
-        {allergenSummary ? (
-          <ServiceDietStudentsPanel
-            groups={allergenSummary.groups}
-            hasMenu={allergenSummary.hasMenu}
-            groupLevelById={groupLevelById}
-            className="col-span-full"
-          />
-        ) : null}
       </ServiceInfoGrid>
 
       {service.metrics.length === 0 ? (
