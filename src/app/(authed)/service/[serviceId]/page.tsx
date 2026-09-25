@@ -106,7 +106,12 @@ export default async function ServicePage({
     <div className="space-y-6">
       <div className="min-w-0 space-y-3 text-center">
         <h1 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">Saisie par classe</h1>
-        <ol className="mx-auto max-w-2xl list-decimal space-y-1.5 pl-5 text-left text-base leading-relaxed text-zinc-600 sm:text-lg">
+        <ServiceMealTitle
+          mealType={service.mealType}
+          dateLabel={dateLabel}
+          className="w-full justify-center"
+        />
+        <ol className="mx-auto w-full max-w-5xl list-decimal space-y-1.5 pl-5 text-left text-base leading-relaxed text-zinc-600 sm:text-lg">
           <li>
             <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
             allergènes et grammage. Appuyez sur une{" "}
@@ -123,11 +128,6 @@ export default async function ServicePage({
             poids des déchets en grammes, puis « Fin de service » en haut à droite.
           </li>
         </ol>
-        <ServiceMealTitle
-          mealType={service.mealType}
-          dateLabel={dateLabel}
-          className="w-full justify-center"
-        />
       </div>
 
       <ServiceInfoGrid>

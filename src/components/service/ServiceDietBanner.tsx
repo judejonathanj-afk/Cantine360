@@ -16,7 +16,7 @@ export function ServiceDietBanner({
 
   return (
     <ServiceInsightCard
-      tone="sky"
+      tone="black"
       icon={Salad}
       title="Régimes — menu du jour"
       subtitle={
