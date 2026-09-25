@@ -113,7 +113,7 @@ export function MenuEditor({
       }
       setStatus("Sauvegardé. Retour à la fiche service…");
       window.setTimeout(() => {
-        router.push(`/service/${serviceId}?liste=1`);
+        router.push(`/service/${serviceId}`);
       }, 600);
     } finally {
       setBusy(false);
