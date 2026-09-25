@@ -71,22 +71,6 @@ export function ServiceMetricsSection({
 
   return (
     <div className="space-y-4">
-      <div
-        className="border-t border-zinc-300 pt-6"
-        role="separator"
-        aria-hidden
-      />
-      <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">
-          Saisie par classe
-        </h2>
-        <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-600 sm:text-lg">
-          Appuyez sur une <strong className="font-semibold text-zinc-800">classe</strong> pour
-          ouvrir le compteur, remplissez les chiffres (présents, servis, RAB, refus), puis{" "}
-          <strong className="font-semibold text-zinc-800">Enregistrer</strong>. Les déchets se
-          saisissent en grammes en fin de service.
-        </p>
-      </div>
       <ServiceAttendanceImport
         serviceId={serviceId}
         showCsvImport={showCsvImport}

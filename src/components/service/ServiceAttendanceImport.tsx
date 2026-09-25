@@ -126,10 +126,6 @@ export function ServiceAttendanceImport({
           {busy ? "Chargement…" : "Reprendre les présents de la veille"}
           <History className="h-4 w-4 shrink-0" aria-hidden />
         </Button>
-        <p className="max-w-md text-center text-sm text-zinc-600">
-          Copie les effectifs du dernier déjeuner enregistré. Ajustez ensuite les classes avec
-          absents ou sorties.
-        </p>
         {errorMessage ? (
           <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
         ) : null}

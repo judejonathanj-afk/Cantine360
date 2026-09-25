@@ -104,31 +104,19 @@ export default async function ServicePage({
 
   return (
     <div className="space-y-6">
-      <div className="min-w-0 space-y-3">
-        <h1 className="w-full">
-          <ServiceMealTitle
-            mealType={service.mealType}
-            dateLabel={dateLabel}
-            className="w-full justify-start"
-          />
-        </h1>
-        <div className="w-full space-y-2 text-pretty text-base leading-relaxed text-zinc-700 sm:text-lg">
-          <p className="font-semibold text-zinc-900">Aide au flux de saisie</p>
-          <ol className="list-decimal space-y-1.5 pl-5">
-            <li>
-              <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
-              allergènes et grammage, puis présents par classe (saisie ou import).
-            </li>
-            <li>
-              <strong className="font-semibold text-zinc-900">Pendant / après</strong> — servis,
-              RAB et refus sur chaque classe.
-            </li>
-            <li>
-              <strong className="font-semibold text-zinc-900">Fin de service</strong> — poids des
-              déchets en grammes, puis « Fin de service » en haut à droite.
-            </li>
-          </ol>
-        </div>
+      <div className="min-w-0 space-y-3 text-center">
+        <h1 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">Saisie par classe</h1>
+        <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-600 sm:text-lg">
+          Appuyez sur une <strong className="font-semibold text-zinc-800">classe</strong> pour
+          ouvrir le compteur, remplissez les chiffres (présents, servis, RAB, refus), puis{" "}
+          <strong className="font-semibold text-zinc-800">Enregistrer</strong>. Les déchets se
+          saisissent en grammes en fin de service.
+        </p>
+        <ServiceMealTitle
+          mealType={service.mealType}
+          dateLabel={dateLabel}
+          className="w-full justify-center"
+        />
       </div>
 
       <ServiceInfoGrid>
