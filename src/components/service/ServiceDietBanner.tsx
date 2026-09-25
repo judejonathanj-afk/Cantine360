@@ -1,5 +1,5 @@
 import type { ServiceAllergenSummary } from "@/server/serviceAllergenSummary";
-import { ArrowDown, Salad } from "lucide-react";
+import { Salad } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { cn } from "@/lib/utils";
 
@@ -15,17 +15,7 @@ export function ServiceDietBanner({
   const classesTouched = summary.groups.filter((g) => g.dietAffectedByMenu > 0);
 
   return (
-    <div className="relative">
-      {summary.totalDietAffected > 0 ? (
-        <a
-          href="#regimes-a-adapter"
-          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-white shadow-md ring-2 ring-white transition hover:scale-105 hover:bg-red-700"
-          aria-label="Voir les régimes à adapter"
-        >
-          <ArrowDown className="h-5 w-5" aria-hidden />
-        </a>
-      ) : null}
-      <ServiceInsightCard
+    <ServiceInsightCard
       tone="black"
       icon={Salad}
       title="Régimes — menu du jour"
@@ -52,18 +42,18 @@ export function ServiceDietBanner({
         <p>Complétez le menu (cochez porc / viande sur les plats) pour voir les adaptations.</p>
       ) : classesTouched.length > 0 ? (
         <p>
-          {classesTouched
-            .slice(0, 4)
-            .map((g) => `${g.className} (${g.dietAffectedByMenu})`)
-            .join(" · ")}
-          {classesTouched.length > 4
-            ? ` · +${classesTouched.length - 4} classe${classesTouched.length - 4 > 1 ? "s" : ""}`
-            : null}
+          {classesTouched.map((g, index) => (
+            <span key={g.groupId}>
+              {index > 0 ? " · " : null}
+              <strong className="font-bold">
+                {g.className} ({g.dietAffectedByMenu})
+              </strong>
+            </span>
+          ))}
         </p>
       ) : (
         <p>Les régimes sont enregistrés ; aucun plat du jour n’est signalé porc ou viande.</p>
       )}
     </ServiceInsightCard>
-    </div>
   );
 }

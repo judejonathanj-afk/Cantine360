@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
   Collapsible,
@@ -33,20 +33,6 @@ export function ServiceDietStudentsPanel({
 
   const total = dietGroups.reduce((n, g) => n + g.concerned.length, 0);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    function openFromArrow() {
-      if (window.location.hash !== "#regimes-a-adapter") return;
-      setOpen(true);
-      document.getElementById("regimes-a-adapter")?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-    openFromArrow();
-    window.addEventListener("hashchange", openFromArrow);
-    return () => window.removeEventListener("hashchange", openFromArrow);
-  }, []);
 
   if (!hasMenu || total === 0) return null;
 
@@ -119,9 +105,17 @@ export function ServiceDietStudentsPanel({
                           ) : null}
                         </div>
                         {s.dietDishes.length > 0 ? (
-                          <div className="mt-1 text-sm font-medium text-zinc-900">
-                            <span className="font-semibold">Plats :</span>{" "}
-                            {s.dietDishes.join(", ")}
+                          <div className="mt-1.5 space-y-0.5 text-sm font-medium text-zinc-900">
+                            <p>
+                              <span className="font-semibold">Plats :</span>{" "}
+                              {s.dietDishes.join(", ")}
+                            </p>
+                            {s.noPork ? (
+                              <p>Ne pas servir (porc). Prévoir une alternative sans porc.</p>
+                            ) : null}
+                            {s.vegetarian ? (
+                              <p>Ne pas servir (viande). Prévoir une alternative végétarienne.</p>
+                            ) : null}
                           </div>
                         ) : null}
                       </li>

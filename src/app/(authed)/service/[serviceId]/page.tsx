@@ -130,10 +130,12 @@ export default async function ServicePage({
         </ol>
       </div>
 
-      <ServiceInfoGrid>
-        {allergenSummary && session.role === "ADMIN" ? (
+      {allergenSummary && session.role === "ADMIN" ? (
+        <ServiceInfoGrid>
           <ServiceAllergenOverview summary={allergenSummary} />
-        ) : null}
+        </ServiceInfoGrid>
+      ) : null}
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[7fr_3fr]">
         {allergenSummary && allergenSummary.totalDietAffected > 0 ? (
           <div className="flex flex-col gap-2 rounded-3xl border-2 border-zinc-900 p-2">
             <ServiceDietBanner summary={allergenSummary} />
@@ -146,8 +148,12 @@ export default async function ServicePage({
         ) : allergenSummary ? (
           <ServiceDietBanner summary={allergenSummary} />
         ) : null}
-        <ServiceGrammagePanel menuItems={menuItems} metrics={metricsGrammage} />
-      </ServiceInfoGrid>
+        <ServiceGrammagePanel
+          menuItems={menuItems}
+          metrics={metricsGrammage}
+          className="h-auto self-start"
+        />
+      </div>
 
       {service.metrics.length === 0 ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-4">
