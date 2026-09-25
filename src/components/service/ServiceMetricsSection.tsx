@@ -71,13 +71,25 @@ export function ServiceMetricsSection({
 
   return (
     <div className="space-y-4">
-      <ServiceAttendanceImport
-        serviceId={serviceId}
-        showCsvImport={showCsvImport}
-        presentTotal={presentTotal}
-        className="w-full"
-      />
-      <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
+      {showCsvImport ? (
+        <>
+          <ServiceAttendanceImport
+            serviceId={serviceId}
+            showCsvImport
+            presentTotal={presentTotal}
+            className="w-full"
+          />
+          <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
+        </>
+      ) : (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <ServiceAttendanceImport
+            serviceId={serviceId}
+            presentTotal={presentTotal}
+          />
+          <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
+        </div>
+      )}
       <ServiceSchoolFilter
         cards={cards}
         value={schoolFilter}

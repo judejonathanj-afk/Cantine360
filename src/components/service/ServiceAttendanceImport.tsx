@@ -115,7 +115,7 @@ export function ServiceAttendanceImport({
 
   if (!showCsvImport) {
     return (
-      <div className={cn("flex flex-col items-center gap-2", className)}>
+      <div className={cn("flex flex-col items-start gap-2", className)}>
         <Button
           type="button"
           variant="default"
