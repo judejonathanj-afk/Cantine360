@@ -32,18 +32,17 @@ export function ServiceDietStudentsPanel({
     .filter((g) => g.concerned.length > 0);
 
   const total = dietGroups.reduce((n, g) => n + g.concerned.length, 0);
-  const [open, setOpen] = useState(() => total > 0);
+  const [open, setOpen] = useState(false);
 
   if (!hasMenu || total === 0) return null;
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className={cn("group h-full", className)}>
-      <div
-        className={cn(
-          "flex h-full flex-col overflow-hidden rounded-2xl border-2 border-sky-500 bg-sky-50 shadow-md",
-          open ? "min-h-0" : "min-h-[10.5rem]",
-        )}
-      >
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      className={cn("group mx-auto w-full max-w-xl", className)}
+    >
+      <div className="flex flex-col overflow-hidden rounded-2xl border-2 border-sky-500 bg-sky-50 shadow-md">
         <CollapsibleTrigger
           className={cn(
             "flex w-full shrink-0 flex-col px-4 outline-none hover:bg-sky-100/80",
