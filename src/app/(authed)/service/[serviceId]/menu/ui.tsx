@@ -24,6 +24,13 @@ const CATEGORY_LABEL: Record<Category, string> = {
   OTHER: "Autres",
 };
 
+const CATEGORY_PLACEHOLDER: Record<Category, string> = {
+  STARTER: "Ex: Salade de tomates",
+  MAIN: "Ex: Lasagnes maison",
+  DESSERT: "Ex: Yaourt nature",
+  OTHER: "Ex: Pain",
+};
+
 function emptyItem(category: Category): Item {
   return {
     category,
@@ -218,7 +225,7 @@ export function MenuEditor({
                       value={it.label}
                       onChange={(e) => update(idx, { label: e.target.value })}
                       className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 outline-none focus:border-zinc-900"
-                      placeholder="Ex: Lasagnes maison"
+                      placeholder={CATEGORY_PLACEHOLDER[cat]}
                     />
                   </label>
 
