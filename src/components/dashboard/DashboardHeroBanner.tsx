@@ -13,9 +13,9 @@ export function DashboardHeroBanner({
   establishmentId: string;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-[color:var(--dash-ink)] text-[color:var(--dash-ink-fg)] shadow-[0_24px_60px_-24px_oklch(0.3_0.045_178_/_0.55)] ring-1 ring-white/5">
-      <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-primary/25 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-28 left-1/3 size-72 rounded-full bg-[color:var(--dash-accent)]/20 blur-3xl" />
+    <section className="relative overflow-hidden rounded-3xl bg-[#f26522] text-white shadow-[0_24px_60px_-24px_oklch(0.55_0.18_45_/_0.45)] ring-1 ring-white/10">
+      <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-28 left-1/3 size-72 rounded-full bg-[#c2410c]/35 blur-3xl" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
@@ -28,7 +28,7 @@ export function DashboardHeroBanner({
       <div className="relative flex flex-col gap-6 p-7 sm:p-9 lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-2xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/15 backdrop-blur">
-            <Sparkles className="size-3.5 text-[color:var(--dash-accent)]" />
+            <Sparkles className="size-3.5 text-white" />
             {isKitchen
               ? "Tableau de bord cuisine"
               : "Tableau de bord anti-gaspillage"}
@@ -48,7 +48,7 @@ export function DashboardHeroBanner({
             </h1>
           </div>
 
-          <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-[color:var(--dash-ink-muted)]">
+          <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-white/80">
             {isKitchen
               ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
               : `Chiffres clés du déjeuner, note Cantine+, évolution des déchets et détail jour par jour — sur ${days} jours.`}
@@ -56,7 +56,7 @@ export function DashboardHeroBanner({
 
           {schoolNames.length > 1 ? (
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-[color:var(--dash-ink-muted)]">
+              <span className="text-xs font-medium uppercase tracking-wide text-white/75">
                 Écoles suivies
               </span>
               {schoolNames.map((s) => (
@@ -64,7 +64,7 @@ export function DashboardHeroBanner({
                   key={s}
                   className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white ring-1 ring-white/10"
                 >
-                  <Leaf className="size-3 text-primary" />
+                  <Leaf className="size-3 text-white" />
                   {s}
                 </span>
               ))}
@@ -73,14 +73,14 @@ export function DashboardHeroBanner({
         </div>
 
         <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur lg:flex-col lg:items-center lg:text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg shadow-primary/30">
-            <Leaf className="size-7 text-primary-foreground" />
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-white shadow-lg shadow-orange-900/20">
+            <Leaf className="size-7 text-[#f26522]" />
           </div>
           <div>
             <div className="font-display text-lg font-extrabold tracking-tight">
-              Cantine<span className="text-[color:var(--dash-accent)]">+</span>
+              Cantine<span className="text-white">+</span>
             </div>
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-[color:var(--dash-ink-muted)]">
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-white/75">
               Stop au gaspillage
             </div>
           </div>
