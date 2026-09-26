@@ -162,13 +162,30 @@ export function MenuEditor({
             <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
               {CATEGORY_LABEL[cat]}
             </h2>
-            <button
-              type="button"
-              onClick={() => add(cat)}
-              className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800"
-            >
-              Ajouter
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => add(cat)}
+                className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 ease-out hover:scale-105 hover:bg-emerald-700 active:bg-emerald-800"
+              >
+                Ajouter
+              </button>
+              {items.map((it, idx) =>
+                it.category !== cat ? null : (
+                  <button
+                    key={`del-${cat}-${idx}`}
+                    type="button"
+                    onClick={() => remove(idx)}
+                    className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 ease-out hover:scale-105 hover:bg-emerald-700 active:bg-emerald-800"
+                  >
+                    Supprimer
+                    {grouped[cat].length > 1 && it.label.trim()
+                      ? ` ${it.label.trim()}`
+                      : ""}
+                  </button>
+                ),
+              )}
+            </div>
           </div>
 
           {grouped[cat].length === 0 ? (
@@ -193,26 +210,17 @@ export function MenuEditor({
                   key={`${cat}-${idx}`}
                   className="rounded-2xl border-[2.5px] border-zinc-900 bg-zinc-700 p-4 shadow-sm"
                 >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <label className="block flex-1">
-                      <span className="text-lg font-bold text-white">
-                        Intitulé
-                      </span>
-                      <input
-                        value={it.label}
-                        onChange={(e) => update(idx, { label: e.target.value })}
-                        className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 outline-none focus:border-zinc-900"
-                        placeholder="Ex: Lasagnes maison"
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => remove(idx)}
-                      className="rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
+                  <label className="block">
+                    <span className="text-lg font-bold text-white">
+                      Intitulé
+                    </span>
+                    <input
+                      value={it.label}
+                      onChange={(e) => update(idx, { label: e.target.value })}
+                      className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 outline-none focus:border-zinc-900"
+                      placeholder="Ex: Lasagnes maison"
+                    />
+                  </label>
 
                   <div className="mt-4">
                     <span className="text-lg font-bold text-white">
