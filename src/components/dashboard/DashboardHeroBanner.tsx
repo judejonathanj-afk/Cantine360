@@ -13,11 +13,11 @@ export function DashboardHeroBanner({
   establishmentId: string;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-[#ffb15a] via-[#ff8a2a] to-[#f26522] text-white shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]">
-      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#ffd7a1]/70 blur-2xl" />
-      <div className="pointer-events-none absolute -right-10 bottom-0 h-48 w-72 rounded-full bg-[#ff7a1a]/80 blur-2xl" />
+    <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-[#ff8a2a] via-[#f26522] to-[#e85a16] text-white shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]">
+      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#ff9a3c]/40 blur-2xl" />
+      <div className="pointer-events-none absolute -right-10 bottom-0 h-48 w-72 rounded-full bg-[#c2410c]/50 blur-2xl" />
       <svg
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full text-white/15"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full text-[#c2410c]/25"
         viewBox="0 0 1200 160"
         preserveAspectRatio="none"
         aria-hidden
