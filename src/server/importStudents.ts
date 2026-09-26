@@ -198,13 +198,10 @@ export async function importStudentsForEstablishment(
       if (existing) {
         await db.student.update({
           where: { id: existing.id },
-        await db.student.update({
-          where: { id: existing.id },
           data: withDietFlags(
             { allergens, allergenNotes, active: true },
             { noPork: row.noPork, vegetarian: row.vegetarian },
           ),
-        });
         });
         studentsUpdated++;
       } else {
