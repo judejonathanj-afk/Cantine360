@@ -14,9 +14,11 @@ function storageKey(establishmentId: string) {
 export function DashboardProfileAvatar({
   establishmentId,
   className,
+  variant = "default",
 }: {
   establishmentId: string;
   className?: string;
+  variant?: "default" | "banner";
 }) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -74,10 +76,23 @@ export function DashboardProfileAvatar({
         <span className="sr-only">
           {src ? "Changer la photo de profil" : "Ajouter une photo de profil"}
         </span>
-        <Avatar className="size-12 border-2 border-emerald-600/80 bg-emerald-50 shadow-sm sm:size-14">
+        <Avatar
+          className={cn(
+            "shadow-sm",
+            variant === "banner"
+              ? "size-16 border-4 border-orange-200 bg-white sm:size-[4.5rem]"
+              : "size-12 border-2 border-emerald-600/80 bg-emerald-50 sm:size-14",
+          )}
+        >
           {src ? <AvatarImage src={src} alt="" /> : null}
-          <AvatarFallback className="bg-emerald-50 text-emerald-800">
-            <ChefHat className="size-6 sm:size-7" aria-hidden />
+          <AvatarFallback
+            className={cn(
+              variant === "banner"
+                ? "bg-white text-emerald-600"
+                : "bg-emerald-50 text-emerald-800",
+            )}
+          >
+            <ChefHat className={variant === "banner" ? "size-8" : "size-6 sm:size-7"} aria-hidden />
           </AvatarFallback>
         </Avatar>
         <span

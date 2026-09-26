@@ -1,4 +1,4 @@
-import { Leaf, Sparkles } from "lucide-react";
+import { Building2, ChefHat, Leaf } from "lucide-react";
 import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
 
 export function DashboardHeroBanner({
@@ -13,58 +13,69 @@ export function DashboardHeroBanner({
   establishmentId: string;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-[#f26522] text-white shadow-[0_24px_60px_-24px_oklch(0.55_0.18_45_/_0.45)] ring-1 ring-white/10">
-      <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-white/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-28 left-1/3 size-72 rounded-full bg-[#c2410c]/35 blur-3xl" />
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+    <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-[#ffb15a] via-[#ff8a2a] to-[#f26522] text-white shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]">
+      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#ffd7a1]/70 blur-2xl" />
+      <div className="pointer-events-none absolute -right-10 bottom-0 h-48 w-72 rounded-full bg-[#ff7a1a]/80 blur-2xl" />
+      <svg
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full text-white/15"
+        viewBox="0 0 1200 160"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        <path
+          fill="currentColor"
+          d="M0 90c80 40 160-20 260 0s180 50 280 10 180-60 280-20 200 40 260 10 80-30 120-10v80H0Z"
+        />
+        <path
+          fill="currentColor"
+          opacity="0.7"
+          d="M0 120c120 20 180-30 300-10s200 40 320 8 180-36 280-8 160 20 300 0v50H0Z"
+        />
+      </svg>
+      <Leaf className="pointer-events-none absolute right-[28%] top-6 size-8 -rotate-12 text-white/25" aria-hidden />
+      <Leaf className="pointer-events-none absolute right-[18%] bottom-8 size-6 rotate-45 text-white/30" aria-hidden />
+      <Leaf className="pointer-events-none absolute left-8 top-16 size-5 rotate-12 text-white/20" aria-hidden />
 
-      <div className="relative flex flex-col gap-6 p-7 sm:p-9 lg:flex-row lg:items-center lg:justify-between">
-        <div className="max-w-2xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/15 backdrop-blur">
-            <Sparkles className="size-3.5 text-white" />
-            {isKitchen
-              ? "Tableau de bord cuisine"
-              : "Tableau de bord anti-gaspillage"}
+      <div className="relative flex flex-col gap-6 px-6 py-6 sm:px-8 sm:py-7 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0 max-w-3xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/25 px-3 py-1 text-xs font-medium text-white ring-1 ring-white/30 backdrop-blur">
+            <ChefHat className="size-3.5" aria-hidden />
+            {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord anti-gaspillage"}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {isKitchen ? (
-              <DashboardProfileAvatar establishmentId={establishmentId} />
-            ) : null}
-            <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-balance sm:text-4xl">
-              {isKitchen
-                ? "Pilotage cuisine"
-                : "Bienvenue sur votre pilotage cantine"}
-              {schoolNames.length === 1 ? (
-                <span className="text-white/90"> — {schoolNames[0]}</span>
-              ) : null}
-            </h1>
+              <DashboardProfileAvatar establishmentId={establishmentId} variant="banner" />
+            ) : (
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-orange-200 bg-white text-emerald-600 shadow-sm">
+                <ChefHat className="size-8" aria-hidden />
+              </span>
+            )}
+            <div className="min-w-0">
+              <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
+                {isKitchen ? "Pilotage cuisine" : "Pilotage cantine"}
+              </h1>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
+                {isKitchen
+                  ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
+                  : `Chiffres clés du déjeuner, note Cantine+ et évolution des déchets sur ${days} jours.`}
+              </p>
+            </div>
           </div>
 
-          <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-white/80">
-            {isKitchen
-              ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
-              : `Chiffres clés du déjeuner, note Cantine+, évolution des déchets et détail jour par jour — sur ${days} jours.`}
-          </p>
-
-          {schoolNames.length > 1 ? (
+          {schoolNames.length > 0 ? (
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-white/75">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-white/90">
+                <Building2 className="size-3.5" aria-hidden />
                 Écoles suivies
               </span>
+              <span className="mx-1 hidden h-4 w-px bg-white/50 sm:inline-block" aria-hidden />
               {schoolNames.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-3 py-1 text-xs font-medium text-white ring-1 ring-white/10"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#fff6ea] px-3 py-1 text-xs font-semibold text-[#9a4b12] shadow-sm"
                 >
-                  <Leaf className="size-3 text-white" />
+                  <Leaf className="size-3.5 text-emerald-600" aria-hidden />
                   {s}
                 </span>
               ))}
@@ -72,15 +83,15 @@ export function DashboardHeroBanner({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur lg:flex-col lg:items-center lg:text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-white shadow-lg shadow-orange-900/20">
-            <Leaf className="size-7 text-[#f26522]" />
-          </div>
+        <div className="flex w-fit items-center gap-3 self-start rounded-2xl bg-white px-4 py-3 text-[#145c32] shadow-lg shadow-orange-900/10 lg:self-center">
+          <span className="flex size-12 items-center justify-center rounded-2xl bg-[#f26522] text-white">
+            <Leaf className="size-6" aria-hidden />
+          </span>
           <div>
-            <div className="font-display text-lg font-extrabold tracking-tight">
-              Cantine<span className="text-white">+</span>
+            <div className="font-display text-xl font-extrabold leading-none tracking-tight">
+              Cantine<span className="text-[#f26522]">+</span>
             </div>
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-white/75">
+            <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#f26522]">
               Stop au gaspillage
             </div>
           </div>
