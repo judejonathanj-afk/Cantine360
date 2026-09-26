@@ -191,31 +191,31 @@ export function MenuEditor({
               return (
                 <div
                   key={`${cat}-${idx}`}
-                  className="rounded-2xl border-[2.5px] border-zinc-900 bg-white p-4 shadow-sm"
+                  className="rounded-2xl border-[2.5px] border-zinc-900 bg-zinc-700 p-4 shadow-sm"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <label className="block flex-1">
-                      <span className="text-sm font-medium text-zinc-900">
+                      <span className="text-lg font-bold text-white">
                         Intitulé
                       </span>
                       <input
                         value={it.label}
                         onChange={(e) => update(idx, { label: e.target.value })}
-                        className="mt-2 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+                        className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 outline-none focus:border-zinc-900"
                         placeholder="Ex: Lasagnes maison"
                       />
                     </label>
                     <button
                       type="button"
                       onClick={() => remove(idx)}
-                      className="rounded-xl border border-zinc-300 px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+                      className="rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
                     >
                       Supprimer
                     </button>
                   </div>
 
                   <div className="mt-4">
-                    <span className="text-sm font-medium text-zinc-900">
+                    <span className="text-lg font-bold text-white">
                       Grammage (g / assiette)
                     </span>
                     <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-3">
@@ -230,7 +230,7 @@ export function MenuEditor({
                             grammageG: raw === "" ? null : Number(raw),
                           });
                         }}
-                        className="w-full max-w-xs rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+                        className="w-full max-w-xs rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 outline-none focus:border-zinc-900"
                         placeholder="Ex: 120"
                       />
                       {suggestion ? (
@@ -258,7 +258,7 @@ export function MenuEditor({
                   </div>
 
                   <div className="mt-4">
-                    <div className="text-sm font-medium text-zinc-900">Allergènes</div>
+                    <div className="text-lg font-bold text-white">Allergènes</div>
                     {it.label.trim() && dishImpact[`${it.category}:${it.label.trim()}`] ? (
                       <p className="mt-1 text-xs font-semibold text-amber-800">
                         {dishImpact[`${it.category}:${it.label.trim()}`]} élève
@@ -284,10 +284,10 @@ export function MenuEditor({
                               });
                             }}
                             className={[
-                              "rounded-full px-3 py-1 text-xs font-semibold",
+                              "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                               selected
                                 ? "bg-zinc-900 text-white"
-                                : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
+                                : "bg-white text-zinc-900 hover:bg-zinc-100",
                             ].join(" ")}
                           >
                             {allergenButtonLabel(a)}
@@ -298,7 +298,7 @@ export function MenuEditor({
                   </div>
 
                   <div className="mt-4">
-                    <div className="text-sm font-medium text-zinc-900">
+                    <div className="text-lg font-bold text-white">
                       Régimes (hors allergènes)
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -312,10 +312,10 @@ export function MenuEditor({
                           });
                         }}
                         className={[
-                          "rounded-full px-3 py-1 text-xs font-semibold",
+                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                           it.containsPork
                             ? "bg-sky-800 text-white"
-                            : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
+                            : "bg-white text-zinc-900 hover:bg-zinc-100",
                         ].join(" ")}
                       >
                         Contient du porc
@@ -331,10 +331,10 @@ export function MenuEditor({
                           })
                         }
                         className={[
-                          "rounded-full px-3 py-1 text-xs font-semibold",
+                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                           it.containsMeat
                             ? "bg-emerald-800 text-white"
-                            : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
+                            : "bg-white text-zinc-900 hover:bg-zinc-100",
                         ].join(" ")}
                       >
                         Contient de la viande
