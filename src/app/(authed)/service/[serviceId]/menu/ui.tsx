@@ -275,7 +275,7 @@ export function MenuEditor({
                   <div className="mt-4">
                     <div className="text-lg font-bold text-white">Allergènes</div>
                     {it.label.trim() && dishImpact[`${it.category}:${it.label.trim()}`] ? (
-                      <p className="mt-1 text-xs font-semibold text-amber-800">
+                      <p className="mt-1 text-sm font-bold text-emerald-400">
                         {dishImpact[`${it.category}:${it.label.trim()}`]} élève
                         {dishImpact[`${it.category}:${it.label.trim()}`]! > 1 ? "s" : ""}{" "}
                         concerné
