@@ -95,18 +95,18 @@ export default function ServiceHomeClient() {
       <section className="hero-panel">
         <DecorativeIllustration />
         <div className="hero-content">
-          <div className="eyebrow">
-            <Sparkles aria-hidden="true" /> Réduisons le gaspillage ensemble
-          </div>
           <BrandMark />
           <p className="hero-copy">
-            Pour ouvrir un service, choisissez la <strong>date du déjeuner</strong>, puis «
-            Démarrer le service » pour saisir les groupes.
+            La <strong>date du déjeuner</strong> est sélectionnée automatiquement. Appuyez
+            sur « Démarrer le service » pour saisir les groupes.
           </p>
           <div className="hero-pills" aria-label="Fonctionnalités">
             <span>Simple</span>
             <span>Rapide</span>
             <span>Anti-gaspi</span>
+            <div className="eyebrow">
+              <Sparkles aria-hidden="true" /> Réduisons le gaspillage ensemble
+            </div>
           </div>
         </div>
       </section>
