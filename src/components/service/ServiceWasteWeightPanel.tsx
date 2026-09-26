@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, CloudOff, Save, Trash2 } from "lucide-react";
+import { Baby, CloudOff, GraduationCap, Save, Scale, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,15 +40,17 @@ type LevelWeights = {
 
 const LEVEL_PANEL: Record<
   SchoolLevel,
-  { shell: string; inputBorder: string }
+  { shell: string; icon: typeof Baby; iconWrap: string }
 > = {
   MATERNELLE: {
-    shell: "bg-emerald-600",
-    inputBorder: "border-emerald-300 focus-visible:ring-emerald-400",
+    shell: "bg-emerald-50",
+    icon: Baby,
+    iconWrap: "bg-emerald-600 text-white",
   },
   PRIMAIRE: {
-    shell: "bg-sky-600",
-    inputBorder: "border-sky-300 focus-visible:ring-sky-400",
+    shell: "bg-sky-50",
+    icon: GraduationCap,
+    iconWrap: "bg-sky-600 text-white",
   },
 };
 
@@ -251,135 +253,110 @@ export function ServiceWasteWeightPanel({
     "Appuyez sur Enregistrer après les pesées"
   );
 
+  const shownTotal = parsedTotal ?? totalSaved;
+
   return (
     <div className={cn("space-y-6", className)}>
-    <div
-      className="overflow-hidden rounded-2xl border border-zinc-300 shadow-md"
-    >
-      <div className="relative overflow-hidden border-b border-white/20 bg-zinc-800 px-4 py-4 text-center sm:px-6 sm:py-5">
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-[4.5rem] overflow-hidden sm:w-28 md:w-36"
-          aria-hidden
-        >
-          <Trash2
-            className="absolute right-0 top-1/2 h-44 w-44 -translate-y-1/2 text-white/25 sm:h-56 sm:w-56 md:h-64 md:w-64"
-            strokeWidth={1.25}
-          />
-        </div>
-        <div className="relative z-10">
-          <div className="flex items-center justify-center gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15 text-white ring-1 ring-white/25">
-              <Trash2 className="h-6 w-6" aria-hidden />
-            </span>
-            <h2 className="text-lg font-semibold leading-snug text-white sm:text-xl">
-              Poids des déchets
-            </h2>
-          </div>
-          <p className="mt-2 text-sm leading-relaxed text-white/85 sm:text-base">
+    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-md">
+      <div className="flex items-center gap-3 bg-[#1e2a3a] px-4 py-4 text-white sm:px-5">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">
+          <Trash2 className="h-5 w-5" aria-hidden />
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold leading-tight sm:text-xl">Poids des déchets</h2>
+          <p className="mt-0.5 text-sm text-white/75">
             Après le service — une pesée par cycle (maternelle / primaire)
           </p>
-          <div className="mx-auto mt-4 inline-flex min-w-[12rem] flex-col items-center justify-center rounded-2xl border-2 border-white/35 bg-white/10 px-8 py-3 text-white shadow-inner sm:min-w-[14rem] sm:px-10">
-            <span className="text-xs font-semibold uppercase tracking-wide text-white/70">
-              Total
-            </span>
-            <span className="mt-1 flex flex-wrap items-baseline justify-center gap-x-2 text-3xl font-bold tracking-tight sm:text-4xl">
-              <span>{totalSaved.toLocaleString("fr-FR")} g</span>
-              <span className="text-base font-medium text-white/80 sm:text-lg">
-                ({formatKgFromGrams(totalSaved)})
-              </span>
-            </span>
-          </div>
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-2">
-        {(["MATERNELLE", "PRIMAIRE"] as const).map((level) => {
-          const value = level === "MATERNELLE" ? matInput : primInput;
-          const setValue = level === "MATERNELLE" ? setMatInput : setPrimInput;
-          const parsed = level === "MATERNELLE" ? parsedMat : parsedPrim;
-          const tone = LEVEL_PANEL[level];
-          return (
-            <div
-              key={level}
-              className={cn(
-                "relative flex min-h-[14rem] flex-col px-4 pb-6 pt-4 sm:min-h-[16rem] sm:px-6 sm:pt-5",
-                tone.shell,
-                level === "PRIMAIRE" && "border-t border-white/25 sm:border-l sm:border-t-0",
-              )}
-            >
-              <Label
-                htmlFor={`waste-${level}-${serviceId}`}
-                className="relative z-10 w-full justify-center text-center text-lg font-bold tracking-wide text-white sm:text-xl"
-              >
-                {schoolLevelLabelFr(level)} (g)
-              </Label>
-              <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-2 text-center">
+      <div className="space-y-4 px-4 py-4 sm:px-5">
+        <div className="mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl bg-slate-100 px-4 py-3 text-zinc-900">
+          <Scale className="h-5 w-5 text-zinc-500" aria-hidden />
+          <div className="text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+              Total
+            </p>
+            <p className="text-2xl font-bold leading-none">
+              {shownTotal.toLocaleString("fr-FR")} g{" "}
+              <span className="text-base font-medium text-zinc-500">
+                ({formatKgFromGrams(shownTotal)})
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {(["MATERNELLE", "PRIMAIRE"] as const).map((level) => {
+            const value = level === "MATERNELLE" ? matInput : primInput;
+            const setValue = level === "MATERNELLE" ? setMatInput : setPrimInput;
+            const parsed = level === "MATERNELLE" ? parsedMat : parsedPrim;
+            const tone = LEVEL_PANEL[level];
+            const Icon = tone.icon;
+            return (
+              <div key={level} className={cn("rounded-xl px-4 py-4", tone.shell)}>
+                <div className="mb-3 flex items-center gap-2.5">
+                  <span
+                    className={cn(
+                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+                      tone.iconWrap,
+                    )}
+                  >
+                    <Icon className="h-4 w-4" aria-hidden />
+                  </span>
+                  <Label
+                    htmlFor={`waste-${level}-${serviceId}`}
+                    className="text-base font-bold text-zinc-900"
+                  >
+                    {schoolLevelLabelFr(level)} (g)
+                  </Label>
+                </div>
                 <Input
                   id={`waste-${level}-${serviceId}`}
                   type="text"
                   inputMode="numeric"
-                  placeholder="ex. 4200"
+                  placeholder="Ex. 4200"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className={cn(
-                    "h-14 w-full max-w-[14rem] border-2 bg-white/95 text-center text-xl font-semibold text-zinc-900 placeholder:text-base placeholder:font-normal placeholder:text-zinc-500 sm:text-2xl",
-                    tone.inputBorder,
-                  )}
+                  className="h-11 border-zinc-200 bg-white text-center text-base text-zinc-900 shadow-sm placeholder:text-zinc-400"
                 />
-                <span className="text-sm text-white/90">
+                <p className="mt-2 text-center text-xs text-zinc-500">
                   {parsed != null && parsed > 0
                     ? `= ${formatKgFromGrams(parsed)}`
                     : "Pesée du bac / zone"}
-                </span>
+                </p>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      <div className="flex flex-col items-center gap-3 border-t border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-6">
-        {parsedTotal != null ? (
-          <span className="text-sm text-zinc-700 sm:text-base">
-            Total saisi : {parsedTotal.toLocaleString("fr-FR")} g (
-            {formatKgFromGrams(parsedTotal)})
-          </span>
-        ) : null}
-
-        <div className="flex w-full max-w-xl flex-col items-center justify-center gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Button
             type="button"
-            size="lg"
             disabled={!canSave}
             onClick={() => void save()}
-            className="h-12 min-w-[11rem] shrink-0 rounded-xl border-2 border-yellow-400 bg-white font-semibold text-zinc-800 shadow-sm ring-2 ring-yellow-300/80 hover:bg-white/95 disabled:border-zinc-200 disabled:bg-zinc-100 disabled:text-zinc-400 disabled:ring-transparent"
+            className={cn(
+              "h-9 w-fit rounded-lg px-5 text-sm font-medium shadow-none",
+              canSave
+                ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                : "bg-zinc-200 text-zinc-500 hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100",
+            )}
           >
             <Save className="h-4 w-4 shrink-0" aria-hidden />
             {status === "saving" ? "Enregistrement…" : "Enregistrer"}
           </Button>
-          {savedAck ? (
-            <p
-              className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-left text-sm leading-snug text-emerald-900 sm:max-w-xs sm:text-base"
-              role="status"
-            >
-              <ArrowRight
-                className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600"
-                aria-hidden
-              />
-              <span>
-                <strong className="font-semibold">
-                  {totalSaved.toLocaleString("fr-FR")} g
-                </strong>{" "}
-                au total — pris en compte dans le bilan et le dashboard Cantine+.
-              </span>
+          {savedAck && !dirty ? (
+            <p className="text-sm font-medium text-emerald-700" role="status">
+              Déchets enregistrés
             </p>
           ) : null}
         </div>
+        <p className="flex items-center justify-center gap-1.5 text-center text-sm text-zinc-500">
+          {statusMessage}
+        </p>
         {bilanTips.length > 0 ? (
           <AntiWasteEndOfServiceBilan tips={bilanTips} />
         ) : null}
-        <p className="flex items-center justify-center gap-1.5 text-sm text-zinc-600 sm:text-base">
-          {statusMessage}
-        </p>
       </div>
     </div>
 
