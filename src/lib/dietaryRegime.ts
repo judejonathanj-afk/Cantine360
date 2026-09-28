@@ -39,6 +39,8 @@ export function withDietFlags<T extends object>(
   return { ...data, ...flags } as T;
 }
 
-export function withDietSelect<T extends object>(data: T): T {
-  return { ...data, noPork: true, vegetarian: true } as T;
+export function withDietSelect<T extends object>(
+  data: T,
+): T & { noPork: true; vegetarian: true } {
+  return { ...data, noPork: true, vegetarian: true };
 }
