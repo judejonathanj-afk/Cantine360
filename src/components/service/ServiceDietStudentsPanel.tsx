@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import {
   Collapsible,
@@ -32,9 +32,78 @@ export function ServiceDietStudentsPanel({
     .filter((g) => g.concerned.length > 0);
 
   const total = dietGroups.reduce((n, g) => n + g.concerned.length, 0);
-  const [open, setOpen] = useState(false);
 
   if (!hasMenu || total === 0) return null;
+
+  return (
+    <DietStudentsCollapsible
+      total={total}
+      className={className}
+      list={dietGroups.map((g) => {
+        const level = groupLevelById?.[g.groupId] ?? "PRIMAIRE";
+        const cardColor = LEVEL_CARD_COLORS[level];
+        return (
+          <li key={g.groupId}>
+            <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
+            <ul className="mt-1.5 space-y-1.5">
+              {g.concerned.map((s) => (
+                <li
+                  key={s.id}
+                  className="w-full rounded-xl border-2 px-4 py-2.5 text-base text-zinc-900 shadow-sm"
+                  style={{
+                    backgroundColor: cardColor,
+                    borderColor: cardColor,
+                  }}
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
+                      {formatStudentKitchenName(s.firstName, s.lastName)}
+                    </span>
+                    {s.noPork ? (
+                      <span className="rounded-full bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
+                        Sans porc
+                      </span>
+                    ) : null}
+                    {s.vegetarian ? (
+                      <span className="rounded-full bg-emerald-800 px-2 py-0.5 text-sm font-bold text-white">
+                        Végétarien
+                      </span>
+                    ) : null}
+                  </div>
+                  {s.dietDishes.length > 0 ? (
+                    <div className="mt-1.5 space-y-0.5 text-sm font-medium text-zinc-900">
+                      <p>
+                        <span className="font-semibold">Plats :</span>{" "}
+                        {s.dietDishes.join(", ")}
+                      </p>
+                      {s.noPork ? (
+                        <p>Ne pas servir (porc). Prévoir une alternative sans porc.</p>
+                      ) : null}
+                      {s.vegetarian ? (
+                        <p>Ne pas servir (viande). Prévoir une alternative végétarienne.</p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </li>
+        );
+      })}
+    />
+  );
+}
+
+function DietStudentsCollapsible({
+  total,
+  className,
+  list,
+}: {
+  total: number;
+  className?: string;
+  list: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
 
   return (
     <Collapsible
@@ -73,57 +142,7 @@ export function ServiceDietStudentsPanel({
             Hors allergènes UE-14 — alternative sans porc / végétarienne.
           </p>
           <ul className="mt-2 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[26rem]">
-            {dietGroups.map((g) => {
-              const level = groupLevelById?.[g.groupId] ?? "PRIMAIRE";
-              const cardColor = LEVEL_CARD_COLORS[level];
-              return (
-                <li key={g.groupId}>
-                  <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
-                  <ul className="mt-1.5 space-y-1.5">
-                    {g.concerned.map((s) => (
-                      <li
-                        key={s.id}
-                        className="w-full rounded-xl border-2 px-4 py-2.5 text-base text-zinc-900 shadow-sm"
-                        style={{
-                          backgroundColor: cardColor,
-                          borderColor: cardColor,
-                        }}
-                      >
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
-                            {formatStudentKitchenName(s.firstName, s.lastName)}
-                          </span>
-                          {s.noPork ? (
-                            <span className="rounded-full bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
-                              Sans porc
-                            </span>
-                          ) : null}
-                          {s.vegetarian ? (
-                            <span className="rounded-full bg-emerald-800 px-2 py-0.5 text-sm font-bold text-white">
-                              Végétarien
-                            </span>
-                          ) : null}
-                        </div>
-                        {s.dietDishes.length > 0 ? (
-                          <div className="mt-1.5 space-y-0.5 text-sm font-medium text-zinc-900">
-                            <p>
-                              <span className="font-semibold">Plats :</span>{" "}
-                              {s.dietDishes.join(", ")}
-                            </p>
-                            {s.noPork ? (
-                              <p>Ne pas servir (porc). Prévoir une alternative sans porc.</p>
-                            ) : null}
-                            {s.vegetarian ? (
-                              <p>Ne pas servir (viande). Prévoir une alternative végétarienne.</p>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              );
-            })}
+            {list}
           </ul>
         </CollapsibleContent>
       </div>
