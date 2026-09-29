@@ -370,26 +370,24 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      {!isKitchen ? (
-        <CantinePulseCard
-          rows={pulseRows}
-          wasteRows={pulseWasteRows}
-          mealType="LUNCH"
-          days={days}
-          showBrandTitle
-          levelFilter={levelFilter}
-          eco={
-            eco
-              ? {
-                  groups: eco.groups,
-                  periodTitle: eco.periodTitle,
-                  restesParen: eco.restesParen,
-                  priorPhrase: eco.priorPhrase,
-                }
-              : null
-          }
-        />
-      ) : null}
+      <CantinePulseCard
+        rows={pulseRows}
+        wasteRows={pulseWasteRows}
+        mealType="LUNCH"
+        days={days}
+        showBrandTitle
+        levelFilter={levelFilter}
+        eco={
+          !isKitchen && eco
+            ? {
+                groups: eco.groups,
+                periodTitle: eco.periodTitle,
+                restesParen: eco.restesParen,
+                priorPhrase: eco.priorPhrase,
+              }
+            : null
+        }
+      />
 
       <section>
         <DashboardSectionHeading
