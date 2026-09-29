@@ -510,39 +510,6 @@ export function CantinePulseCard({
           />
         )}
 
-        <div
-          className={cn(
-            "rounded-2xl border px-4 py-3.5",
-            pulse.mood === "attention" && "border-rose-200 bg-rose-50",
-            pulse.mood === "great" && "border-emerald-200 bg-emerald-50",
-            pulse.mood === "ok" && "border-amber-200 bg-amber-50",
-            pulse.mood === "pending" && "border-zinc-200 bg-zinc-50",
-          )}
-        >
-          <p
-            className={cn(
-              "text-lg font-bold leading-snug sm:text-xl",
-              pulse.mood === "attention" && "text-rose-800",
-              pulse.mood === "great" && "text-emerald-800",
-              pulse.mood === "ok" && "text-amber-900",
-              pulse.mood === "pending" && "text-zinc-900",
-            )}
-          >
-            {pulse.headline}
-          </p>
-          <p
-            className={cn(
-              "mt-1.5 text-base font-medium leading-relaxed",
-              pulse.mood === "attention" && "text-rose-700",
-              pulse.mood === "great" && "text-emerald-700",
-              pulse.mood === "ok" && "text-amber-800",
-              pulse.mood === "pending" && "text-zinc-700",
-            )}
-          >
-            {pulse.subline}
-          </p>
-        </div>
-
         {sparseServings ? (
           <p
             className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm leading-relaxed text-amber-900"
@@ -620,6 +587,39 @@ export function CantinePulseCard({
               tileClass={STAT_TILE}
             />
           </dl>
+        </div>
+
+        <div
+          className={cn(
+            "rounded-2xl border px-4 py-3.5",
+            pulse.mood === "attention" && "border-rose-200 bg-rose-50",
+            pulse.mood === "great" && "border-emerald-200 bg-emerald-50",
+            pulse.mood === "ok" && "border-amber-200 bg-amber-50",
+            pulse.mood === "pending" && "border-zinc-200 bg-zinc-50",
+          )}
+        >
+          <p
+            className={cn(
+              "text-lg font-bold leading-snug sm:text-xl",
+              pulse.mood === "attention" && "text-rose-800",
+              pulse.mood === "great" && "text-emerald-800",
+              pulse.mood === "ok" && "text-amber-900",
+              pulse.mood === "pending" && "text-zinc-900",
+            )}
+          >
+            {pulse.headline}
+          </p>
+          <p
+            className={cn(
+              "mt-1.5 text-base font-medium leading-relaxed",
+              pulse.mood === "attention" && "text-rose-700",
+              pulse.mood === "great" && "text-emerald-700",
+              pulse.mood === "ok" && "text-amber-800",
+              pulse.mood === "pending" && "text-zinc-700",
+            )}
+          >
+            {pulse.subline}
+          </p>
         </div>
 
         {showEco ? (
