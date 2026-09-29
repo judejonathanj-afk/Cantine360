@@ -11,7 +11,6 @@ import {
   Repeat2,
   Table as TableIcon,
   Trash2,
-  TriangleAlert,
   Users,
   Utensils,
   UtensilsCrossed,
@@ -244,10 +243,6 @@ export default function DashboardPanels({
     return parts.length > 0 ? parts.join(" · ") : "saisir en fin de service";
   })();
 
-  const showWasteAlert =
-    !isKitchen &&
-    (totalWasteWeightG > 0 || totals.refused > 0 || totals.rab > 0);
-
   return (
     <div className="dashboard-v2 space-y-8">
       <DashboardHeroBanner
@@ -374,44 +369,6 @@ export default function DashboardPanels({
           </motion.div>
         ))}
       </div>
-
-      {showWasteAlert ? (
-        <div className="relative overflow-hidden rounded-2xl border border-[color:var(--accent)]/40 bg-gradient-to-r from-[color:var(--accent)]/15 to-[color:var(--accent)]/5 p-5 shadow-sm">
-          <div className="flex items-start gap-4">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[color:var(--accent)]/30 text-[color:var(--accent-foreground)] ring-1 ring-[color:var(--accent)]/40">
-              <TriangleAlert className="size-5" />
-            </span>
-            <div>
-              <h3 className="font-display text-base font-bold text-black">
-                Lecture déchets &amp; refus
-              </h3>
-              <p className="mt-1 text-sm leading-relaxed text-black/90">
-                {wasteGramsPer100Served != null ? (
-                  <>
-                    Taux actuel{" "}
-                    <b className="font-semibold">
-                      {wasteGramsPer100Served.toLocaleString("fr-FR", {
-                        maximumFractionDigits: 1,
-                      })}{" "}
-                      g / 100 assiettes
-                    </b>
-                    .{" "}
-                  </>
-                ) : null}
-                Refus sur la période :{" "}
-                <b className="font-semibold">
-                  {totals.refused.toLocaleString("fr-FR")}
-                </b>
-                . RAB :{" "}
-                <b className="font-semibold">
-                  {totals.rab.toLocaleString("fr-FR")} assiettes
-                </b>{" "}
-                ({rabRatePct} des servis).
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {!isKitchen ? (
         <CantinePulseCard
