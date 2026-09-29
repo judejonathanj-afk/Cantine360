@@ -121,11 +121,10 @@ export function applyEstablishmentLoginCookies(
   res: NextResponse,
   establishmentId: string,
   token: string,
-  existingMap: EstablishmentSessionsMap = {},
 ): void {
-  const pruned = pruneEstablishmentSessionsMap(existingMap, establishmentId);
+  // Une seule session active. Garder un ancien jeton admin à côté du jeton
+  // cuisine faisait repasser le navigateur en admin plus tard.
   const map: EstablishmentSessionsMap = {
-    ...pruned,
     [establishmentId]: token,
   };
   const base = cookieBaseOptions();
@@ -141,38 +140,21 @@ export function applyEstablishmentLoginCookies(
   clearLegacySessionCookie(res);
 }
 
-export function applyEstablishmentLogoutCookies(
-  res: NextResponse,
+export function applyEstablishmentLogoutCookies(res: NextResponse): void {
+  clearEstablishmentSessionCookies(res);
+  clearLegacySessionCookie(res);
+}
+
+/**
+ * Ne pas réutiliser l’ancien cookie `c360_session` s’il reste un pointeur
+ * de session établissement : cet ancien cookie est souvent un admin.
+ */
+export function hasEstablishmentSessionPointer(
   getCookie: (name: string) => string | undefined,
-): void {
-  const { map, activeEstablishmentId } =
-    readEstablishmentSessionsFromCookies(getCookie);
-  if (!activeEstablishmentId) {
-    clearEstablishmentSessionCookies(res);
-    return;
-  }
-
-  const nextMap = { ...map };
-  delete nextMap[activeEstablishmentId];
-  const remainingIds = Object.keys(nextMap);
-  const base = cookieBaseOptions();
-
-  if (remainingIds.length === 0) {
-    clearEstablishmentSessionCookies(res);
-    return;
-  }
-
-  res.cookies.set(
-    ESTABLISHMENT_SESSIONS_COOKIE_NAME,
-    serializeEstablishmentSessionsCookie(nextMap),
-    { ...base, maxAge: ESTABLISHMENT_SESSION_MAX_AGE },
-  );
-
-  const nextActive = remainingIds[0]!;
-  res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, nextActive, {
-    ...base,
-    maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
-  });
+): boolean {
+  const activeId = getCookie(ACTIVE_ESTABLISHMENT_COOKIE_NAME);
+  const sessions = getCookie(ESTABLISHMENT_SESSIONS_COOKIE_NAME);
+  return Boolean(activeId || sessions);
 }
 
 export function clearEstablishmentSessionCookies(res: NextResponse): void {
@@ -198,19 +180,4 @@ export function applyPlatformLogoutCookies(res: NextResponse): void {
 export function clearLegacySessionCookie(res: NextResponse): void {
   const base = cookieBaseOptions();
   res.cookies.set(LEGACY_SESSION_COOKIE_NAME, "", { ...base, maxAge: 0 });
-}
-
-export function applyLegacyMigrationCookies(
-  res: NextResponse,
-  kind: "establishment" | "platform",
-  token: string,
-  establishmentId?: string,
-  existingMap: EstablishmentSessionsMap = {},
-): void {
-  if (kind === "platform") {
-    applyPlatformLoginCookies(res, token);
-    return;
-  }
-  if (!establishmentId) return;
-  applyEstablishmentLoginCookies(res, establishmentId, token, existingMap);
 }

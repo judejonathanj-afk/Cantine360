@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
 import { signEstablishmentSession, type EstablishmentRole } from "@/server/auth";
-import {
-  applyEstablishmentLoginCookies,
-  parseCookieHeader,
-  parseEstablishmentSessionsCookie,
-  ESTABLISHMENT_SESSIONS_COOKIE_NAME,
-} from "@/server/auth-cookies";
+import { applyEstablishmentLoginCookies } from "@/server/auth-cookies";
 import { normalizeEstablishmentPin } from "@/lib/platformEstablishment";
 import {
   hashEstablishmentPin,
@@ -152,11 +147,7 @@ export async function POST(req: Request) {
         : defaultHome;
 
     const res = NextResponse.json({ redirectTo });
-    const cookieJar = parseCookieHeader(req.headers.get("cookie") ?? "");
-    const existingMap = parseEstablishmentSessionsCookie(
-      cookieJar[ESTABLISHMENT_SESSIONS_COOKIE_NAME],
-    );
-    applyEstablishmentLoginCookies(res, establishment.id, token, existingMap);
+    applyEstablishmentLoginCookies(res, establishment.id, token);
     return res;
   } catch (e) {
     console.error("[auth/login]", e);

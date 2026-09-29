@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import {
-  applyLegacyMigrationCookies,
   clearLegacySessionCookie,
   ESTABLISHMENT_SESSIONS_COOKIE_NAME,
+  hasEstablishmentSessionPointer,
   LEGACY_SESSION_COOKIE_NAME,
   PLATFORM_SESSION_COOKIE_NAME,
   readActiveEstablishmentToken,
@@ -52,6 +52,8 @@ async function readSessionKind(req: NextRequest): Promise<SessionKind> {
     if (kind === "establishment") return "establishment";
   }
 
+  if (hasEstablishmentSessionPointer(getCookie)) return null;
+
   const legacy = getCookie(LEGACY_SESSION_COOKIE_NAME);
   if (legacy) return verifyTokenKind(legacy);
 
@@ -69,31 +71,9 @@ async function migrateLegacySessionCookie(
     req.cookies.get(ESTABLISHMENT_SESSIONS_COOKIE_NAME)?.value ||
     req.cookies.get(PLATFORM_SESSION_COOKIE_NAME)?.value;
 
-  if (hasNewSessions) {
-    clearLegacySessionCookie(res);
-    return res;
-  }
-
-  try {
-    const { payload } = await jwtVerify(legacy, getSecret());
-    if (payload.kind === "platform") {
-      applyLegacyMigrationCookies(res, "platform", legacy);
-      return res;
-    }
-
-    const role = payload.role;
-    const establishmentId = payload.establishmentId;
-    if (
-      (role === "ADMIN" || role === "KITCHEN") &&
-      typeof establishmentId === "string" &&
-      establishmentId.length > 0
-    ) {
-      applyLegacyMigrationCookies(res, "establishment", legacy, establishmentId);
-      return res;
-    }
-  } catch {
-    clearLegacySessionCookie(res);
-  }
+  // Ne jamais recopier l’ancien cookie (souvent admin) par-dessus la session
+  // cuisine : une réponse tardive faisait basculer le rôle.
+  if (hasNewSessions) clearLegacySessionCookie(res);
 
   return res;
 }

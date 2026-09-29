@@ -6,6 +6,7 @@ import {
   ESTABLISHMENT_SESSIONS_COOKIE_NAME,
   LEGACY_SESSION_COOKIE_NAME,
   PLATFORM_SESSION_COOKIE_NAME,
+  hasEstablishmentSessionPointer,
   readActiveEstablishmentToken,
   readPlatformTokenFromCookies,
   SESSION_COOKIE_NAME,
@@ -130,6 +131,7 @@ async function readEstablishmentToken(
 ): Promise<{ establishmentId: string; token: string } | null> {
   const active = readActiveEstablishmentToken(getCookie);
   if (active) return active;
+  if (hasEstablishmentSessionPointer(getCookie)) return null;
   return readLegacyEstablishmentToken(getCookie);
 }
 
