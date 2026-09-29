@@ -474,7 +474,15 @@ export function CantinePulseCard({
         )}
 
         <div className="flex items-start justify-between gap-4">
-          <div className="flex min-w-0 flex-wrap items-center gap-4">
+          {showBrandTitle ? (
+            <div className="inline-flex shrink-0 items-center rounded-full bg-[#06101c] px-4 py-1.5 shadow-md ring-1 ring-zinc-200 sm:px-5 sm:py-2">
+              <MenusCantineColorTitle
+                text="CANTINE +"
+                className="text-base tracking-[0.16em] sm:text-lg md:text-lg lg:text-lg"
+              />
+            </div>
+          ) : null}
+          <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-4">
             <MealIcon />
             <div className="min-w-0">
               <p className="flex items-center gap-2 text-lg font-semibold text-zinc-800 sm:text-xl">
@@ -489,14 +497,6 @@ export function CantinePulseCard({
               </Badge>
             </div>
           </div>
-          {showBrandTitle ? (
-            <div className="inline-flex shrink-0 items-center rounded-full bg-[#06101c] px-4 py-1.5 shadow-md ring-1 ring-zinc-200 sm:px-5 sm:py-2">
-              <MenusCantineColorTitle
-                text="CANTINE +"
-                className="text-base tracking-[0.16em] sm:text-lg md:text-lg lg:text-lg"
-              />
-            </div>
-          ) : null}
         </div>
 
         {scorePending ? null : (
