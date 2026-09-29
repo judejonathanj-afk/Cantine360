@@ -163,8 +163,8 @@ function CantinePlusGlobalChart({
   return (
     <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
       <p className="text-sm font-semibold text-zinc-700">Lecture globale</p>
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_11rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_12.5rem]">
-        <div className="space-y-4 min-w-0">
+      <div className="mt-4 space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="flex flex-wrap items-end gap-6">
             <div>
               <p className="text-sm text-zinc-500">Note Cantine +</p>
@@ -294,11 +294,11 @@ function CantinePlusGlobalChart({
           )}
         </div>
 
-        <div className="flex h-full flex-col rounded-xl border border-zinc-200 bg-white px-3 py-3.5 lg:min-h-0">
+        <div className="rounded-xl border border-zinc-200 bg-white px-3 py-3.5">
           <p className="text-base font-semibold leading-snug text-zinc-900">
             Comment lire ce graphique ?
           </p>
-          <ul className="mt-2.5 flex-1 space-y-2.5 text-sm leading-relaxed text-zinc-600">
+          <ul className="mt-2.5 grid gap-3 text-sm leading-relaxed text-zinc-600 sm:grid-cols-2 xl:grid-cols-4">
             <li>
               Les <strong className="text-zinc-900">barres vert d&apos;eau</strong> = portions
               servies sur <strong className="text-zinc-900">{periodLabel}</strong>.
