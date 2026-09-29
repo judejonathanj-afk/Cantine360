@@ -432,20 +432,12 @@ export function CantinePulseCard({
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
   const brandTitle = showBrandTitle ? (
-    <div className="text-center">
-      <div className="flex justify-center">
-        <div className="inline-flex w-full max-w-2xl justify-center rounded-xl bg-[#06101c] px-10 py-2.5 shadow-lg ring-1 ring-white/10 sm:rounded-2xl sm:px-16 sm:py-3">
-          <MenusCantineColorTitle
-            text="CANTINE +"
-            className="text-2xl tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] lg:text-4xl"
-          />
-        </div>
-      </div>
-      <p className="mx-auto mt-2 max-w-2xl text-balance text-sm text-zinc-600 sm:text-base">
+    <div className="w-full text-center">
+      <p className="w-full text-sm text-zinc-600 sm:text-base">
         RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
         déchets (poids) — {periodLabel}
       </p>
-      <p className="mx-auto mt-2 max-w-2xl text-pretty text-sm leading-relaxed text-zinc-800 sm:text-base">
+      <p className="mt-2 w-full text-sm leading-relaxed text-zinc-800 sm:text-base">
         Cantine+ suit le repas du quotidien : elle calcule une{" "}
         <span className="font-semibold text-zinc-950">note sur 100</span>, met en
         avant le RAB et le poids des déchets, et affiche les tendances pour
