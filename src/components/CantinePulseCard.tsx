@@ -102,7 +102,7 @@ function ChartLegendItem({
         aria-hidden
       />
       <div>
-        <p className="text-xs text-zinc-500">{label}</p>
+        <p className="text-sm text-zinc-500">{label}</p>
         <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-900">{value}</p>
       </div>
     </div>
@@ -111,7 +111,7 @@ function ChartLegendItem({
 
 function CantineChartLegend() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-xs text-zinc-600">
+    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-sm text-zinc-600">
       <span className="flex items-center gap-1.5">
         <span className="h-2 w-2 rounded-[2px] bg-[#2dd4bf]" aria-hidden />
         Servis
@@ -162,12 +162,12 @@ function CantinePlusGlobalChart({
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
-      <p className="text-xs font-semibold text-zinc-700">Lecture globale</p>
+      <p className="text-sm font-semibold text-zinc-700">Lecture globale</p>
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_11rem] lg:items-stretch xl:grid-cols-[minmax(0,1fr)_12.5rem]">
         <div className="space-y-4 min-w-0">
           <div className="flex flex-wrap items-end gap-6">
             <div>
-              <p className="text-xs text-zinc-500">Note Cantine +</p>
+              <p className="text-sm text-zinc-500">Note Cantine +</p>
               <p
                 className={cn(
                   "text-4xl font-black tabular-nums leading-none sm:text-5xl",
@@ -213,7 +213,7 @@ function CantinePlusGlobalChart({
                   axisLine={false}
                   tickMargin={8}
                   minTickGap={16}
-                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 11 }}
+                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
                 />
                 <YAxis
                   yAxisId="count"
@@ -221,7 +221,7 @@ function CantinePlusGlobalChart({
                   axisLine={false}
                   allowDecimals={false}
                   width={32}
-                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 11 }}
+                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
                 />
                 <YAxis
                   yAxisId="pct"
@@ -231,7 +231,7 @@ function CantinePlusGlobalChart({
                   tickFormatter={(v) => `${v}%`}
                   width={36}
                   domain={[0, "auto"]}
-                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 11 }}
+                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
                 />
                 <YAxis
                   yAxisId="waste"
@@ -241,7 +241,7 @@ function CantinePlusGlobalChart({
                   tickFormatter={(v) => `${v} g`}
                   width={40}
                   domain={[0, "auto"]}
-                  tick={{ fill: "rgba(234,179,8,0.95)", fontSize: 11 }}
+                  tick={{ fill: "rgba(234,179,8,0.95)", fontSize: 13 }}
                 />
                 <ChartTooltip
                   content={(tooltipProps) => (
@@ -295,10 +295,10 @@ function CantinePlusGlobalChart({
         </div>
 
         <div className="flex h-full flex-col rounded-xl border border-zinc-200 bg-white px-3 py-3.5 lg:min-h-0">
-          <p className="text-sm font-semibold leading-snug text-zinc-900">
+          <p className="text-base font-semibold leading-snug text-zinc-900">
             Comment lire ce graphique ?
           </p>
-          <ul className="mt-2.5 flex-1 space-y-2.5 text-[11px] leading-relaxed text-zinc-600 sm:text-xs">
+          <ul className="mt-2.5 flex-1 space-y-2.5 text-sm leading-relaxed text-zinc-600">
             <li>
               Les <strong className="text-zinc-900">barres vert d&apos;eau</strong> = portions
               servies sur <strong className="text-zinc-900">{periodLabel}</strong>.
@@ -352,11 +352,11 @@ function StatTile({ icon, label, value, hint, tileClass }: StatProps) {
     >
       <div className="flex items-center gap-1.5 text-zinc-600">
         <span className="text-emerald-600 [&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
-        <dt className="text-[11px] font-semibold">{label}</dt>
+        <dt className="text-sm font-semibold">{label}</dt>
       </div>
-      <dd className="text-lg font-bold tabular-nums tracking-tight text-zinc-900">{value}</dd>
+      <dd className="text-xl font-bold tabular-nums tracking-tight text-zinc-900">{value}</dd>
       {hint ? (
-        <p className="text-[10px] leading-snug text-zinc-500">{hint}</p>
+        <p className="text-xs leading-snug text-zinc-500">{hint}</p>
       ) : null}
     </div>
   );
@@ -433,14 +433,14 @@ export function CantinePulseCard({
 
   const brandTitle = showBrandTitle ? (
     <div className="w-full text-center">
-      <p className="w-full text-sm leading-relaxed text-zinc-800 sm:text-base">
+      <p className="w-full text-base leading-relaxed text-zinc-800 sm:text-lg">
         Cantine+ suit le repas du quotidien : elle calcule une{" "}
         <span className="font-semibold text-zinc-950">note sur 100</span>, met en
         avant le RAB et le poids des déchets, et affiche les tendances pour
         aider cuisine et direction à{" "}
         <span className="font-semibold text-zinc-950">réduire le gaspillage</span>.
       </p>
-      <p className="mt-2 w-full text-sm text-zinc-600 sm:text-base">
+      <p className="mt-2 w-full text-base text-zinc-600 sm:text-lg">
         RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
         déchets (poids) — {periodLabel}
       </p>
@@ -477,13 +477,13 @@ export function CantinePulseCard({
           <div className="flex min-w-0 flex-wrap items-center gap-4">
             <MealIcon />
             <div className="min-w-0">
-              <p className="flex items-center gap-2 text-base font-semibold text-zinc-800 sm:text-lg">
+              <p className="flex items-center gap-2 text-lg font-semibold text-zinc-800 sm:text-xl">
                 <Activity className="h-5 w-5 shrink-0 text-emerald-600 sm:h-5 sm:w-5" aria-hidden />
                 {mealLabel(mealType)}
               </p>
               <Badge
                 variant="outline"
-                className={cn("mt-2.5 px-3 py-1 text-sm font-semibold sm:text-base", s.badge)}
+                className={cn("mt-2.5 px-3 py-1 text-base font-semibold", s.badge)}
               >
                 {s.label}
               </Badge>
@@ -493,7 +493,7 @@ export function CantinePulseCard({
             <div className="inline-flex shrink-0 items-center rounded-full bg-[#06101c] px-4 py-1.5 shadow-md ring-1 ring-zinc-200 sm:px-5 sm:py-2">
               <MenusCantineColorTitle
                 text="CANTINE +"
-                className="text-sm tracking-[0.16em] sm:text-base md:text-base lg:text-base"
+                className="text-base tracking-[0.16em] sm:text-lg md:text-lg lg:text-lg"
               />
             </div>
           ) : null}
@@ -521,7 +521,7 @@ export function CantinePulseCard({
         >
           <p
             className={cn(
-              "text-base font-bold leading-snug sm:text-lg",
+              "text-lg font-bold leading-snug sm:text-xl",
               pulse.mood === "attention" && "text-rose-800",
               pulse.mood === "great" && "text-emerald-800",
               pulse.mood === "ok" && "text-amber-900",
@@ -532,7 +532,7 @@ export function CantinePulseCard({
           </p>
           <p
             className={cn(
-              "mt-1.5 text-sm font-medium leading-relaxed sm:text-[15px]",
+              "mt-1.5 text-base font-medium leading-relaxed",
               pulse.mood === "attention" && "text-rose-700",
               pulse.mood === "great" && "text-emerald-700",
               pulse.mood === "ok" && "text-amber-800",
@@ -564,7 +564,7 @@ export function CantinePulseCard({
         ) : null}
 
         <div>
-          <p className="mb-3 text-xs font-semibold text-zinc-600">Les chiffres</p>
+          <p className="mb-3 text-sm font-semibold text-zinc-600">Les chiffres</p>
           <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
             <StatTile
               icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
@@ -752,7 +752,7 @@ export function CantinePulseCard({
           </div>
         ) : null}
 
-        <p className="border-t border-zinc-200 pt-4 text-[11px] leading-relaxed text-zinc-500">
+        <p className="border-t border-zinc-200 pt-4 text-sm leading-relaxed text-zinc-500">
           <span className="font-medium text-zinc-800">{pulse.actionLabel}</span>
           {" — "}
           Note /100 dès les <strong className="font-semibold text-zinc-900">premières portions servies</strong> ;
