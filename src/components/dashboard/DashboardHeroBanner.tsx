@@ -55,7 +55,7 @@ export function DashboardHeroBanner({
             )}
             <div className="min-w-0">
               <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
-                {isKitchen ? "Pilotage cuisine" : "Pilotage cantine"}
+                {isKitchen ? "Pilotage cuisine" : "Suivi anti-gaspi"}
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
                 {isKitchen
