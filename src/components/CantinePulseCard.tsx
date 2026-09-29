@@ -298,28 +298,28 @@ function CantinePlusGlobalChart({
           <p className="text-base font-semibold leading-snug text-zinc-900">
             Comment lire ce graphique ?
           </p>
-          <ul className="mt-2.5 grid gap-3 text-sm leading-relaxed text-zinc-600 sm:grid-cols-2 xl:grid-cols-4">
-            <li>
+          <p className="mt-2.5 w-full text-sm leading-relaxed text-zinc-600">
+            <span>
               Les <strong className="text-zinc-900">barres vert d&apos;eau</strong> = portions
               servies sur <strong className="text-zinc-900">{periodLabel}</strong>.
-            </li>
-            <li>
+            </span>{" "}
+            <span>
               La <strong className="text-yellow-700">courbe jaune</strong> = poids des déchets
               (g, axe de droite). La{" "}
               <strong className="text-lime-700">courbe verte pointillée</strong> = g de déchets
               pour 100 assiettes.
-            </li>
-            <li>
+            </span>{" "}
+            <span>
               La <strong className="text-zinc-900">note sur 100</strong> ({score}/100) résume la
               période : plus elle est haute, mieux c&apos;est —{" "}
               <strong className="text-zinc-900">100 = objectif idéal</strong>.
-            </li>
-            <li>
+            </span>{" "}
+            <span>
               Le calcul repose surtout sur les grammes de déchets pour 100 assiettes, avec une
               petite pénalité si le RAB est élevé, et l&apos;évolution vs {priorLabel} dès
               qu&apos;il y a assez d&apos;historique.
-            </li>
-          </ul>
+            </span>
+          </p>
         </div>
       </div>
     </div>
