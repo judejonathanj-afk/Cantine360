@@ -481,20 +481,30 @@ export function CantinePulseCard({
           </div>
         )}
 
-        <div className="flex flex-wrap items-center gap-4">
-          <MealIcon />
-          <div className="min-w-0">
-            <p className="flex items-center gap-2 text-base font-semibold text-zinc-800 sm:text-lg">
-              <Activity className="h-5 w-5 shrink-0 text-emerald-600 sm:h-5 sm:w-5" aria-hidden />
-              {mealLabel(mealType)}
-            </p>
-            <Badge
-              variant="outline"
-              className={cn("mt-2.5 px-3 py-1 text-sm font-semibold sm:text-base", s.badge)}
-            >
-              {s.label}
-            </Badge>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex min-w-0 flex-wrap items-center gap-4">
+            <MealIcon />
+            <div className="min-w-0">
+              <p className="flex items-center gap-2 text-base font-semibold text-zinc-800 sm:text-lg">
+                <Activity className="h-5 w-5 shrink-0 text-emerald-600 sm:h-5 sm:w-5" aria-hidden />
+                {mealLabel(mealType)}
+              </p>
+              <Badge
+                variant="outline"
+                className={cn("mt-2.5 px-3 py-1 text-sm font-semibold sm:text-base", s.badge)}
+              >
+                {s.label}
+              </Badge>
+            </div>
           </div>
+          {showBrandTitle ? (
+            <div className="inline-flex shrink-0 items-center rounded-full bg-[#06101c] px-4 py-1.5 shadow-md ring-1 ring-zinc-200 sm:px-5 sm:py-2">
+              <MenusCantineColorTitle
+                text="CANTINE +"
+                className="text-sm tracking-[0.16em] sm:text-base md:text-base lg:text-base"
+              />
+            </div>
+          ) : null}
         </div>
 
         {scorePending ? null : (
