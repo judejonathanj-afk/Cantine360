@@ -181,8 +181,8 @@ export function AntiWasteModeToggle({
               msg.includes("introuvable") ||
               msg.includes("Déployez") ||
               msg.includes("prisma")
-              ? "text-rose-300"
-              : "text-emerald-300",
+              ? "text-rose-700"
+              : "text-emerald-800",
           )}
         >
           {msg}
@@ -289,7 +289,7 @@ export function AntiWasteModeToggle({
     return (
       <div
         id="anti-waste"
-        className="flex scroll-mt-24 flex-col gap-5 rounded-3xl bg-black p-5 sm:p-6"
+        className="flex scroll-mt-24 flex-col gap-5"
       >
         {body}
       </div>
@@ -299,7 +299,7 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/10 bg-black p-6 shadow-[0_24px_60px_-30px_rgb(0_0_0/0.55)] sm:p-8"
+      className="scroll-mt-24"
     >
       <div className="flex flex-col gap-5">{body}</div>
     </div>
