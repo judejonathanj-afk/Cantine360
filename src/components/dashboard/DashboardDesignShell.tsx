@@ -81,21 +81,19 @@ export function DashboardInsightCard({
         <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
           <Icon className="size-5" />
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="font-display text-base font-bold text-black">{title}</h3>
           <div className="mt-1 text-sm font-semibold leading-relaxed text-black">
             {description}
           </div>
         </div>
-      </div>
-      <div className="p-4 sm:p-5">
         {level ? (
-          <div className="mb-3">
+          <div className="sm:ml-auto sm:self-start">
             <DashboardLevelPill level={level} />
           </div>
         ) : null}
-        {children}
       </div>
+      <div className="p-4 sm:p-5">{children}</div>
     </div>
   );
 }
