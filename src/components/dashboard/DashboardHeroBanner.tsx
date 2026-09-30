@@ -121,25 +121,6 @@ export function DashboardHeroBanner({
             </div>
           ) : null}
         </div>
-
-        <div
-          className={cn(
-            "absolute left-1/2 top-5 z-20 flex w-fit -translate-x-1/2 items-center gap-3 rounded-2xl bg-white px-4 py-3 text-[#145c32] shadow-lg sm:top-6 max-lg:relative max-lg:left-auto max-lg:top-auto max-lg:mx-auto max-lg:mt-6 max-lg:translate-none",
-            isKitchen ? "shadow-orange-900/10" : "ring-1 ring-zinc-200 shadow-zinc-900/10",
-          )}
-        >
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-[#f26522] text-white">
-            <Leaf className="size-6" aria-hidden />
-          </span>
-          <div>
-            <div className="font-display text-xl font-extrabold leading-none tracking-tight">
-              Cantine<span className="text-[#f26522]">+</span>
-            </div>
-            <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#f26522]">
-              Stop au gaspillage
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
