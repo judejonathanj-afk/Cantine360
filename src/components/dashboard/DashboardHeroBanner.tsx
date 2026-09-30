@@ -50,7 +50,23 @@ export function DashboardHeroBanner({
           alt=""
           className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-auto max-w-[58%] object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_18%)] sm:block"
         />
-      ) : null}
+      ) : (
+        <svg
+          className="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-[min(48%,32rem)]"
+          viewBox="0 0 480 240"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          <path
+            fill="#86efac"
+            d="M170 0C100 42 210 72 130 118C55 158 200 182 120 222C90 238 150 240 110 240H480V0H170Z"
+          />
+          <path
+            fill="#16a34a"
+            d="M250 0C175 48 290 78 200 128C125 170 275 196 190 228C165 240 210 240 180 240H480V0H250Z"
+          />
+        </svg>
+      )}
       {isKitchen ? (
         <Leaf className="pointer-events-none absolute left-8 top-16 size-5 rotate-12 text-white/20" aria-hidden />
       ) : null}
