@@ -22,16 +22,13 @@ export function DashboardHeroBanner({
           : "bg-white text-zinc-900 shadow-[0_18px_40px_-18px_rgba(24,24,27,0.18)] ring-1 ring-zinc-200",
       )}
     >
-      <div
-        className={cn(
-          "pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full blur-2xl",
-          isKitchen ? "bg-[#ffb15a]/35" : "bg-zinc-100/80",
-        )}
-      />
+      {isKitchen ? (
+      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#ffb15a]/35 blur-2xl" />
+      ) : null}
       <svg
         className={cn(
           "pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full",
-          isKitchen ? "text-[#c2410c]/25" : "text-zinc-200/80",
+          isKitchen ? "text-[#c2410c]/25" : "hidden",
         )}
         viewBox="0 0 1200 160"
         preserveAspectRatio="none"
@@ -47,18 +44,16 @@ export function DashboardHeroBanner({
           d="M0 120c120 20 180-30 300-10s200 40 320 8 180-36 280-8 160 20 300 0v50H0Z"
         />
       </svg>
-      <img
-        src="/dashboard/banner-cuisine-droite.jpg?v=5"
-        alt=""
-        className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-auto max-w-[58%] object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_18%)] sm:block"
-      />
-      <Leaf
-        className={cn(
-          "pointer-events-none absolute left-8 top-16 size-5 rotate-12",
-          isKitchen ? "text-white/20" : "text-zinc-300",
-        )}
-        aria-hidden
-      />
+      {isKitchen ? (
+        <img
+          src="/dashboard/banner-cuisine-droite.jpg?v=5"
+          alt=""
+          className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-auto max-w-[58%] object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_18%)] sm:block"
+        />
+      ) : null}
+      {isKitchen ? (
+        <Leaf className="pointer-events-none absolute left-8 top-16 size-5 rotate-12 text-white/20" aria-hidden />
+      ) : null}
 
       <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
         <div className="min-w-0 max-w-xl lg:max-w-3xl">
