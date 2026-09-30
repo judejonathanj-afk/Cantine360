@@ -298,7 +298,8 @@
   margin-bottom: -2rem;
   margin-left: -0.75rem;
   padding: 2rem 0.75rem 2rem;
-  background-image: linear-gradient(180deg, #d5d8de 0%, #eef0f3 28%, #ffffff 62%);
+  background-color: #ffffff;
+  background-image: linear-gradient(180deg, #d5d8de 0px, #ffffff 240px);
 }
 
 @media (min-width: 640px) {
