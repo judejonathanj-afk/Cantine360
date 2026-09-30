@@ -599,7 +599,7 @@ export function CantinePulseCard({
           className={cn(
             "rounded-2xl border px-4 py-3.5",
             pulse.headline === "Plus de déchets qu’avant."
-              ? "border-[#74b482] bg-[#8cc498]"
+              ? "border-[#1c3f78] bg-[#102848]"
               : cn(
                   pulse.mood === "attention" && "border-rose-200 bg-rose-50",
                   pulse.mood === "great" && "border-emerald-200 bg-emerald-50",
