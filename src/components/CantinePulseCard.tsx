@@ -612,7 +612,7 @@ export function CantinePulseCard({
             className={cn(
               "text-lg font-bold leading-snug sm:text-xl",
               pulse.headline === "Plus de déchets qu’avant."
-                ? "text-zinc-950"
+                ? "text-[#ffe14a]"
                 : cn(
                     pulse.mood === "attention" && "text-rose-800",
                     pulse.mood === "great" && "text-emerald-800",
@@ -627,7 +627,7 @@ export function CantinePulseCard({
             className={cn(
               "mt-1.5 text-base font-medium leading-relaxed",
               pulse.headline === "Plus de déchets qu’avant."
-                ? "text-zinc-900"
+                ? "text-[#ffe14a]"
                 : cn(
                     pulse.mood === "attention" && "text-rose-700",
                     pulse.mood === "great" && "text-emerald-700",
