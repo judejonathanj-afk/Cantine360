@@ -598,19 +598,27 @@ export function CantinePulseCard({
         <div
           className={cn(
             "rounded-2xl border px-4 py-3.5",
-            pulse.mood === "attention" && "border-rose-200 bg-rose-50",
-            pulse.mood === "great" && "border-emerald-200 bg-emerald-50",
-            pulse.mood === "ok" && "border-amber-200 bg-amber-50",
-            pulse.mood === "pending" && "border-zinc-200 bg-zinc-50",
+            pulse.headline === "Plus de déchets qu’avant."
+              ? "border-[#74b482] bg-[#8cc498]"
+              : cn(
+                  pulse.mood === "attention" && "border-rose-200 bg-rose-50",
+                  pulse.mood === "great" && "border-emerald-200 bg-emerald-50",
+                  pulse.mood === "ok" && "border-amber-200 bg-amber-50",
+                  pulse.mood === "pending" && "border-zinc-200 bg-zinc-50",
+                ),
           )}
         >
           <p
             className={cn(
               "text-lg font-bold leading-snug sm:text-xl",
-              pulse.mood === "attention" && "text-rose-800",
-              pulse.mood === "great" && "text-emerald-800",
-              pulse.mood === "ok" && "text-amber-900",
-              pulse.mood === "pending" && "text-zinc-900",
+              pulse.headline === "Plus de déchets qu’avant."
+                ? "text-zinc-950"
+                : cn(
+                    pulse.mood === "attention" && "text-rose-800",
+                    pulse.mood === "great" && "text-emerald-800",
+                    pulse.mood === "ok" && "text-amber-900",
+                    pulse.mood === "pending" && "text-zinc-900",
+                  ),
             )}
           >
             {pulse.headline}
@@ -618,10 +626,14 @@ export function CantinePulseCard({
           <p
             className={cn(
               "mt-1.5 text-base font-medium leading-relaxed",
-              pulse.mood === "attention" && "text-rose-700",
-              pulse.mood === "great" && "text-emerald-700",
-              pulse.mood === "ok" && "text-amber-800",
-              pulse.mood === "pending" && "text-zinc-700",
+              pulse.headline === "Plus de déchets qu’avant."
+                ? "text-zinc-900"
+                : cn(
+                    pulse.mood === "attention" && "text-rose-700",
+                    pulse.mood === "great" && "text-emerald-700",
+                    pulse.mood === "ok" && "text-amber-800",
+                    pulse.mood === "pending" && "text-zinc-700",
+                  ),
             )}
           >
             {pulse.subline}
