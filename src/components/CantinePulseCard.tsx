@@ -111,7 +111,7 @@ function ChartLegendItem({
 
 function CantineChartLegend() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-sm text-zinc-600">
+    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-sm font-semibold text-black">
       <span className="flex items-center gap-1.5">
         <span className="h-2 w-2 rounded-[2px] bg-[#2dd4bf]" aria-hidden />
         Servis
@@ -203,7 +203,7 @@ function CantinePlusGlobalChart({
             <>
             <ChartContainer
               config={globalChartConfig}
-              className="h-[min(19rem,48vw)] w-full min-h-[220px] aspect-auto"
+              className="h-[min(19rem,48vw)] w-full min-h-[220px] aspect-auto [&_.recharts-cartesian-axis-tick_text]:!fill-black [&_.recharts-cartesian-axis-tick_text]:font-semibold"
             >
               <ComposedChart data={series} margin={{ top: 8, right: 136, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="rgba(24,24,27,0.08)" strokeDasharray="4 4" />
@@ -213,7 +213,7 @@ function CantinePlusGlobalChart({
                   axisLine={false}
                   tickMargin={8}
                   minTickGap={16}
-                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
+                  tick={{ fill: "#000000", fontSize: 13, fontWeight: 600 }}
                 />
                 <YAxis
                   yAxisId="count"
@@ -221,7 +221,7 @@ function CantinePlusGlobalChart({
                   axisLine={false}
                   allowDecimals={false}
                   width={32}
-                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
+                  tick={{ fill: "#000000", fontSize: 13, fontWeight: 600 }}
                 />
                 <YAxis
                   yAxisId="pct"
@@ -231,7 +231,7 @@ function CantinePlusGlobalChart({
                   tickFormatter={(v) => `${v}%`}
                   width={58}
                   domain={[0, "auto"]}
-                  tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
+                  tick={{ fill: "#000000", fontSize: 13, fontWeight: 600 }}
                 />
                 <YAxis
                   yAxisId="waste"
@@ -241,7 +241,7 @@ function CantinePlusGlobalChart({
                   tickFormatter={(v) => `${Math.round(v)} g`}
                   width={72}
                   domain={[0, "auto"]}
-                  tick={{ fill: "rgba(234,179,8,0.95)", fontSize: 13 }}
+                  tick={{ fill: "#000000", fontSize: 13, fontWeight: 600 }}
                 />
                 <ChartTooltip
                   content={(tooltipProps) => (
