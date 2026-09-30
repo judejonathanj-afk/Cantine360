@@ -205,7 +205,7 @@ function CantinePlusGlobalChart({
               config={globalChartConfig}
               className="h-[min(19rem,48vw)] w-full min-h-[220px] aspect-auto"
             >
-              <ComposedChart data={series} margin={{ top: 8, right: 44, left: 0, bottom: 0 }}>
+              <ComposedChart data={series} margin={{ top: 8, right: 136, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="rgba(24,24,27,0.08)" strokeDasharray="4 4" />
                 <XAxis
                   dataKey="label"
@@ -229,7 +229,7 @@ function CantinePlusGlobalChart({
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(v) => `${v}%`}
-                  width={36}
+                  width={58}
                   domain={[0, "auto"]}
                   tick={{ fill: "rgba(24,24,27,0.65)", fontSize: 13 }}
                 />
@@ -238,8 +238,8 @@ function CantinePlusGlobalChart({
                   orientation="right"
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v) => `${v} g`}
-                  width={40}
+                  tickFormatter={(v) => `${Math.round(v)} g`}
+                  width={72}
                   domain={[0, "auto"]}
                   tick={{ fill: "rgba(234,179,8,0.95)", fontSize: 13 }}
                 />
