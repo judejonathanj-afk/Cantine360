@@ -370,6 +370,7 @@ export default function DashboardPanels({
         ))}
       </div>
 
+      <div className="dashboard-v2-fade space-y-8">
       <CantinePulseCard
         rows={pulseRows}
         wasteRows={pulseWasteRows}
@@ -656,6 +657,7 @@ export default function DashboardPanels({
           Fonctions Cantine+ · inclus dans Cantine360
         </footer>
       ) : null}
+      </div>
     </div>
   );
 }

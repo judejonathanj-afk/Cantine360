@@ -277,9 +277,10 @@
   --chart-4: oklch(0.62 0.2 22);
   --chart-5: oklch(0.55 0.13 285);
   color: var(--foreground);
-  background-color: #ffffff;
-  background-image: linear-gradient(180deg, #d5d8de 0%, #eef0f3 42%, #ffffff 78%);
+  background-color: #d5d8de;
+  background-image: none;
   border-radius: 1.5rem;
+  overflow: hidden;
   padding: 1rem 0.75rem 2rem;
   margin: -0.5rem -0.25rem 0;
 }
@@ -288,6 +289,24 @@
   .dashboard-v2 {
     padding: 1.5rem 1.25rem 2.5rem;
     margin: -0.75rem -0.5rem 0;
+  }
+}
+
+.dashboard-v2-fade {
+  margin-top: 0 !important;
+  margin-right: -0.75rem;
+  margin-bottom: -2rem;
+  margin-left: -0.75rem;
+  padding: 2rem 0.75rem 2rem;
+  background-image: linear-gradient(180deg, #d5d8de 0%, #eef0f3 28%, #ffffff 62%);
+}
+
+@media (min-width: 640px) {
+  .dashboard-v2-fade {
+    margin-right: -1.25rem;
+    margin-bottom: -2.5rem;
+    margin-left: -1.25rem;
+    padding: 2rem 1.25rem 2.5rem;
   }
 }
 
