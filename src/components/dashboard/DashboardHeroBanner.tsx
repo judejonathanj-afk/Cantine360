@@ -16,22 +16,22 @@ export function DashboardHeroBanner({
   return (
     <section
       className={cn(
-        "relative overflow-hidden rounded-[28px] text-white",
+        "relative overflow-hidden rounded-[28px]",
         isKitchen
-          ? "bg-gradient-to-r from-[#ff9a32] via-[#ff7a22] to-[#f26522] shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]"
-          : "bg-gradient-to-r from-[#1c3f78] via-[#102848] to-[#071526] shadow-[0_18px_40px_-18px_rgba(7,21,38,0.55)]",
+          ? "bg-gradient-to-r from-[#ff9a32] via-[#ff7a22] to-[#f26522] text-white shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]"
+          : "bg-white text-zinc-900 shadow-[0_18px_40px_-18px_rgba(24,24,27,0.18)] ring-1 ring-zinc-200",
       )}
     >
       <div
         className={cn(
           "pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full blur-2xl",
-          isKitchen ? "bg-[#ffb15a]/35" : "bg-[#5b8fd4]/30",
+          isKitchen ? "bg-[#ffb15a]/35" : "bg-zinc-100/80",
         )}
       />
       <svg
         className={cn(
           "pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full",
-          isKitchen ? "text-[#c2410c]/25" : "text-[#8eb4e8]/20",
+          isKitchen ? "text-[#c2410c]/25" : "text-zinc-200/80",
         )}
         viewBox="0 0 1200 160"
         preserveAspectRatio="none"
@@ -52,11 +52,24 @@ export function DashboardHeroBanner({
         alt=""
         className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-auto max-w-[58%] object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_18%)] sm:block"
       />
-      <Leaf className="pointer-events-none absolute left-8 top-16 size-5 rotate-12 text-white/20" aria-hidden />
+      <Leaf
+        className={cn(
+          "pointer-events-none absolute left-8 top-16 size-5 rotate-12",
+          isKitchen ? "text-white/20" : "text-zinc-300",
+        )}
+        aria-hidden
+      />
 
       <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
         <div className="min-w-0 max-w-xl lg:max-w-3xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/25 px-3 py-1 text-xs font-medium text-white ring-1 ring-white/30 backdrop-blur">
+          <div
+            className={cn(
+              "mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1 backdrop-blur",
+              isKitchen
+                ? "bg-white/25 text-white ring-white/30"
+                : "bg-zinc-100 text-zinc-700 ring-zinc-200",
+            )}
+          >
             <ChefHat className="size-3.5" aria-hidden />
             {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord anti-gaspillage"}
           </div>
@@ -65,7 +78,7 @@ export function DashboardHeroBanner({
             {isKitchen ? (
               <DashboardProfileAvatar establishmentId={establishmentId} variant="banner" />
             ) : (
-              <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-[#c5d7ef] bg-white text-emerald-600 shadow-sm">
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-zinc-200 bg-white text-emerald-600 shadow-sm">
                 <ChefHat className="size-8" aria-hidden />
               </span>
             )}
@@ -73,7 +86,12 @@ export function DashboardHeroBanner({
               <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
                 {isKitchen ? "Pilotage cuisine" : "Suivi anti-gaspi"}
               </h1>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base">
+              <p
+                className={cn(
+                  "mt-2 max-w-xl text-sm leading-relaxed sm:text-base",
+                  isKitchen ? "text-white/90" : "text-zinc-600",
+                )}
+              >
                 {isKitchen
                   ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
                   : `Chiffres clés du déjeuner, note Cantine+ et évolution des déchets sur ${days} jours.`}
@@ -83,11 +101,19 @@ export function DashboardHeroBanner({
 
           {schoolNames.length > 0 ? (
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-white/90">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide",
+                  isKitchen ? "text-white/90" : "text-zinc-500",
+                )}
+              >
                 <Building2 className="size-3.5" aria-hidden />
                 Écoles suivies
               </span>
-              <span className="mx-1 hidden h-4 w-px bg-white/50 sm:inline-block" aria-hidden />
+              <span
+                className={cn("mx-1 hidden h-4 w-px sm:inline-block", isKitchen ? "bg-white/50" : "bg-zinc-300")}
+                aria-hidden
+              />
               {schoolNames.map((s) => (
                 <span
                   key={s}
@@ -101,7 +127,12 @@ export function DashboardHeroBanner({
           ) : null}
         </div>
 
-        <div className="absolute left-1/2 top-5 z-20 flex w-fit -translate-x-1/2 items-center gap-3 rounded-2xl bg-white px-4 py-3 text-[#145c32] shadow-lg shadow-orange-900/10 sm:top-6 max-lg:relative max-lg:left-auto max-lg:top-auto max-lg:mx-auto max-lg:mt-6 max-lg:translate-none">
+        <div
+          className={cn(
+            "absolute left-1/2 top-5 z-20 flex w-fit -translate-x-1/2 items-center gap-3 rounded-2xl bg-white px-4 py-3 text-[#145c32] shadow-lg sm:top-6 max-lg:relative max-lg:left-auto max-lg:top-auto max-lg:mx-auto max-lg:mt-6 max-lg:translate-none",
+            isKitchen ? "shadow-orange-900/10" : "ring-1 ring-zinc-200 shadow-zinc-900/10",
+          )}
+        >
           <span className="flex size-12 items-center justify-center rounded-2xl bg-[#f26522] text-white">
             <Leaf className="size-6" aria-hidden />
           </span>
