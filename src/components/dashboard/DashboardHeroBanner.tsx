@@ -74,7 +74,7 @@ export function DashboardHeroBanner({
               <DashboardProfileAvatar establishmentId={establishmentId} variant="banner" />
             ) : (
               <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-zinc-200 bg-white text-emerald-600 shadow-sm">
-                <ChefHat className="size-8" aria-hidden />
+                <Building2 className="size-8" aria-hidden />
               </span>
             )}
             <div className="min-w-0">
