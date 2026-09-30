@@ -266,7 +266,7 @@
   --accent-foreground: oklch(0.32 0.05 80);
   --destructive: oklch(0.62 0.2 22);
   --border: oklch(0.9 0.012 155);
-  --background: #76ccca;
+  --background: #b4ebc8;
   --foreground: #000000;
   --card: oklch(1 0 0);
   --card-foreground: #000000;
@@ -277,7 +277,7 @@
   --chart-4: oklch(0.62 0.2 22);
   --chart-5: oklch(0.55 0.13 285);
   color: var(--foreground);
-  background-color: #76ccca;
+  background-color: #b4ebc8;
   background-image: none;
   border-radius: 1.5rem;
   padding: 1rem 0.75rem 2rem;
