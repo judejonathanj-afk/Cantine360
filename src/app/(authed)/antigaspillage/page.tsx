@@ -9,7 +9,7 @@ import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
-import { Leaf } from "lucide-react";
+import { Recycle } from "lucide-react";
 
 const MENU_CATEGORY_FR: Record<string, string> = {
   STARTER: "Entrée",
@@ -54,11 +54,11 @@ function formatMissingWeighDate(date: Date): string {
 
 function AntiWasteOffHeader() {
   return (
-    <div className="anti-waste-dash flex items-start gap-3">
+    <div className="anti-waste-dash flex flex-col items-center text-center">
       <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-        <Leaf className="size-5" aria-hidden />
+        <Recycle className="size-5" aria-hidden />
       </div>
-      <div className="max-w-2xl">
+      <div className="mt-3 max-w-2xl">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Cantine 360
         </p>

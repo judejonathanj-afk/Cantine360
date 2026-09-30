@@ -11,7 +11,6 @@ import {
   Download,
   Flag,
   Flame,
-  Leaf,
   Recycle,
   Scale,
   Trash2,
@@ -276,11 +275,11 @@ export function AntiWastePanels({
       />
 
       <section className="aw-reveal space-y-6">
-        <div className="flex items-start gap-3">
+        <div className="flex flex-col items-center text-center">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-            <Leaf className="size-5" aria-hidden />
+            <Recycle className="size-5" aria-hidden />
           </div>
-          <div className="max-w-2xl">
+          <div className="mt-3 max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               Cantine 360
             </p>
