@@ -486,7 +486,7 @@ export function CantinePulseCard({
             <span aria-hidden />
           )}
           <h2 className="text-center text-lg font-semibold text-zinc-900 sm:text-xl">
-            Graphique chiffre
+            Lecture globale graphique et chiffre
           </h2>
           <div className="flex min-w-0 flex-wrap items-center justify-end gap-4">
             <MealIcon />
