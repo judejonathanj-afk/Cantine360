@@ -1,5 +1,6 @@
 import { Building2, ChefHat, Leaf } from "lucide-react";
 import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
+import { cn } from "@/lib/utils";
 
 export function DashboardHeroBanner({
   schoolNames,
@@ -13,10 +14,25 @@ export function DashboardHeroBanner({
   establishmentId: string;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-[#ff9a32] via-[#ff7a22] to-[#f26522] text-white shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]">
-      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#ffb15a]/35 blur-2xl" />
+    <section
+      className={cn(
+        "relative overflow-hidden rounded-[28px] text-white",
+        isKitchen
+          ? "bg-gradient-to-r from-[#ff9a32] via-[#ff7a22] to-[#f26522] shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]"
+          : "bg-gradient-to-r from-[#1c3f78] via-[#102848] to-[#071526] shadow-[0_18px_40px_-18px_rgba(7,21,38,0.55)]",
+      )}
+    >
+      <div
+        className={cn(
+          "pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full blur-2xl",
+          isKitchen ? "bg-[#ffb15a]/35" : "bg-[#5b8fd4]/30",
+        )}
+      />
       <svg
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full text-[#c2410c]/25"
+        className={cn(
+          "pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full",
+          isKitchen ? "text-[#c2410c]/25" : "text-[#8eb4e8]/20",
+        )}
         viewBox="0 0 1200 160"
         preserveAspectRatio="none"
         aria-hidden
@@ -49,7 +65,7 @@ export function DashboardHeroBanner({
             {isKitchen ? (
               <DashboardProfileAvatar establishmentId={establishmentId} variant="banner" />
             ) : (
-              <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-orange-200 bg-white text-emerald-600 shadow-sm">
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-[#c5d7ef] bg-white text-emerald-600 shadow-sm">
                 <ChefHat className="size-8" aria-hidden />
               </span>
             )}
