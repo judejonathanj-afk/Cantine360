@@ -587,8 +587,8 @@ export function AntiWastePanels({
           ) : (
             <ul
               className={cn(
-                "flex flex-col gap-3 overflow-y-auto p-4 [scrollbar-gutter:stable]",
-                riskyDishesOpen ? "max-h-none" : "max-h-[22rem]",
+                "flex flex-col gap-3 overflow-y-scroll p-4 [scrollbar-gutter:stable]",
+                riskyDishesOpen ? "max-h-[70vh]" : "max-h-[22rem]",
               )}
             >
               {riskyDishesVisible.map((d, i) => {
