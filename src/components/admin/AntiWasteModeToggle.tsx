@@ -132,7 +132,7 @@ export function AntiWasteModeToggle({
       ) : null}
 
       <div
-        className="flex items-start justify-between gap-4 rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950"
+        className="flex items-start justify-between gap-4 rounded-2xl border border-[#e6d24a] bg-[#fbe961] p-5 text-zinc-950"
       >
         <div>
           <p className="font-display text-base font-semibold text-zinc-950">
@@ -190,7 +190,7 @@ export function AntiWasteModeToggle({
 
       {enabled ? (
         <div
-          className="rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950"
+          className="rounded-2xl border border-[#e6d24a] bg-[#fbe961] p-5 text-zinc-950"
         >
           <div className="flex items-center gap-2">
             <Target className="size-4 text-emerald-800" aria-hidden />
