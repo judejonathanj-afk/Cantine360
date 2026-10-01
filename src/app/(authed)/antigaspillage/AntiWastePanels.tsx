@@ -116,6 +116,48 @@ export type MissingWeighServiceRow = {
   servedCount: number;
 };
 
+const SAMPLE_MISSING_WEIGHS: MissingWeighServiceRow[] = [
+  {
+    id: "sample-missing-1",
+    dateLabel: "Vendredi 25 septembre",
+    mealLabel: "Déjeuner",
+    menuSummary:
+      "Entrée : carottes râpées · Plat : poisson pané · Dessert : compote",
+    servedCount: 96,
+  },
+  {
+    id: "sample-missing-2",
+    dateLabel: "Jeudi 24 septembre",
+    mealLabel: "Déjeuner",
+    menuSummary:
+      "Entrée : salade de concombre · Plat : poulet rôti · Dessert : yaourt",
+    servedCount: 112,
+  },
+  {
+    id: "sample-missing-3",
+    dateLabel: "Mercredi 23 septembre",
+    mealLabel: "Déjeuner",
+    menuSummary: "Menu non renseigné",
+    servedCount: 0,
+  },
+  {
+    id: "sample-missing-4",
+    dateLabel: "Mardi 22 septembre",
+    mealLabel: "Déjeuner",
+    menuSummary:
+      "Entrée : betteraves · Plat : hachis parmentier · Dessert : fruit",
+    servedCount: 88,
+  },
+  {
+    id: "sample-missing-5",
+    dateLabel: "Lundi 21 septembre",
+    mealLabel: "Déjeuner",
+    menuSummary:
+      "Entrée : taboulé · Plat : omelette · Dessert : fromage blanc",
+    servedCount: 104,
+  },
+];
+
 const STATUS_STYLES = {
   green: "bg-primary/12 text-primary",
   amber: "bg-[color:var(--aw-amber)]/25 text-[color:var(--aw-amber-fg)]",
@@ -166,6 +208,13 @@ export function AntiWastePanels({
     ...riskyDishes,
     ...SAMPLE_RISKY_DISHES,
   ];
+  const missingWeighVisible = [
+    ...missingWeighServices,
+    ...SAMPLE_MISSING_WEIGHS,
+  ];
+  const missingWeighShown = missingWeighOpen
+    ? missingWeighVisible
+    : missingWeighVisible.slice(0, 2);
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
   const gaugeValue = wasteGramsPer100Served ?? 0;
   const gaugeStatus = gaugeStatusFromTone(
@@ -494,44 +543,46 @@ export function AntiWastePanels({
         })}
       </div>
 
-      {missingWeighCount > 0 || streakAboveTarget >= 3 ? (
-        <div className="aw-reveal overflow-hidden rounded-2xl border border-[color:var(--aw-coral)]/30 bg-[color:var(--aw-coral)]/8">
-          <div className="flex w-full flex-wrap items-center justify-between gap-4 px-5 py-4">
-            <span className="flex items-start gap-3">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--aw-coral)]/15 text-[color:var(--aw-coral)]">
-                <AlertTriangle className="size-4" aria-hidden />
+      {streakAboveTarget >= 3 ? (
+        <div className="aw-reveal flex items-center gap-3 rounded-2xl border-2 border-rose-500 bg-rose-50 px-5 py-4">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rose-600 text-white">
+            <AlertTriangle className="size-4" aria-hidden />
+          </span>
+          <p className="text-base font-semibold text-zinc-950">
+            <span className="font-bold">{streakAboveTarget} jours de suite</span>{" "}
+            au-dessus de l’objectif g / 100.
+          </p>
+        </div>
+      ) : null}
+
+      {missingWeighVisible.length > 0 ? (
+        <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-rose-500 bg-card">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-rose-200 bg-rose-100 p-5">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white">
+                <AlertTriangle className="size-5" aria-hidden />
               </span>
-              <span className="space-y-1 text-sm sm:text-base">
-                {streakAboveTarget >= 3 ? (
-                  <p>
-                    <span className="font-semibold text-[color:var(--aw-coral)]">
-                      {streakAboveTarget} jours de suite
-                    </span>{" "}
-                    au-dessus de l’objectif g / 100.
-                  </p>
-                ) : null}
-                {missingWeighCount > 0 ? (
-                  <p>
-                    <span className="font-semibold text-[color:var(--aw-coral)]">
-                      {missingWeighCount} service
-                      {missingWeighCount > 1 ? "s" : ""}
-                    </span>{" "}
-                    sans pesée sur la période.
-                  </p>
-                ) : null}
-              </span>
-            </span>
-            {missingWeighServices.length > 0 ? (
+              <div className="min-w-0">
+                <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
+                  {missingWeighVisible.length} service
+                  {missingWeighVisible.length > 1 ? "s" : ""} sans pesée
+                </h2>
+                <p className="mt-1 text-base font-medium leading-snug text-zinc-950">
+                  Sur la période. Ouvrez un service pour saisir la pesée.
+                </p>
+              </div>
+            </div>
+            {missingWeighVisible.length > 2 ? (
               <button
                 type="button"
                 onClick={() => setMissingWeighOpen((v) => !v)}
                 aria-expanded={missingWeighOpen}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--aw-coral)]/30 px-3 py-1 text-xs font-medium text-[color:var(--aw-coral)]"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
               >
                 {missingWeighOpen ? "Voir moins" : "Voir plus"}
                 <ChevronDown
                   className={cn(
-                    "size-3.5 transition-transform",
+                    "size-4 transition-transform",
                     missingWeighOpen && "rotate-180",
                   )}
                   aria-hidden
@@ -540,41 +591,51 @@ export function AntiWastePanels({
             ) : null}
           </div>
 
-          <div
+          <ul
             className={cn(
-              "grid transition-all duration-300 ease-out",
-              missingWeighOpen
-                ? "grid-rows-[1fr] opacity-100"
-                : "grid-rows-[0fr] opacity-0",
+              "grid gap-3 overflow-y-auto p-5 sm:grid-cols-2",
+              missingWeighOpen && "max-h-[28rem]",
             )}
           >
-            <div className="overflow-hidden">
-              <ul className="grid gap-2 px-5 pb-5 sm:grid-cols-2">
-                {missingWeighServices.map((s) => (
-                  <li key={s.id}>
+            {missingWeighShown.map((s) => {
+              const sample = s.id.startsWith("sample-missing-");
+              const body = (
+                <>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-base font-bold leading-snug text-zinc-950">
+                      {s.dateLabel}
+                      <span className="font-semibold"> · {s.mealLabel}</span>
+                    </p>
+                    <span className="shrink-0 rounded-full bg-rose-600 px-2.5 py-1 text-xs font-bold text-white">
+                      Pesée manquante
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-950">
+                    {s.menuSummary}
+                    {s.servedCount > 0
+                      ? ` · ${fmt(s.servedCount)} assiette${s.servedCount > 1 ? "s" : ""}`
+                      : ""}
+                  </p>
+                </>
+              );
+              return (
+                <li key={s.id}>
+                  {sample ? (
+                    <div className="h-full rounded-2xl border border-rose-200 bg-white px-4 py-3">
+                      {body}
+                    </div>
+                  ) : (
                     <Link
                       href={`/service/${s.id}`}
-                      className="block rounded-xl border border-[color:var(--aw-coral)]/20 bg-card/70 px-4 py-3 transition hover:border-[color:var(--aw-coral)]/45"
+                      className="block h-full rounded-2xl border border-rose-200 bg-white px-4 py-3 transition hover:border-rose-500"
                     >
-                      <p className="text-sm font-semibold">
-                        {s.dateLabel}{" "}
-                        <span className="text-muted-foreground">
-                          · {s.mealLabel}
-                        </span>
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {s.menuSummary}
-                        {s.servedCount > 0
-                          ? ` · ${fmt(s.servedCount)} assiette${s.servedCount > 1 ? "s" : ""}`
-                          : ""}{" "}
-                        · Pesée manquante
-                      </p>
+                      {body}
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </div>
       ) : null}
 
