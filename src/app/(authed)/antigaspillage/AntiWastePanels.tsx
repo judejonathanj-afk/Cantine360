@@ -332,11 +332,6 @@ export function AntiWastePanels({
 
   return (
     <div className="anti-waste-dash relative space-y-6">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[420px] bg-gradient-to-b from-primary/8 to-transparent"
-      />
-
       <section className="aw-reveal space-y-6">
         <div className="flex flex-col items-center text-center">
           <div className="w-full">
@@ -387,7 +382,9 @@ export function AntiWastePanels({
             Télécharger
           </button>
         </div>
+      </section>
 
+      <div className="anti-waste-dash-fade space-y-6">
         <div className="grid gap-px overflow-hidden rounded-3xl border border-border bg-border shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)] lg:grid-cols-[1.05fr_1.35fr]">
           <div className="flex flex-col items-center justify-center gap-5 bg-card px-6 py-10">
             <AntiWasteGauge
@@ -435,7 +432,6 @@ export function AntiWastePanels({
             />
           </div>
         </div>
-      </section>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((t, i) => {
@@ -793,6 +789,7 @@ export function AntiWastePanels({
         <span aria-hidden>·</span>
         <span>Données sur {days} jours</span>
       </footer>
+      </div>
     </div>
   );
 }
