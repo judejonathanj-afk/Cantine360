@@ -745,7 +745,7 @@ export function AntiWastePanels({
           )}
         </div>
 
-        <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)]">
+        <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
           <div className="min-w-0">
             <AntiWasteLineChart days={days} points={chartPoints} />
           </div>
@@ -886,46 +886,61 @@ function WasteAdvicePanel({
           : "border-zinc-200 bg-zinc-50";
 
   return (
-    <aside className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
-      <div className="flex items-start gap-3 border-b border-amber-200 bg-amber-100 p-4">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white">
+    <aside className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-[#eab308] bg-card">
+      <div className="flex items-start gap-3 border-b border-[#e6d24a] bg-[#fbe961] p-5">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white">
           <Lightbulb className="size-5" aria-hidden />
         </div>
         <div className="min-w-0">
-          <h2 className="font-display text-lg font-bold tracking-tight">
+          <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
             Avis du suivi
           </h2>
-          <p className="mt-0.5 text-sm font-medium text-foreground/80">
+          <p className="mt-1 text-base font-medium leading-snug text-zinc-800">
             Ce que les pesées indiquent sur {days} jours.
           </p>
         </div>
       </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
-        <div className={cn("rounded-2xl border p-3", toneClass)}>
-          <p className="font-display text-sm font-semibold leading-snug text-foreground">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+        <div className={cn("rounded-2xl border p-4", toneClass)}>
+          <p className="font-display text-lg font-bold leading-snug text-zinc-950">
             {title}
           </p>
-          <p className="mt-1.5 text-sm leading-relaxed text-foreground/80">
+          <p className="mt-2 text-base font-medium leading-relaxed text-zinc-800">
             {hint}
           </p>
         </div>
         {heaviestLabel && heaviestValue ? (
-          <p className="text-sm leading-relaxed text-foreground">
-            <span className="font-semibold">Jour le plus lourd. </span>
-            {heaviestLabel} — {heaviestValue}.
-          </p>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
+              Jour le plus lourd
+            </p>
+            <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
+              {heaviestLabel}
+            </p>
+            <p className="text-lg font-bold tabular-nums text-zinc-950">
+              {heaviestValue}
+            </p>
+          </div>
         ) : null}
         {curveRemark ? (
-          <p className="text-sm leading-relaxed text-foreground">
-            <span className="font-semibold">Courbe. </span>
-            {curveRemark}
-          </p>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
+              Courbe
+            </p>
+            <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
+              {curveRemark}
+            </p>
+          </div>
         ) : null}
         {dishRemark ? (
-          <p className="text-sm leading-relaxed text-foreground">
-            <span className="font-semibold">Plat à surveiller. </span>
-            {dishRemark}
-          </p>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
+              Plat à surveiller
+            </p>
+            <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
+              {dishRemark}
+            </p>
+          </div>
         ) : null}
       </div>
     </aside>
