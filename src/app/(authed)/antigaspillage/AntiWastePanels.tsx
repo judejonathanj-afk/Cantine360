@@ -375,10 +375,10 @@ export function AntiWastePanels({
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               Cantine 360
             </p>
-            <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
               Mode anti-gaspillage
             </h1>
-            <p className="mt-3 w-full text-lg leading-relaxed text-foreground sm:text-xl">
+            <p className="mt-3 w-full text-lg leading-relaxed text-white sm:text-xl">
               Le mode anti-gaspillage aide la cuisine et la commission à réduire
               les restes : fixez un objectif en grammes pour 100 assiettes, puis
               activez le mode ci-dessous pour afficher la synthèse, les plats à
