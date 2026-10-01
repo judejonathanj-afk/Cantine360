@@ -318,6 +318,7 @@ export default function DashboardPanels({
         </div>
       </div>
 
+      <div className="dashboard-v2-fade space-y-8">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         {[
           {
@@ -370,7 +371,6 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      <div className="dashboard-v2-fade space-y-8">
       <CantinePulseCard
         rows={pulseRows}
         wasteRows={pulseWasteRows}
