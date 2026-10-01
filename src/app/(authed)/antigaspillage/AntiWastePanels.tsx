@@ -593,8 +593,10 @@ export function AntiWastePanels({
 
           <ul
             className={cn(
-              "grid gap-3 overflow-y-auto p-5 sm:grid-cols-2",
-              missingWeighOpen && "max-h-[28rem]",
+              "grid gap-3 p-5 sm:grid-cols-2",
+              missingWeighOpen
+                ? "max-h-[22rem] overflow-y-scroll [scrollbar-gutter:stable]"
+                : "overflow-visible",
             )}
           >
             {missingWeighShown.map((s) => {
