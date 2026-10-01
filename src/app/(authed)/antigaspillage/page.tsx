@@ -9,8 +9,6 @@ import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
-import { Recycle } from "lucide-react";
-
 const MENU_CATEGORY_FR: Record<string, string> = {
   STARTER: "Entrée",
   MAIN: "Plat",
@@ -55,17 +53,14 @@ function formatMissingWeighDate(date: Date): string {
 function AntiWasteOffHeader() {
   return (
     <div className="anti-waste-dash flex flex-col items-center text-center">
-      <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-        <Recycle className="size-5" aria-hidden />
-      </div>
-      <div className="mt-3 max-w-2xl">
+      <div className="w-full">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Cantine 360
         </p>
         <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
           Mode anti-gaspillage
         </h1>
-        <p className="mt-2 text-pretty text-sm leading-relaxed text-foreground/85">
+        <p className="mt-3 w-full text-lg leading-relaxed text-foreground sm:text-xl">
           Le mode anti-gaspillage aide la cuisine et la commission à réduire les
           restes : fixez un objectif en grammes pour 100 assiettes, puis activez
           le mode ci-dessous pour afficher la synthèse, les plats à risque,
