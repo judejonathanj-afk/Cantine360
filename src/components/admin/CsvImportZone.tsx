@@ -55,19 +55,19 @@ export function CsvImportZone({
           ? "flex h-full flex-col"
           : onColor
             ? "rounded-2xl border border-white/10 bg-zinc-950 p-4"
-            : "rounded-2xl border border-zinc-200 bg-white p-4",
+            : "rounded-2xl border-2 border-zinc-900 bg-white p-5",
         className ?? "",
       ].join(" ")}
     >
       {!embedded ? (
         <div
           className={[
-            "flex items-center gap-2.5 text-lg font-semibold sm:text-xl",
-            onColor ? "text-amber-300" : "text-amber-600",
+            "flex items-center gap-2.5 font-bold",
+            onColor ? "text-lg text-amber-300 sm:text-xl" : "text-xl text-amber-700 sm:text-2xl",
           ].join(" ")}
         >
           <Upload
-            className={["h-5 w-5 shrink-0", onColor ? "text-amber-300" : "text-amber-600"].join(
+            className={["h-5 w-5 shrink-0", onColor ? "text-amber-300" : "text-amber-700"].join(
               " ",
             )}
             aria-hidden
@@ -83,7 +83,7 @@ export function CsvImportZone({
               : "text-base text-black"
             : onColor
               ? "mt-2 text-sm text-white/75"
-              : "mt-2 text-sm text-zinc-600"
+              : "mt-2 text-base font-medium leading-relaxed text-zinc-950"
         }
       >
         {description}
@@ -92,27 +92,27 @@ export function CsvImportZone({
       {!embedded ? (
         <ol
           className={[
-            "mt-3 list-decimal space-y-1 pl-5 text-sm",
-            onColor ? "text-white/80" : "text-zinc-700",
+            "mt-3 list-decimal space-y-1.5 pl-5",
+            onColor ? "text-sm text-white/80" : "text-base font-medium text-zinc-950",
           ].join(" ")}
         >
           <li>
             Cliquez sur{" "}
-            <strong className={onColor ? "font-semibold text-white" : "font-semibold text-zinc-900"}>
+            <strong className={onColor ? "font-semibold text-white" : "font-bold text-zinc-950"}>
               Choisir un fichier
             </strong>{" "}
             (depuis votre appareil : Bureau ou Téléchargements).
           </li>
           <li>
             Vérifiez que le nom du fichier apparaît ci-dessous — le bouton{" "}
-            <strong className={onColor ? "font-semibold text-white" : "font-semibold text-zinc-900"}>
+            <strong className={onColor ? "font-semibold text-white" : "font-bold text-zinc-950"}>
               Importer
             </strong>{" "}
             s’active ensuite.
           </li>
           <li>
             Cliquez sur{" "}
-            <strong className={onColor ? "font-semibold text-white" : "font-semibold text-zinc-900"}>
+            <strong className={onColor ? "font-semibold text-white" : "font-bold text-zinc-950"}>
               Importer
             </strong>
             .
@@ -192,7 +192,7 @@ export function CsvImportZone({
                 : "mt-2 text-sm text-black"
               : onColor
                 ? "mt-2 text-xs text-amber-200/90"
-                : "mt-2 text-xs text-amber-800"
+                : "mt-2 text-sm font-semibold text-zinc-950"
           }
         >
           Le bouton reste grisé tant qu’aucun fichier n’est choisi — c’est normal.
@@ -210,7 +210,7 @@ export function CsvImportZone({
                 : "text-base font-medium text-black underline-offset-2 hover:underline"
               : onColor
                 ? "text-sm font-medium text-white underline-offset-2 hover:underline"
-                : "text-sm font-medium text-zinc-700 underline-offset-2 hover:underline"
+                : "text-base font-semibold text-zinc-950 underline-offset-2 hover:underline"
           }
         >
           {exampleLabel}
