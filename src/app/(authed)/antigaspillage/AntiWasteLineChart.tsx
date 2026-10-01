@@ -113,11 +113,12 @@ export function AntiWasteLineChart({
           Pas encore de données sur la période.
         </p>
       ) : (
-        <div className="relative flex justify-center p-2">
+        <div className="relative w-full px-2 pb-3 pt-2">
           <svg
             ref={svgRef}
             viewBox={`0 0 ${W} ${H}`}
-            className="h-52 w-auto max-w-full touch-none sm:h-60"
+            preserveAspectRatio="none"
+            className="block h-56 w-full touch-none sm:h-64"
             onPointerMove={handleMove}
             onPointerLeave={() => setHover(null)}
             role="img"
