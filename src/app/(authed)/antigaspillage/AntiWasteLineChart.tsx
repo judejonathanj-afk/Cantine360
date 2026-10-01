@@ -6,7 +6,16 @@ import { fmt, formatDayLabelFr } from "./antiWasteFormat";
 
 const W = 820;
 const H = 360;
-const PAD = { top: 28, right: 56, bottom: 40, left: 56 };
+
+/** Largeur de marge (unités du viewBox) pour que le libellé tienne dans la fenêtre. */
+function sidePad(label: string) {
+  const widthChars = [...label].reduce(
+    (n, ch) => n + (ch === "\u202f" || ch === "\u00a0" || ch === " " ? 0.45 : 1),
+    0,
+  );
+  const px = widthChars * 8 + 12;
+  return Math.round(Math.min(190, Math.max(72, px * 2.2)));
+}
 
 type ChartPoint = {
   date: string;
@@ -49,23 +58,29 @@ export function AntiWasteLineChart({
     }));
     const maxWaste = Math.max(...data.map((d) => d.waste), 1);
     const maxG100 = Math.max(...data.map((d) => d.g100), 1);
-    const innerW = W - PAD.left - PAD.right;
-    const innerH = H - PAD.top - PAD.bottom;
+    const pad = {
+      top: 28,
+      bottom: 44,
+      left: sidePad(fmt(Math.round(maxWaste))),
+      right: sidePad(fmt(Math.round(maxG100))),
+    };
+    const innerW = W - pad.left - pad.right;
+    const innerH = H - pad.top - pad.bottom;
     const x = (i: number) =>
-      PAD.left + (data.length <= 1 ? 0 : (i / (data.length - 1)) * innerW);
-    const yWaste = (v: number) => PAD.top + innerH - (v / maxWaste) * innerH;
-    const yG100 = (v: number) => PAD.top + innerH - (v / maxG100) * innerH;
+      pad.left + (data.length <= 1 ? 0 : (i / (data.length - 1)) * innerW);
+    const yWaste = (v: number) => pad.top + innerH - (v / maxWaste) * innerH;
+    const yG100 = (v: number) => pad.top + innerH - (v / maxG100) * innerH;
 
     const wastePts = data.map((d, i) => ({ x: x(i), y: yWaste(d.waste) }));
     const g100Pts = data.map((d, i) => ({ x: x(i), y: yG100(d.g100) }));
 
-    return { data, maxWaste, maxG100, innerH, x, wastePts, g100Pts };
+    return { data, maxWaste, maxG100, innerH, pad, x, wastePts, g100Pts };
   }, [points]);
 
   const wasteLine = smoothPath(geo.wastePts);
   const wasteArea =
     geo.wastePts.length >= 2
-      ? `${wasteLine} L ${geo.wastePts.at(-1)!.x},${H - PAD.bottom} L ${geo.wastePts[0]!.x},${H - PAD.bottom} Z`
+      ? `${wasteLine} L ${geo.wastePts.at(-1)!.x},${H - geo.pad.bottom} L ${geo.wastePts[0]!.x},${H - geo.pad.bottom} Z`
       : "";
   const g100Line = smoothPath(geo.g100Pts);
   const perimeter = 2600;
@@ -88,22 +103,22 @@ export function AntiWasteLineChart({
   }
 
   return (
-    <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
-      <div className="flex items-start gap-3 border-b border-emerald-200 bg-emerald-100 p-6">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
+    <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-emerald-600 bg-card">
+      <div className="flex items-start gap-3 border-b border-emerald-300 bg-emerald-100 p-6">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white">
           <LineChart className="size-5" aria-hidden />
         </div>
-        <div className="flex-1">
-          <h2 className="font-display text-lg font-bold tracking-tight">
+        <div className="min-w-0 flex-1">
+          <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
             Évolution des déchets
           </h2>
-          <p className="mt-0.5 text-sm font-medium text-foreground/80">
+          <p className="mt-1 text-base font-medium leading-snug text-zinc-800">
             Poids des déchets par jour et grammes pour 100 assiettes servies —
             pour repérer quel jour ça augmente ({days} jours).
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-border px-4 py-3 text-sm">
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-emerald-100 px-4 py-3 text-base">
         <Legend
           color="var(--aw-primary)"
           label="Déchets (g) — chiffres à gauche"
@@ -148,12 +163,12 @@ export function AntiWasteLineChart({
             </defs>
 
             {yTicks.map((t) => {
-              const y = PAD.top + geo.innerH * (1 - t);
+              const y = geo.pad.top + geo.innerH * (1 - t);
               return (
                 <g key={t}>
                   <line
-                    x1={PAD.left}
-                    x2={W - PAD.right}
+                    x1={geo.pad.left}
+                    x2={W - geo.pad.right}
                     y1={y}
                     y2={y}
                     stroke="var(--border)"
@@ -193,8 +208,8 @@ export function AntiWasteLineChart({
               <line
                 x1={geo.x(hover)}
                 x2={geo.x(hover)}
-                y1={PAD.top}
-                y2={H - PAD.bottom}
+                y1={geo.pad.top}
+                y2={H - geo.pad.bottom}
                 stroke="var(--foreground)"
                 strokeOpacity="0.25"
               />
@@ -216,22 +231,22 @@ export function AntiWasteLineChart({
           </svg>
 
           {yTicks.map((t) => {
-            const y = PAD.top + geo.innerH * (1 - t);
+            const y = geo.pad.top + geo.innerH * (1 - t);
             return (
               <span key={t}>
                 <span
-                  className="pointer-events-none absolute -translate-x-full -translate-y-1/2 pr-1.5 text-[11px] tabular-nums leading-none text-muted-foreground"
+                  className="pointer-events-none absolute -translate-x-full -translate-y-1/2 whitespace-nowrap pr-1.5 text-xs font-semibold tabular-nums leading-none text-zinc-950"
                   style={{
-                    left: `${(PAD.left / W) * 100}%`,
+                    left: `${(geo.pad.left / W) * 100}%`,
                     top: `${(y / H) * 100}%`,
                   }}
                 >
                   {fmt(Math.round(geo.maxWaste * t))}
                 </span>
                 <span
-                  className="pointer-events-none absolute -translate-y-1/2 pl-1.5 text-[11px] tabular-nums leading-none text-muted-foreground"
+                  className="pointer-events-none absolute -translate-y-1/2 whitespace-nowrap pl-1.5 text-xs font-semibold tabular-nums leading-none text-zinc-950"
                   style={{
-                    left: `${((W - PAD.right) / W) * 100}%`,
+                    left: `${((W - geo.pad.right) / W) * 100}%`,
                     top: `${(y / H) * 100}%`,
                   }}
                 >
@@ -245,10 +260,10 @@ export function AntiWasteLineChart({
             i % 2 === 0 ? (
               <span
                 key={i}
-                className="pointer-events-none absolute -translate-x-1/2 whitespace-nowrap text-[11px] leading-none text-muted-foreground"
+                className="pointer-events-none absolute -translate-x-1/2 whitespace-nowrap text-xs font-semibold leading-none text-zinc-950"
                 style={{
                   left: `${(geo.x(i) / W) * 100}%`,
-                  top: `${((H - PAD.bottom + 18) / H) * 100}%`,
+                  top: `${((H - geo.pad.bottom + 18) / H) * 100}%`,
                 }}
               >
                 {d.label}
@@ -297,7 +312,7 @@ function Legend({
   dashed?: boolean;
 }) {
   return (
-    <span className="flex items-center gap-2 font-medium text-foreground">
+    <span className="flex items-center gap-2 font-semibold text-zinc-950">
       <span
         className="h-1 w-8 shrink-0 rounded-full"
         style={{
