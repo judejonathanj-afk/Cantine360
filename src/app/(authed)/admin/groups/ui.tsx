@@ -248,8 +248,10 @@ export function AdminGroupsClient({
           <strong className="font-semibold text-zinc-900">classes</strong> utilisées ensuite dans
           le service cantine (compteurs par groupe). Importez un CSV pour aller vite, ou ajoutez
           une école puis une classe à la main. Les{" "}
-          <strong className="font-semibold text-zinc-900">objectifs par défaut</strong> s&apos;appliquent
-          à toutes les classes ; le bouton <strong className="font-semibold text-zinc-900">Objectifs</strong>{" "}
+          <strong className="font-semibold text-zinc-900">objectifs par défaut</strong>
+          {" "}
+          s’appliquent à toutes les classes ; le bouton{" "}
+          <strong className="font-semibold text-zinc-900">Objectifs</strong>{" "}
           sur chaque carte permet une cible propre à la classe.
         </p>
       </div>
