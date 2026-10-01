@@ -579,17 +579,17 @@ export function AntiWastePanels({
       ) : null}
 
       <div className="grid gap-6">
-        <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
-          <div className="flex items-start justify-between gap-3 border-b border-violet-200 bg-violet-100 p-6">
+        <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-violet-600 bg-card">
+          <div className="flex items-start justify-between gap-3 border-b border-violet-300 bg-violet-100 p-6">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white">
                 <Flame className="size-5" aria-hidden />
               </div>
               <div className="min-w-0">
-                <h2 className="font-display text-lg font-bold tracking-tight">
+                <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
                   Plats à risque
                 </h2>
-                <p className="mt-0.5 text-sm font-medium text-foreground/80">
+                <p className="mt-1 text-base font-medium leading-snug text-zinc-800">
                   Les plats liés aux jours de plus fort gaspillage sur {days}{" "}
                   jours — pour décider quoi ajuster demain.
                 </p>
@@ -648,10 +648,10 @@ export function AntiWastePanels({
                           {rank}
                         </span>
                         <div className="min-w-0">
-                          <p className="truncate font-semibold leading-tight capitalize">
+                          <p className="truncate text-lg font-bold leading-tight text-zinc-950 capitalize">
                             {d.label}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="mt-0.5 text-sm font-medium text-zinc-800">
                             {d.serviceCount} service
                             {d.serviceCount > 1 ? "s" : ""} avec ce plat
                           </p>
@@ -660,11 +660,11 @@ export function AntiWastePanels({
                       <div className="shrink-0 text-right">
                         <p className="font-display text-xl font-bold tracking-tight text-[color:var(--aw-coral)]">
                           {fmt(Math.round(d.avgWasteGPer100))}
-                          <span className="ml-1 text-xs font-medium text-muted-foreground">
+                          <span className="ml-1 text-sm font-semibold text-zinc-800">
                             g / 100
                           </span>
                         </p>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        <span className="text-xs font-bold uppercase tracking-wider text-zinc-950">
                           {d.vsTarget === "above"
                             ? "Au-dessus objectif"
                             : d.vsTarget === "ok"
@@ -676,10 +676,10 @@ export function AntiWastePanels({
                     {riskyDishesOpen ? (
                       <div className="mt-4 grid gap-4 border-t border-border pt-3 sm:grid-cols-2">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                          <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
                             Gaspillage par niveau
                           </p>
-                          <p className="mt-2 text-sm text-zinc-800">
+                          <p className="mt-2 text-base font-medium text-zinc-950">
                             Maternelle :{" "}
                             <strong>
                               {d.maternelleGPer100 != null
@@ -687,7 +687,7 @@ export function AntiWastePanels({
                                 : "—"}
                             </strong>
                           </p>
-                          <p className="mt-1 text-sm text-zinc-800">
+                          <p className="mt-1 text-base font-medium text-zinc-950">
                             Primaire :{" "}
                             <strong>
                               {d.primaireGPer100 != null
@@ -697,7 +697,7 @@ export function AntiWastePanels({
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                          <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
                             Classes qui gaspillent le plus
                           </p>
                           {(d.topClasses ?? []).length === 0 ? (
