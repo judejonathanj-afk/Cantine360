@@ -38,30 +38,61 @@ const SAMPLE_RISKY_DISHES: RiskyDishRow[] = [
     avgWasteGPer100: 1860,
     serviceCount: 2,
     vsTarget: "unknown",
+    maternelleGPer100: 2140,
+    primaireGPer100: 1620,
+    topClasses: [
+      { label: "École Anne Frank — MS", level: "MATERNELLE", wasteG: 640, gramsPer100: 2280, served: 28 },
+      { label: "École Jean Moulin — CE1", level: "PRIMAIRE", wasteG: 510, gramsPer100: 1700, served: 30 },
+      { label: "École Voltaire — GS", level: "MATERNELLE", wasteG: 390, gramsPer100: 1950, served: 20 },
+    ],
   },
   {
     label: "Poisson pané",
     avgWasteGPer100: 1540,
     serviceCount: 3,
     vsTarget: "unknown",
+    maternelleGPer100: 1710,
+    primaireGPer100: 1390,
+    topClasses: [
+      { label: "École Jean Moulin — CE2", level: "PRIMAIRE", wasteG: 480, gramsPer100: 1500, served: 32 },
+      { label: "École Anne Frank — GS", level: "MATERNELLE", wasteG: 360, gramsPer100: 1800, served: 20 },
+    ],
   },
   {
     label: "Gratin de courgettes",
     avgWasteGPer100: 1210,
     serviceCount: 1,
     vsTarget: "unknown",
+    maternelleGPer100: 980,
+    primaireGPer100: 1340,
+    topClasses: [
+      { label: "École Voltaire — CM1", level: "PRIMAIRE", wasteG: 420, gramsPer100: 1400, served: 30 },
+      { label: "École Anne Frank — MS", level: "MATERNELLE", wasteG: 210, gramsPer100: 1050, served: 20 },
+    ],
   },
   {
     label: "Poulet rôti",
     avgWasteGPer100: 980,
     serviceCount: 2,
     vsTarget: "unknown",
+    maternelleGPer100: 860,
+    primaireGPer100: 1040,
+    topClasses: [
+      { label: "École Jean Moulin — CM2", level: "PRIMAIRE", wasteG: 330, gramsPer100: 1100, served: 30 },
+      { label: "École Voltaire — GS", level: "MATERNELLE", wasteG: 190, gramsPer100: 950, served: 20 },
+    ],
   },
   {
     label: "Riz cantonais",
     avgWasteGPer100: 740,
     serviceCount: 1,
     vsTarget: "unknown",
+    maternelleGPer100: 620,
+    primaireGPer100: 810,
+    topClasses: [
+      { label: "École Anne Frank — CE1", level: "PRIMAIRE", wasteG: 250, gramsPer100: 830, served: 30 },
+      { label: "École Voltaire — MS", level: "MATERNELLE", wasteG: 140, gramsPer100: 700, served: 20 },
+    ],
   },
 ];
 
@@ -129,6 +160,7 @@ export function AntiWastePanels({
   riskyDishes?: RiskyDishRow[];
 }) {
   const [missingWeighOpen, setMissingWeighOpen] = useState(false);
+  const [riskyDishesOpen, setRiskyDishesOpen] = useState(false);
   const riskyDishesVisible = [
     ...riskyDishes,
     ...SAMPLE_RISKY_DISHES,
@@ -530,6 +562,21 @@ export function AntiWastePanels({
                 </p>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => setRiskyDishesOpen((v) => !v)}
+              aria-expanded={riskyDishesOpen}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-violet-400/50 bg-white/70 px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
+            >
+              {riskyDishesOpen ? "Voir moins" : "Voir plus"}
+              <ChevronDown
+                className={cn(
+                  "size-3.5 transition-transform",
+                  riskyDishesOpen && "rotate-180",
+                )}
+                aria-hidden
+              />
+            </button>
           </div>
 
           {riskyDishesVisible.length === 0 ? (
@@ -540,7 +587,8 @@ export function AntiWastePanels({
           ) : (
             <ul
               className={cn(
-                "flex max-h-[22rem] flex-col gap-3 overflow-y-auto p-4 [scrollbar-gutter:stable]",
+                "flex flex-col gap-3 overflow-y-auto p-4 [scrollbar-gutter:stable]",
+                riskyDishesOpen ? "max-h-none" : "max-h-[22rem]",
               )}
             >
               {riskyDishesVisible.map((d, i) => {
@@ -592,6 +640,60 @@ export function AntiWastePanels({
                         </span>
                       </div>
                     </div>
+                    {riskyDishesOpen ? (
+                      <div className="mt-4 grid gap-4 border-t border-border pt-3 sm:grid-cols-2">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                            Gaspillage par niveau
+                          </p>
+                          <p className="mt-2 text-sm text-zinc-800">
+                            Maternelle :{" "}
+                            <strong>
+                              {d.maternelleGPer100 != null
+                                ? `${fmt(Math.round(d.maternelleGPer100))} g / 100`
+                                : "—"}
+                            </strong>
+                          </p>
+                          <p className="mt-1 text-sm text-zinc-800">
+                            Primaire :{" "}
+                            <strong>
+                              {d.primaireGPer100 != null
+                                ? `${fmt(Math.round(d.primaireGPer100))} g / 100`
+                                : "—"}
+                            </strong>
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                            Classes qui gaspillent le plus
+                          </p>
+                          {(d.topClasses ?? []).length === 0 ? (
+                            <p className="mt-2 text-sm text-zinc-600">
+                              Pas encore de détail par classe.
+                            </p>
+                          ) : (
+                            <ul className="mt-2 space-y-1.5">
+                              {(d.topClasses ?? []).map((c) => (
+                                <li
+                                  key={`${d.label}-${c.label}`}
+                                  className="flex items-baseline justify-between gap-3 text-sm text-zinc-800"
+                                >
+                                  <span className="min-w-0">
+                                    {c.label}
+                                    <span className="ml-1 text-xs text-zinc-500">
+                                      {c.level === "MATERNELLE" ? "Maternelle" : "Primaire"}
+                                    </span>
+                                  </span>
+                                  <span className="shrink-0 font-semibold">
+                                    {fmt(Math.round(c.wasteG))} g
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
                     <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
                       <div
                         className="aw-grow-bar h-full rounded-full"

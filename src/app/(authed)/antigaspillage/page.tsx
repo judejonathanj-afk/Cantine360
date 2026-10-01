@@ -5,6 +5,7 @@ import { getServerSession } from "@/server/auth";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
+import { formatGroupLabel } from "@/lib/groupLabel";
 import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
@@ -224,15 +225,33 @@ export default async function AntiWastePage({
       const waste =
         (s.wasteWeightG ?? 0) > 0 ? (s.wasteWeightG ?? 0) : matG + primG;
       const items = s.menu?.items ?? [];
+      const servedMaternelle = s.metrics
+        .filter((m) => m.group.level === "MATERNELLE")
+        .reduce((sum, m) => sum + m.servedCount, 0);
+      const servedPrimaire = s.metrics
+        .filter((m) => m.group.level === "PRIMAIRE")
+        .reduce((sum, m) => sum + m.servedCount, 0);
       return {
         wasteGramsPer100:
           dayServed > 0 && waste > 0 ? (waste / dayServed) * 100 : null,
+        wasteMaternelleG: matG,
+        wastePrimaireG: primG,
+        servedMaternelle,
+        servedPrimaire,
         menuLabels: items
           .filter((i) => i.label.trim().length > 0)
           .map((i) => i.label),
         mainLabels: items
           .filter((i) => i.category === "MAIN" && i.label.trim().length > 0)
           .map((i) => i.label),
+        classes: s.metrics.map((m) => ({
+          label: formatGroupLabel(m.group.school.name, m.group.name),
+          level:
+            m.group.level === "MATERNELLE"
+              ? ("MATERNELLE" as const)
+              : ("PRIMAIRE" as const),
+          served: m.servedCount,
+        })),
       };
     }),
     target,

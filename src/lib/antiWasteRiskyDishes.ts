@@ -1,9 +1,28 @@
 import { normalizeDishLabel } from "@/lib/antiWasteKitchenAdvice";
 
+export type RiskyDishClassInput = {
+  label: string;
+  level: "MATERNELLE" | "PRIMAIRE";
+  served: number;
+};
+
 export type RiskyDishInputDay = {
   wasteGramsPer100: number | null;
+  wasteMaternelleG?: number;
+  wastePrimaireG?: number;
+  servedMaternelle?: number;
+  servedPrimaire?: number;
   menuLabels: string[];
   mainLabels: string[];
+  classes?: RiskyDishClassInput[];
+};
+
+export type RiskyDishClassRow = {
+  label: string;
+  level: "MATERNELLE" | "PRIMAIRE";
+  wasteG: number;
+  gramsPer100: number;
+  served: number;
 };
 
 export type RiskyDishRow = {
@@ -11,6 +30,9 @@ export type RiskyDishRow = {
   avgWasteGPer100: number;
   serviceCount: number;
   vsTarget: "above" | "ok" | "unknown";
+  maternelleGPer100?: number | null;
+  primaireGPer100?: number | null;
+  topClasses?: RiskyDishClassRow[];
 };
 
 export type TodayRiskyDishAlert = {
@@ -33,7 +55,22 @@ export function buildRiskyDishesRanking(
   const limit = options?.limit ?? 8;
   const preferMain = options?.preferMain ?? true;
 
-  type Acc = { wasteSum: number; n: number; displayLabel: string };
+  type ClassAcc = {
+    label: string;
+    level: "MATERNELLE" | "PRIMAIRE";
+    wasteG: number;
+    served: number;
+  };
+  type Acc = {
+    wasteSum: number;
+    n: number;
+    displayLabel: string;
+    matWaste: number;
+    matServed: number;
+    primWaste: number;
+    primServed: number;
+    classes: Map<string, ClassAcc>;
+  };
   const byKey = new Map<string, Acc>();
 
   for (const day of days) {
@@ -51,9 +88,40 @@ export function buildRiskyDishesRanking(
         wasteSum: 0,
         n: 0,
         displayLabel: raw.trim(),
+        matWaste: 0,
+        matServed: 0,
+        primWaste: 0,
+        primServed: 0,
+        classes: new Map(),
       };
       cur.wasteSum += day.wasteGramsPer100;
       cur.n += 1;
+      cur.matWaste += day.wasteMaternelleG ?? 0;
+      cur.matServed += day.servedMaternelle ?? 0;
+      cur.primWaste += day.wastePrimaireG ?? 0;
+      cur.primServed += day.servedPrimaire ?? 0;
+      for (const cls of day.classes ?? []) {
+        if (cls.served <= 0) continue;
+        const levelWaste =
+          cls.level === "MATERNELLE"
+            ? (day.wasteMaternelleG ?? 0)
+            : (day.wastePrimaireG ?? 0);
+        const levelServed =
+          cls.level === "MATERNELLE"
+            ? (day.servedMaternelle ?? 0)
+            : (day.servedPrimaire ?? 0);
+        const share = levelServed > 0 ? cls.served / levelServed : 0;
+        const id = `${cls.level}:${cls.label}`;
+        const acc = cur.classes.get(id) ?? {
+          label: cls.label,
+          level: cls.level,
+          wasteG: 0,
+          served: 0,
+        };
+        acc.wasteG += levelWaste * share;
+        acc.served += cls.served;
+        cur.classes.set(id, acc);
+      }
       byKey.set(key, cur);
     }
   }
@@ -64,6 +132,17 @@ export function buildRiskyDishesRanking(
   return [...byKey.entries()]
     .map(([, acc]) => {
       const avg = acc.wasteSum / acc.n;
+      const topClasses = [...acc.classes.values()]
+        .filter((c) => c.wasteG > 0)
+        .sort((a, b) => b.wasteG - a.wasteG)
+        .slice(0, 4)
+        .map((c) => ({
+          label: c.label,
+          level: c.level,
+          wasteG: c.wasteG,
+          gramsPer100: c.served > 0 ? (c.wasteG / c.served) * 100 : 0,
+          served: c.served,
+        }));
       return {
         label: acc.displayLabel,
         avgWasteGPer100: avg,
@@ -74,6 +153,15 @@ export function buildRiskyDishesRanking(
             : avg > target
               ? ("above" as const)
               : ("ok" as const),
+        maternelleGPer100:
+          acc.matServed > 0 && acc.matWaste > 0
+            ? (acc.matWaste / acc.matServed) * 100
+            : null,
+        primaireGPer100:
+          acc.primServed > 0 && acc.primWaste > 0
+            ? (acc.primWaste / acc.primServed) * 100
+            : null,
+        topClasses,
       };
     })
     .filter((r) => r.serviceCount >= 1)
