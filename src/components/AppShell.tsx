@@ -194,13 +194,13 @@ export function AppShell({
     role === "ADMIN"
       ? [
           NAV[1],
+          ...(antiWasteNav ? [antiWasteNav] : []),
           { href: "/admin/groups", label: "Écoles & classes", icon: Users },
           {
             href: "/admin/students",
             label: "Élèves & allergènes",
             icon: GraduationCap,
           },
-          ...(antiWasteNav ? [antiWasteNav] : []),
           ...serviceNavItems,
           { href: "/exports", label: "Exports", icon: FileDown },
         ]
