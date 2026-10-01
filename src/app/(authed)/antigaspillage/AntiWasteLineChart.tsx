@@ -102,10 +102,17 @@ export function AntiWasteLineChart({
             pour repérer quel jour ça augmente ({days} jours).
           </p>
         </div>
-        <div className="hidden items-center gap-4 text-xs sm:flex">
-          <Legend color="var(--aw-primary)" label="Déchets (g)" />
-          <Legend color="var(--aw-amber)" label="g / 100" dashed />
-        </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-border px-4 py-3 text-sm">
+        <Legend
+          color="var(--aw-primary)"
+          label="Déchets (g) — chiffres à gauche"
+        />
+        <Legend
+          color="var(--aw-amber)"
+          label="g / 100 assiettes — chiffres à droite"
+          dashed
+        />
       </div>
 
       {geo.data.length === 0 ? (
@@ -290,12 +297,12 @@ function Legend({
   dashed?: boolean;
 }) {
   return (
-    <span className="flex items-center gap-2 text-muted-foreground">
+    <span className="flex items-center gap-2 font-medium text-foreground">
       <span
-        className="h-0.5 w-5 rounded-full"
+        className="h-1 w-8 shrink-0 rounded-full"
         style={{
           background: dashed
-            ? `repeating-linear-gradient(90deg, ${color} 0 4px, transparent 4px 7px)`
+            ? `repeating-linear-gradient(90deg, ${color} 0 6px, transparent 6px 10px)`
             : color,
         }}
       />
