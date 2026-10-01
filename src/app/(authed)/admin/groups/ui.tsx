@@ -233,7 +233,7 @@ export function AdminGroupsClient({
           <div className="inline-flex rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3">
             <MenusCantineColorTitle
               text="ÉCOLES & CLASSES"
-              className="text-2xl md:text-3xl lg:text-4xl"
+              className="text-xl md:text-2xl lg:text-3xl"
             />
           </div>
         </div>
@@ -257,13 +257,12 @@ export function AdminGroupsClient({
       </div>
 
       <CsvImportZone
-        onColor
         title="Importer des classes (CSV)"
         description={
           <>
-            Colonnes <code className="rounded bg-white/15 px-1 text-white/90">ecole</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">classe</code> et{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">niveau</code>{" "}
+            Colonnes <code className="rounded bg-zinc-100 px-1 text-zinc-900">ecole</code>,{" "}
+            <code className="rounded bg-zinc-100 px-1 text-zinc-900">classe</code> et{" "}
+            <code className="rounded bg-zinc-100 px-1 text-zinc-900">niveau</code>{" "}
             (maternelle ou primaire), séparateur point-virgule. Les écoles sont créées
             automatiquement si besoin. Sans colonne niveau, la classe est en primaire.
           </>
