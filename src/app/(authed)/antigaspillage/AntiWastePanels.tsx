@@ -11,6 +11,7 @@ import {
   Download,
   Flag,
   Flame,
+  Lightbulb,
   Recycle,
   Scale,
   Trash2,
@@ -329,6 +330,42 @@ export function AntiWastePanels({
     ...riskyDishesVisible.map((d) => d.avgWasteGPer100),
     1,
   );
+
+  const weighedPoints = chartPoints.filter((p) => p.g100 > 0 || p.waste > 0);
+  const heaviestDay =
+    weighedPoints.length === 0
+      ? null
+      : weighedPoints.reduce((best, p) => {
+          if (p.g100 !== best.g100) return p.g100 > best.g100 ? p : best;
+          return p.waste > best.waste ? p : best;
+        });
+  const g100Series = chartPoints.filter((p) => p.g100 > 0);
+  let curveRemark: string | null = null;
+  if (g100Series.length >= 2) {
+    const first = g100Series[0]!.g100;
+    const last = g100Series[g100Series.length - 1]!.g100;
+    const delta = last - first;
+    if (first > 0 && Math.abs(delta) / first < 0.08) {
+      curveRemark = "Les g / 100 restent stables sur la période.";
+    } else if (delta > 0) {
+      curveRemark = "Les g / 100 montent sur la période.";
+    } else {
+      curveRemark = "Les g / 100 baissent sur la période.";
+    }
+  }
+  const watchedDish = riskyDishes[0] ?? null;
+  let dishRemark: string | null = null;
+  if (watchedDish) {
+    const mat = watchedDish.maternelleGPer100;
+    const prim = watchedDish.primaireGPer100;
+    let levelNote = "";
+    if (mat != null && prim != null && mat > 0 && prim > 0) {
+      if (mat > prim * 1.1) levelNote = " La maternelle jette plus que le primaire.";
+      else if (prim > mat * 1.1)
+        levelNote = " Le primaire jette plus que la maternelle.";
+    }
+    dishRemark = `« ${watchedDish.label} » revient dans les jours lourds, environ ${fmt(Math.round(watchedDish.avgWasteGPer100))} g / 100.${levelNote}`;
+  }
 
   return (
     <div className="anti-waste-dash relative space-y-6">
@@ -708,7 +745,33 @@ export function AntiWastePanels({
           )}
         </div>
 
-        <AntiWasteLineChart days={days} points={chartPoints} />
+        <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)]">
+          <div className="min-w-0">
+            <AntiWasteLineChart days={days} points={chartPoints} />
+          </div>
+          <div className="min-w-0 lg:h-0 lg:min-h-full">
+            <WasteAdvicePanel
+              days={days}
+              tone={status.tone}
+              title={status.title}
+              hint={status.hint}
+              heaviestLabel={
+                heaviestDay && (heaviestDay.g100 > 0 || heaviestDay.waste > 0)
+                  ? formatDayLabelFr(heaviestDay.date)
+                  : null
+              }
+              heaviestValue={
+                heaviestDay == null
+                  ? null
+                  : heaviestDay.g100 > 0
+                    ? `${fmt(Math.round(heaviestDay.g100))} g / 100`
+                    : `${fmt(Math.round(heaviestDay.waste))} g`
+              }
+              curveRemark={curveRemark}
+              dishRemark={dishRemark}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="aw-reveal overflow-hidden rounded-3xl border border-border bg-card">
@@ -791,6 +854,81 @@ export function AntiWastePanels({
       </footer>
       </div>
     </div>
+  );
+}
+
+function WasteAdvicePanel({
+  days,
+  tone,
+  title,
+  hint,
+  heaviestLabel,
+  heaviestValue,
+  curveRemark,
+  dishRemark,
+}: {
+  days: 7 | 30;
+  tone: "ok" | "watch" | "alert" | "none";
+  title: string;
+  hint: string;
+  heaviestLabel: string | null;
+  heaviestValue: string | null;
+  curveRemark: string | null;
+  dishRemark: string | null;
+}) {
+  const toneClass =
+    tone === "ok"
+      ? "border-emerald-200 bg-emerald-50"
+      : tone === "watch"
+        ? "border-amber-200 bg-amber-50"
+        : tone === "alert"
+          ? "border-rose-200 bg-rose-50"
+          : "border-zinc-200 bg-zinc-50";
+
+  return (
+    <aside className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
+      <div className="flex items-start gap-3 border-b border-amber-200 bg-amber-100 p-4">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white">
+          <Lightbulb className="size-5" aria-hidden />
+        </div>
+        <div className="min-w-0">
+          <h2 className="font-display text-lg font-bold tracking-tight">
+            Avis du suivi
+          </h2>
+          <p className="mt-0.5 text-sm font-medium text-foreground/80">
+            Ce que les pesées indiquent sur {days} jours.
+          </p>
+        </div>
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-4">
+        <div className={cn("rounded-2xl border p-3", toneClass)}>
+          <p className="font-display text-sm font-semibold leading-snug text-foreground">
+            {title}
+          </p>
+          <p className="mt-1.5 text-sm leading-relaxed text-foreground/80">
+            {hint}
+          </p>
+        </div>
+        {heaviestLabel && heaviestValue ? (
+          <p className="text-sm leading-relaxed text-foreground">
+            <span className="font-semibold">Jour le plus lourd. </span>
+            {heaviestLabel} — {heaviestValue}.
+          </p>
+        ) : null}
+        {curveRemark ? (
+          <p className="text-sm leading-relaxed text-foreground">
+            <span className="font-semibold">Courbe. </span>
+            {curveRemark}
+          </p>
+        ) : null}
+        {dishRemark ? (
+          <p className="text-sm leading-relaxed text-foreground">
+            <span className="font-semibold">Plat à surveiller. </span>
+            {dishRemark}
+          </p>
+        ) : null}
+      </div>
+    </aside>
   );
 }
 
