@@ -911,7 +911,7 @@ function WasteAdvicePanel({
         </div>
         {heaviestLabel && heaviestValue ? (
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
+            <p className="inline-flex rounded-md bg-black px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-white">
               Jour le plus lourd
             </p>
             <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
@@ -934,7 +934,7 @@ function WasteAdvicePanel({
         ) : null}
         {dishRemark ? (
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
+            <p className="inline-flex rounded-md bg-black px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-white">
               Plat à surveiller
             </p>
             <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
