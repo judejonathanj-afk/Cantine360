@@ -114,11 +114,12 @@ export function AntiWasteLineChart({
         </p>
       ) : (
         <div className="relative w-full px-2 pb-3 pt-2">
+          <div className="relative h-56 w-full sm:h-64">
           <svg
             ref={svgRef}
             viewBox={`0 0 ${W} ${H}`}
             preserveAspectRatio="none"
-            className="block h-56 w-full touch-none sm:h-64"
+            className="absolute inset-0 h-full w-full touch-none"
             onPointerMove={handleMove}
             onPointerLeave={() => setHover(null)}
             role="img"
@@ -151,24 +152,6 @@ export function AntiWasteLineChart({
                     stroke="var(--border)"
                     strokeDasharray="2 6"
                   />
-                  <text
-                    x={PAD.left - 10}
-                    y={y + 4}
-                    textAnchor="end"
-                    className="fill-muted-foreground"
-                    fontSize="11"
-                  >
-                    {fmt(Math.round(geo.maxWaste * t))}
-                  </text>
-                  <text
-                    x={W - PAD.right + 10}
-                    y={y + 4}
-                    textAnchor="start"
-                    className="fill-muted-foreground"
-                    fontSize="11"
-                  >
-                    {fmt(Math.round(geo.maxG100 * t))}
-                  </text>
                 </g>
               );
             })}
@@ -223,21 +206,48 @@ export function AntiWasteLineChart({
               />
             ))}
 
-            {geo.data.map((d, i) =>
-              i % 2 === 0 ? (
-                <text
-                  key={i}
-                  x={geo.x(i)}
-                  y={H - PAD.bottom + 22}
-                  textAnchor="middle"
-                  className="fill-muted-foreground"
-                  fontSize="11"
-                >
-                  {d.label}
-                </text>
-              ) : null,
-            )}
           </svg>
+
+          {yTicks.map((t) => {
+            const y = PAD.top + geo.innerH * (1 - t);
+            return (
+              <span key={t}>
+                <span
+                  className="pointer-events-none absolute -translate-x-full -translate-y-1/2 pr-1.5 text-[11px] tabular-nums leading-none text-muted-foreground"
+                  style={{
+                    left: `${(PAD.left / W) * 100}%`,
+                    top: `${(y / H) * 100}%`,
+                  }}
+                >
+                  {fmt(Math.round(geo.maxWaste * t))}
+                </span>
+                <span
+                  className="pointer-events-none absolute -translate-y-1/2 pl-1.5 text-[11px] tabular-nums leading-none text-muted-foreground"
+                  style={{
+                    left: `${((W - PAD.right) / W) * 100}%`,
+                    top: `${(y / H) * 100}%`,
+                  }}
+                >
+                  {fmt(Math.round(geo.maxG100 * t))}
+                </span>
+              </span>
+            );
+          })}
+
+          {geo.data.map((d, i) =>
+            i % 2 === 0 ? (
+              <span
+                key={i}
+                className="pointer-events-none absolute -translate-x-1/2 whitespace-nowrap text-[11px] leading-none text-muted-foreground"
+                style={{
+                  left: `${(geo.x(i) / W) * 100}%`,
+                  top: `${((H - PAD.bottom + 18) / H) * 100}%`,
+                }}
+              >
+                {d.label}
+              </span>
+            ) : null,
+          )}
 
           {hover != null && geo.data[hover] ? (
             <div
@@ -263,6 +273,7 @@ export function AntiWasteLineChart({
               </p>
             </div>
           ) : null}
+          </div>
         </div>
       )}
     </div>
