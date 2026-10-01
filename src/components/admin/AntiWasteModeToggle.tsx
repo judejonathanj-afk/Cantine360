@@ -131,9 +131,7 @@ export function AntiWasteModeToggle({
         </p>
       ) : null}
 
-      <div
-        className="flex items-start justify-between gap-4 rounded-2xl border border-[#e6d24a] bg-[#fbe961] p-5 text-zinc-950"
-      >
+      <div className="flex items-start justify-between gap-4 rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950">
         <div>
           <p className="font-display text-base font-semibold text-zinc-950">
             Activation du mode
@@ -189,9 +187,7 @@ export function AntiWasteModeToggle({
       ) : null}
 
       {enabled ? (
-        <div
-          className="rounded-2xl border border-[#e6d24a] bg-[#fbe961] p-5 text-zinc-950"
-        >
+        <div className="rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950">
           <div className="flex items-center gap-2">
             <Target className="size-4 text-emerald-800" aria-hidden />
             <p className="font-display text-base font-semibold text-zinc-950">
@@ -287,7 +283,7 @@ export function AntiWasteModeToggle({
     return (
       <div
         id="anti-waste"
-        className="flex scroll-mt-24 flex-col gap-5"
+        className="flex scroll-mt-24 flex-col gap-5 rounded-2xl border border-[#e6d24a] bg-[#fbe961] p-5"
       >
         {body}
       </div>
@@ -297,7 +293,7 @@ export function AntiWasteModeToggle({
   return (
     <div
       id="anti-waste"
-      className="scroll-mt-24"
+      className="scroll-mt-24 rounded-2xl border border-[#e6d24a] bg-[#fbe961] p-5"
     >
       <div className="flex flex-col gap-5">{body}</div>
     </div>
