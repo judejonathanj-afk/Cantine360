@@ -32,6 +32,39 @@ import {
   weighingStatusFromLabel,
 } from "./antiWasteFormat";
 
+const SAMPLE_RISKY_DISHES: RiskyDishRow[] = [
+  {
+    label: "Purée de carottes",
+    avgWasteGPer100: 1860,
+    serviceCount: 2,
+    vsTarget: "unknown",
+  },
+  {
+    label: "Poisson pané",
+    avgWasteGPer100: 1540,
+    serviceCount: 3,
+    vsTarget: "unknown",
+  },
+  {
+    label: "Gratin de courgettes",
+    avgWasteGPer100: 1210,
+    serviceCount: 1,
+    vsTarget: "unknown",
+  },
+  {
+    label: "Poulet rôti",
+    avgWasteGPer100: 980,
+    serviceCount: 2,
+    vsTarget: "unknown",
+  },
+  {
+    label: "Riz cantonais",
+    avgWasteGPer100: 740,
+    serviceCount: 1,
+    vsTarget: "unknown",
+  },
+];
+
 type DayRow = {
   date: string;
   wasteWeightG: number;
@@ -96,12 +129,10 @@ export function AntiWastePanels({
   riskyDishes?: RiskyDishRow[];
 }) {
   const [missingWeighOpen, setMissingWeighOpen] = useState(false);
-  const [riskyDishesOpen, setRiskyDishesOpen] = useState(false);
-  const RISKY_PREVIEW = 3;
-  const riskyDishesVisible = riskyDishesOpen
-    ? riskyDishes
-    : riskyDishes.slice(0, RISKY_PREVIEW);
-  const riskyDishesCanExpand = riskyDishes.length > RISKY_PREVIEW;
+  const riskyDishesVisible = [
+    ...riskyDishes,
+    ...SAMPLE_RISKY_DISHES,
+  ];
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
   const gaugeValue = wasteGramsPer100Served ?? 0;
   const gaugeStatus = gaugeStatusFromTone(
@@ -263,7 +294,7 @@ export function AntiWastePanels({
   ];
 
   const maxRiskG = Math.max(
-    ...riskyDishes.map((d) => d.avgWasteGPer100),
+    ...riskyDishesVisible.map((d) => d.avgWasteGPer100),
     1,
   );
 
@@ -499,26 +530,9 @@ export function AntiWastePanels({
                 </p>
               </div>
             </div>
-            {riskyDishesCanExpand ? (
-              <button
-                type="button"
-                onClick={() => setRiskyDishesOpen((v) => !v)}
-                aria-expanded={riskyDishesOpen}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-violet-400/50 bg-white/70 px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
-              >
-                {riskyDishesOpen ? "Voir moins" : "Voir plus"}
-                <ChevronDown
-                  className={cn(
-                    "size-3.5 transition-transform",
-                    riskyDishesOpen && "rotate-180",
-                  )}
-                  aria-hidden
-                />
-              </button>
-            ) : null}
           </div>
 
-          {riskyDishes.length === 0 ? (
+          {riskyDishesVisible.length === 0 ? (
             <p className="px-6 py-10 text-center text-sm text-muted-foreground">
               Pas encore assez de menus + pesées sur la période pour classer
               les plats.
@@ -526,8 +540,7 @@ export function AntiWastePanels({
           ) : (
             <ul
               className={cn(
-                "flex flex-1 flex-col gap-3 overflow-y-auto p-4 [scrollbar-gutter:stable]",
-                riskyDishesOpen ? "max-h-[28rem]" : "max-h-[18rem]",
+                "flex max-h-[22rem] flex-col gap-3 overflow-y-auto p-4 [scrollbar-gutter:stable]",
               )}
             >
               {riskyDishesVisible.map((d, i) => {
