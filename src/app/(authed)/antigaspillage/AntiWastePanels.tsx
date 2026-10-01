@@ -482,7 +482,7 @@ export function AntiWastePanels({
         </div>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="grid gap-6">
         <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-card">
           <div className="flex items-start justify-between gap-3 border-b border-violet-200 bg-violet-100 p-6">
             <div className="flex min-w-0 items-start gap-3">
