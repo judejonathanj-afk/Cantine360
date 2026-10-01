@@ -442,11 +442,11 @@ export function AntiWastePanels({
                   ? "Sans objectif"
                   : gaugeStatusLabel[gaugeStatus]}
             </div>
-            <p className="max-w-xs text-balance text-center text-sm leading-relaxed text-foreground/85">
+            <p className="max-w-xs text-balance text-center text-base font-medium leading-relaxed text-zinc-950">
               {wasteGramsPer100Served != null && wasteGramsPer100Served > 0 ? (
                 <>
                   Pour 100 repas servis, environ{" "}
-                  <span className="font-semibold text-foreground">
+                  <span className="font-bold text-zinc-950">
                     {(wasteGramsPer100Served / 1000).toLocaleString("fr-FR", {
                       maximumFractionDigits: 2,
                     })}{" "}
@@ -480,15 +480,15 @@ export function AntiWastePanels({
               style={{ animationDelay: `${160 + i * 70}ms` }}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                <span className="text-sm font-bold uppercase tracking-wider text-zinc-950">
                   {t.label}
                 </span>
                 <Icon className={cn("size-4", t.accent)} aria-hidden />
               </div>
-              <p className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground">
+              <p className="mt-3 font-display text-3xl font-bold tracking-tight text-zinc-950">
                 {t.value}
               </p>
-              <p className="mt-1 text-sm font-medium text-foreground/75">{t.sub}</p>
+              <p className="mt-1 text-base font-semibold text-zinc-950">{t.sub}</p>
             </div>
           );
         })}

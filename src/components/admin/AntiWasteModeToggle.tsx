@@ -141,12 +141,12 @@ export function AntiWasteModeToggle({
           >
             {enabled ? "Mode activé" : "Activation du mode"}
           </p>
-          <p className="mt-1 text-sm font-medium text-zinc-900/85">
+          <p className="mt-1 text-base font-medium leading-snug text-zinc-950">
             {enabled
               ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
               : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
           </p>
-          <p className="mt-1 text-xs font-medium text-zinc-900/75">
+          <p className="mt-1 text-sm font-semibold text-zinc-950">
             Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
@@ -199,7 +199,7 @@ export function AntiWasteModeToggle({
               Objectif à ne pas dépasser
             </p>
           </div>
-          <p className="mt-1 text-sm leading-relaxed font-medium text-zinc-900/85">
+          <p className="mt-1 text-base font-medium leading-relaxed text-zinc-950">
             Grammes de déchets acceptés{" "}
             <span className="font-semibold text-zinc-950">
               pour 100 assiettes servies
@@ -224,7 +224,7 @@ export function AntiWasteModeToggle({
                 className="w-20 bg-transparent text-lg font-semibold text-zinc-950 outline-none placeholder:font-normal placeholder:text-zinc-500"
                 aria-label="Objectif en grammes pour 100 assiettes"
               />
-              <span className="text-sm text-zinc-700">g / 100</span>
+              <span className="text-base font-semibold text-zinc-950">g / 100</span>
             </div>
             <button
               type="button"
@@ -273,7 +273,7 @@ export function AntiWasteModeToggle({
                     }
                   })();
                 }}
-                className="text-sm font-medium text-zinc-800 underline-offset-4 hover:underline"
+                className="text-base font-semibold text-zinc-950 underline-offset-4 hover:underline"
               >
                 Effacer
               </button>

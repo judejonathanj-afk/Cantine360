@@ -99,7 +99,7 @@ export function AntiWasteGauge({
         >
           {fmt1(value)}
         </span>
-        <span className="mt-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-950">
           g / 100 assiettes
         </span>
       </div>
