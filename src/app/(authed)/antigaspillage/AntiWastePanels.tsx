@@ -576,7 +576,7 @@ export function AntiWastePanels({
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                onClick={() => downloadRiskyDishesPdf(riskyDishes, days)}
+                onClick={() => downloadRiskyDishesPdf(riskyDishesVisible, days)}
                 className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/50 bg-white px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
               >
                 <Download className="size-3.5" aria-hidden />

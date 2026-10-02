@@ -2,9 +2,20 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 
+function pdfNumber(value: number) {
+  const rounded = Math.round(value).toString();
+  return rounded.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
 function g100(value: number | null | undefined) {
   if (value == null) return "—";
-  return `${Math.round(value).toLocaleString("fr-FR")} g / 100`;
+  return `${pdfNumber(value)} g/100`;
+}
+
+function dishTitle(label: string) {
+  return label.replace(/\p{L}+/gu, (word) => {
+    return word.charAt(0).toLocaleUpperCase("fr-FR") + word.slice(1);
+  });
 }
 
 function vsLabel(value: RiskyDishRow["vsTarget"]) {
@@ -19,9 +30,9 @@ function classesLabel(dish: RiskyDishRow) {
   return rows
     .map((row) => {
       const level = row.level === "MATERNELLE" ? "Maternelle" : "Primaire";
-      return `${row.label} (${level}, ${Math.round(row.wasteG).toLocaleString("fr-FR")} g)`;
+      return `${row.label} - ${level} - ${pdfNumber(row.wasteG)} g`;
     })
-    .join(" · ");
+    .join("\n");
 }
 
 export function downloadRiskyDishesPdf(dishes: RiskyDishRow[], days: 7 | 30) {
@@ -38,7 +49,7 @@ export function downloadRiskyDishesPdf(dishes: RiskyDishRow[], days: 7 | 30) {
       ? [["—", "Pas encore de plat à risque sur la période.", "—", "—", "—", "—", "—", "—"]]
       : dishes.map((dish, index) => [
           String(index + 1),
-          dish.label,
+          dishTitle(dish.label),
           String(dish.serviceCount),
           g100(dish.avgWasteGPer100),
           vsLabel(dish.vsTarget),
