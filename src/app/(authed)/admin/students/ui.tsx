@@ -226,10 +226,14 @@ export function AdminStudentsClient({
           <div className="inline-flex rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3">
             <MenusCantineColorTitle
               text="ÉLÈVES & ALLERGÈNES"
-              className="text-2xl md:text-3xl lg:text-4xl"
+              className="text-xl md:text-2xl lg:text-3xl"
             />
           </div>
         </div>
+        <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-zinc-950 sm:text-4xl">
+          Préparez vos élèves
+          <span className="mt-1 block text-emerald-600">en toute simplicité.</span>
+        </h2>
         <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
           {students.length} élève{students.length > 1 ? "s" : ""} ·{" "}
           <span className="font-bold">{withAllergens}</span> avec allergène
@@ -255,24 +259,11 @@ export function AdminStudentsClient({
       </div>
 
       <CsvImportZone
-        onColor
-        title="Importer des élèves (CSV)"
-        description={
-          <>
-            Colonnes <code className="rounded bg-white/15 px-1 text-white/90">ecole</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">classe</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">prenom</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">nom</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">allergenes</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">consignes</code>{" "}
-            (optionnel),{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">sans_porc</code>,{" "}
-            <code className="rounded bg-white/15 px-1 text-white/90">vegetarien</code>{" "}
-            (oui/non). Importez d’abord les classes.
-          </>
-        }
+        title="Importer vos élèves"
+        description="Ajoutez rapidement vos élèves avec un fichier CSV"
+        columns={["ecole", "classe", "prenom", "nom", "allergenes", "consignes", "sans_porc", "vegetarien"]}
         exampleHref="/test-import-eleves.csv"
-        exampleLabel="Télécharger un exemple CSV (34 élèves)"
+        exampleLabel="Télécharger un exemple CSV"
         busy={busy}
         resultMessage={
           importResult
