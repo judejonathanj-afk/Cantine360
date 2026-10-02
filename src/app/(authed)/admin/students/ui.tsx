@@ -258,12 +258,12 @@ export function AdminStudentsClient({
         onSubmit={createStudent}
         className="rounded-2xl border-2 border-zinc-900 bg-white p-4"
       >
-        <div className="text-sm font-medium text-zinc-900">Ajouter un élève</div>
+        <div className="text-base font-bold text-zinc-950">Ajouter un élève</div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
+            className="rounded-xl border border-zinc-300 px-4 py-3 text-base font-bold text-zinc-950 outline-none placeholder:font-bold placeholder:text-zinc-700 focus:border-zinc-900"
             placeholder="Prénom"
           />
           <input
@@ -289,7 +289,7 @@ export function AdminStudentsClient({
           </select>
         </div>
         <div className="mt-3">
-          <div className="text-xs font-medium text-zinc-700">Allergènes</div>
+          <div className="text-sm font-bold text-zinc-950">Allergènes</div>
           <div className="mt-2 flex flex-wrap gap-2">
             {EU14_ALLERGENS.map((a) => {
               const on = selectedAllergens.includes(a);
@@ -310,14 +310,14 @@ export function AdminStudentsClient({
           </div>
         </div>
         <div className="mt-3">
-          <div className="text-xs font-medium text-zinc-700">Régimes (hors allergènes)</div>
+          <div className="text-sm font-bold text-zinc-950">Régimes (hors allergènes)</div>
           <div className="mt-2 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setNoPork((v) => !v)}
               className={[
-                "rounded-full px-2.5 py-1 text-xs font-semibold",
-                noPork ? "bg-sky-800 text-white" : "bg-zinc-100 text-zinc-700",
+                "rounded-full px-3 py-1.5 text-sm font-bold",
+                noPork ? "bg-sky-800 text-white" : "bg-zinc-100 text-zinc-800",
               ].join(" ")}
             >
               Sans porc
@@ -326,8 +326,8 @@ export function AdminStudentsClient({
               type="button"
               onClick={() => setVegetarian((v) => !v)}
               className={[
-                "rounded-full px-2.5 py-1 text-xs font-semibold",
-                vegetarian ? "bg-emerald-800 text-white" : "bg-zinc-100 text-zinc-700",
+                "rounded-full px-3 py-1.5 text-sm font-bold",
+                vegetarian ? "bg-emerald-800 text-white" : "bg-zinc-100 text-zinc-800",
               ].join(" ")}
             >
               Végétarien
@@ -335,7 +335,7 @@ export function AdminStudentsClient({
           </div>
         </div>
         <div className="mt-3">
-          <label className="text-xs font-medium text-zinc-700" htmlFor="allergen-notes">
+          <label className="text-sm font-bold text-zinc-950" htmlFor="allergen-notes">
             Consignes parents (affichées en cuisine)
           </label>
           <textarea
