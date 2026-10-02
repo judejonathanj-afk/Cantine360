@@ -477,20 +477,18 @@ export function AdminStudentsClient({
                         Végétarien
                       </button>
                     </div>
-                    {s.allergens.length > 0 ? (
-                      <div className="mt-2">
-                        <p className="mb-1 text-sm font-bold text-zinc-950">Consignes parents</p>
-                        <textarea
-                          defaultValue={s.allergenNotes ?? ""}
-                          key={`${s.id}-${s.allergenNotes ?? ""}`}
-                          rows={2}
-                          maxLength={500}
-                          onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                          className="w-full min-w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
-                          placeholder="Sinon : à ne pas servir — allergie"
-                        />
-                      </div>
-                    ) : null}
+                    <div className="mt-2">
+                      <p className="mb-1 text-sm font-bold text-zinc-950">Consignes parents</p>
+                      <textarea
+                        defaultValue={s.allergenNotes ?? ""}
+                        key={`${s.id}-${s.allergenNotes ?? ""}`}
+                        rows={2}
+                        maxLength={500}
+                        onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
+                        className="w-full min-w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
+                        placeholder="Sinon : à ne pas servir — allergie"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
