@@ -261,18 +261,11 @@ export function AdminGroupsClient({
       </div>
 
       <CsvImportZone
-        title="Importer des classes (CSV)"
-        description={
-          <>
-            Colonnes <code className="rounded bg-zinc-100 px-1 text-zinc-900">ecole</code>,{" "}
-            <code className="rounded bg-zinc-100 px-1 text-zinc-900">classe</code> et{" "}
-            <code className="rounded bg-zinc-100 px-1 text-zinc-900">niveau</code>{" "}
-            (maternelle ou primaire), séparateur point-virgule. Les écoles sont créées
-            automatiquement si besoin. Sans colonne niveau, la classe est en primaire.
-          </>
-        }
+        title="Importer vos classes"
+        description="Ajoutez rapidement votre structure avec un fichier CSV"
+        columns={["ecole", "classe", "niveau"]}
         exampleHref="/test-import-classes.csv"
-        exampleLabel="Télécharger un exemple CSV (15 classes)"
+        exampleLabel="Télécharger un exemple CSV"
         busy={busy}
         resultMessage={
           importResult

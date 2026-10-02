@@ -17,6 +17,8 @@ type CsvImportZoneProps = {
   onColor?: boolean;
   className?: string;
   footer?: React.ReactNode;
+  /** Pastilles « colonnes attendues » pour la fenêtre claire. */
+  columns?: string[];
 };
 
 export function CsvImportZone({
@@ -32,10 +34,12 @@ export function CsvImportZone({
   onColor = false,
   className,
   footer,
+  columns,
 }: CsvImportZoneProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+  const [dragging, setDragging] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,6 +49,128 @@ export function CsvImportZone({
       setFile(null);
       if (inputRef.current) inputRef.current.value = "";
     }
+  }
+
+  if (!onColor && !embedded) {
+    return (
+      <form
+        onSubmit={(e) => void handleSubmit(e)}
+        className={["rounded-3xl border border-zinc-200 bg-white p-5 sm:p-6", className ?? ""].join(
+          " ",
+        )}
+      >
+        <div className="flex items-start gap-3">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-orange-500">
+            <Upload className="size-5" aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-950">{title}</h2>
+            <p className="mt-1 text-sm font-medium text-zinc-500">{description}</p>
+          </div>
+        </div>
+
+        <div
+          className={[
+            "mt-5 flex flex-col gap-4 rounded-2xl border-2 border-dashed px-5 py-6 sm:flex-row sm:items-center sm:justify-between",
+            dragging
+              ? "border-emerald-700 bg-emerald-50"
+              : "border-zinc-300 bg-emerald-50/70",
+          ].join(" ")}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            const next = e.dataTransfer.files?.[0] ?? null;
+            if (next) setFile(next);
+          }}
+          onClick={() => inputRef.current?.click()}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <FileSpreadsheet className="size-6 shrink-0 text-emerald-800" aria-hidden />
+            <div className="min-w-0">
+              <p className="text-base font-bold text-zinc-950">
+                {file ? file.name : "Déposez votre fichier CSV ici"}
+              </p>
+              <p className="mt-0.5 text-sm text-zinc-500">
+                {file
+                  ? "Fichier prêt. Cliquez sur Importer."
+                  : "ou cliquez pour parcourir votre ordinateur"}
+              </p>
+            </div>
+          </div>
+          {file ? (
+            <Button
+              type="submit"
+              disabled={busy}
+              className="h-auto shrink-0 rounded-xl bg-emerald-900 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-800"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {busy ? "Import…" : "Importer"}
+            </Button>
+          ) : (
+            <button
+              type="button"
+              className="shrink-0 rounded-xl bg-emerald-900 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                inputRef.current?.click();
+              }}
+            >
+              Choisir un fichier
+            </button>
+          )}
+          <input
+            ref={inputRef}
+            id={inputId}
+            type="file"
+            accept=".csv,text/csv,text/plain"
+            className="sr-only"
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          {columns && columns.length > 0 ? (
+            <p className="flex flex-wrap items-center gap-2 text-sm text-zinc-600">
+              <span>Colonnes attendues :</span>
+              {columns.map((column) => (
+                <span
+                  key={column}
+                  className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-800"
+                >
+                  {column}
+                </span>
+              ))}
+            </p>
+          ) : (
+            <span />
+          )}
+          <a
+            href={exampleHref}
+            download
+            className="text-sm font-semibold text-emerald-700 hover:underline"
+          >
+            {exampleLabel} →
+          </a>
+        </div>
+
+        {errorMessage ? (
+          <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+            {errorMessage}
+          </p>
+        ) : null}
+        {resultMessage ? (
+          <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">
+            {resultMessage}
+          </p>
+        ) : null}
+        {footer ? <div className="mt-4 border-t border-zinc-200 pt-4">{footer}</div> : null}
+      </form>
+    );
   }
 
   return (
