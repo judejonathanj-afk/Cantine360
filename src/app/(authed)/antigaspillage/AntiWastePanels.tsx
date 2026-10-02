@@ -555,92 +555,6 @@ export function AntiWastePanels({
         </div>
       ) : null}
 
-      {missingWeighVisible.length > 0 ? (
-        <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-rose-500 bg-card">
-          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-rose-200 bg-rose-100 p-5">
-            <div className="flex min-w-0 items-start gap-3">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white">
-                <AlertTriangle className="size-5" aria-hidden />
-              </span>
-              <div className="min-w-0">
-                <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
-                  {missingWeighVisible.length} service
-                  {missingWeighVisible.length > 1 ? "s" : ""} sans pesée
-                </h2>
-                <p className="mt-1 text-base font-medium leading-snug text-zinc-950">
-                  Sur la période. Ouvrez un service pour saisir la pesée.
-                </p>
-              </div>
-            </div>
-            {missingWeighVisible.length > 2 ? (
-              <button
-                type="button"
-                onClick={() => setMissingWeighOpen((v) => !v)}
-                aria-expanded={missingWeighOpen}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
-              >
-                {missingWeighOpen ? "Voir moins" : "Voir plus"}
-                <ChevronDown
-                  className={cn(
-                    "size-4 transition-transform",
-                    missingWeighOpen && "rotate-180",
-                  )}
-                  aria-hidden
-                />
-              </button>
-            ) : null}
-          </div>
-
-          <ul
-            className={cn(
-              "grid gap-3 p-5 sm:grid-cols-2",
-              missingWeighOpen
-                ? "max-h-[22rem] overflow-y-scroll [scrollbar-gutter:stable]"
-                : "overflow-visible",
-            )}
-          >
-            {missingWeighShown.map((s) => {
-              const sample = s.id.startsWith("sample-missing-");
-              const body = (
-                <>
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-base font-bold leading-snug text-zinc-950">
-                      {s.dateLabel}
-                      <span className="font-semibold"> · {s.mealLabel}</span>
-                    </p>
-                    <span className="shrink-0 rounded-full bg-rose-600 px-2.5 py-1 text-xs font-bold text-white">
-                      Pesée manquante
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-950">
-                    {s.menuSummary}
-                    {s.servedCount > 0
-                      ? ` · ${fmt(s.servedCount)} assiette${s.servedCount > 1 ? "s" : ""}`
-                      : ""}
-                  </p>
-                </>
-              );
-              return (
-                <li key={s.id}>
-                  {sample ? (
-                    <div className="h-full rounded-2xl border border-rose-200 bg-white px-4 py-3">
-                      {body}
-                    </div>
-                  ) : (
-                    <Link
-                      href={`/service/${s.id}`}
-                      className="block h-full rounded-2xl border border-rose-200 bg-white px-4 py-3 transition hover:border-rose-500"
-                    >
-                      {body}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ) : null}
-
       <div className="grid gap-6">
         <div className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-violet-600 bg-card">
           <div className="flex items-start justify-between gap-3 border-b border-violet-300 bg-violet-100 p-6">
@@ -807,6 +721,92 @@ export function AntiWastePanels({
             </ul>
           )}
         </div>
+
+        {missingWeighVisible.length > 0 ? (
+          <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-rose-500 bg-card">
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-rose-200 bg-rose-100 p-5">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white">
+                  <AlertTriangle className="size-5" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
+                    {missingWeighVisible.length} service
+                    {missingWeighVisible.length > 1 ? "s" : ""} sans pesée
+                  </h2>
+                  <p className="mt-1 text-base font-medium leading-snug text-zinc-950">
+                    Sur la période. Ouvrez un service pour saisir la pesée.
+                  </p>
+                </div>
+              </div>
+              {missingWeighVisible.length > 2 ? (
+                <button
+                  type="button"
+                  onClick={() => setMissingWeighOpen((v) => !v)}
+                  aria-expanded={missingWeighOpen}
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
+                >
+                  {missingWeighOpen ? "Voir moins" : "Voir plus"}
+                  <ChevronDown
+                    className={cn(
+                      "size-4 transition-transform",
+                      missingWeighOpen && "rotate-180",
+                    )}
+                    aria-hidden
+                  />
+                </button>
+              ) : null}
+            </div>
+
+            <ul
+              className={cn(
+                "grid gap-3 p-5 sm:grid-cols-2",
+                missingWeighOpen
+                  ? "max-h-[22rem] overflow-y-scroll [scrollbar-gutter:stable]"
+                  : "overflow-visible",
+              )}
+            >
+              {missingWeighShown.map((s) => {
+                const sample = s.id.startsWith("sample-missing-");
+                const body = (
+                  <>
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-base font-bold leading-snug text-zinc-950">
+                        {s.dateLabel}
+                        <span className="font-semibold"> · {s.mealLabel}</span>
+                      </p>
+                      <span className="shrink-0 rounded-full bg-rose-600 px-2.5 py-1 text-xs font-bold text-white">
+                        Pesée manquante
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-950">
+                      {s.menuSummary}
+                      {s.servedCount > 0
+                        ? ` · ${fmt(s.servedCount)} assiette${s.servedCount > 1 ? "s" : ""}`
+                        : ""}
+                    </p>
+                  </>
+                );
+                return (
+                  <li key={s.id}>
+                    {sample ? (
+                      <div className="h-full rounded-2xl border border-rose-200 bg-white px-4 py-3">
+                        {body}
+                      </div>
+                    ) : (
+                      <Link
+                        href={`/service/${s.id}`}
+                        className="block h-full rounded-2xl border border-rose-200 bg-white px-4 py-3 transition hover:border-rose-500"
+                      >
+                        {body}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
 
         <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
           <div className="min-w-0">
