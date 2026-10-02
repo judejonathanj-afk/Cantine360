@@ -393,10 +393,10 @@ export function AdminStudentsClient({
               {bucket.students.map((s) => (
                 <div
                   key={s.id}
-                  className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-3.5 shadow-sm sm:flex-row sm:items-start sm:justify-between"
+                  className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-3.5 shadow-sm"
                 >
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
                       <span className="inline-flex rounded-lg border-2 border-zinc-950 bg-zinc-950 px-2.5 py-0.5 font-semibold text-white">
                         {s.firstName} {s.lastName}
                       </span>
@@ -404,6 +404,32 @@ export function AdminStudentsClient({
                         <span className="text-xs font-medium text-zinc-500">(inactif)</span>
                       ) : null}
                     </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleActive(s)}
+                        className={[
+                          "rounded-full border-2 border-zinc-900 px-3 py-1 text-xs font-semibold",
+                          s.active
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-zinc-100 text-zinc-700",
+                        ].join(" ")}
+                      >
+                        {s.active ? "Actif" : "Inactif"}
+                      </button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                        aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
+                        onClick={() => setToDelete(s)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="min-w-0">
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       <span className="mr-1 text-sm font-bold text-zinc-950">Allergènes</span>
                       {s.allergens.length > 0 ? (
@@ -455,35 +481,11 @@ export function AdminStudentsClient({
                           rows={2}
                           maxLength={500}
                           onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                          className="w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
+                          className="w-full min-w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
                           placeholder="Sinon : à ne pas servir — allergie"
                         />
                       </div>
                     ) : null}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleActive(s)}
-                      className={[
-                        "rounded-full border-2 border-zinc-900 px-3 py-1 text-xs font-semibold",
-                        s.active
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-zinc-100 text-zinc-700",
-                      ].join(" ")}
-                    >
-                      {s.active ? "Actif" : "Inactif"}
-                    </button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-muted-foreground hover:text-destructive"
-                      aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
-                      onClick={() => setToDelete(s)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               ))}
