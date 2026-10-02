@@ -267,26 +267,26 @@ export function AdminStudentsClient({
 
       <form
         onSubmit={createStudent}
-        className="rounded-2xl border-2 border-zinc-900 bg-white p-4"
+        className="rounded-2xl border-2 border-zinc-900 bg-white p-3"
       >
-        <div className="text-lg font-bold text-zinc-950">Ajouter un élève</div>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="text-base font-bold text-zinc-950">Ajouter un élève</div>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="rounded-xl border border-zinc-300 px-4 py-3 text-base font-bold text-zinc-950 outline-none placeholder:font-bold placeholder:text-zinc-700 focus:border-zinc-900"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-bold text-zinc-950 outline-none placeholder:font-bold placeholder:text-zinc-700 focus:border-zinc-900"
             placeholder="Prénom"
           />
           <input
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="rounded-xl border border-zinc-300 px-4 py-3 text-base font-semibold text-zinc-950 outline-none placeholder:font-semibold placeholder:text-zinc-700 focus:border-zinc-900"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-semibold text-zinc-950 outline-none placeholder:font-semibold placeholder:text-zinc-700 focus:border-zinc-900"
             placeholder="Nom"
           />
           <select
             value={groupId}
             onChange={(e) => setGroupId(e.target.value)}
-            className="rounded-xl border border-zinc-300 px-4 py-3 text-base font-semibold text-zinc-950 outline-none focus:border-zinc-900 sm:col-span-2"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-semibold text-zinc-950 outline-none focus:border-zinc-900 sm:col-span-2"
           >
             {activeGroups.length === 0 ? (
               <option value="">Aucune classe active</option>
@@ -299,9 +299,9 @@ export function AdminStudentsClient({
             )}
           </select>
         </div>
-        <div className="mt-3">
-          <div className="text-base font-bold text-zinc-950">Allergènes</div>
-          <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-2">
+          <div className="text-sm font-bold text-zinc-950">Allergènes</div>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
             {EU14_ALLERGENS.map((a) => {
               const on = selectedAllergens.includes(a);
               return (
@@ -310,7 +310,7 @@ export function AdminStudentsClient({
                   type="button"
                   onClick={() => toggleAllergen(a)}
                   className={[
-                    "rounded-full px-3 py-1.5 text-sm font-semibold",
+                    "rounded-full px-2.5 py-1 text-xs font-semibold",
                     on ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-700",
                   ].join(" ")}
                 >
@@ -320,14 +320,14 @@ export function AdminStudentsClient({
             })}
           </div>
         </div>
-        <div className="mt-3">
-          <div className="text-base font-bold text-zinc-950">Régimes (hors allergènes)</div>
-          <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-2">
+          <div className="text-sm font-bold text-zinc-950">Régimes (hors allergènes)</div>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
             <button
               type="button"
               onClick={() => setNoPork((v) => !v)}
               className={[
-                "rounded-full px-3.5 py-1.5 text-base font-bold",
+                "rounded-full px-2.5 py-1 text-sm font-bold",
                 noPork ? "bg-sky-800 text-white" : "bg-zinc-100 text-zinc-800",
               ].join(" ")}
             >
@@ -337,7 +337,7 @@ export function AdminStudentsClient({
               type="button"
               onClick={() => setVegetarian((v) => !v)}
               className={[
-                "rounded-full px-3.5 py-1.5 text-base font-bold",
+                "rounded-full px-2.5 py-1 text-sm font-bold",
                 vegetarian ? "bg-emerald-800 text-white" : "bg-zinc-100 text-zinc-800",
               ].join(" ")}
             >
@@ -345,8 +345,8 @@ export function AdminStudentsClient({
             </button>
           </div>
         </div>
-        <div className="mt-3">
-          <label className="text-base font-bold text-zinc-950" htmlFor="allergen-notes">
+        <div className="mt-2">
+          <label className="text-sm font-bold text-zinc-950" htmlFor="allergen-notes">
             Consignes parents (affichées en cuisine)
           </label>
           <textarea
@@ -355,14 +355,14 @@ export function AdminStudentsClient({
             onChange={(e) => setAllergenNotes(e.target.value)}
             rows={2}
             maxLength={500}
-            className="mt-1.5 w-full rounded-xl border border-zinc-300 px-4 py-3 text-base outline-none placeholder:text-zinc-600 focus:border-zinc-900"
+            className="mt-1.5 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none placeholder:text-zinc-600 focus:border-zinc-900"
             placeholder="Ex. : ne pas servir d’œufs même en trace ; pain sans gluten fourni par la famille…"
           />
         </div>
         <button
           type="submit"
           disabled={busy || !firstName.trim() || !lastName.trim() || !groupId}
-          className="mt-4 rounded-xl bg-emerald-900 px-4 py-3 text-base font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
+          className="mt-3 rounded-lg bg-emerald-900 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
         >
           Ajouter l’élève
         </button>
