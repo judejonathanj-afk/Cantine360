@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GraduationCap, School, Target, Trash2 } from "lucide-react";
+import { ArrowDown, GraduationCap, School, Target, Trash2 } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
@@ -73,6 +73,29 @@ export function AdminGroupsClient({
     () => groups.filter((g) => g.active).length,
     [groups],
   );
+
+  const structureBars = useMemo(() => {
+    return schools
+      .map((school) => ({
+        id: school.id,
+        name: school.name,
+        count: groups.filter((group) => group.schoolId === school.id && group.active).length,
+      }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "fr"))
+      .slice(0, 6);
+  }, [groups, schools]);
+
+  const objectivesDefined = useMemo(
+    () =>
+      groups.filter(
+        (group) =>
+          group.active &&
+          (group.ecoRestesServisTargetPct != null || group.ecoReductionTargetPct != null),
+      ).length,
+    [groups],
+  );
+
+  const maxBar = Math.max(1, ...structureBars.map((bar) => bar.count));
 
   const groupsBySchool = useMemo(() => {
     const map = new Map<string, { schoolName: string; groups: Group[] }>();
@@ -260,20 +283,82 @@ export function AdminGroupsClient({
         </p>
       </div>
 
-      <CsvImportZone
-        title="Importer vos classes"
-        description="Ajoutez rapidement votre structure avec un fichier CSV"
-        columns={["ecole", "classe", "niveau"]}
-        exampleHref="/test-import-classes.csv"
-        exampleLabel="Télécharger un exemple CSV"
-        busy={busy}
-        resultMessage={
-          importResult
-            ? `${importResult.groupsCreated} classe${importResult.groupsCreated > 1 ? "s" : ""} ajoutée${importResult.groupsCreated > 1 ? "s" : ""}, ${importResult.schoolsCreated} école${importResult.schoolsCreated > 1 ? "s" : ""} créée${importResult.schoolsCreated > 1 ? "s" : ""}, ${importResult.groupsSkipped} ignorée${importResult.groupsSkipped > 1 ? "s" : ""}.`
-            : null
-        }
-        onImport={importCsvFile}
-      />
+      <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)]">
+        <CsvImportZone
+          title="Importer vos classes"
+          description="Ajoutez rapidement votre structure avec un fichier CSV"
+          columns={["ecole", "classe", "niveau"]}
+          exampleHref="/test-import-classes.csv"
+          exampleLabel="Télécharger un exemple CSV"
+          busy={busy}
+          resultMessage={
+            importResult
+              ? `${importResult.groupsCreated} classe${importResult.groupsCreated > 1 ? "s" : ""} ajoutée${importResult.groupsCreated > 1 ? "s" : ""}, ${importResult.schoolsCreated} école${importResult.schoolsCreated > 1 ? "s" : ""} créée${importResult.schoolsCreated > 1 ? "s" : ""}, ${importResult.groupsSkipped} ignorée${importResult.groupsSkipped > 1 ? "s" : ""}.`
+              : null
+          }
+          onImport={importCsvFile}
+          className="h-full"
+        />
+
+        <aside className="flex h-full flex-col rounded-3xl bg-[#14382c] p-5 text-white shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200/80">
+            Aperçu de la structure
+          </p>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight">Votre établissement</h2>
+          <p className="mt-4 text-lg font-bold leading-snug text-emerald-50">
+            {schools.length} école{schools.length > 1 ? "s" : ""} · {activeCount} classe
+            {activeCount > 1 ? "s" : ""} active{activeCount > 1 ? "s" : ""}
+          </p>
+          <p className="mt-1 text-sm text-emerald-100/80">
+            {schools.length} école{schools.length > 1 ? "s" : ""} configurée
+            {schools.length > 1 ? "s" : ""}
+          </p>
+
+          <div className="mt-5 flex h-24 items-end gap-2 border-b border-white/15">
+            {structureBars.length === 0 ? (
+              <div className="mb-2 h-3 w-full rounded-full bg-white/10" />
+            ) : (
+              structureBars.map((bar) => (
+                <div
+                  key={bar.id}
+                  title={`${bar.name} · ${bar.count} classe${bar.count > 1 ? "s" : ""}`}
+                  className="min-w-0 flex-1 rounded-t-md bg-gradient-to-t from-emerald-600 to-emerald-300"
+                  style={{ height: `${Math.max(18, (bar.count / maxBar) * 100)}%` }}
+                />
+              ))
+            )}
+          </div>
+
+          <dl className="mt-4 space-y-3 text-sm">
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+              <dt className="text-emerald-100/80">Classes actives</dt>
+              <dd className="font-semibold tabular-nums">{activeCount}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt className="text-emerald-100/80">Objectifs définis</dt>
+              <dd className="font-semibold tabular-nums text-emerald-200">
+                {objectivesDefined} / {activeCount}
+              </dd>
+            </div>
+          </dl>
+
+          <div className="mt-auto pt-5">
+            <button
+              type="button"
+              onClick={() =>
+                document.getElementById("liste-classes")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+              }
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-100 px-4 py-3 text-sm font-semibold text-emerald-950 hover:bg-emerald-50"
+            >
+              Voir les classes
+              <ArrowDown className="size-4" aria-hidden />
+            </button>
+          </div>
+        </aside>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <form
@@ -281,15 +366,15 @@ export function AdminGroupsClient({
             e.preventDefault();
             void createSchool();
           }}
-          className="rounded-2xl border-2 border-zinc-900 bg-white p-4"
+          className="overflow-hidden rounded-2xl border-2 border-zinc-900 bg-white"
         >
-          <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-900">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
+          <div className="flex items-center gap-2.5 border-b-2 border-zinc-900 bg-orange-50 px-4 py-3 text-lg font-bold text-zinc-950">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-orange-500">
               <School className="size-4" aria-hidden />
             </span>
             Ajouter une école manuellement
           </div>
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 p-4 sm:flex-row">
             <input
               value={newSchoolName}
               onChange={(e) => setNewSchoolName(e.target.value)}
@@ -308,15 +393,15 @@ export function AdminGroupsClient({
 
         <form
           onSubmit={createGroup}
-          className="rounded-2xl border-2 border-zinc-900 bg-white p-4"
+          className="overflow-hidden rounded-2xl border-2 border-zinc-900 bg-white"
         >
-          <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-900">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+          <div className="flex items-center gap-2.5 border-b-2 border-zinc-900 bg-emerald-50 px-4 py-3 text-lg font-bold text-zinc-950">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-700">
               <GraduationCap className="size-4" aria-hidden />
             </span>
             Ajouter une classe manuellement
           </div>
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="flex flex-col gap-3 p-4">
             <select
               value={schoolId}
               onChange={(e) => setSchoolId(e.target.value)}
@@ -376,11 +461,14 @@ export function AdminGroupsClient({
       </p>
 
       {groupsBySchool.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-600">
+        <div
+          id="liste-classes"
+          className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-600"
+        >
           Aucune classe. Importez un CSV ou ajoutez une école puis une classe.
         </div>
       ) : (
-        <div className="space-y-6">
+        <div id="liste-classes" className="space-y-6">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-700">
             <span className="font-medium text-zinc-900">Légende :</span>
             <span className="inline-flex items-center gap-2">

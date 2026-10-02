@@ -120,14 +120,14 @@ function EstablishmentEcoObjectivesFormFields({
   }
 
   return (
-    <section className="rounded-2xl border-2 border-zinc-900 bg-white p-5 shadow-sm">
-      <h2 className="flex items-center gap-2.5 text-lg font-semibold text-zinc-900">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+    <section className="overflow-hidden rounded-2xl border-2 border-zinc-900 bg-white shadow-sm">
+      <h2 className="flex items-center gap-2.5 border-b-2 border-zinc-900 bg-amber-50 px-5 py-3 text-lg font-bold text-zinc-950">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-600">
           <Target className="size-4" aria-hidden />
         </span>
         Défauts objectifs (établissement)
       </h2>
-      <p className="mt-1 text-sm leading-relaxed text-zinc-600">
+      <p className="px-5 pt-4 text-sm leading-relaxed text-zinc-600">
         La <strong className="text-zinc-900">période</strong> et les pourcentages ci-dessous servent de{" "}
         <strong className="text-zinc-900">référence par défaut</strong> pour toutes les classes. Au-dessus de ce bloc,
         chaque carte de groupe a le bouton <strong className="text-zinc-900">Objectifs</strong> pour des plafonds
@@ -135,7 +135,7 @@ function EstablishmentEcoObjectivesFormFields({
         <strong className="text-zinc-900">Enregistrer les objectifs</strong> : le tableau de bord compare chaque classe
         à sa cible effective (classe ou défaut).
       </p>
-      <form onSubmit={submit} className="mt-4 space-y-4">
+      <form onSubmit={submit} className="space-y-4 px-5 py-4">
         <div>
           <Label htmlFor="eco-period" className="text-zinc-900">
             Période pour les objectifs
