@@ -397,28 +397,30 @@ export function AdminStudentsClient({
                 >
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex rounded-lg border-2 border-zinc-900 bg-white px-2.5 py-0.5 font-semibold text-zinc-900">
+                      <span className="inline-flex rounded-lg border-2 border-zinc-950 bg-zinc-950 px-2.5 py-0.5 font-semibold text-white">
                         {s.firstName} {s.lastName}
                       </span>
                       {!s.active ? (
                         <span className="text-xs font-medium text-zinc-500">(inactif)</span>
                       ) : null}
                     </div>
-                    {s.allergens.length > 0 ? (
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {s.allergens.map((a) => (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="mr-1 text-sm font-bold text-zinc-950">Allergènes</span>
+                      {s.allergens.length > 0 ? (
+                        s.allergens.map((a) => (
                           <span
                             key={a}
                             className="rounded-full border-2 border-zinc-900 bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900"
                           >
                             {a}
                           </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="mt-1 text-xs text-zinc-500">Aucun allergène déclaré</p>
-                    )}
-                    <div className="mt-2 flex flex-wrap gap-1.5">
+                        ))
+                      ) : (
+                        <span className="text-xs font-medium text-zinc-500">Aucun allergène déclaré</span>
+                      )}
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="mr-1 text-sm font-bold text-zinc-950">Viande</span>
                       <button
                         type="button"
                         onClick={() => void toggleDiet(s, "noPork")}
@@ -445,15 +447,18 @@ export function AdminStudentsClient({
                       </button>
                     </div>
                     {s.allergens.length > 0 ? (
-                      <textarea
-                        defaultValue={s.allergenNotes ?? ""}
-                        key={`${s.id}-${s.allergenNotes ?? ""}`}
-                        rows={2}
-                        maxLength={500}
-                        onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                        className="mt-2 w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
-                        placeholder="Consignes parents (sinon : à ne pas servir — allergie)"
-                      />
+                      <div className="mt-2">
+                        <p className="mb-1 text-sm font-bold text-zinc-950">Consignes parents</p>
+                        <textarea
+                          defaultValue={s.allergenNotes ?? ""}
+                          key={`${s.id}-${s.allergenNotes ?? ""}`}
+                          rows={2}
+                          maxLength={500}
+                          onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
+                          className="w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
+                          placeholder="Sinon : à ne pas servir — allergie"
+                        />
+                      </div>
                     ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
