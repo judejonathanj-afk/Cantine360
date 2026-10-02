@@ -299,7 +299,7 @@ export function AdminGroupsClient({
             <button
               type="submit"
               disabled={busy || newSchoolName.trim().length === 0}
-              className="rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+              className="rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
             >
               Ajouter
             </button>
@@ -349,7 +349,7 @@ export function AdminGroupsClient({
               />
               <button
                 disabled={busy || className.trim().length === 0 || !schoolId}
-                className="rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+                className="rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
               >
                 {busy ? "..." : "Ajouter"}
               </button>
