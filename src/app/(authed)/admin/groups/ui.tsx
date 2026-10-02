@@ -241,11 +241,6 @@ export function AdminGroupsClient({
           Préparez votre établissement
           <span className="mt-1 block text-emerald-600">en toute simplicité.</span>
         </h2>
-        <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
-          {schools.length} école{schools.length > 1 ? "s" : ""} ·{" "}
-          <span className="font-bold">{activeCount}</span> classe{activeCount > 1 ? "s" : ""}{" "}
-          active{activeCount > 1 ? "s" : ""}
-        </p>
         <p className="w-full text-base leading-relaxed text-zinc-700 sm:text-lg">
           Cette page prépare la structure de votre établissement :{" "}
           <strong className="font-semibold text-zinc-900">écoles</strong> et{" "}
