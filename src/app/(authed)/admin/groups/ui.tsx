@@ -51,10 +51,17 @@ export function AdminGroupsClient({
   initialGroups,
   initialSchools,
   establishmentEco,
+  studentSummary,
 }: {
   initialGroups: Group[];
   initialSchools: School[];
   establishmentEco: EstablishmentEcoSettings;
+  studentSummary: {
+    total: number;
+    withAllergens: number;
+    noPork: number;
+    vegetarian: number;
+  };
 }) {
   const [groups, setGroups] = useState<Group[]>(initialGroups);
   const [schools, setSchools] = useState<School[]>(initialSchools);
@@ -398,6 +405,15 @@ export function AdminGroupsClient({
               Bleu = Maternelle
             </span>
           </div>
+          <p className="text-base font-semibold text-zinc-900">
+            {studentSummary.total} élève{studentSummary.total > 1 ? "s" : ""} ·{" "}
+            <span className="font-bold">{studentSummary.withAllergens}</span> avec allergène
+            {studentSummary.withAllergens > 1 ? "s" : ""} déclaré
+            {studentSummary.withAllergens > 1 ? "s" : ""} ·{" "}
+            <span className="font-bold">{studentSummary.noPork}</span> sans porc ·{" "}
+            <span className="font-bold">{studentSummary.vegetarian}</span> végétarien
+            {studentSummary.vegetarian > 1 ? "s" : ""}
+          </p>
           {groupsBySchool.map(([sid, bucket]) => (
           <section key={sid} className="space-y-3">
             <h2 className="text-lg font-semibold text-zinc-900">{bucket.schoolName}</h2>

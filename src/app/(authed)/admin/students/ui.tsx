@@ -69,11 +69,6 @@ export function AdminStudentsClient({
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
 
-  const withAllergens = useMemo(
-    () => students.filter((s) => s.active && s.allergens.length > 0).length,
-    [students],
-  );
-
   const byClass = useMemo(() => {
     const map = new Map<string, { label: string; students: Student[] }>();
     for (const s of students) {
@@ -234,20 +229,6 @@ export function AdminStudentsClient({
           Préparez vos élèves
           <span className="mt-1 block text-emerald-600">en toute simplicité.</span>
         </h2>
-        <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
-          {students.length} élève{students.length > 1 ? "s" : ""} ·{" "}
-          <span className="font-bold">{withAllergens}</span> avec allergène
-          {withAllergens > 1 ? "s" : ""} déclaré{withAllergens > 1 ? "s" : ""} ·{" "}
-          <span className="font-bold">
-            {students.filter((s) => s.active && s.noPork).length}
-          </span>{" "}
-          sans porc ·{" "}
-          <span className="font-bold">
-            {students.filter((s) => s.active && s.vegetarian).length}
-          </span>{" "}
-          végétarien
-          {students.filter((s) => s.active && s.vegetarian).length > 1 ? "s" : ""}
-        </p>
         <p className="w-full text-base leading-relaxed text-zinc-700 sm:text-lg">
           Cette page enregistre la liste des <strong className="font-semibold text-zinc-900">élèves</strong>
           , leurs <strong className="font-semibold text-zinc-900">allergènes</strong> et les
