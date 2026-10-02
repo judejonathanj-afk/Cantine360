@@ -351,7 +351,7 @@ export function AdminStudentsClient({
         <button
           type="submit"
           disabled={busy || !firstName.trim() || !lastName.trim() || !groupId}
-          className="mt-4 rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+          className="mt-4 rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
         >
           Ajouter l’élève
         </button>
