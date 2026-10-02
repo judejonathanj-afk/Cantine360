@@ -20,6 +20,7 @@ import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
 import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
+import { downloadRiskyDishesPdf } from "@/lib/downloadRiskyDishesPdf";
 import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWasteGauge } from "./AntiWasteGauge";
@@ -572,21 +573,31 @@ export function AntiWastePanels({
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setRiskyDishesOpen((v) => !v)}
-              aria-expanded={riskyDishesOpen}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-violet-400/50 bg-white/70 px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
-            >
-              {riskyDishesOpen ? "Voir moins" : "Voir plus"}
-              <ChevronDown
-                className={cn(
-                  "size-3.5 transition-transform",
-                  riskyDishesOpen && "rotate-180",
-                )}
-                aria-hidden
-              />
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => downloadRiskyDishesPdf(riskyDishes, days)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/50 bg-white px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
+              >
+                <Download className="size-3.5" aria-hidden />
+                Télécharger
+              </button>
+              <button
+                type="button"
+                onClick={() => setRiskyDishesOpen((v) => !v)}
+                aria-expanded={riskyDishesOpen}
+                className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/50 bg-white/70 px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
+              >
+                {riskyDishesOpen ? "Voir moins" : "Voir plus"}
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 transition-transform",
+                    riskyDishesOpen && "rotate-180",
+                  )}
+                  aria-hidden
+                />
+              </button>
+            </div>
           </div>
 
           {riskyDishesVisible.length === 0 ? (
