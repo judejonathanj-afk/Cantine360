@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Trash2, Target } from "lucide-react";
+import { GraduationCap, School, Target, Trash2 } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
@@ -283,7 +283,12 @@ export function AdminGroupsClient({
           }}
           className="rounded-2xl border-2 border-zinc-900 bg-white p-4"
         >
-          <div className="text-sm font-medium text-zinc-900">Ajouter une école manuellement</div>
+          <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-900">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
+              <School className="size-4" aria-hidden />
+            </span>
+            Ajouter une école manuellement
+          </div>
           <div className="mt-3 flex flex-col gap-3 sm:flex-row">
             <input
               value={newSchoolName}
@@ -305,7 +310,12 @@ export function AdminGroupsClient({
           onSubmit={createGroup}
           className="rounded-2xl border-2 border-zinc-900 bg-white p-4"
         >
-          <div className="text-sm font-medium text-zinc-900">Ajouter une classe manuellement</div>
+          <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-900">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+              <GraduationCap className="size-4" aria-hidden />
+            </span>
+            Ajouter une classe manuellement
+          </div>
           <div className="mt-3 flex flex-col gap-3">
             <select
               value={schoolId}

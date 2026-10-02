@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Target } from "lucide-react";
 import type { EcoObjectivePeriod } from "@/generated/prisma/client";
 import { Label } from "@/components/ui/label";
 
@@ -120,7 +121,12 @@ function EstablishmentEcoObjectivesFormFields({
 
   return (
     <section className="rounded-2xl border-2 border-zinc-900 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold text-zinc-900">Défauts objectifs (établissement)</h2>
+      <h2 className="flex items-center gap-2.5 text-lg font-semibold text-zinc-900">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+          <Target className="size-4" aria-hidden />
+        </span>
+        Défauts objectifs (établissement)
+      </h2>
       <p className="mt-1 text-sm leading-relaxed text-zinc-600">
         La <strong className="text-zinc-900">période</strong> et les pourcentages ci-dessous servent de{" "}
         <strong className="text-zinc-900">référence par défaut</strong> pour toutes les classes. Au-dessus de ce bloc,
