@@ -257,6 +257,7 @@ export function AdminGroupsClient({
 
       <CsvImportZone
         title="Importer vos classes"
+        titleClassName="text-xl font-bold tracking-tight text-zinc-950"
         description="Ajoutez rapidement votre structure avec un fichier CSV"
         columns={["ecole", "classe", "niveau"]}
         exampleHref="/test-import-classes.csv"
