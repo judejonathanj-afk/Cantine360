@@ -237,6 +237,10 @@ export function AdminGroupsClient({
             />
           </div>
         </div>
+        <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-zinc-950 sm:text-4xl">
+          Préparez votre établissement
+          <span className="mt-1 block text-emerald-600">en toute simplicité.</span>
+        </h2>
         <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
           {schools.length} école{schools.length > 1 ? "s" : ""} ·{" "}
           <span className="font-bold">{activeCount}</span> classe{activeCount > 1 ? "s" : ""}{" "}
