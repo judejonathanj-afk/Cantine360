@@ -252,6 +252,7 @@ export function AdminStudentsClient({
 
       <CsvImportZone
         title="Importer vos élèves"
+        titleClassName="text-xl font-bold tracking-tight text-zinc-950"
         description="Ajoutez rapidement vos élèves avec un fichier CSV"
         columns={["ecole", "classe", "prenom", "nom", "allergenes", "consignes", "sans_porc", "vegetarien"]}
         exampleHref="/test-import-eleves.csv"

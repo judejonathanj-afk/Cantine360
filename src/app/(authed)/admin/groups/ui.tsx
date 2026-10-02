@@ -381,28 +381,30 @@ export function AdminGroupsClient({
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-700">
-            <span className="font-medium text-zinc-900">Légende :</span>
-            <span className="inline-flex items-center gap-2">
-              <span
-                className="h-3.5 w-3.5 rounded-sm border border-emerald-300 bg-emerald-100"
-                aria-hidden
-              />
-              Vert = Primaire
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <span
-                className="h-3.5 w-3.5 rounded-sm border border-sky-300 bg-sky-100"
-                aria-hidden
-              />
-              Bleu = Maternelle
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-base font-semibold text-zinc-900">
+              {schools.length} école{schools.length > 1 ? "s" : ""} ·{" "}
+              <span className="font-bold">{activeCount}</span> classe{activeCount > 1 ? "s" : ""}{" "}
+              active{activeCount > 1 ? "s" : ""}
+            </p>
+            <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm text-zinc-700">
+              <span className="font-medium text-zinc-900">Légende :</span>
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className="h-3.5 w-3.5 rounded-sm border border-emerald-300 bg-emerald-100"
+                  aria-hidden
+                />
+                Vert = Primaire
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className="h-3.5 w-3.5 rounded-sm border border-sky-300 bg-sky-100"
+                  aria-hidden
+                />
+                Bleu = Maternelle
+              </span>
+            </div>
           </div>
-          <p className="text-base font-semibold text-zinc-900">
-            {schools.length} école{schools.length > 1 ? "s" : ""} ·{" "}
-            <span className="font-bold">{activeCount}</span> classe{activeCount > 1 ? "s" : ""}{" "}
-            active{activeCount > 1 ? "s" : ""}
-          </p>
           {groupsBySchool.map(([sid, bucket]) => (
           <section key={sid} className="space-y-3">
             <h2 className="text-lg font-semibold text-zinc-900">{bucket.schoolName}</h2>

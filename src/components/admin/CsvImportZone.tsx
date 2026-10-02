@@ -19,6 +19,7 @@ type CsvImportZoneProps = {
   footer?: React.ReactNode;
   /** Pastilles « colonnes attendues » pour la fenêtre claire. */
   columns?: string[];
+  titleClassName?: string;
 };
 
 export function CsvImportZone({
@@ -35,6 +36,7 @@ export function CsvImportZone({
   className,
   footer,
   columns,
+  titleClassName,
 }: CsvImportZoneProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +66,7 @@ export function CsvImportZone({
             <Upload className="size-5" aria-hidden />
           </span>
           <div className="min-w-0">
-            <h2 className="text-2xl font-bold tracking-tight text-zinc-950">{title}</h2>
+            <h2 className={titleClassName ?? "text-2xl font-bold tracking-tight text-zinc-950"}>{title}</h2>
             <p className="mt-1 text-base font-semibold text-zinc-900">{description}</p>
           </div>
         </div>
