@@ -21,6 +21,7 @@ import { antiWasteStatus } from "@/lib/antiWasteStatus";
 import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
 import { downloadRiskyDishesPdf } from "@/lib/downloadRiskyDishesPdf";
+import { downloadMissingWeighPdf } from "@/lib/downloadMissingWeighPdf";
 import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWasteGauge } from "./AntiWasteGauge";
@@ -750,23 +751,33 @@ export function AntiWastePanels({
                   </p>
                 </div>
               </div>
-              {missingWeighVisible.length > 2 ? (
+              <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setMissingWeighOpen((v) => !v)}
-                  aria-expanded={missingWeighOpen}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
+                  onClick={() => downloadMissingWeighPdf(missingWeighVisible, days)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
                 >
-                  {missingWeighOpen ? "Voir moins" : "Voir plus"}
-                  <ChevronDown
-                    className={cn(
-                      "size-4 transition-transform",
-                      missingWeighOpen && "rotate-180",
-                    )}
-                    aria-hidden
-                  />
+                  <Download className="size-3.5" aria-hidden />
+                  Télécharger
                 </button>
-              ) : null}
+                {missingWeighVisible.length > 2 ? (
+                  <button
+                    type="button"
+                    onClick={() => setMissingWeighOpen((v) => !v)}
+                    aria-expanded={missingWeighOpen}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
+                  >
+                    {missingWeighOpen ? "Voir moins" : "Voir plus"}
+                    <ChevronDown
+                      className={cn(
+                        "size-4 transition-transform",
+                        missingWeighOpen && "rotate-180",
+                      )}
+                      aria-hidden
+                    />
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             <ul
