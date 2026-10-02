@@ -381,6 +381,7 @@ export function AdminStudentsClient({
       ) : (
         byClass.map(([gid, bucket]) => (
           <section key={gid} className="space-y-2">
+            <div className="h-1 w-full rounded-full bg-emerald-600" aria-hidden />
             <h2 className="text-lg font-semibold text-zinc-900">{bucket.label}</h2>
             <p className="text-xs text-zinc-500">
               {bucket.students.filter((s) => s.allergens.length > 0).length} allergie
