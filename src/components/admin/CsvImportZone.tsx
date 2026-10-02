@@ -55,7 +55,7 @@ export function CsvImportZone({
     return (
       <form
         onSubmit={(e) => void handleSubmit(e)}
-        className={["rounded-3xl border border-zinc-200 bg-white p-5 sm:p-6", className ?? ""].join(
+        className={["rounded-3xl border-2 border-zinc-900 bg-white p-5 sm:p-6", className ?? ""].join(
           " ",
         )}
       >
@@ -64,8 +64,8 @@ export function CsvImportZone({
             <Upload className="size-5" aria-hidden />
           </span>
           <div className="min-w-0">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-950">{title}</h2>
-            <p className="mt-1 text-sm font-medium text-zinc-500">{description}</p>
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-950">{title}</h2>
+            <p className="mt-1 text-base font-semibold text-zinc-900">{description}</p>
           </div>
         </div>
 
@@ -95,7 +95,7 @@ export function CsvImportZone({
               <p className="text-base font-bold text-zinc-950">
                 {file ? file.name : "Déposez votre fichier CSV ici"}
               </p>
-              <p className="mt-0.5 text-sm text-zinc-500">
+              <p className="mt-0.5 text-sm font-semibold text-zinc-800">
                 {file
                   ? "Fichier prêt. Cliquez sur Importer."
                   : "ou cliquez pour parcourir votre ordinateur"}
@@ -135,12 +135,12 @@ export function CsvImportZone({
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           {columns && columns.length > 0 ? (
-            <p className="flex flex-wrap items-center gap-2 text-sm text-zinc-600">
+            <p className="flex flex-wrap items-center gap-2 text-sm font-bold text-zinc-950">
               <span>Colonnes attendues :</span>
               {columns.map((column) => (
                 <span
                   key={column}
-                  className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-800"
+                  className="rounded-md border border-zinc-300 bg-zinc-100 px-2 py-0.5 text-sm font-bold text-zinc-950"
                 >
                   {column}
                 </span>
@@ -152,7 +152,7 @@ export function CsvImportZone({
           <a
             href={exampleHref}
             download
-            className="text-sm font-semibold text-emerald-700 hover:underline"
+            className="text-base font-bold text-emerald-800 hover:underline"
           >
             {exampleLabel} →
           </a>
