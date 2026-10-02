@@ -382,7 +382,7 @@ export function AdminStudentsClient({
         byClass.map(([gid, bucket]) => (
           <section key={gid} className="space-y-2">
             <div className="flex items-center gap-3">
-              <h2 className="shrink-0 text-lg font-semibold text-zinc-900">{bucket.label}</h2>
+              <h2 className="shrink-0 text-xl font-bold text-zinc-950">{bucket.label}</h2>
               <div className="h-1 min-w-0 flex-1 rounded-full bg-emerald-600" aria-hidden />
             </div>
             <p className="text-xs text-zinc-500">
