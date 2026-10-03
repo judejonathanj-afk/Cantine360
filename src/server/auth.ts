@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { db } from "@/server/db";
@@ -135,8 +136,8 @@ async function readEstablishmentToken(
   return readLegacyEstablishmentToken(getCookie);
 }
 
-/** Session établissement (cuisine / admin cantine) — usage courant dans l’app. */
-export async function getEstablishmentSession(): Promise<EstablishmentSession | null> {
+/** Session établissement (cuisine / admin cantine) — une seule lecture par requête. */
+export const getEstablishmentSession = cache(async function getEstablishmentSession(): Promise<EstablishmentSession | null> {
   const jar = await cookies();
   const getCookie = (name: string) => jar.get(name)?.value;
 
@@ -149,7 +150,7 @@ export async function getEstablishmentSession(): Promise<EstablishmentSession | 
 
   const valid = await establishmentSessionStillValid(session);
   return valid ? session : null;
-}
+});
 
 /** @deprecated Alias — préférer `getEstablishmentSession`. */
 export const getServerSession = getEstablishmentSession;

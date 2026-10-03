@@ -20,8 +20,6 @@ import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
 import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
-import { downloadRiskyDishesPdf } from "@/lib/downloadRiskyDishesPdf";
-import { downloadMissingWeighPdf } from "@/lib/downloadMissingWeighPdf";
 import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWasteGauge } from "./AntiWasteGauge";
@@ -577,7 +575,11 @@ export function AntiWastePanels({
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
-                onClick={() => downloadRiskyDishesPdf(riskyDishesVisible, days)}
+                onClick={() => {
+                  void import("@/lib/downloadRiskyDishesPdf").then((mod) =>
+                    mod.downloadRiskyDishesPdf(riskyDishesVisible, days),
+                  );
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/50 bg-white px-3 py-1.5 text-xs font-semibold text-violet-900 transition hover:bg-white"
               >
                 <Download className="size-3.5" aria-hidden />
@@ -754,7 +756,11 @@ export function AntiWastePanels({
               <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => downloadMissingWeighPdf(missingWeighVisible, days)}
+                  onClick={() => {
+                    void import("@/lib/downloadMissingWeighPdf").then((mod) =>
+                      mod.downloadMissingWeighPdf(missingWeighVisible, days),
+                    );
+                  }}
                   className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
                 >
                   <Download className="size-3.5" aria-hidden />

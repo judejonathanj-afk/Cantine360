@@ -137,10 +137,10 @@ export async function POST(req: Request) {
       typeof requestedNext === "string" &&
       requestedNext.startsWith("/") &&
       !requestedNext.startsWith("//");
-    // Admin : ne pas rouvrir un service via ?next=/service/[id]…
+    // Admin : la cuisine s’ouvre avec le compte cuisine, pas via ?next=/service…
     const nextOpensService =
       typeof requestedNext === "string" &&
-      /^\/service\/[^/]+/.test(requestedNext);
+      (requestedNext === "/service" || requestedNext.startsWith("/service/"));
     const redirectTo =
       nextLooksSafe && !(role === "ADMIN" && nextOpensService)
         ? requestedNext!
