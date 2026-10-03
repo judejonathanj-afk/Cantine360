@@ -201,7 +201,6 @@ export function AppShell({
             label: "Élèves & allergènes",
             icon: GraduationCap,
           },
-          ...serviceNavItems,
           { href: "/exports", label: "Exports", icon: FileDown },
         ]
       : serviceId
