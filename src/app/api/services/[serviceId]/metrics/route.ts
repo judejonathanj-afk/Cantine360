@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
+import { runDbWrite } from "@/server/runDbWrite";
 
 const BodySchema = z.object({
   groupId: z.string().min(1),
@@ -51,7 +52,7 @@ export async function PUT(
     return NextResponse.json({ error: "Groupe invalide" }, { status: 400 });
   }
 
-  const updated = await db.serviceGroupMetrics.upsert({
+  const updated = await runDbWrite(() => db.serviceGroupMetrics.upsert({
     where: {
       serviceId_groupId: { serviceId, groupId: parsed.data.groupId },
     },
@@ -71,7 +72,7 @@ export async function PUT(
       refusedCount: parsed.data.refusedCount,
       leftoversCount: 0,
     },
-  });
+  }));
 
   return NextResponse.json({ metrics: updated });
 }

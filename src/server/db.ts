@@ -39,6 +39,12 @@ function resolvePoolMax(): number {
   return process.env.NODE_ENV === "production" ? 1 : 5;
 }
 
+function resolveIdleTimeoutMillis(): number {
+  // En prod, rendre la connexion tout de suite pour que le pic de midi
+  // ne garde pas des slots Supabase après la réponse.
+  return process.env.NODE_ENV === "production" ? 1_000 : 20_000;
+}
+
 function pgPoolOptions(): ConstructorParameters<typeof Pool>[0] {
   const raw = process.env.DATABASE_URL;
   if (!raw) return { connectionString: raw, max: resolvePoolMax() };
@@ -51,8 +57,9 @@ function pgPoolOptions(): ConstructorParameters<typeof Pool>[0] {
   return {
     connectionString,
     max: resolvePoolMax(),
-    idleTimeoutMillis: 20_000,
-    connectionTimeoutMillis: 10_000,
+    idleTimeoutMillis: resolveIdleTimeoutMillis(),
+    connectionTimeoutMillis: 8_000,
+    allowExitOnIdle: true,
     ...(supabase ? { ssl: { rejectUnauthorized: false } } : {}),
   };
 }

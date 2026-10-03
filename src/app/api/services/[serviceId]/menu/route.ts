@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { MenuCategory } from "@/generated/prisma/client";
 import { withDietFlags } from "@/lib/dietaryRegime";
+import { runDbWrite } from "@/server/runDbWrite";
 
 const ItemSchema = z.object({
   id: z.string().optional(),
@@ -43,52 +44,78 @@ export async function PUT(
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { serviceId } = await params;
-  const service = await db.service.findFirst({
-    where: { id: serviceId, establishmentId: session.establishmentId },
-  });
-  if (!service) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
   const json = await req.json().catch(() => null);
   const parsed = PutSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  const menu = await db.menu.upsert({
-    where: { serviceId },
-    create: { serviceId },
-    update: {},
-  });
+  const baseItems = parsed.data.items.map((i) => ({
+    category: i.category as MenuCategory,
+    label: i.label,
+    allergens: i.allergens,
+    grammageG: i.grammageG ?? null,
+    containsPork: Boolean(i.containsPork),
+    containsMeat: Boolean(i.containsMeat) || Boolean(i.containsPork),
+  }));
 
-  await db.menuItem.deleteMany({ where: { menuId: menu.id } });
-  if (parsed.data.items.length > 0) {
-    const base = parsed.data.items.map((i) => ({
-      menuId: menu.id,
-      category: i.category as MenuCategory,
-      label: i.label,
-      allergens: i.allergens,
-      grammageG: i.grammageG ?? null,
-    }));
-    try {
-      await db.menuItem.createMany({
-        data: parsed.data.items.map((i, idx) =>
-          withDietFlags(base[idx], {
-            containsPork: Boolean(i.containsPork),
-            containsMeat: Boolean(i.containsMeat) || Boolean(i.containsPork),
-          }),
-        ),
+  async function replaceMenu(withDiet: boolean) {
+    return db.$transaction(async (tx) => {
+      const owned = await tx.service.findFirst({
+        where: { id: serviceId, establishmentId: session.establishmentId },
+        select: { id: true },
       });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : "";
-      if (!msg.includes("containsPork") && !msg.includes("containsMeat")) throw e;
-      await db.menuItem.createMany({ data: base });
-    }
+      if (!owned) return null;
+      const menu = await tx.menu.upsert({
+        where: { serviceId },
+        create: { serviceId },
+        update: {},
+        select: { id: true, serviceId: true },
+      });
+      await tx.menuItem.deleteMany({ where: { menuId: menu.id } });
+      if (baseItems.length > 0) {
+        await tx.menuItem.createMany({
+          data: baseItems.map((item) => {
+            const row = {
+              menuId: menu.id,
+              category: item.category,
+              label: item.label,
+              allergens: item.allergens,
+              grammageG: item.grammageG,
+            };
+            return withDiet
+              ? withDietFlags(row, {
+                  containsPork: item.containsPork,
+                  containsMeat: item.containsMeat,
+                })
+              : row;
+          }),
+        });
+      }
+      return {
+        id: menu.id,
+        serviceId: menu.serviceId,
+        items: baseItems.map((item) => ({
+          category: item.category,
+          label: item.label,
+          allergens: item.allergens,
+          grammageG: item.grammageG,
+          containsPork: item.containsPork,
+          containsMeat: item.containsMeat,
+        })),
+      };
+    });
   }
 
-  const updated = await db.menu.findUnique({
-    where: { id: menu.id },
-    include: { items: { orderBy: [{ createdAt: "asc" }] } },
-  });
-  return NextResponse.json({ menu: updated });
+  let menu;
+  try {
+    menu = await runDbWrite(() => replaceMenu(true));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "";
+    if (!msg.includes("containsPork") && !msg.includes("containsMeat")) throw e;
+    menu = await runDbWrite(() => replaceMenu(false));
+  }
+  if (!menu) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({ menu });
 }
 

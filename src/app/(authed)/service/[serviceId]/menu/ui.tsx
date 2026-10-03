@@ -108,11 +108,18 @@ export function MenuEditor({
         }))
         .filter((i) => i.label.length > 0);
 
-      const res = await fetch(`/api/services/${serviceId}/menu`, {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ items: cleaned }),
-      });
+      const payload = JSON.stringify({ items: cleaned });
+      const send = () =>
+        fetch(`/api/services/${serviceId}/menu`, {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: payload,
+        });
+      let res = await send();
+      if (!res.ok && res.status >= 500) {
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        res = await send();
+      }
       if (!res.ok) {
         setStatus("Erreur de sauvegarde.");
         window.setTimeout(() => setStatus(null), 4000);
