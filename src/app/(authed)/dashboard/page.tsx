@@ -26,6 +26,7 @@ import { aggregateTotalsByLevel } from "@/lib/buildLevelComparisonSeries";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { SCHOOL_LEVELS, type SchoolLevel } from "@/lib/schoolLevel";
+import { readDashboardLunches } from "@/server/dashboardLunchRead";
 
 function resolveMetricLevel(level?: string | null): SchoolLevel {
   return level === "MATERNELLE" ? "MATERNELLE" : "PRIMAIRE";
@@ -177,85 +178,13 @@ export default async function DashboardPage({
       Math.min(pulseRangeStart.getTime(), ecoBounds.priorStart.getTime()),
     );
 
-    const [servicesResult, wide, studentRows] = await Promise.all([
-      db.service.findMany({
-        where: {
-          date: { gte: start },
-          establishmentId: session.establishmentId,
-          mealType: MealType.LUNCH,
-        },
-        orderBy: [{ date: "asc" }, { mealType: "asc" }],
-        select: {
-          date: true,
-          mealType: true,
-          wasteWeightG: true,
-          wasteWeightMaternelleG: true,
-          wasteWeightPrimaireG: true,
-          metrics: {
-            select: {
-              presentCount: true,
-              servedCount: true,
-              rabCount: true,
-              refusedCount: true,
-              leftoversCount: true,
-              group: {
-                select: {
-                  id: true,
-                  name: true,
-                  level: true,
-                  school: { select: { name: true } },
-                },
-              },
-            },
-          },
-          menu: {
-            select: {
-              items: {
-                select: { category: true, label: true, allergens: true },
-              },
-            },
-          },
-        },
-      }),
-      db.service.findMany({
-        where: {
-          date: { gte: wideLower, lt: ecoBounds.currentEndExclusive },
-          establishmentId: session.establishmentId,
-          mealType: MealType.LUNCH,
-        },
-        orderBy: [{ date: "asc" }, { mealType: "asc" }],
-        select: {
-          date: true,
-          mealType: true,
-          wasteWeightG: true,
-          wasteWeightMaternelleG: true,
-          wasteWeightPrimaireG: true,
-          metrics: {
-            select: {
-              presentCount: true,
-              servedCount: true,
-              rabCount: true,
-              refusedCount: true,
-              leftoversCount: true,
-              group: {
-                select: {
-                  id: true,
-                  name: true,
-                  level: true,
-                  school: { select: { name: true } },
-                },
-              },
-            },
-          },
-        },
-      }),
-      db.student.findMany({
-        where: { establishmentId: session.establishmentId, active: true },
-        select: { id: true, allergens: true, groupId: true },
-      }),
-    ]);
-    services = servicesResult;
-    wideServices = wide.map((s) => ({
+    const { lunches, students: studentRows } = await readDashboardLunches(db, {
+      establishmentId: session.establishmentId,
+      from: wideLower,
+      toExclusive: ecoBounds.currentEndExclusive,
+    });
+    services = lunches.filter((s) => s.date.getTime() >= start.getTime());
+    wideServices = lunches.map((s) => ({
       date: s.date,
       mealType: s.mealType,
       wasteWeightG: s.wasteWeightG,
