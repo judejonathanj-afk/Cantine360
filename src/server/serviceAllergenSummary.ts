@@ -70,7 +70,86 @@ export type ServiceAllergenSummary = {
   totalDietAffected: number;
 };
 
+const cache = new Map<string, ServiceAllergenSummary>();
+const MAX_ENTRIES = 24;
+
+function remember(key: string, summary: ServiceAllergenSummary) {
+  if (cache.has(key)) cache.delete(key);
+  cache.set(key, summary);
+  while (cache.size > MAX_ENTRIES) {
+    const oldest = cache.keys().next().value;
+    if (oldest === undefined) break;
+    cache.delete(oldest);
+  }
+}
+
+function stampPart(max: Date | null, count: number) {
+  return `${max?.getTime() ?? 0}:${count}`;
+}
+
+/** Menu, élèves, classes. Les compteurs saisis pendant le service ne relancent pas la lecture. */
+async function dataStamp(
+  db: PrismaClient,
+  establishmentId: string,
+  serviceId: string,
+): Promise<string> {
+  const [menu, menuItem, metrics, student, group, school] = await Promise.all([
+    db.menu.aggregate({
+      where: { serviceId },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+    db.menuItem.aggregate({
+      where: { menu: { serviceId } },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+    db.serviceGroupMetrics.aggregate({
+      where: { serviceId },
+      _count: true,
+    }),
+    db.student.aggregate({
+      where: { establishmentId },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+    db.group.aggregate({
+      where: { establishmentId },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+    db.school.aggregate({
+      where: { establishmentId },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+  ]);
+  return [
+    stampPart(menu._max.updatedAt, menu._count),
+    stampPart(menuItem._max.updatedAt, menuItem._count),
+    String(metrics._count),
+    stampPart(student._max.updatedAt, student._count),
+    stampPart(group._max.updatedAt, group._count),
+    stampPart(school._max.updatedAt, school._count),
+  ].join("|");
+}
+
 export async function getServiceAllergenSummary(
+  db: PrismaClient,
+  establishmentId: string,
+  serviceId: string,
+): Promise<ServiceAllergenSummary | null> {
+  const stamp = await dataStamp(db, establishmentId, serviceId);
+  const key = [establishmentId, serviceId, stamp].join("|");
+  const hit = cache.get(key);
+  if (hit) return hit;
+
+  const summary = await loadServiceAllergenSummary(db, establishmentId, serviceId);
+  if (summary) remember(key, summary);
+  return summary;
+}
+
+async function loadServiceAllergenSummary(
   db: PrismaClient,
   establishmentId: string,
   serviceId: string,
