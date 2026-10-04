@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { MealType } from "@/generated/prisma/client";
 import { db } from "@/server/db";
+import { readAntiWasteServices } from "@/server/antiWasteRead";
 import { getServerSession } from "@/server/auth";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
@@ -105,44 +105,9 @@ export default async function AntiWastePage({
   const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
   start.setHours(0, 0, 0, 0);
 
-  const services = await db.service.findMany({
-    where: {
-      date: { gte: start },
-      establishmentId: session.establishmentId,
-      mealType: MealType.LUNCH,
-    },
-    orderBy: [{ date: "asc" }],
-    select: {
-      id: true,
-      date: true,
-      mealType: true,
-      wasteWeightG: true,
-      wasteWeightMaternelleG: true,
-      wasteWeightPrimaireG: true,
-      metrics: {
-        select: {
-          presentCount: true,
-          servedCount: true,
-          rabCount: true,
-          refusedCount: true,
-          group: {
-            select: {
-              id: true,
-              name: true,
-              level: true,
-              school: { select: { name: true } },
-            },
-          },
-        },
-      },
-      menu: {
-        select: {
-          items: {
-            select: { category: true, label: true, allergens: true },
-          },
-        },
-      },
-    },
+  const services = await readAntiWasteServices(db, {
+    establishmentId: session.establishmentId,
+    from: start,
   });
 
   const perDayRows = buildDashboardDayDetailRows(services, {
