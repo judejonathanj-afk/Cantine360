@@ -59,9 +59,11 @@ export default async function ServicePage({
     grammageG: i.grammageG,
   }));
   const metricsGrammage = service.metrics.map((m) => ({
+    groupId: m.groupId,
     presentCount: m.presentCount,
     servedCount: m.servedCount,
     rabCount: m.rabCount,
+    refusedCount: m.refusedCount,
   }));
 
   const dateLabel = new Intl.DateTimeFormat("fr-FR", {
@@ -149,6 +151,7 @@ export default async function ServicePage({
           <ServiceDietBanner summary={allergenSummary} />
         ) : null}
         <ServiceGrammagePanel
+          serviceId={serviceId}
           menuItems={menuItems}
           metrics={metricsGrammage}
           className="h-auto self-start"
@@ -169,7 +172,6 @@ export default async function ServicePage({
           <ServiceMetricsSection
             serviceId={serviceId}
             showCsvImport={session.role === "ADMIN"}
-            presentTotal={service.metrics.reduce((sum, m) => sum + m.presentCount, 0)}
             cards={classCards}
             hasMenu={allergenSummary?.hasMenu ?? false}
           />
@@ -184,12 +186,14 @@ export default async function ServicePage({
         initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
         antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
         kitchenAdvice={kitchenAdvice}
-        servedCount={service.metrics.reduce((sum, m) => sum + m.servedCount, 0)}
-        rabCount={service.metrics.reduce((sum, m) => sum + m.rabCount, 0)}
-        refusedCount={service.metrics.reduce(
-          (sum, m) => sum + m.refusedCount,
-          0,
-        )}
+        classCounts={classCards.map((card) => ({
+          groupId: card.groupId,
+          level: card.level,
+          presentCount: card.presentCount,
+          servedCount: card.servedCount,
+          rabCount: card.rabCount,
+          refusedCount: card.refusedCount,
+        }))}
         targetGPer100={antiWaste.antiWasteTargetGPer100}
         mainLabels={menuItems
           .filter((i) => i.category === "MAIN" && i.label.trim())

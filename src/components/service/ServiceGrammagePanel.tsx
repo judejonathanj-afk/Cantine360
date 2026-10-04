@@ -1,4 +1,9 @@
+"use client";
+
+import { useMemo } from "react";
 import { Scale } from "lucide-react";
+import { useQueuedMetrics } from "@/hooks/useQueuedMetrics";
+import { overlayQueuedCounts } from "@/lib/mergeQueuedMetrics";
 import {
   computeServiceGrammageSummary,
   formatKgFromGrams,
@@ -9,15 +14,29 @@ import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { cn } from "@/lib/utils";
 
 export function ServiceGrammagePanel({
+  serviceId,
   menuItems,
   metrics,
   className,
 }: {
+  serviceId?: string;
   menuItems: MenuItemGrammage[];
   metrics: ServiceMetricsGrammage[];
   className?: string;
 }) {
-  const summary = computeServiceGrammageSummary(menuItems, metrics);
+  const queued = useQueuedMetrics(serviceId ?? "");
+  const live = useMemo(() => {
+    const rows = metrics.map((m, index) => ({
+      groupId: m.groupId ?? `__${index}`,
+      presentCount: m.presentCount,
+      servedCount: m.servedCount,
+      rabCount: m.rabCount,
+      refusedCount: m.refusedCount ?? 0,
+    }));
+    if (!serviceId) return rows;
+    return overlayQueuedCounts(rows, queued);
+  }, [metrics, queued, serviceId]);
+  const summary = computeServiceGrammageSummary(menuItems, live);
 
   return (
     <ServiceInsightCard

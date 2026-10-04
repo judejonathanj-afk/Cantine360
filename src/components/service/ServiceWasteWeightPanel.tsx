@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Baby, CloudOff, GraduationCap, Save, Scale, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,13 @@ import {
   removeQueuedWaste,
 } from "@/lib/offlineWasteQueue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useQueuedMetrics } from "@/hooks/useQueuedMetrics";
+import { overlayQueuedCounts } from "@/lib/mergeQueuedMetrics";
 import { buildEndOfServiceBilanTips } from "@/lib/antiWasteEndOfServiceBilan";
-import type { AntiWasteKitchenAdvice } from "@/lib/antiWasteKitchenAdvice";
+import {
+  buildLevelPortionSuggestions,
+  type AntiWasteKitchenAdvice,
+} from "@/lib/antiWasteKitchenAdvice";
 import { AntiWasteEndOfServiceBilan } from "@/components/service/AntiWasteEndOfServiceBilan";
 import { AntiWasteServiceBanner } from "@/components/service/AntiWasteServiceBanner";
 import { cn } from "@/lib/utils";
@@ -64,6 +69,7 @@ export function ServiceWasteWeightPanel({
   servedCount = 0,
   rabCount = 0,
   refusedCount = 0,
+  classCounts,
   targetGPer100 = null,
   mainLabels = [],
   allLabels = [],
@@ -78,12 +84,54 @@ export function ServiceWasteWeightPanel({
   servedCount?: number;
   rabCount?: number;
   refusedCount?: number;
+  classCounts?: Array<{
+    groupId: string;
+    level: "MATERNELLE" | "PRIMAIRE";
+    presentCount: number;
+    servedCount: number;
+    rabCount: number;
+    refusedCount: number;
+  }>;
   targetGPer100?: number | null;
   mainLabels?: string[];
   allLabels?: string[];
   className?: string;
 }) {
   const online = useOnlineStatus();
+  const queued = useQueuedMetrics(serviceId);
+  const liveTotals = useMemo(() => {
+    if (!classCounts || classCounts.length === 0) {
+      return { servedCount, rabCount, refusedCount };
+    }
+    const rows = overlayQueuedCounts(classCounts, queued);
+    return {
+      servedCount: rows.reduce((sum, row) => sum + row.servedCount, 0),
+      rabCount: rows.reduce((sum, row) => sum + row.rabCount, 0),
+      refusedCount: rows.reduce((sum, row) => sum + row.refusedCount, 0),
+    };
+  }, [classCounts, queued, servedCount, rabCount, refusedCount]);
+  const liveAdvice = useMemo(() => {
+    if (!kitchenAdvice || !classCounts || classCounts.length === 0) return kitchenAdvice;
+    const rows = overlayQueuedCounts(classCounts, queued);
+    const portions = buildLevelPortionSuggestions(
+      kitchenAdvice.perPlateBase,
+      rows.map((row) => ({
+        level: row.level,
+        presentCount: row.presentCount,
+        servedCount: row.servedCount,
+      })),
+    );
+    const total = portions.reduce((sum, portion) => sum + (portion.plannedGrams ?? 0), 0);
+    const hasPlanned = portions.some(
+      (portion) => portion.plannedGrams != null && portion.plannedGrams > 0,
+    );
+    return {
+      ...kitchenAdvice,
+      portions,
+      totalPlannedGrams: hasPlanned ? total : null,
+      totalPlannedKgLabel: hasPlanned ? formatKgFromGrams(total) : null,
+    };
+  }, [classCounts, kitchenAdvice, queued]);
 
   const initialLevels = (): LevelWeights => {
     const mat = initialWasteWeightMaternelleG ?? null;
@@ -222,9 +270,9 @@ export function ServiceWasteWeightPanel({
     antiWasteModeEnabled && savedAck && totalSaved > 0
       ? buildEndOfServiceBilanTips({
           wasteWeightG: totalSaved,
-          served: servedCount,
-          rab: rabCount,
-          refused: refusedCount,
+          served: liveTotals.servedCount,
+          rab: liveTotals.rabCount,
+          refused: liveTotals.refusedCount,
           targetGPer100,
           mainLabels,
           allLabels,
@@ -233,7 +281,7 @@ export function ServiceWasteWeightPanel({
 
   const showPortionsConclusion =
     antiWasteModeEnabled &&
-    kitchenAdvice != null &&
+    liveAdvice != null &&
     (savedAck || totalSaved > 0);
 
   const statusMessage = invalidMat || invalidPrim ? (
@@ -360,8 +408,8 @@ export function ServiceWasteWeightPanel({
       </div>
     </div>
 
-    {showPortionsConclusion && kitchenAdvice ? (
-      <AntiWasteServiceBanner advice={kitchenAdvice} asConclusion />
+    {showPortionsConclusion && liveAdvice ? (
+      <AntiWasteServiceBanner advice={liveAdvice} asConclusion />
     ) : null}
     </div>
   );

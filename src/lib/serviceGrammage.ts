@@ -5,9 +5,11 @@ export type MenuItemGrammage = {
 };
 
 export type ServiceMetricsGrammage = {
+  groupId?: string;
   presentCount: number;
   servedCount: number;
   rabCount: number;
+  refusedCount?: number;
 };
 
 /** Somme des grammages renseignés sur le menu (g par assiette complète). */

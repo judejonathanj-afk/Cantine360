@@ -34,6 +34,7 @@ function readQueue(): QueuedMetricsEntry[] {
 function writeQueue(entries: QueuedMetricsEntry[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  window.dispatchEvent(new Event("c360-offline-queue"));
 }
 
 export function getQueuedMetrics(
@@ -67,6 +68,11 @@ export function removeQueuedMetrics(serviceId: string, groupId: string) {
   writeQueue(readQueue().filter((e) => e.key !== key));
 }
 
+function removeQueuedKeys(keys: string[]) {
+  const drop = new Set(keys);
+  writeQueue(readQueue().filter((e) => !drop.has(e.key)));
+}
+
 export function listQueuedMetrics(): QueuedMetricsEntry[] {
   return readQueue().sort((a, b) => a.updatedAt - b.updatedAt);
 }
@@ -75,31 +81,54 @@ export function queuedMetricsCount(): number {
   return readQueue().length;
 }
 
-export async function flushMetricsQueue(): Promise<{
-  synced: number;
-  failed: number;
-}> {
-  const entries = listQueuedMetrics();
+let inflight: Promise<{ synced: number; failed: number }> | null = null;
+
+async function flushNow(): Promise<{ synced: number; failed: number }> {
+  const byService = new Map<string, QueuedMetricsEntry[]>();
+  for (const entry of listQueuedMetrics()) {
+    const group = byService.get(entry.serviceId) ?? [];
+    group.push(entry);
+    byService.set(entry.serviceId, group);
+  }
+
   let synced = 0;
   let failed = 0;
 
-  for (const entry of entries) {
+  for (const [serviceId, group] of byService) {
     try {
-      const res = await fetch(`/api/services/${entry.serviceId}/metrics`, {
+      const res = await fetch(`/api/services/${serviceId}/metrics`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ groupId: entry.groupId, ...entry.metrics }),
+        keepalive: true,
+        body: JSON.stringify({
+          groups: group.map((entry) => ({
+            groupId: entry.groupId,
+            ...entry.metrics,
+          })),
+        }),
       });
       if (!res.ok) {
-        failed++;
+        failed += group.length;
         continue;
       }
-      removeQueuedMetrics(entry.serviceId, entry.groupId);
-      synced++;
+      removeQueuedKeys(group.map((entry) => entry.key));
+      synced += group.length;
     } catch {
-      failed++;
+      failed += group.length;
     }
   }
 
   return { synced, failed };
+}
+
+/** Une requête par service, pour toutes les classes en attente. */
+export function flushMetricsQueue(): Promise<{
+  synced: number;
+  failed: number;
+}> {
+  if (inflight) return inflight;
+  inflight = flushNow().finally(() => {
+    inflight = null;
+  });
+  return inflight;
 }

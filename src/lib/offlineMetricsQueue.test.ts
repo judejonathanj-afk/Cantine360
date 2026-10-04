@@ -48,6 +48,21 @@ describe("offlineMetricsQueue", () => {
     expect(queuedMetricsCount()).toBe(0);
   });
 
+  it("envoie toutes les classes d’un service en une requête", async () => {
+    enqueueMetricsSave("svc1", "grp1", metrics);
+    enqueueMetricsSave("svc1", "grp2", { ...metrics, presentCount: 10 });
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+    const result = await flushMetricsQueue();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const body = JSON.parse(
+      (fetchMock.mock.calls[0]?.[1] as { body: string }).body,
+    ) as { groups: unknown[] };
+    expect(body.groups).toHaveLength(2);
+    expect(result.synced).toBe(2);
+    expect(queuedMetricsCount()).toBe(0);
+  });
+
   it("conserve la file si la sync échoue", async () => {
     enqueueMetricsSave("svc1", "grp1", metrics);
     vi.stubGlobal(

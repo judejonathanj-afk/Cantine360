@@ -11,17 +11,20 @@ import {
   queuedWasteCount,
 } from "@/lib/offlineWasteQueue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function OfflineSyncBanner() {
   const online = useOnlineStatus();
   const router = useRouter();
+  const pathname = usePathname();
+  const onOpenService = /^\/service\/[^/]+/.test(pathname);
   const [pending, setPending] = useState(0);
   const [syncing, setSyncing] = useState(false);
 
   const refreshPending = useCallback(() => {
-    setPending(queuedMetricsCount() + queuedWasteCount());
-  }, []);
+    const metrics = onOpenService && online ? 0 : queuedMetricsCount();
+    setPending(metrics + queuedWasteCount());
+  }, [onOpenService, online]);
 
   useEffect(() => {
     refreshPending();

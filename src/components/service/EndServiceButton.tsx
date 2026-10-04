@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { rememberActiveServiceId } from "@/lib/activeService";
+import { flushMetricsQueue } from "@/lib/offlineMetricsQueue";
 
 type Props = {
   className?: string;
@@ -54,10 +55,17 @@ export function EndServiceButton({ className, compact = false }: Props) {
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => {
-                setOpen(false);
-                rememberActiveServiceId(null);
-                router.push("/service");
+              onClick={(event) => {
+                event.preventDefault();
+                void (async () => {
+                  try {
+                    await flushMetricsQueue();
+                  } finally {
+                    setOpen(false);
+                    rememberActiveServiceId(null);
+                    router.push("/service");
+                  }
+                })();
               }}
             >
               Terminer

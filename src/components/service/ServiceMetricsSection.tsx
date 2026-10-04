@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQueuedMetrics } from "@/hooks/useQueuedMetrics";
+import { overlayQueuedCounts } from "@/lib/mergeQueuedMetrics";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ServiceAttendanceImport } from "@/components/service/ServiceAttendanceImport";
 import {
@@ -14,35 +16,39 @@ import type { SchoolLevel } from "@/lib/schoolLevel";
 export function ServiceMetricsSection({
   serviceId,
   showCsvImport = false,
-  presentTotal,
   cards,
   hasMenu,
 }: {
   serviceId: string;
   showCsvImport?: boolean;
-  presentTotal: number;
   cards: ServiceClassCard[];
   hasMenu: boolean;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scrollGroupId = searchParams.get("group");
+  const queued = useQueuedMetrics(serviceId);
+  const liveCards = useMemo(
+    () => overlayQueuedCounts(cards, queued),
+    [cards, queued],
+  );
+  const livePresent = liveCards.reduce((sum, card) => sum + card.presentCount, 0);
   const [schoolFilter, setSchoolFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState<"all" | SchoolLevel>("all");
   const scrolledToGroup = useRef(false);
 
   const filtered = useMemo(() => {
-    return cards.filter((c) => {
+    return liveCards.filter((c) => {
       if (schoolFilter !== "all" && c.schoolName !== schoolFilter) return false;
       if (levelFilter !== "all" && c.level !== levelFilter) return false;
       return true;
     });
-  }, [cards, schoolFilter, levelFilter]);
+  }, [liveCards, schoolFilter, levelFilter]);
 
   useEffect(() => {
     if (!scrollGroupId || scrolledToGroup.current) return;
 
-    const card = cards.find((c) => c.groupId === scrollGroupId);
+    const card = liveCards.find((c) => c.groupId === scrollGroupId);
     if (!card) return;
 
     if (schoolFilter !== "all" && card.schoolName !== schoolFilter) {
@@ -67,7 +73,7 @@ export function ServiceMetricsSection({
     }, 700);
 
     return () => window.clearTimeout(timeout);
-  }, [cards, levelFilter, router, schoolFilter, scrollGroupId, serviceId]);
+  }, [liveCards, levelFilter, router, schoolFilter, scrollGroupId, serviceId]);
 
   return (
     <div className="space-y-4">
@@ -76,22 +82,22 @@ export function ServiceMetricsSection({
           <ServiceAttendanceImport
             serviceId={serviceId}
             showCsvImport
-            presentTotal={presentTotal}
+            presentTotal={livePresent}
             className="w-full"
           />
-          <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
+          <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
         </>
       ) : (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <ServiceAttendanceImport
             serviceId={serviceId}
-            presentTotal={presentTotal}
+            presentTotal={livePresent}
           />
-          <ServiceLevelFilter cards={cards} value={levelFilter} onChange={setLevelFilter} />
+          <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
         </div>
       )}
       <ServiceSchoolFilter
-        cards={cards}
+        cards={liveCards}
         value={schoolFilter}
         onChange={(school) => {
           setSchoolFilter(school);

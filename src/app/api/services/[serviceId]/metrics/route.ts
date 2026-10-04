@@ -4,13 +4,18 @@ import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { runDbWrite } from "@/server/runDbWrite";
 
-const BodySchema = z.object({
+const CountsSchema = z.object({
   groupId: z.string().min(1),
   presentCount: z.number().int().min(0).max(1_000_000).optional(),
   servedCount: z.number().int().min(0).max(1_000_000).optional(),
   rabCount: z.number().int().min(0).max(1_000_000).optional(),
   refusedCount: z.number().int().min(0).max(1_000_000).optional(),
 });
+
+const BodySchema = z.union([
+  z.object({ groups: z.array(CountsSchema).min(1).max(80) }),
+  CountsSchema,
+]);
 
 export async function PUT(
   req: Request,
@@ -26,7 +31,13 @@ export async function PUT(
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   }
 
-  // Une seule lecture : service du tenant + classe du même établissement.
+  const incoming =
+    "groups" in parsed.data ? parsed.data.groups : [parsed.data];
+  const byGroup = new Map<string, (typeof incoming)[number]>();
+  for (const row of incoming) byGroup.set(row.groupId, row);
+  const rows = [...byGroup.values()];
+
+  // Une lecture : service du tenant + classes du même établissement.
   const service = await db.service.findFirst({
     where: {
       id: serviceId,
@@ -37,9 +48,8 @@ export async function PUT(
       establishment: {
         select: {
           groups: {
-            where: { id: parsed.data.groupId },
+            where: { id: { in: rows.map((row) => row.groupId) } },
             select: { id: true },
-            take: 1,
           },
         },
       },
@@ -48,31 +58,40 @@ export async function PUT(
   if (!service) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (service.establishment.groups.length === 0) {
+
+  const validIds = new Set(service.establishment.groups.map((g) => g.id));
+  const accepted = rows.filter((row) => validIds.has(row.groupId));
+  if (accepted.length === 0) {
     return NextResponse.json({ error: "Groupe invalide" }, { status: 400 });
   }
 
-  const updated = await runDbWrite(() => db.serviceGroupMetrics.upsert({
-    where: {
-      serviceId_groupId: { serviceId, groupId: parsed.data.groupId },
-    },
-    create: {
-      serviceId,
-      groupId: parsed.data.groupId,
-      presentCount: parsed.data.presentCount ?? 0,
-      servedCount: parsed.data.servedCount ?? 0,
-      rabCount: parsed.data.rabCount ?? 0,
-      refusedCount: parsed.data.refusedCount ?? 0,
-      leftoversCount: 0,
-    },
-    update: {
-      presentCount: parsed.data.presentCount,
-      servedCount: parsed.data.servedCount,
-      rabCount: parsed.data.rabCount,
-      refusedCount: parsed.data.refusedCount,
-      leftoversCount: 0,
-    },
-  }));
+  const updated = await runDbWrite(() =>
+    db.$transaction(
+      accepted.map((row) =>
+        db.serviceGroupMetrics.upsert({
+          where: {
+            serviceId_groupId: { serviceId, groupId: row.groupId },
+          },
+          create: {
+            serviceId,
+            groupId: row.groupId,
+            presentCount: row.presentCount ?? 0,
+            servedCount: row.servedCount ?? 0,
+            rabCount: row.rabCount ?? 0,
+            refusedCount: row.refusedCount ?? 0,
+            leftoversCount: 0,
+          },
+          update: {
+            presentCount: row.presentCount,
+            servedCount: row.servedCount,
+            rabCount: row.rabCount,
+            refusedCount: row.refusedCount,
+            leftoversCount: 0,
+          },
+        }),
+      ),
+    ),
+  );
 
-  return NextResponse.json({ metrics: updated });
+  return NextResponse.json({ updated: updated.length, metrics: updated });
 }

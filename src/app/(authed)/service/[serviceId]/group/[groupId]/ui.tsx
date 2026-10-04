@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Check, CloudOff } from "lucide-react";
 import { Counter } from "@/components/Counter";
@@ -12,7 +12,6 @@ import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import {
   enqueueMetricsSave,
   getQueuedMetrics,
-  removeQueuedMetrics,
 } from "@/lib/offlineMetricsQueue";
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import { schoolLevelLabelFr } from "@/lib/schoolLevel";
@@ -54,18 +53,17 @@ export function GroupMetricsEditor({
   const online = useOnlineStatus();
   const [m, setM] = useState<Metrics>(initial);
   const [lastSaved, setLastSaved] = useState<Metrics>(initial);
-  const [status, setStatus] = useState<
-    "idle" | "saving" | "saved" | "error" | "offline"
-  >("idle");
+  const [status, setStatus] = useState<"idle" | "saved" | "offline">("idle");
+  const [heldLocally, setHeldLocally] = useState(false);
   const [leaving, setLeaving] = useState(false);
-  const saveTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const queued = getQueuedMetrics(serviceId, groupId);
     if (!queued) return;
     setM(queued.metrics);
     setLastSaved(queued.metrics);
-    setStatus("offline");
+    setHeldLocally(true);
+    setStatus("saved");
   }, [serviceId, groupId]);
 
   const dirty = useMemo(() => {
@@ -78,92 +76,38 @@ export function GroupMetricsEditor({
   }, [lastSaved, m]);
 
   const save = useCallback(
-    async (next: Metrics) => {
-      if (!online) {
-        enqueueMetricsSave(serviceId, groupId, next);
-        setLastSaved(next);
-        setStatus("offline");
-        return true;
-      }
-
-      setStatus("saving");
-      try {
-        const res = await fetch(`/api/services/${serviceId}/metrics`, {
-          method: "PUT",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ groupId, ...next }),
-        });
-        if (!res.ok) {
-          enqueueMetricsSave(serviceId, groupId, next);
-          setLastSaved(next);
-          setStatus("offline");
-          return false;
-        }
-        removeQueuedMetrics(serviceId, groupId);
-        setLastSaved(next);
-        setStatus("saved");
-        window.setTimeout(() => setStatus("idle"), 800);
-        return true;
-      } catch {
-        enqueueMetricsSave(serviceId, groupId, next);
-        setLastSaved(next);
-        setStatus("offline");
-        return false;
-      }
+    (next: Metrics) => {
+      enqueueMetricsSave(serviceId, groupId, next);
+      setLastSaved(next);
+      setHeldLocally(true);
+      setStatus(online ? "saved" : "offline");
+      if (online) window.setTimeout(() => setStatus("idle"), 800);
     },
     [groupId, online, serviceId],
   );
 
   useEffect(() => {
     if (!dirty) return;
-    if (saveTimer.current) window.clearTimeout(saveTimer.current);
-    // Debounce plus long pour limiter les PUT au pic du service (midi).
-    saveTimer.current = window.setTimeout(() => {
-      void save(m);
-    }, 900);
-    return () => {
-      if (saveTimer.current) window.clearTimeout(saveTimer.current);
-    };
+    save(m);
   }, [dirty, m, save]);
 
-  async function saveAndLeave() {
-    if (saveTimer.current) {
-      window.clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
+  function saveAndLeave() {
     setLeaving(true);
     try {
-      if (!online) {
-        if (dirty) await save(m);
-        setStatus("offline");
-        router.push(`/service/${serviceId}?group=${groupId}`);
-        return;
-      }
-
-      if (dirty || getQueuedMetrics(serviceId, groupId)) {
-        const ok = await save(m);
-        if (!ok) {
-          setStatus("offline");
-          return;
-        }
-      }
-
+      if (dirty) save(m);
       router.push(`/service/${serviceId}?group=${groupId}`);
     } finally {
       setLeaving(false);
     }
   }
 
-  const saveLabel =
-    leaving || status === "saving"
-      ? "Enregistrement…"
-      : !online
-        ? dirty
-          ? "Enregistrer localement"
-          : "Enregistré (local)"
-        : status === "saved" && !dirty && !leaving
-          ? "Enregistré"
-          : "Enregistrer";
+  const saveLabel = leaving
+    ? "Enregistrement…"
+    : !online
+      ? dirty
+        ? "Enregistrer localement"
+        : "Enregistré (local)"
+      : "Enregistrer";
 
   const counterBorder =
     level === "MATERNELLE" ? "border-sky-400" : "border-emerald-500";
@@ -226,17 +170,13 @@ export function GroupMetricsEditor({
               <CloudOff className="h-4 w-4 text-amber-700" aria-hidden />
             ) : null}
             <span>
-              {status === "saving"
-                ? "Sauvegarde..."
-                : status === "saved"
-                  ? "Sauvegardé"
-                  : status === "offline"
-                    ? "Enregistré localement — sync au retour du réseau"
-                    : status === "error"
-                      ? "Erreur de sauvegarde"
-                      : dirty
-                        ? "Modifications non sauvegardées"
-                        : "À jour"}
+              {!online || status === "offline"
+                ? "Enregistré localement — sync au retour du réseau"
+                : dirty
+                  ? "Modifications non sauvegardées"
+                  : heldLocally
+                    ? "Gardé sur cet appareil — envoi groupé en fin de service"
+                    : "À jour"}
             </span>
           </div>
           <div className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
@@ -301,7 +241,7 @@ export function GroupMetricsEditor({
         <Button
           type="button"
           onClick={() => void saveAndLeave()}
-          disabled={leaving || status === "saving"}
+          disabled={leaving}
           className="inline-flex min-w-[12rem] shrink-0 items-center justify-center gap-2 rounded-xl border border-emerald-700 bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-70"
         >
           {status === "saved" && !dirty && !leaving ? (
