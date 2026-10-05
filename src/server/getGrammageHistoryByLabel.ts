@@ -3,6 +3,69 @@ import { normalizeDishLabel } from "@/lib/antiWasteKitchenAdvice";
 import type { DishWasteHistory } from "@/lib/antiWasteGrammageSuggestion";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 
+const HISTORY_DAYS = 90;
+const cache = new Map<string, Record<string, DishWasteHistory>>();
+const MAX_ENTRIES = 24;
+
+function remember(key: string, history: Record<string, DishWasteHistory>) {
+  if (cache.has(key)) cache.delete(key);
+  cache.set(key, history);
+  while (cache.size > MAX_ENTRIES) {
+    const oldest = cache.keys().next().value;
+    if (oldest === undefined) break;
+    cache.delete(oldest);
+  }
+}
+
+function stampPart(max: Date | null, count: number) {
+  return `${max?.getTime() ?? 0}:${count}`;
+}
+
+function historyWindow() {
+  const endExclusive = new Date();
+  endExclusive.setHours(0, 0, 0, 0);
+  const start = new Date(endExclusive);
+  start.setDate(start.getDate() - HISTORY_DAYS);
+  return { start, endExclusive };
+}
+
+/** Anciens grammages et pesées. Le jour en cours ne relance pas cette lecture. */
+async function historyStamp(
+  db: PrismaClient,
+  establishmentId: string,
+  mealType: MealType,
+  start: Date,
+  endExclusive: Date,
+) {
+  const whereService = {
+    establishmentId,
+    mealType,
+    date: { gte: start, lt: endExclusive },
+  };
+  const [service, metrics, menuItem] = await Promise.all([
+    db.service.aggregate({
+      where: whereService,
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+    db.serviceGroupMetrics.aggregate({
+      where: { service: whereService },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+    db.menuItem.aggregate({
+      where: { menu: { service: whereService } },
+      _max: { updatedAt: true },
+      _count: true,
+    }),
+  ]);
+  return [
+    stampPart(service._max.updatedAt, service._count),
+    stampPart(metrics._max.updatedAt, metrics._count),
+    stampPart(menuItem._max.updatedAt, menuItem._count),
+  ].join("|");
+}
+
 /**
  * Historique par intitulé : grammage moyen + gaspillage (g/100)
  * les jours où ce plat était au menu (même type de repas, même établissement).
@@ -13,16 +76,18 @@ export async function getDishWasteHistoryByLabel(
   excludeServiceId: string,
   mealType: MealType = MealType.LUNCH,
 ): Promise<Record<string, DishWasteHistory>> {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setDate(start.getDate() - 90);
+  const { start, endExclusive } = historyWindow();
+  const stamp = await historyStamp(db, establishmentId, mealType, start, endExclusive);
+  const key = [establishmentId, mealType, start.getTime(), excludeServiceId, stamp].join("|");
+  const hit = cache.get(key);
+  if (hit) return hit;
 
   const services = await db.service.findMany({
     where: {
       establishmentId,
       mealType,
       id: { not: excludeServiceId },
-      date: { gte: start },
+      date: { gte: start, lt: endExclusive },
       menu: { isNot: null },
     },
     take: 60,
@@ -102,6 +167,7 @@ export async function getDishWasteHistoryByLabel(
       serviceCount: acc.serviceCount,
     };
   }
+  remember(key, out);
   return out;
 }
 
