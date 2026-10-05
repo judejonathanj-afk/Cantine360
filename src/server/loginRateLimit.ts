@@ -2,9 +2,14 @@ type Bucket = { count: number; resetAt: number };
 
 const buckets = new Map<string, Bucket>();
 
-/** Fenêtre glissante / fixe courte : trop d’essais PIN → 429. */
+/**
+ * Fenêtre courte : trop d’essais PIN → 429.
+ * Plusieurs tablettes partagent souvent la même connexion en cuisine,
+ * donc la limite laisse de la place aux erreurs de frappe sans ouvrir
+ * un compte sur un mauvais code.
+ */
 const WINDOW_MS = 15 * 60 * 1000;
-const MAX_ATTEMPTS = 12;
+const MAX_ATTEMPTS = 40;
 
 function pruneExpired(now: number) {
   if (buckets.size < 500) return;
