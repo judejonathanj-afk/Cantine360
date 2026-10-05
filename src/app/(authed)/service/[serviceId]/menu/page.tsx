@@ -7,6 +7,7 @@ import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { getDishWasteHistoryByLabel } from "@/server/getGrammageHistoryByLabel";
+import { readServiceScreen } from "@/server/serviceScreenRead";
 import { MenuEditor } from "./ui";
 
 export default async function ServiceMenuPage({
@@ -18,10 +19,14 @@ export default async function ServiceMenuPage({
   if (!session) redirect("/login");
 
   const { serviceId } = await params;
-  const service = await db.service.findFirst({
-    where: { id: serviceId, establishmentId: session.establishmentId },
-    include: { menu: { include: { items: true } } },
-  });
+  const [service, allergenSummary, antiWaste] = await Promise.all([
+    readServiceScreen(db, {
+      establishmentId: session.establishmentId,
+      serviceId,
+    }),
+    getServiceAllergenSummary(db, session.establishmentId, serviceId),
+    getEstablishmentAntiWasteSettings(db, session.establishmentId),
+  ]);
   if (!service) notFound();
 
   const dateLabel = new Intl.DateTimeFormat("fr-FR", {
@@ -44,11 +49,6 @@ export default async function ServiceMenuPage({
           "containsMeat" in i && (i as { containsMeat?: boolean }).containsMeat,
         ),
       }));
-
-  const [allergenSummary, antiWaste] = await Promise.all([
-    getServiceAllergenSummary(db, session.establishmentId, serviceId),
-    getEstablishmentAntiWasteSettings(db, session.establishmentId),
-  ]);
 
   const dishWasteHistoryByLabel = antiWaste.antiWasteModeEnabled
     ? await getDishWasteHistoryByLabel(
