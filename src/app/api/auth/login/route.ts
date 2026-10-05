@@ -91,12 +91,17 @@ export async function POST(req: Request) {
       );
     }
 
+    const [adminOk, kitchenOk] = await Promise.all([
+      verifyEstablishmentPin(pin, establishment.adminPin),
+      verifyEstablishmentPin(pin, establishment.kitchenPin),
+    ]);
+
     let role: EstablishmentRole | null = null;
     let matchedField: "adminPin" | "kitchenPin" | null = null;
-    if (await verifyEstablishmentPin(pin, establishment.adminPin)) {
+    if (adminOk) {
       role = "ADMIN";
       matchedField = "adminPin";
-    } else if (await verifyEstablishmentPin(pin, establishment.kitchenPin)) {
+    } else if (kitchenOk) {
       role = "KITCHEN";
       matchedField = "kitchenPin";
     }
