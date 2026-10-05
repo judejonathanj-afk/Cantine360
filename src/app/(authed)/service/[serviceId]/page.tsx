@@ -16,6 +16,7 @@ import { ServiceInfoGrid } from "@/components/service/ServiceInfoGrid";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { getAntiWasteKitchenAdvice } from "@/server/getAntiWasteKitchenAdvice";
+import { readServiceScreen } from "@/server/serviceScreenRead";
 
 export default async function ServicePage({
   params,
@@ -26,15 +27,9 @@ export default async function ServicePage({
   if (!session) redirect("/login");
 
   const { serviceId } = await params;
-  const service = await db.service.findFirst({
-    where: { id: serviceId, establishmentId: session.establishmentId },
-    include: {
-      menu: { include: { items: true } },
-      metrics: {
-        include: { group: { include: { school: true } } },
-        orderBy: [{ group: { school: { name: "asc" } } }, { group: { name: "asc" } }],
-      },
-    },
+  const service = await readServiceScreen(db, {
+    establishmentId: session.establishmentId,
+    serviceId,
   });
   if (!service) notFound();
 
