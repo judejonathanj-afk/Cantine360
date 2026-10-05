@@ -10,6 +10,7 @@ import {
 } from "@/lib/pinHash";
 import { normalizeEstablishmentSlug } from "@/lib/establishmentSlug";
 import { db } from "@/server/db";
+import { runDbWrite } from "@/server/runDbWrite";
 import {
   clearLoginAttempts,
   clientIpFromRequest,
@@ -67,15 +68,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const establishment = await db.establishment.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        adminPin: true,
-        kitchenPin: true,
-        accessCredentialRevision: true,
-      },
-    });
+    const establishment = await runDbWrite(() =>
+      db.establishment.findUnique({
+        where: { slug },
+        select: {
+          id: true,
+          adminPin: true,
+          kitchenPin: true,
+          accessCredentialRevision: true,
+        },
+      }),
+    );
     if (!establishment) {
       return NextResponse.json(
         { error: "Établissement inconnu (vérifiez le code)." },
@@ -120,10 +123,12 @@ export async function POST(req: Request) {
     if (!isHashedPin(stored)) {
       try {
         const hashed = await hashEstablishmentPin(pin);
-        await db.establishment.update({
-          where: { id: establishment.id },
-          data: { [matchedField]: hashed },
-        });
+        await runDbWrite(() =>
+          db.establishment.update({
+            where: { id: establishment.id },
+            data: { [matchedField]: hashed },
+          }),
+        );
       } catch (upgradeErr) {
         console.error("[auth/login] pin upgrade", upgradeErr);
       }
