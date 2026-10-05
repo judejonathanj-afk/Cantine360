@@ -106,14 +106,32 @@ export async function verifySessionToken(token: string): Promise<Session | null>
   }
 }
 
+const SESSION_REVISION_TTL_MS = 15_000;
+const revisionCache = new Map<string, { revision: number; at: number }>();
+
+function rememberRevision(establishmentId: string, revision: number) {
+  const now = Date.now();
+  revisionCache.set(establishmentId, { revision, at: now });
+  if (revisionCache.size <= 200) return;
+  for (const [id, entry] of revisionCache) {
+    if (now - entry.at > SESSION_REVISION_TTL_MS) revisionCache.delete(id);
+  }
+}
+
 async function establishmentSessionStillValid(
   session: EstablishmentSession,
 ): Promise<boolean> {
+  const cached = revisionCache.get(session.establishmentId);
+  if (cached && Date.now() - cached.at < SESSION_REVISION_TTL_MS) {
+    return cached.revision === session.accessCredentialRevision;
+  }
+
   const row = await db.establishment.findUnique({
     where: { id: session.establishmentId },
     select: { accessCredentialRevision: true },
   });
   if (!row) return false;
+  rememberRevision(session.establishmentId, row.accessCredentialRevision);
   return row.accessCredentialRevision === session.accessCredentialRevision;
 }
 
