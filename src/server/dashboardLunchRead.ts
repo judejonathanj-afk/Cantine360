@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import { MealType } from "@/generated/prisma/client";
 
 const lunchSelect = {
@@ -32,6 +32,10 @@ const lunchSelect = {
     },
   },
 } as const;
+
+export type DashboardLunchRow = Prisma.ServiceGetPayload<{
+  select: typeof lunchSelect;
+}>;
 
 const studentSelect = {
   id: true,

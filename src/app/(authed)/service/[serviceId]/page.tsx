@@ -1,8 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import {
-  ServiceAllergenOverview,
-} from "@/components/service/ServiceAllergenPanel";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -12,7 +9,6 @@ import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
 import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
-import { ServiceInfoGrid } from "@/components/service/ServiceInfoGrid";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { getAntiWasteKitchenAdvice } from "@/server/getAntiWasteKitchenAdvice";
@@ -128,11 +124,6 @@ export default async function ServicePage({
         </ol>
       </div>
 
-      {allergenSummary && session.role === "ADMIN" ? (
-        <ServiceInfoGrid>
-          <ServiceAllergenOverview summary={allergenSummary} />
-        </ServiceInfoGrid>
-      ) : null}
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[7fr_3fr]">
         {allergenSummary && allergenSummary.totalDietAffected > 0 ? (
           <div className="flex flex-col gap-2 rounded-3xl border-2 border-zinc-900 p-2">
@@ -167,7 +158,7 @@ export default async function ServicePage({
         <Suspense fallback={<div className="h-40 animate-pulse rounded-2xl bg-zinc-100" />}>
           <ServiceMetricsSection
             serviceId={serviceId}
-            showCsvImport={session.role === "ADMIN"}
+            showCsvImport={false}
             cards={classCards}
             hasMenu={allergenSummary?.hasMenu ?? false}
           />

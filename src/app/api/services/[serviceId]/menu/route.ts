@@ -42,6 +42,7 @@ export async function PUT(
 ) {
   const session = await getServerSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const establishmentId = session.establishmentId;
 
   const { serviceId } = await params;
   const json = await req.json().catch(() => null);
@@ -62,7 +63,7 @@ export async function PUT(
   async function replaceMenu(withDiet: boolean) {
     return db.$transaction(async (tx) => {
       const owned = await tx.service.findFirst({
-        where: { id: serviceId, establishmentId: session.establishmentId },
+        where: { id: serviceId, establishmentId },
         select: { id: true },
       });
       if (!owned) return null;
