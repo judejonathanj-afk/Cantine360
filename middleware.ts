@@ -37,6 +37,24 @@ async function verifyTokenKind(token: string): Promise<SessionKind> {
   }
 }
 
+async function readActiveEstablishmentRole(
+  req: NextRequest,
+): Promise<"ADMIN" | "KITCHEN" | null> {
+  const getCookie = (name: string) => req.cookies.get(name)?.value;
+  const active = readActiveEstablishmentToken(getCookie);
+  const token = active?.token ?? getCookie(LEGACY_SESSION_COOKIE_NAME);
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, getSecret());
+    if (payload.kind === "platform") return null;
+    const role = payload.role;
+    if (role === "ADMIN" || role === "KITCHEN") return role;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 async function readSessionKind(req: NextRequest): Promise<SessionKind> {
   const getCookie = (name: string) => req.cookies.get(name)?.value;
 
@@ -128,6 +146,18 @@ export async function middleware(req: NextRequest) {
   }
 
   if (kind === "establishment") {
+    const role = await readActiveEstablishmentRole(req);
+    if (
+      role === "ADMIN" &&
+      (pathname === "/service" || pathname.startsWith("/service/"))
+    ) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin/groups";
+      url.search = "";
+      const res = NextResponse.redirect(url);
+      return migrateLegacySessionCookie(req, res);
+    }
+
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-pathname", pathname);
     const res = NextResponse.next({ request: { headers: requestHeaders } });

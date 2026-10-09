@@ -33,70 +33,6 @@ import {
   weighingStatusFromLabel,
 } from "./antiWasteFormat";
 
-const SAMPLE_RISKY_DISHES: RiskyDishRow[] = [
-  {
-    label: "Purée de carottes",
-    avgWasteGPer100: 1860,
-    serviceCount: 2,
-    vsTarget: "unknown",
-    maternelleGPer100: 2140,
-    primaireGPer100: 1620,
-    topClasses: [
-      { label: "École Anne Frank — MS", level: "MATERNELLE", wasteG: 640, gramsPer100: 2280, served: 28 },
-      { label: "École Jean Moulin — CE1", level: "PRIMAIRE", wasteG: 510, gramsPer100: 1700, served: 30 },
-      { label: "École Voltaire — GS", level: "MATERNELLE", wasteG: 390, gramsPer100: 1950, served: 20 },
-    ],
-  },
-  {
-    label: "Poisson pané",
-    avgWasteGPer100: 1540,
-    serviceCount: 3,
-    vsTarget: "unknown",
-    maternelleGPer100: 1710,
-    primaireGPer100: 1390,
-    topClasses: [
-      { label: "École Jean Moulin — CE2", level: "PRIMAIRE", wasteG: 480, gramsPer100: 1500, served: 32 },
-      { label: "École Anne Frank — GS", level: "MATERNELLE", wasteG: 360, gramsPer100: 1800, served: 20 },
-    ],
-  },
-  {
-    label: "Gratin de courgettes",
-    avgWasteGPer100: 1210,
-    serviceCount: 1,
-    vsTarget: "unknown",
-    maternelleGPer100: 980,
-    primaireGPer100: 1340,
-    topClasses: [
-      { label: "École Voltaire — CM1", level: "PRIMAIRE", wasteG: 420, gramsPer100: 1400, served: 30 },
-      { label: "École Anne Frank — MS", level: "MATERNELLE", wasteG: 210, gramsPer100: 1050, served: 20 },
-    ],
-  },
-  {
-    label: "Poulet rôti",
-    avgWasteGPer100: 980,
-    serviceCount: 2,
-    vsTarget: "unknown",
-    maternelleGPer100: 860,
-    primaireGPer100: 1040,
-    topClasses: [
-      { label: "École Jean Moulin — CM2", level: "PRIMAIRE", wasteG: 330, gramsPer100: 1100, served: 30 },
-      { label: "École Voltaire — GS", level: "MATERNELLE", wasteG: 190, gramsPer100: 950, served: 20 },
-    ],
-  },
-  {
-    label: "Riz cantonais",
-    avgWasteGPer100: 740,
-    serviceCount: 1,
-    vsTarget: "unknown",
-    maternelleGPer100: 620,
-    primaireGPer100: 810,
-    topClasses: [
-      { label: "École Anne Frank — CE1", level: "PRIMAIRE", wasteG: 250, gramsPer100: 830, served: 30 },
-      { label: "École Voltaire — MS", level: "MATERNELLE", wasteG: 140, gramsPer100: 700, served: 20 },
-    ],
-  },
-];
-
 type DayRow = {
   date: string;
   wasteWeightG: number;
@@ -115,48 +51,6 @@ export type MissingWeighServiceRow = {
   menuSummary: string;
   servedCount: number;
 };
-
-const SAMPLE_MISSING_WEIGHS: MissingWeighServiceRow[] = [
-  {
-    id: "sample-missing-1",
-    dateLabel: "Vendredi 25 septembre",
-    mealLabel: "Déjeuner",
-    menuSummary:
-      "Entrée : carottes râpées · Plat : poisson pané · Dessert : compote",
-    servedCount: 96,
-  },
-  {
-    id: "sample-missing-2",
-    dateLabel: "Jeudi 24 septembre",
-    mealLabel: "Déjeuner",
-    menuSummary:
-      "Entrée : salade de concombre · Plat : poulet rôti · Dessert : yaourt",
-    servedCount: 112,
-  },
-  {
-    id: "sample-missing-3",
-    dateLabel: "Mercredi 23 septembre",
-    mealLabel: "Déjeuner",
-    menuSummary: "Menu non renseigné",
-    servedCount: 0,
-  },
-  {
-    id: "sample-missing-4",
-    dateLabel: "Mardi 22 septembre",
-    mealLabel: "Déjeuner",
-    menuSummary:
-      "Entrée : betteraves · Plat : hachis parmentier · Dessert : fruit",
-    servedCount: 88,
-  },
-  {
-    id: "sample-missing-5",
-    dateLabel: "Lundi 21 septembre",
-    mealLabel: "Déjeuner",
-    menuSummary:
-      "Entrée : taboulé · Plat : omelette · Dessert : fromage blanc",
-    servedCount: 104,
-  },
-];
 
 const STATUS_STYLES = {
   green: "bg-primary/12 text-primary",
@@ -204,19 +98,15 @@ export function AntiWastePanels({
 }) {
   const [missingWeighOpen, setMissingWeighOpen] = useState(false);
   const [riskyDishesOpen, setRiskyDishesOpen] = useState(false);
-  const riskyDishesVisible = [
-    ...riskyDishes,
-    ...SAMPLE_RISKY_DISHES,
-  ];
-  const missingWeighVisible = [
-    ...missingWeighServices,
-    ...SAMPLE_MISSING_WEIGHS,
-  ];
+  const riskyDishesVisible = riskyDishes;
+  const missingWeighVisible = missingWeighServices;
   const missingWeighShown = missingWeighOpen
     ? missingWeighVisible
     : missingWeighVisible.slice(0, 2);
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
-  const gaugeValue = wasteGramsPer100Served ?? 0;
+  const hasWeighing =
+    wasteGramsPer100Served != null && wasteGramsPer100Served > 0;
+  const gaugeValue = hasWeighing ? wasteGramsPer100Served : null;
   const gaugeStatus = gaugeStatusFromTone(
     status.tone,
     wasteGramsPer100Served != null && wasteGramsPer100Served > 0,
@@ -477,6 +367,7 @@ export function AntiWastePanels({
               value={gaugeValue}
               objective={targetGPer100}
               status={gaugeStatus}
+              emptyLabel="—"
             />
             <div
               className={cn(
@@ -736,7 +627,7 @@ export function AntiWastePanels({
           )}
         </div>
 
-        {missingWeighVisible.length > 0 ? (
+        {missingWeighCount > 0 && missingWeighVisible.length > 0 ? (
           <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-rose-500 bg-card">
             <div className="flex flex-wrap items-start justify-between gap-4 border-b border-rose-200 bg-rose-100 p-5">
               <div className="flex min-w-0 items-start gap-3">
@@ -745,11 +636,13 @@ export function AntiWastePanels({
                 </span>
                 <div className="min-w-0">
                   <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
-                    {missingWeighVisible.length} service
-                    {missingWeighVisible.length > 1 ? "s" : ""} sans pesée
+                    {missingWeighCount} service
+                    {missingWeighCount > 1 ? "s" : ""} sans pesée
                   </h2>
                   <p className="mt-1 text-base font-medium leading-snug text-zinc-950">
-                    Sur la période. Ouvrez un service pour saisir la pesée.
+                    Sur la période. La pesée se saisit depuis l’espace{" "}
+                    <span className="font-bold">Cuisine</span> (écran Service,
+                    bloc « Poids des déchets »).
                   </p>
                 </div>
               </div>
@@ -794,10 +687,9 @@ export function AntiWastePanels({
                   : "overflow-visible",
               )}
             >
-              {missingWeighShown.map((s) => {
-                const sample = s.id.startsWith("sample-missing-");
-                const body = (
-                  <>
+              {missingWeighShown.map((s) => (
+                <li key={s.id}>
+                  <div className="h-full rounded-2xl border border-rose-200 bg-white px-4 py-3">
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-base font-bold leading-snug text-zinc-950">
                         {s.dateLabel}
@@ -813,25 +705,13 @@ export function AntiWastePanels({
                         ? ` · ${fmt(s.servedCount)} assiette${s.servedCount > 1 ? "s" : ""}`
                         : ""}
                     </p>
-                  </>
-                );
-                return (
-                  <li key={s.id}>
-                    {sample ? (
-                      <div className="h-full rounded-2xl border border-rose-200 bg-white px-4 py-3">
-                        {body}
-                      </div>
-                    ) : (
-                      <Link
-                        href={`/service/${s.id}`}
-                        className="block h-full rounded-2xl border border-rose-200 bg-white px-4 py-3 transition hover:border-rose-500"
-                      >
-                        {body}
-                      </Link>
-                    )}
-                  </li>
-                );
-              })}
+                    <p className="mt-2 text-xs font-semibold text-rose-800">
+                      Rappel cuisine : ouvrir ce service et enregistrer maternelle
+                      / primaire après le repas.
+                    </p>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         ) : null}

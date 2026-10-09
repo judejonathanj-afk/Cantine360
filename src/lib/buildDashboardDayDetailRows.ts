@@ -182,8 +182,10 @@ export function buildDashboardDayDetailRows(
       bucket.wasteWeightG += matG;
     } else if (levelFilter === "PRIMAIRE") {
       bucket.wasteWeightG += primG;
-    } else if (s.wasteWeightG != null && s.wasteWeightG > 0) {
-      bucket.wasteWeightG += s.wasteWeightG;
+    } else {
+      const dayTotal =
+        (s.wasteWeightG ?? 0) > 0 ? (s.wasteWeightG ?? 0) : matG + primG;
+      if (dayTotal > 0) bucket.wasteWeightG += dayTotal;
     }
 
     if (bucket.menuItems.length === 0 && s.menu?.items?.length) {

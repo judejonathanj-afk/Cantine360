@@ -17,6 +17,7 @@ export default async function ServiceMenuPage({
 }) {
   const session = await getServerSession();
   if (!session) redirect("/login");
+  if (session.role === "ADMIN") redirect("/admin/groups");
 
   const { serviceId } = await params;
   const [service, allergenSummary, antiWaste] = await Promise.all([

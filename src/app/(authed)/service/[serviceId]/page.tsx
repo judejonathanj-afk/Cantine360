@@ -25,6 +25,7 @@ export default async function ServicePage({
 }) {
   const session = await getServerSession();
   if (!session) redirect("/login");
+  if (session.role === "ADMIN") redirect("/admin/groups");
 
   const { serviceId } = await params;
   const service = await readServiceScreen(db, {

@@ -28,6 +28,17 @@ function hasLevelSplit(service: ServiceWasteWeights): boolean {
  * - Priorité aux champs maternelle / primaire.
  * - Sinon (données legacy) : répartition au prorata des assiettes servies.
  */
+/** Total déchets d’un service (champ total ou somme mat. + prim.). */
+export function effectiveServiceWasteG(
+  service: ServiceWasteWeights,
+  matG: number,
+  primG: number,
+): number {
+  const total = service.wasteWeightG ?? 0;
+  if (total > 0) return total;
+  return matG + primG;
+}
+
 export function wasteWeightForLevel(
   service: ServiceWasteWeights,
   level: SchoolLevel,

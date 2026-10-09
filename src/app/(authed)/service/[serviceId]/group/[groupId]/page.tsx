@@ -13,6 +13,7 @@ export default async function GroupMetricsPage({
 }) {
   const session = await getServerSession();
   if (!session) redirect("/login");
+  if (session.role === "ADMIN") redirect("/admin/groups");
 
   const { serviceId, groupId } = await params;
 

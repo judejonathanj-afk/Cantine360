@@ -73,4 +73,35 @@ describe("buildDashboardDayDetailRows", () => {
     expect(rows[1]?.wasteDelta).toBe(500);
     expect(rows[1]?.concernedStudents).toBe(0);
   });
+
+  it("additionne mat.+prim. quand wasteWeightG est absent (filtre all)", () => {
+    const rows = buildDashboardDayDetailRows(
+      [
+        {
+          date: new Date("2026-07-21T00:00:00"),
+          wasteWeightG: null,
+          wasteWeightMaternelleG: 400,
+          wasteWeightPrimaireG: 600,
+          metrics: [
+            {
+              presentCount: 20,
+              servedCount: 20,
+              rabCount: 0,
+              refusedCount: 0,
+              group: {
+                id: "g1",
+                name: "MS",
+                level: "MATERNELLE",
+                school: { name: "École A" },
+              },
+            },
+          ],
+          menu: { items: [] },
+        },
+      ],
+      { levelFilter: "all", students: [] },
+    );
+    expect(rows[0]?.wasteWeightG).toBe(1000);
+    expect(rows[0]?.wasteGramsPer100).toBe(5000);
+  });
 });

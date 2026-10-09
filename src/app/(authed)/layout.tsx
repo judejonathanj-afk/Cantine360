@@ -19,7 +19,7 @@ export default async function AuthedLayout({
   const pathname = (await headers()).get("x-pathname") ?? "";
   // L’admin ne pilote pas le service : ça mélange sa session avec celle de la cuisine.
   if (session.role === "ADMIN" && (pathname === "/service" || pathname.startsWith("/service/"))) {
-    redirect("/dashboard");
+    redirect("/admin/groups");
   }
   const initialServiceId = activeServiceIdFromPathname(pathname);
   return (

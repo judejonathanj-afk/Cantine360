@@ -279,10 +279,10 @@ export function ServiceWasteWeightPanel({
         })
       : [];
 
-  const showPortionsConclusion =
-    antiWasteModeEnabled &&
-    liveAdvice != null &&
-    (savedAck || totalSaved > 0);
+  const showAntiWasteBanner =
+    antiWasteModeEnabled && liveAdvice != null;
+  const antiWasteAsConclusion =
+    savedAck || (totalSaved > 0 && !dirty);
 
   const statusMessage = invalidMat || invalidPrim ? (
     "Saisissez un nombre de grammes valide"
@@ -408,8 +408,11 @@ export function ServiceWasteWeightPanel({
       </div>
     </div>
 
-    {showPortionsConclusion && liveAdvice ? (
-      <AntiWasteServiceBanner advice={liveAdvice} asConclusion />
+    {showAntiWasteBanner && liveAdvice ? (
+      <AntiWasteServiceBanner
+        advice={liveAdvice}
+        asConclusion={antiWasteAsConclusion}
+      />
     ) : null}
     </div>
   );

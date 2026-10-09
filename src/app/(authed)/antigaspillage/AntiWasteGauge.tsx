@@ -14,18 +14,27 @@ export function AntiWasteGauge({
   value,
   objective,
   status,
+  emptyLabel = "—",
 }: {
-  value: number;
+  value: number | null;
   objective: number | null;
   status: GaugeStatus;
+  /** Affiché au centre quand aucune pesée sur la période. */
+  emptyLabel?: string;
 }) {
+  const numericValue = value ?? 0;
+  const showEmpty = value == null || value <= 0;
   const cx = 140;
   const cy = 140;
   const r = 118;
   const len = Math.PI * r;
 
-  const scaleMax = objective ? objective * 2 : Math.max(value * 1.25, 100);
-  const frac = Math.min(Math.max(value / scaleMax, 0), 1);
+  const scaleMax = objective
+    ? objective * 2
+    : Math.max(numericValue * 1.25, 100);
+  const frac = showEmpty
+    ? 0
+    : Math.min(Math.max(numericValue / scaleMax, 0), 1);
 
   const objFrac = objective ? Math.min(objective / scaleMax, 1) : null;
   const point = (f: number) => ({
@@ -49,7 +58,11 @@ export function AntiWasteGauge({
         viewBox="0 0 280 172"
         className="w-full"
         role="img"
-        aria-label={`${fmt1(value)} grammes pour 100 assiettes`}
+        aria-label={
+          showEmpty
+            ? "Pas encore de pesée sur la période"
+            : `${fmt1(numericValue)} grammes pour 100 assiettes`
+        }
       >
         <defs>
           <linearGradient id="awGaugeGrad" x1="0" y1="0" x2="1" y2="0">
@@ -97,10 +110,10 @@ export function AntiWasteGauge({
           className="font-display text-4xl font-bold leading-none tracking-tight"
           style={{ color }}
         >
-          {fmt1(value)}
+          {showEmpty ? emptyLabel : fmt1(numericValue)}
         </span>
         <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-950">
-          g / 100 assiettes
+          {showEmpty ? "en attente de pesée" : "g / 100 assiettes"}
         </span>
       </div>
     </div>
