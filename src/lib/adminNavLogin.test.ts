@@ -5,7 +5,7 @@ function loginRedirectTo(
   role: "ADMIN" | "KITCHEN",
   requestedNext?: string,
 ): string {
-  const defaultHome = role === "ADMIN" ? "/dashboard" : "/service";
+  const defaultHome = role === "ADMIN" ? "/admin/dashboard" : "/service";
   const nextLooksSafe =
     typeof requestedNext === "string" &&
     requestedNext.startsWith("/") &&
@@ -31,8 +31,8 @@ function adminNavLabels(): string[] {
 }
 
 describe("admin login redirect", () => {
-  it("envoie l’admin sur /dashboard sans next", () => {
-    expect(loginRedirectTo("ADMIN")).toBe("/dashboard");
+  it("envoie l’admin sur /admin/dashboard sans next", () => {
+    expect(loginRedirectTo("ADMIN")).toBe("/admin/dashboard");
   });
 
   it("envoie la cuisine sur /service sans next", () => {
@@ -44,9 +44,11 @@ describe("admin login redirect", () => {
   });
 
   it("n’ouvre pas la cuisine pour l’admin via next", () => {
-    expect(loginRedirectTo("ADMIN", "/service")).toBe("/dashboard");
-    expect(loginRedirectTo("ADMIN", "/service/abc123")).toBe("/dashboard");
-    expect(loginRedirectTo("ADMIN", "/service/abc123/menu")).toBe("/dashboard");
+    expect(loginRedirectTo("ADMIN", "/service")).toBe("/admin/dashboard");
+    expect(loginRedirectTo("ADMIN", "/service/abc123")).toBe("/admin/dashboard");
+    expect(loginRedirectTo("ADMIN", "/service/abc123/menu")).toBe(
+      "/admin/dashboard",
+    );
   });
 
   it("laisse la cuisine reprendre un service via next", () => {
@@ -56,7 +58,7 @@ describe("admin login redirect", () => {
   });
 
   it("ignore un next open-redirect", () => {
-    expect(loginRedirectTo("ADMIN", "//evil.example")).toBe("/dashboard");
+    expect(loginRedirectTo("ADMIN", "//evil.example")).toBe("/admin/dashboard");
   });
 });
 

@@ -200,18 +200,21 @@ export default function DashboardPanels({
     return `${sign}${value.toLocaleString("fr-FR")}`;
   }
 
+  const dashboardBase =
+    role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
+
   function daysHref(nextDays: 7 | 30) {
     const params = new URLSearchParams();
     params.set("days", String(nextDays));
     if (levelFilter !== "all") params.set("level", levelFilter);
-    return `/dashboard?${params.toString()}`;
+    return `${dashboardBase}?${params.toString()}`;
   }
 
   function levelHref(level: "all" | SchoolLevel) {
     const params = new URLSearchParams();
     params.set("days", String(days));
     if (level !== "all") params.set("level", level);
-    return `/dashboard?${params.toString()}`;
+    return `${dashboardBase}?${params.toString()}`;
   }
 
   const wasteSub = (() => {

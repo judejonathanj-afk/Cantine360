@@ -12,6 +12,82 @@ export const SESSION_COOKIE_NAME = LEGACY_SESSION_COOKIE_NAME;
 
 export type EstablishmentSessionsMap = Record<string, string>;
 
+export type EstablishmentRole = "ADMIN" | "KITCHEN";
+
+/** Clé de session : un jeton admin et un jeton cuisine par établissement. */
+export function establishmentSessionSlotKey(
+  establishmentId: string,
+  role: EstablishmentRole,
+): string {
+  return `${establishmentId}:${role}`;
+}
+
+export function parseEstablishmentSessionSlotKey(key: string): {
+  establishmentId: string;
+  role: EstablishmentRole | null;
+} {
+  const sep = key.lastIndexOf(":");
+  if (sep <= 0) return { establishmentId: key, role: null };
+  const establishmentId = key.slice(0, sep);
+  const suffix = key.slice(sep + 1);
+  if (suffix === "ADMIN" || suffix === "KITCHEN") {
+    return { establishmentId, role: suffix };
+  }
+  return { establishmentId: key, role: null };
+}
+
+/** Rôle attendu pour la page — permet admin + cuisine en parallèle (onglets). */
+export function sessionRoleForPath(pathname: string): EstablishmentRole | null {
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/antigaspillage") ||
+    pathname.startsWith("/exports")
+  ) {
+    return "ADMIN";
+  }
+  if (pathname === "/service" || pathname.startsWith("/service/")) {
+    return "KITCHEN";
+  }
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
+    return "KITCHEN";
+  }
+  return null;
+}
+
+export function pickEstablishmentSessionCandidate(
+  map: EstablishmentSessionsMap,
+  pathname: string,
+  activeSlot: string | null,
+): { establishmentId: string; token: string; slotKey: string } | null {
+  const wantRole = sessionRoleForPath(pathname);
+
+  if (wantRole) {
+    for (const [key, token] of Object.entries(map)) {
+      if (!token) continue;
+      const { establishmentId, role: keyRole } =
+        parseEstablishmentSessionSlotKey(key);
+      if (keyRole != null && keyRole !== wantRole) continue;
+      return { establishmentId, token, slotKey: key };
+    }
+    return null;
+  }
+
+  if (activeSlot && map[activeSlot]) {
+    const { establishmentId } = parseEstablishmentSessionSlotKey(activeSlot);
+    return {
+      establishmentId,
+      token: map[activeSlot]!,
+      slotKey: activeSlot,
+    };
+  }
+
+  const first = Object.entries(map).find(([, token]) => token.length > 0);
+  if (!first) return null;
+  const [slotKey, token] = first;
+  const { establishmentId } = parseEstablishmentSessionSlotKey(slotKey);
+  return { establishmentId, token, slotKey };
+}
+
 export const ESTABLISHMENT_SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 export const PLATFORM_SESSION_MAX_AGE = 60 * 60 * 12;
 
@@ -101,13 +177,17 @@ export function readEstablishmentSessionsFromCookies(
 
 export function readActiveEstablishmentToken(
   getCookie: (name: string) => string | undefined,
+  pathname = "",
 ): { establishmentId: string; token: string } | null {
-  const { map, activeEstablishmentId } =
+  const { map, activeEstablishmentId: activeSlot } =
     readEstablishmentSessionsFromCookies(getCookie);
-  if (!activeEstablishmentId) return null;
-  const token = map[activeEstablishmentId];
-  if (!token) return null;
-  return { establishmentId: activeEstablishmentId, token };
+  const picked = pickEstablishmentSessionCandidate(
+    map,
+    pathname,
+    activeSlot,
+  );
+  if (!picked) return null;
+  return { establishmentId: picked.establishmentId, token: picked.token };
 }
 
 export function readPlatformTokenFromCookies(
@@ -120,23 +200,64 @@ export function readPlatformTokenFromCookies(
 export function applyEstablishmentLoginCookies(
   res: NextResponse,
   establishmentId: string,
+  role: EstablishmentRole,
   token: string,
+  priorMap: EstablishmentSessionsMap = {},
 ): void {
-  // Une seule session active. Garder un ancien jeton admin à côté du jeton
-  // cuisine faisait repasser le navigateur en admin plus tard.
-  const map: EstablishmentSessionsMap = {
-    [establishmentId]: token,
-  };
+  const slot = establishmentSessionSlotKey(establishmentId, role);
+  const merged: EstablishmentSessionsMap = { ...priorMap, [slot]: token };
+  delete merged[establishmentId];
+  const map = pruneEstablishmentSessionsMap(merged, slot);
   const base = cookieBaseOptions();
   res.cookies.set(
     ESTABLISHMENT_SESSIONS_COOKIE_NAME,
     serializeEstablishmentSessionsCookie(map),
     { ...base, maxAge: ESTABLISHMENT_SESSION_MAX_AGE },
   );
-  res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, establishmentId, {
+  res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, slot, {
     ...base,
     maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
   });
+  clearLegacySessionCookie(res);
+}
+
+export function applyEstablishmentRoleLogoutCookies(
+  res: NextResponse,
+  priorMap: EstablishmentSessionsMap,
+  establishmentId: string,
+  role: EstablishmentRole,
+  activeSlot: string | null,
+): void {
+  const slot = establishmentSessionSlotKey(establishmentId, role);
+  const next: EstablishmentSessionsMap = { ...priorMap };
+  delete next[slot];
+  delete next[establishmentId];
+
+  const base = cookieBaseOptions();
+  if (Object.keys(next).length === 0) {
+    clearEstablishmentSessionCookies(res);
+    clearLegacySessionCookie(res);
+    return;
+  }
+
+  let newActive = activeSlot;
+  if (!newActive || !next[newActive]) {
+    newActive = Object.keys(next)[0] ?? null;
+  }
+
+  res.cookies.set(
+    ESTABLISHMENT_SESSIONS_COOKIE_NAME,
+    serializeEstablishmentSessionsCookie(next),
+    { ...base, maxAge: ESTABLISHMENT_SESSION_MAX_AGE },
+  );
+  if (newActive) {
+    res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, newActive, {
+      ...base,
+      maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
+    });
+  } else {
+    res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, "", { ...base, maxAge: 0 });
+  }
   clearLegacySessionCookie(res);
 }
 

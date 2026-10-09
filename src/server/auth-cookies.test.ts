@@ -4,11 +4,14 @@ import {
   ACTIVE_ESTABLISHMENT_COOKIE_NAME,
   applyEstablishmentLoginCookies,
   applyEstablishmentLogoutCookies,
+  establishmentSessionSlotKey,
   ESTABLISHMENT_SESSIONS_COOKIE_NAME,
   hasEstablishmentSessionPointer,
   LEGACY_SESSION_COOKIE_NAME,
   MAX_ESTABLISHMENT_SESSIONS,
+  pickEstablishmentSessionCandidate,
   pruneEstablishmentSessionsMap,
+  sessionRoleForPath,
 } from "@/server/auth-cookies";
 
 describe("pruneEstablishmentSessionsMap", () => {
@@ -40,14 +43,40 @@ describe("pruneEstablishmentSessionsMap", () => {
 });
 
 describe("session établissement", () => {
-  it("remplace l’ancienne session au lieu de garder un admin à côté", () => {
+  it("conserve admin et cuisine pour le même établissement", () => {
     const res = NextResponse.json({ ok: true });
-    applyEstablishmentLoginCookies(res, "ecole", "token-admin");
-    applyEstablishmentLoginCookies(res, "ecole", "token-cuisine");
+    applyEstablishmentLoginCookies(res, "ecole", "ADMIN", "token-admin");
+    applyEstablishmentLoginCookies(
+      res,
+      "ecole",
+      "KITCHEN",
+      "token-cuisine",
+      { [establishmentSessionSlotKey("ecole", "ADMIN")]: "token-admin" },
+    );
     const raw = res.cookies.get(ESTABLISHMENT_SESSIONS_COOKIE_NAME)?.value;
-    expect(JSON.parse(raw ?? "{}")).toEqual({ ecole: "token-cuisine" });
-    expect(res.cookies.get(ACTIVE_ESTABLISHMENT_COOKIE_NAME)?.value).toBe("ecole");
+    expect(JSON.parse(raw ?? "{}")).toEqual({
+      [establishmentSessionSlotKey("ecole", "ADMIN")]: "token-admin",
+      [establishmentSessionSlotKey("ecole", "KITCHEN")]: "token-cuisine",
+    });
+    expect(res.cookies.get(ACTIVE_ESTABLISHMENT_COOKIE_NAME)?.value).toBe(
+      establishmentSessionSlotKey("ecole", "KITCHEN"),
+    );
     expect(res.cookies.get(LEGACY_SESSION_COOKIE_NAME)?.value).toBe("");
+  });
+
+  it("choisit le jeton selon la page (admin vs cuisine)", () => {
+    const map = {
+      [establishmentSessionSlotKey("ecole", "ADMIN")]: "token-admin",
+      [establishmentSessionSlotKey("ecole", "KITCHEN")]: "token-cuisine",
+    };
+    expect(
+      pickEstablishmentSessionCandidate(map, "/admin/groups", null)?.token,
+    ).toBe("token-admin");
+    expect(
+      pickEstablishmentSessionCandidate(map, "/service", null)?.token,
+    ).toBe("token-cuisine");
+    expect(sessionRoleForPath("/admin/dashboard")).toBe("ADMIN");
+    expect(sessionRoleForPath("/dashboard")).toBe("KITCHEN");
   });
 
   it("déconnecte sans activer une autre session", () => {

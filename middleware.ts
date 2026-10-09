@@ -6,7 +6,9 @@ import {
   hasEstablishmentSessionPointer,
   LEGACY_SESSION_COOKIE_NAME,
   PLATFORM_SESSION_COOKIE_NAME,
+  pickEstablishmentSessionCandidate,
   readActiveEstablishmentToken,
+  readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
 } from "@/server/auth-cookies";
 
@@ -40,8 +42,9 @@ async function verifyTokenKind(token: string): Promise<SessionKind> {
 async function readActiveEstablishmentRole(
   req: NextRequest,
 ): Promise<"ADMIN" | "KITCHEN" | null> {
+  const pathname = req.nextUrl.pathname;
   const getCookie = (name: string) => req.cookies.get(name)?.value;
-  const active = readActiveEstablishmentToken(getCookie);
+  const active = readActiveEstablishmentToken(getCookie, pathname);
   const token = active?.token ?? getCookie(LEGACY_SESSION_COOKIE_NAME);
   if (!token) return null;
   try {
@@ -64,7 +67,8 @@ async function readSessionKind(req: NextRequest): Promise<SessionKind> {
     if (kind === "platform") return "platform";
   }
 
-  const active = readActiveEstablishmentToken(getCookie);
+  const pathname = req.nextUrl.pathname;
+  const active = readActiveEstablishmentToken(getCookie, pathname);
   if (active) {
     const kind = await verifyTokenKind(active.token);
     if (kind === "establishment") return "establishment";
@@ -162,6 +166,23 @@ export async function middleware(req: NextRequest) {
     requestHeaders.set("x-pathname", pathname);
     const res = NextResponse.next({ request: { headers: requestHeaders } });
     return migrateLegacySessionCookie(req, res);
+  }
+
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
+    const getCookie = (name: string) => req.cookies.get(name)?.value;
+    const { map } = readEstablishmentSessionsFromCookies(getCookie);
+    const adminSlot = pickEstablishmentSessionCandidate(
+      map,
+      "/admin/groups",
+      null,
+    );
+    const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
+    if (adminSlot && !kitchenSlot) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin/dashboard";
+      const res = NextResponse.redirect(url);
+      return migrateLegacySessionCookie(req, res);
+    }
   }
 
   const url = req.nextUrl.clone();

@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
 import { signEstablishmentSession, type EstablishmentRole } from "@/server/auth";
-import { applyEstablishmentLoginCookies } from "@/server/auth-cookies";
+import {
+  applyEstablishmentLoginCookies,
+  parseCookieHeader,
+  readEstablishmentSessionsFromCookies,
+} from "@/server/auth-cookies";
 import { normalizeEstablishmentPin } from "@/lib/platformEstablishment";
 import {
   hashEstablishmentPin,
@@ -141,7 +145,7 @@ export async function POST(req: Request) {
       accessCredentialRevision: establishment.accessCredentialRevision,
     });
 
-    const defaultHome = role === "ADMIN" ? "/dashboard" : "/service";
+    const defaultHome = role === "ADMIN" ? "/admin/dashboard" : "/service";
     const requestedNext = parsed.data.next;
     const nextLooksSafe =
       typeof requestedNext === "string" &&
@@ -156,8 +160,19 @@ export async function POST(req: Request) {
         ? requestedNext!
         : defaultHome;
 
+    const cookieHeader = req.headers.get("cookie") ?? "";
+    const cookieMap = parseCookieHeader(cookieHeader);
+    const getCookie = (name: string) => cookieMap[name];
+    const { map: priorSessions } = readEstablishmentSessionsFromCookies(getCookie);
+
     const res = NextResponse.json({ redirectTo });
-    applyEstablishmentLoginCookies(res, establishment.id, token);
+    applyEstablishmentLoginCookies(
+      res,
+      establishment.id,
+      role,
+      token,
+      priorSessions,
+    );
     return res;
   } catch (e) {
     console.error("[auth/login]", e);

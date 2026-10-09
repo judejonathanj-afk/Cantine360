@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { db } from "@/server/db";
 import {
   ACTIVE_ESTABLISHMENT_COOKIE_NAME,
@@ -10,6 +10,7 @@ import {
   hasEstablishmentSessionPointer,
   readActiveEstablishmentToken,
   readPlatformTokenFromCookies,
+  sessionRoleForPath,
   SESSION_COOKIE_NAME,
   type EstablishmentSessionsMap,
 } from "@/server/auth-cookies";
@@ -147,9 +148,17 @@ async function readLegacyEstablishmentToken(
 
 async function readEstablishmentToken(
   getCookie: (name: string) => string | undefined,
+  pathname: string,
 ): Promise<{ establishmentId: string; token: string } | null> {
-  const active = readActiveEstablishmentToken(getCookie);
-  if (active) return active;
+  const active = readActiveEstablishmentToken(getCookie, pathname);
+  if (active) {
+    const session = await verifySessionToken(active.token);
+    if (!session || session.kind !== "establishment") return null;
+    const wantRole = sessionRoleForPath(pathname);
+    if (wantRole && session.role !== wantRole) return null;
+    if (session.establishmentId !== active.establishmentId) return null;
+    return active;
+  }
   if (hasEstablishmentSessionPointer(getCookie)) return null;
   return readLegacyEstablishmentToken(getCookie);
 }
@@ -158,8 +167,9 @@ async function readEstablishmentToken(
 export const getEstablishmentSession = cache(async function getEstablishmentSession(): Promise<EstablishmentSession | null> {
   const jar = await cookies();
   const getCookie = (name: string) => jar.get(name)?.value;
+  const pathname = (await headers()).get("x-pathname") ?? "";
 
-  const active = await readEstablishmentToken(getCookie);
+  const active = await readEstablishmentToken(getCookie, pathname);
   if (!active) return null;
 
   const session = await verifySessionToken(active.token);

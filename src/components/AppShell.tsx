@@ -120,7 +120,11 @@ export function AppShell({
     try {
       rememberActiveServiceId(null);
       setRememberedServiceId(null);
-      await fetch("/api/auth/logout", { method: "POST" });
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ role }),
+      });
       window.location.assign("/login");
     } finally {
       setBusy(false);
@@ -190,10 +194,18 @@ export function AppShell({
         }
       : null;
 
+  const adminDashboard: NavItem = {
+    href: "/admin/dashboard",
+    label: "Dashboard",
+    icon: BarChart3,
+    isActive: (p) =>
+      p === "/admin/dashboard" || p.startsWith("/admin/dashboard/"),
+  };
+
   const navItems: NavItem[] =
     role === "ADMIN"
       ? [
-          NAV[1],
+          adminDashboard,
           ...(antiWasteNav ? [antiWasteNav] : []),
           { href: "/admin/groups", label: "Écoles & classes", icon: Users },
           {
@@ -221,7 +233,7 @@ export function AppShell({
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
           <Link
-            href={role === "ADMIN" ? "/dashboard" : "/service"}
+            href={role === "ADMIN" ? "/admin/dashboard" : "/service"}
             className="flex min-w-0 max-w-[45%] shrink items-center gap-2 sm:max-w-[14rem] sm:gap-3 md:max-w-[16rem]"
           >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
