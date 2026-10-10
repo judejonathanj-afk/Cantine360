@@ -8,7 +8,8 @@ import {
   LEGACY_SESSION_COOKIE_NAME,
   PLATFORM_SESSION_COOKIE_NAME,
   hasEstablishmentSessionPointer,
-  readActiveEstablishmentToken,
+  parseEstablishmentSessionSlotKey,
+  pickEstablishmentSessionCandidate,
   readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
   sessionRoleForPath,
@@ -143,18 +144,47 @@ async function readLegacyEstablishmentToken(
   return { establishmentId: session.establishmentId, token: legacy };
 }
 
+function establishmentTokensForPath(
+  getCookie: (name: string) => string | undefined,
+  pathname: string,
+): { establishmentId: string; token: string }[] {
+  const { map, activeEstablishmentId: activeSlot } =
+    readEstablishmentSessionsFromCookies(getCookie);
+  const wantRole = sessionRoleForPath(pathname);
+  const seen = new Set<string>();
+  const out: { establishmentId: string; token: string }[] = [];
+
+  const picked = pickEstablishmentSessionCandidate(map, pathname, activeSlot);
+  if (picked && !seen.has(picked.token)) {
+    seen.add(picked.token);
+    out.push({ establishmentId: picked.establishmentId, token: picked.token });
+  }
+
+  if (wantRole) {
+    for (const [key, token] of Object.entries(map)) {
+      if (!token || seen.has(token)) continue;
+      const { establishmentId, role: keyRole } =
+        parseEstablishmentSessionSlotKey(key);
+      if (keyRole != null && keyRole !== wantRole) continue;
+      seen.add(token);
+      out.push({ establishmentId, token });
+    }
+  }
+
+  return out;
+}
+
 async function readEstablishmentToken(
   getCookie: (name: string) => string | undefined,
   pathname: string,
 ): Promise<{ establishmentId: string; token: string } | null> {
-  const active = readActiveEstablishmentToken(getCookie, pathname);
-  if (active) {
-    const session = await verifySessionToken(active.token);
-    if (!session || session.kind !== "establishment") return null;
-    const wantRole = sessionRoleForPath(pathname);
-    if (wantRole && session.role !== wantRole) return null;
-    if (session.establishmentId !== active.establishmentId) return null;
-    return active;
+  const wantRole = sessionRoleForPath(pathname);
+  for (const candidate of establishmentTokensForPath(getCookie, pathname)) {
+    const session = await verifySessionToken(candidate.token);
+    if (!session || session.kind !== "establishment") continue;
+    if (wantRole && session.role !== wantRole) continue;
+    if (session.establishmentId !== candidate.establishmentId) continue;
+    return candidate;
   }
   if (hasEstablishmentSessionPointer(getCookie)) return null;
   return readLegacyEstablishmentToken(getCookie);

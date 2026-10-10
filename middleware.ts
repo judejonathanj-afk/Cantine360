@@ -49,7 +49,7 @@ async function readActiveEstablishmentRole(
   const pathname = req.nextUrl.pathname;
   const getCookie = (name: string) => req.cookies.get(name)?.value;
   const active = readActiveEstablishmentToken(getCookie, pathname);
-  const token = active?.token ?? getCookie(LEGACY_SESSION_COOKIE_NAME);
+  const token = active?.token;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, getSecret());

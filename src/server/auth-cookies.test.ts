@@ -77,6 +77,22 @@ describe("session établissement", () => {
     ).toBe("token-cuisine");
     expect(sessionRoleForPath("/admin/dashboard")).toBe("ADMIN");
     expect(sessionRoleForPath("/dashboard")).toBe("KITCHEN");
+    expect(sessionRoleForPath("/api/groups")).toBe("ADMIN");
+    expect(sessionRoleForPath("/api/services/abc/metrics")).toBe("KITCHEN");
+    expect(sessionRoleForPath("/api/services/abc/attendance/import")).toBe(
+      "ADMIN",
+    );
+  });
+
+  it("ignore le slot actif cuisine pour une route admin", () => {
+    const map = {
+      [establishmentSessionSlotKey("ecole", "ADMIN")]: "token-admin",
+      [establishmentSessionSlotKey("ecole", "KITCHEN")]: "token-cuisine",
+    };
+    const active = establishmentSessionSlotKey("ecole", "KITCHEN");
+    expect(
+      pickEstablishmentSessionCandidate(map, "/api/students", active)?.token,
+    ).toBe("token-admin");
   });
 
   it("déconnecte sans activer une autre session", () => {

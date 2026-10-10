@@ -36,6 +36,26 @@ export function parseEstablishmentSessionSlotKey(key: string): {
   return { establishmentId: key, role: null };
 }
 
+function sessionRoleForApiPath(pathname: string): EstablishmentRole | null {
+  if (
+    pathname.startsWith("/api/groups") ||
+    pathname.startsWith("/api/students") ||
+    pathname.startsWith("/api/schools") ||
+    pathname.startsWith("/api/exports") ||
+    pathname.startsWith("/api/establishment/eco") ||
+    pathname.startsWith("/api/establishment/anti-waste")
+  ) {
+    return "ADMIN";
+  }
+  if (pathname.includes("/attendance/import")) {
+    return "ADMIN";
+  }
+  if (pathname.startsWith("/api/services")) {
+    return "KITCHEN";
+  }
+  return null;
+}
+
 /** Rôle attendu pour la page — permet admin + cuisine en parallèle (onglets). */
 export function sessionRoleForPath(pathname: string): EstablishmentRole | null {
   if (
@@ -51,6 +71,8 @@ export function sessionRoleForPath(pathname: string): EstablishmentRole | null {
   if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
     return "KITCHEN";
   }
+  const apiRole = sessionRoleForApiPath(pathname);
+  if (apiRole) return apiRole;
   return null;
 }
 
@@ -62,22 +84,21 @@ export function pickEstablishmentSessionCandidate(
   const wantRole = sessionRoleForPath(pathname);
 
   if (wantRole) {
-    const candidates = Object.entries(map).filter(([, token]) => token.length > 0);
-    if (activeSlot && map[activeSlot]) {
-      const { establishmentId, role: keyRole } =
-        parseEstablishmentSessionSlotKey(activeSlot);
-      if (keyRole == null || keyRole === wantRole) {
-        return {
-          establishmentId,
-          token: map[activeSlot]!,
-          slotKey: activeSlot,
-        };
-      }
-    }
+    const candidates = Object.entries(map)
+      .filter(([, token]) => token.length > 0)
+      .filter(([key]) => {
+        const { role: keyRole } = parseEstablishmentSessionSlotKey(key);
+        return keyRole == null || keyRole === wantRole;
+      })
+      .sort(([a], [b]) => {
+        if (activeSlot) {
+          if (a === activeSlot) return -1;
+          if (b === activeSlot) return 1;
+        }
+        return a.localeCompare(b);
+      });
     for (const [key, token] of candidates) {
-      const { establishmentId, role: keyRole } =
-        parseEstablishmentSessionSlotKey(key);
-      if (keyRole != null && keyRole !== wantRole) continue;
+      const { establishmentId } = parseEstablishmentSessionSlotKey(key);
       return { establishmentId, token, slotKey: key };
     }
     return null;
