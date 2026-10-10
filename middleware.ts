@@ -115,6 +115,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/images/") ||
     PUBLIC_FILE.test(pathname) ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/cantine-guard") ||
     pathname.startsWith("/api/establishments") ||
     pathname === "/login" ||
     pathname === "/"

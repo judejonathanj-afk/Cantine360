@@ -1,0 +1,25 @@
+[Unit]
+Description=Cantine Guard — sonde Cantine360 (oneshot)
+Documentation=file:/opt/cantine-guard/ops/cantine-guard/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=cantine-guard
+Group=cantine-guard
+EnvironmentFile=-/etc/cantine-guard/env
+WorkingDirectory=/opt/cantine-guard
+ExecStart=/usr/bin/node /opt/cantine-guard/scripts/cantine-guard-run.mjs
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/cantine-guard
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cantine-guard
+
+[Install]
+WantedBy=multi-user.target

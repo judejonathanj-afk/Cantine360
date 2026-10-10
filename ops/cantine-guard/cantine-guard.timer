@@ -1,0 +1,12 @@
+[Unit]
+Description=Cantine Guard — toutes les 30 minutes (Europe/Paris)
+
+[Timer]
+Timezone=Europe/Paris
+OnCalendar=*:0/30
+AccuracySec=30
+Persistent=true
+Unit=cantine-guard.service
+
+[Install]
+WantedBy=timers.target
