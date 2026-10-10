@@ -9,11 +9,17 @@ import {
   PLATFORM_SESSION_COOKIE_NAME,
   hasEstablishmentSessionPointer,
   readActiveEstablishmentToken,
+  readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
   sessionRoleForPath,
+  writeEstablishmentSessionCookies,
   SESSION_COOKIE_NAME,
   type EstablishmentSessionsMap,
 } from "@/server/auth-cookies";
+import {
+  establishmentJwtShouldRefresh,
+  signEstablishmentSessionJwt,
+} from "@/server/establishmentSessionJwt";
 
 export type EstablishmentRole = "ADMIN" | "KITCHEN";
 
@@ -44,16 +50,7 @@ function getSecret() {
 }
 
 export async function signEstablishmentSession(session: EstablishmentSession) {
-  return await new SignJWT({
-    kind: "establishment",
-    role: session.role,
-    establishmentId: session.establishmentId,
-    accessCredentialRevision: session.accessCredentialRevision,
-  })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(getSecret());
+  return signEstablishmentSessionJwt(session);
 }
 
 export async function signPlatformSession() {
@@ -177,7 +174,34 @@ export const getEstablishmentSession = cache(async function getEstablishmentSess
   if (session.establishmentId !== active.establishmentId) return null;
 
   const valid = await establishmentSessionStillValid(session);
-  return valid ? session : null;
+  if (!valid) return null;
+
+  if (establishmentJwtShouldRefresh(active.token)) {
+    try {
+      const newToken = await signEstablishmentSessionJwt(session);
+      const { map } = readEstablishmentSessionsFromCookies(getCookie);
+      writeEstablishmentSessionCookies(
+        (name, value, options) => {
+          jar.set(name, value, options);
+        },
+        session.establishmentId,
+        session.role,
+        newToken,
+        map,
+      );
+      jar.set(LEGACY_SESSION_COOKIE_NAME, "", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 0,
+      });
+    } catch (e) {
+      console.error("[auth] session refresh", e);
+    }
+  }
+
+  return session;
 });
 
 /** @deprecated Alias — préférer `getEstablishmentSession`. */

@@ -62,8 +62,19 @@ export function pickEstablishmentSessionCandidate(
   const wantRole = sessionRoleForPath(pathname);
 
   if (wantRole) {
-    for (const [key, token] of Object.entries(map)) {
-      if (!token) continue;
+    const candidates = Object.entries(map).filter(([, token]) => token.length > 0);
+    if (activeSlot && map[activeSlot]) {
+      const { establishmentId, role: keyRole } =
+        parseEstablishmentSessionSlotKey(activeSlot);
+      if (keyRole == null || keyRole === wantRole) {
+        return {
+          establishmentId,
+          token: map[activeSlot]!,
+          slotKey: activeSlot,
+        };
+      }
+    }
+    for (const [key, token] of candidates) {
       const { establishmentId, role: keyRole } =
         parseEstablishmentSessionSlotKey(key);
       if (keyRole != null && keyRole !== wantRole) continue;
@@ -88,7 +99,8 @@ export function pickEstablishmentSessionCandidate(
   return { establishmentId, token, slotKey };
 }
 
-export const ESTABLISHMENT_SESSION_MAX_AGE = 60 * 60 * 24 * 7;
+/** Aligné sur le JWT (30 j) — onglets admin/cuisine laissés ouverts en semaine. */
+export const ESTABLISHMENT_SESSION_MAX_AGE = 60 * 60 * 24 * 30;
 export const PLATFORM_SESSION_MAX_AGE = 60 * 60 * 12;
 
 /** Plafond de sessions établissement dans le cookie (évite dépassement ~4 Ko navigateur). */
@@ -197,6 +209,54 @@ export function readPlatformTokenFromCookies(
   return token && token.length > 0 ? token : null;
 }
 
+export function buildEstablishmentSessionCookieWrites(
+  establishmentId: string,
+  role: EstablishmentRole,
+  token: string,
+  priorMap: EstablishmentSessionsMap = {},
+): {
+  map: EstablishmentSessionsMap;
+  activeSlot: string;
+  maxAge: number;
+} {
+  const slot = establishmentSessionSlotKey(establishmentId, role);
+  const merged: EstablishmentSessionsMap = { ...priorMap, [slot]: token };
+  delete merged[establishmentId];
+  const map = pruneEstablishmentSessionsMap(merged, slot);
+  return {
+    map,
+    activeSlot: slot,
+    maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
+  };
+}
+
+type CookieWriter = (
+  name: string,
+  value: string,
+  options: ReturnType<typeof cookieBaseOptions> & { maxAge: number },
+) => void;
+
+export function writeEstablishmentSessionCookies(
+  write: CookieWriter,
+  establishmentId: string,
+  role: EstablishmentRole,
+  token: string,
+  priorMap: EstablishmentSessionsMap = {},
+): void {
+  const { map, activeSlot, maxAge } = buildEstablishmentSessionCookieWrites(
+    establishmentId,
+    role,
+    token,
+    priorMap,
+  );
+  const base = cookieBaseOptions();
+  write(ESTABLISHMENT_SESSIONS_COOKIE_NAME, serializeEstablishmentSessionsCookie(map), {
+    ...base,
+    maxAge,
+  });
+  write(ACTIVE_ESTABLISHMENT_COOKIE_NAME, activeSlot, { ...base, maxAge });
+}
+
 export function applyEstablishmentLoginCookies(
   res: NextResponse,
   establishmentId: string,
@@ -204,21 +264,25 @@ export function applyEstablishmentLoginCookies(
   token: string,
   priorMap: EstablishmentSessionsMap = {},
 ): void {
-  const slot = establishmentSessionSlotKey(establishmentId, role);
-  const merged: EstablishmentSessionsMap = { ...priorMap, [slot]: token };
-  delete merged[establishmentId];
-  const map = pruneEstablishmentSessionsMap(merged, slot);
-  const base = cookieBaseOptions();
-  res.cookies.set(
-    ESTABLISHMENT_SESSIONS_COOKIE_NAME,
-    serializeEstablishmentSessionsCookie(map),
-    { ...base, maxAge: ESTABLISHMENT_SESSION_MAX_AGE },
+  writeEstablishmentSessionCookies(
+    (name, value, options) => res.cookies.set(name, value, options),
+    establishmentId,
+    role,
+    token,
+    priorMap,
   );
-  res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, slot, {
-    ...base,
-    maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
-  });
   clearLegacySessionCookie(res);
+}
+
+/** Prolonge le jeton courant sans toucher à l’autre rôle (admin / cuisine). */
+export function refreshEstablishmentSessionCookies(
+  res: NextResponse,
+  establishmentId: string,
+  role: EstablishmentRole,
+  token: string,
+  priorMap: EstablishmentSessionsMap,
+): void {
+  applyEstablishmentLoginCookies(res, establishmentId, role, token, priorMap);
 }
 
 export function applyEstablishmentRoleLogoutCookies(
