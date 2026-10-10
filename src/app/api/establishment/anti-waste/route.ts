@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/server/db";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
 import {
   isMissingAntiWasteColumns,
   updateEstablishmentAntiWasteSettings,
@@ -14,15 +14,14 @@ const PatchSchema = z.object({
 });
 
 export async function PATCH(req: Request) {
-  const session = await getServerSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (session.role !== "ADMIN") {
+  const session = await getEstablishmentSessionForRole("ADMIN");
+  if (!session) {
     return NextResponse.json(
       {
         error:
-          "Seul l’administrateur de l’établissement peut activer le mode Anti-gaspillage.",
+          "Session administrateur requise — reconnectez-vous avec le code admin (pas cuisine).",
       },
-      { status: 403 },
+      { status: 401 },
     );
   }
 

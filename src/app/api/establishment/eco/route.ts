@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { EcoObjectivePeriod } from "@/generated/prisma/client";
 import { db } from "@/server/db";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
 import { isMissingEcoPeriodColumns } from "@/server/establishmentEco";
 
 const PatchSchema = z.object({
@@ -15,12 +15,14 @@ const PatchSchema = z.object({
 });
 
 export async function PATCH(req: Request) {
-  const session = await getServerSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (session.role !== "ADMIN") {
+  const session = await getEstablishmentSessionForRole("ADMIN");
+  if (!session) {
     return NextResponse.json(
-      { error: "Seul l’administrateur de l’établissement peut modifier les objectifs." },
-      { status: 403 },
+      {
+        error:
+          "Session administrateur requise — reconnectez-vous avec le code admin.",
+      },
+      { status: 401 },
     );
   }
 

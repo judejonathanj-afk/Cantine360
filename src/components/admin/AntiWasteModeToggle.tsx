@@ -182,7 +182,10 @@ export function AntiWasteModeToggle({
               msg.includes("colonnes") ||
               msg.includes("introuvable") ||
               msg.includes("Déployez") ||
-              msg.includes("prisma")
+              msg.includes("prisma") ||
+              msg.includes("administrateur") ||
+              msg.includes("Session administrateur") ||
+              msg.includes("cuisine")
               ? "text-rose-700"
               : "text-emerald-800",
           )}

@@ -190,11 +190,11 @@ async function readEstablishmentToken(
   return readLegacyEstablishmentToken(getCookie);
 }
 
-/** Session établissement (cuisine / admin cantine) — une seule lecture par requête. */
-export const getEstablishmentSession = cache(async function getEstablishmentSession(): Promise<EstablishmentSession | null> {
+async function resolveEstablishmentSessionForPathname(
+  pathname: string,
+): Promise<EstablishmentSession | null> {
   const jar = await cookies();
   const getCookie = (name: string) => jar.get(name)?.value;
-  const pathname = (await headers()).get("x-pathname") ?? "";
 
   const active = await readEstablishmentToken(getCookie, pathname);
   if (!active) return null;
@@ -232,7 +232,22 @@ export const getEstablishmentSession = cache(async function getEstablishmentSess
   }
 
   return session;
+}
+
+/** Session établissement (cuisine / admin cantine) — une seule lecture par requête. */
+export const getEstablishmentSession = cache(async function getEstablishmentSession(): Promise<EstablishmentSession | null> {
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  return resolveEstablishmentSessionForPathname(pathname);
 });
+
+/** Routes admin (ex. anti-gaspillage) : jeton admin même si la cuisine est aussi connectée. */
+export async function getEstablishmentSessionForRole(
+  role: EstablishmentRole,
+): Promise<EstablishmentSession | null> {
+  const pathname =
+    role === "ADMIN" ? "/admin/groups" : "/service";
+  return resolveEstablishmentSessionForPathname(pathname);
+}
 
 /** @deprecated Alias — préférer `getEstablishmentSession`. */
 export const getServerSession = getEstablishmentSession;
