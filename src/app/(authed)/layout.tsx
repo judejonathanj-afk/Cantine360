@@ -3,6 +3,7 @@ import { activeServiceIdFromPathname } from "@/lib/activeService";
 import { getServerSession } from "@/server/auth";
 import { db } from "@/server/db";
 import { headers } from "next/headers";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 import { redirect } from "next/navigation";
 
 export default async function AuthedLayout({
@@ -11,7 +12,9 @@ export default async function AuthedLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
-  if (!session) redirect("/login");
+  if (!session) {
+    return redirectToEstablishmentLogin();
+  }
   const establishment = await db.establishment.findUnique({
     where: { id: session.establishmentId },
     select: { name: true, slug: true },

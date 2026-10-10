@@ -11,6 +11,10 @@ import {
   readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
 } from "@/server/auth-cookies";
+import {
+  hadEstablishmentSessionCookies,
+  loginQueryForRedirect,
+} from "@/lib/loginRedirect";
 
 function getSecret() {
   const secret = process.env.SESSION_SECRET;
@@ -185,9 +189,14 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  const getCookie = (name: string) => req.cookies.get(name)?.value;
+  const hadSession = hadEstablishmentSessionCookies(getCookie);
   const url = req.nextUrl.clone();
   url.pathname = "/login";
-  url.searchParams.set("next", pathname);
+  url.search = loginQueryForRedirect({
+    next: pathname,
+    hadEstablishmentSession: hadSession,
+  });
   const res = NextResponse.redirect(url);
   return migrateLegacySessionCookie(req, res);
 }

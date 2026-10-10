@@ -61,6 +61,8 @@ export function LoginClient() {
   const sp = useSearchParams();
 
   const nextPath = useMemo(() => sp.get("next"), [sp]);
+  const sessionReason = useMemo(() => sp.get("reason"), [sp]);
+  const sessionExpired = sessionReason === "expired";
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -156,6 +158,20 @@ export function LoginClient() {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-8 pb-2 sm:px-10">
+            {sessionExpired ? (
+              <div
+                className="mb-6 rounded-xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-base leading-relaxed text-amber-950"
+                role="status"
+              >
+                <p className="font-semibold">Session expirée</p>
+                <p className="mt-1 text-amber-900/90">
+                  Reconnectez-vous avec le code{" "}
+                  <strong>cuisine</strong> ou <strong>admin</strong>. Si l’autre
+                  compte est encore ouvert dans un autre onglet, il reste actif
+                  — seul ce profil doit se reconnecter.
+                </p>
+              </div>
+            ) : null}
             <form onSubmit={onSubmit} className="space-y-6">
               <div className="space-y-2.5">
                 <Label htmlFor="slug" className="text-base">

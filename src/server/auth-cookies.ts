@@ -342,6 +342,15 @@ export function hasEstablishmentSessionPointer(
   return Boolean(activeId || sessions);
 }
 
+export function establishmentSessionCookiesPresent(
+  getCookie: (name: string) => string | undefined,
+): boolean {
+  const raw = getCookie(ESTABLISHMENT_SESSIONS_COOKIE_NAME);
+  if (!raw) return hasEstablishmentSessionPointer(getCookie);
+  const map = parseEstablishmentSessionsCookie(raw);
+  return Object.keys(map).length > 0 || hasEstablishmentSessionPointer(getCookie);
+}
+
 export function clearEstablishmentSessionCookies(res: NextResponse): void {
   const base = cookieBaseOptions();
   res.cookies.set(ESTABLISHMENT_SESSIONS_COOKIE_NAME, "", { ...base, maxAge: 0 });
