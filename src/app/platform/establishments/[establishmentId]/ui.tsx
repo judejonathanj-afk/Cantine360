@@ -2,15 +2,11 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, RefreshCw } from "lucide-react";
 import {
   randomDistinctEstablishmentPins,
   randomEstablishmentPin,
 } from "@/lib/platformPins";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 type EstablishmentDetail = {
   id: string;
@@ -80,7 +76,6 @@ export function PlatformEstablishmentEditClient({
           return;
         }
         const data = (await res.json()) as { establishment: EstablishmentDetail };
-        if (cancelled) return;
         setDetail(data.establishment);
         setName(data.establishment.name);
         setSlug(data.establishment.slug);
@@ -162,184 +157,152 @@ export function PlatformEstablishmentEditClient({
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Chargement…</p>;
+    return (
+      <div className="detail-content">
+        <p style={{ color: "var(--muted)" }}>Chargement…</p>
+      </div>
+    );
   }
 
   if (!detail) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:px-6">
-        <p className="text-sm text-destructive">Établissement introuvable.</p>
-        <Button variant="outline" asChild>
-          <Link href="/platform/establishments">Retour à la liste</Link>
-        </Button>
+      <div className="detail-content">
+        <p className="form-error">Établissement introuvable.</p>
+        <Link href="/platform/establishments" className="back-link">
+          <ArrowLeft size={17} aria-hidden /> Retour à la liste
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:px-6">
-      <Link
-        href="/platform/establishments"
-        className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden />
-        Retour à la liste
+    <div className="detail-content">
+      <Link href="/platform/establishments" className="back-link">
+        <ArrowLeft size={17} aria-hidden /> Retour à la liste
       </Link>
 
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">{detail.name}</h1>
-        <p className="mt-1 font-mono text-sm text-muted-foreground">{detail.slug}</p>
-        <p className="mt-2 text-xs text-muted-foreground">
+      <div className="detail-heading">
+        <h1>{detail.name}</h1>
+        <code>{detail.slug}</code>
+        <p>
           {detail._count.groups} groupe{detail._count.groups !== 1 ? "s" : ""} ·{" "}
           {detail._count.services} service{detail._count.services !== 1 ? "s" : ""} enregistré
           {detail._count.services !== 1 ? "s" : ""}
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Modifier l’établissement</CardTitle>
-          <CardDescription>
-            Nom et code de connexion. Cochez « nouveau code » pour réinitialiser admin ou cuisine,
-            puis enregistrez et remettez les codes sur place.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="edit-name">Nom</Label>
-              <Input
-                id="edit-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+      <section className="panel edit-panel">
+        <h2>Modifier l’établissement</h2>
+        <p>
+          Nom et code de connexion. Cochez « nouveau code » pour réinitialiser admin ou cuisine,
+          puis enregistrez et remettez les codes sur place.
+        </p>
+
+        <form onSubmit={onSubmit}>
+          <label htmlFor="edit-name">Nom</label>
+          <input
+            id="edit-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+
+          <label htmlFor="edit-slug">Code établissement (connexion /login)</label>
+          <input
+            id="edit-slug"
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            className="lowercase"
+            required
+          />
+          <small className="warning">
+            Si vous changez ce code, l’ancien ne fonctionnera plus à la connexion.
+          </small>
+
+          <div className="access-box">
+            <h3>Codes d’accès</h3>
+            <button type="button" className="secondary-button" onClick={resetBothPins}>
+              <RefreshCw size={16} aria-hidden /> Regénérer admin + cuisine
+            </button>
+
+            <label className="check-row">
+              <input
+                type="checkbox"
+                checked={changeAdminPin}
+                onChange={(e) => {
+                  setChangeAdminPin(e.target.checked);
+                  if (e.target.checked && !adminPin) setAdminPin(randomEstablishmentPin());
+                }}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-slug">Code établissement (connexion /login)</Label>
-              <Input
-                id="edit-slug"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="font-mono text-sm lowercase"
-                required
+              <span>
+                <b>Nouveau code admin</b>
+                {changeAdminPin ? (
+                  <input
+                    value={adminPin}
+                    onChange={(e) => setAdminPin(e.target.value)}
+                    inputMode="numeric"
+                    required
+                    style={{ marginTop: 10 }}
+                  />
+                ) : (
+                  <small>Inchangé — cochez pour en définir un nouveau.</small>
+                )}
+              </span>
+            </label>
+
+            <label className="check-row">
+              <input
+                type="checkbox"
+                checked={changeKitchenPin}
+                onChange={(e) => {
+                  setChangeKitchenPin(e.target.checked);
+                  if (e.target.checked && !kitchenPin) setKitchenPin(randomEstablishmentPin());
+                }}
               />
-              <p className="text-xs text-amber-800 dark:text-amber-200">
-                Si vous changez ce code, l’ancien ne fonctionnera plus à la connexion.
-              </p>
-            </div>
+              <span>
+                <b>Nouveau code cuisine</b>
+                {changeKitchenPin ? (
+                  <input
+                    value={kitchenPin}
+                    onChange={(e) => setKitchenPin(e.target.value)}
+                    inputMode="numeric"
+                    required
+                    style={{ marginTop: 10 }}
+                  />
+                ) : (
+                  <small>Inchangé — cochez pour en définir un nouveau.</small>
+                )}
+              </span>
+            </label>
+          </div>
 
-            <div className="space-y-4 rounded-xl border border-border/60 bg-muted/30 p-4">
-              <p className="text-sm font-medium text-foreground">Codes d’accès</p>
-              <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={resetBothPins}>
-                  Regénérer admin + cuisine
-                </Button>
-              </div>
+          {error ? <p className="form-error">{error}</p> : null}
+          {info ? <p className="info-banner">{info}</p> : null}
 
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  className="mt-1"
-                  checked={changeAdminPin}
-                  onChange={(e) => {
-                    setChangeAdminPin(e.target.checked);
-                    if (e.target.checked && !adminPin) setAdminPin(randomEstablishmentPin());
-                  }}
-                />
-                <span className="flex-1 space-y-2">
-                  <span className="block text-sm font-medium">Nouveau code admin</span>
-                  {changeAdminPin ? (
-                    <Input
-                      value={adminPin}
-                      onChange={(e) => setAdminPin(e.target.value)}
-                      inputMode="numeric"
-                      className="font-mono tracking-widest"
-                      required
-                    />
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      Inchangé — cochez pour en définir un nouveau.
-                    </span>
-                  )}
-                </span>
-              </label>
-
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  className="mt-1"
-                  checked={changeKitchenPin}
-                  onChange={(e) => {
-                    setChangeKitchenPin(e.target.checked);
-                    if (e.target.checked && !kitchenPin) setKitchenPin(randomEstablishmentPin());
-                  }}
-                />
-                <span className="flex-1 space-y-2">
-                  <span className="block text-sm font-medium">Nouveau code cuisine</span>
-                  {changeKitchenPin ? (
-                    <Input
-                      value={kitchenPin}
-                      onChange={(e) => setKitchenPin(e.target.value)}
-                      inputMode="numeric"
-                      className="font-mono tracking-widest"
-                      required
-                    />
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      Inchangé — cochez pour en définir un nouveau.
-                    </span>
-                  )}
-                </span>
-              </label>
-            </div>
-
-            {error ? (
-              <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {error}
-              </p>
-            ) : null}
-            {info ? (
-              <p className="rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-100">
-                {info}
-              </p>
-            ) : null}
-
-            <Button type="submit" disabled={busy}>
-              {busy ? "Enregistrement…" : "Enregistrer les modifications"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <button type="submit" className="primary-button" disabled={busy}>
+            <Check size={17} aria-hidden />{" "}
+            {busy ? "Enregistrement…" : "Enregistrer les modifications"}
+          </button>
+        </form>
+      </section>
 
       {saved ? (
-        <Card className="border-primary/40 bg-primary/5">
-          <CardHeader>
-            <CardTitle className="text-primary">Codes mis à jour — à remettre</CardTitle>
-            <CardDescription>
-              Seuls les codes modifiés sont listés. Les postes déjà connectés sont déconnectés
-              automatiquement. Pour tester : ouvrez une fenêtre privée sur /login — le code
-              cuisine et le code admin sont différents.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2 font-mono text-sm">
+        <div className="success-panel">
+          <h3>Codes mis à jour — à remettre</h3>
+          <p>
+            <span>Code établissement :</span> {saved.slug}
+          </p>
+          {saved.adminPin !== undefined ? (
             <p>
-              <span className="text-muted-foreground">Code établissement :</span> {saved.slug}
+              <span>Nouveau code admin :</span> {saved.adminPin}
             </p>
-            {saved.adminPin !== undefined ? (
-              <p>
-                <span className="text-muted-foreground">Nouveau code admin :</span>{" "}
-                {saved.adminPin}
-              </p>
-            ) : null}
-            {saved.kitchenPin !== undefined ? (
-              <p>
-                <span className="text-muted-foreground">Nouveau code cuisine :</span>{" "}
-                {saved.kitchenPin}
-              </p>
-            ) : null}
-          </CardContent>
-        </Card>
+          ) : null}
+          {saved.kitchenPin !== undefined ? (
+            <p>
+              <span>Nouveau code cuisine :</span> {saved.kitchenPin}
+            </p>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

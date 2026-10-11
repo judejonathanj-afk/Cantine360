@@ -1,0 +1,133 @@
+.platform-ui {
+  --foreground: #101914;
+  --muted: #617068;
+  --line: #dce6df;
+  box-sizing: border-box;
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+.platform-ui *,
+.platform-ui *::before,
+.platform-ui *::after {
+  box-sizing: border-box;
+}
+.platform-ui button,
+.platform-ui input {
+  font: inherit;
+}
+.platform-ui button {
+  cursor: pointer;
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; }
+.platform-ui.login-page { min-height: 100vh; overflow: hidden; position: relative; background: linear-gradient(90deg, #f3f9f5 50%, #050505 50%); padding: 45px 5vw; }
+.platform-ui .login-brand { position: relative; z-index: 1; }
+.platform-ui .brand { display: flex; align-items: center; gap: 14px; font-size: 24px; letter-spacing: -1px; }
+.platform-ui .brand strong span { color: var(--brand, #009b55); }
+.platform-ui .platform-ui .brand-mark { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 20px; background: var(--brand, #009b55); color: white; box-shadow: 0 12px 18px #009b552b; }
+.platform-ui .login-hero { width: min(94%, 1095px); margin: 55px auto 44px; text-align: center; background: #ffffffc9; border: 1px solid #dce7e0; border-radius: 22px; padding: 25px 38px 27px; position: relative; z-index: 1; box-shadow: 0 2px 3px #00000012; }
+.platform-ui .login-hero h1 { margin: 0; font-size: clamp(29px, 4vw, 64px); letter-spacing: -2px; font-weight: 900; color: #3ec3a2; }
+.platform-ui .login-hero h1 span:first-child { color: #78bfe8; }
+.platform-ui .hero-line { height: 5px; background: #08b77c; border-radius: 9px; margin: 15px 30px 20px; }
+.platform-ui .login-hero p { margin: 0; font-size: 24px; line-height: 1.7; color: #647068; }
+.platform-ui .login-card { position: relative; z-index: 2; width: min(820px, 92%); margin: 0 auto; padding: 68px 46px 80px; background: #fff; border: 1px solid #dce7e0; border-radius: 24px; box-shadow: 0 3px 5px #00000018; }
+h1, h2, h3, p { margin-top: 0; }
+.platform-ui .login-card h2 { font-size: 42px; margin-bottom: 28px; letter-spacing: -1px; }
+.platform-ui .login-card p, .platform-ui .panel > p { color: var(--muted); font-size: 20px; line-height: 1.7; margin-bottom: 36px; }
+label { display: block; font-weight: 700; font-size: 17px; margin: 20px 0 9px; }
+input { width: 100%; padding: 15px 18px; border: 1px solid #d5e0d9; border-radius: 14px; background: #fff; color: #142019; outline: none; box-shadow: 0 2px 4px #0000000b; }
+input:focus { border-color: var(--brand, #009b55); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand, #009b55) 16%, transparent); }
+.platform-ui .primary-button, .platform-ui .secondary-button, .platform-ui .manage-button, .platform-ui .palette-trigger, .platform-ui .logout, .platform-ui .back-link { border: 0; display: inline-flex; gap: 9px; align-items: center; justify-content: center; border-radius: 13px; font-weight: 700; transition: .2s ease; }
+.platform-ui .primary-button { margin-top: 24px; padding: 15px 20px; background: var(--brand, #009b55); color: white; }
+.platform-ui .primary-button:hover { filter: brightness(.92); transform: translateY(-1px); }
+.platform-ui .wide { width: 100%; font-size: 20px; margin-top: 34px; }
+.platform-ui .login-watermark { position: absolute; bottom: -23px; left: 8%; color: #c6f5df; font-size: clamp(70px, 10vw, 140px); line-height: .8; font-weight: 900; opacity: .8; }
+.platform-ui.app-shell { min-height: 100vh; background: var(--page-bg); }
+.platform-ui .topbar { height: 88px; padding: 0 max(7vw, 30px); background: #fff; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #dbe5df; }
+.platform-ui .topbar .platform-ui .platform-ui .brand-mark { width: 30px; height: 30px; border-radius: 7px; box-shadow: none; }.platform-ui .topbar .platform-ui .brand { font-size: 25px; }
+.platform-ui .header-actions { display: flex; gap: 12px; align-items: center; }.platform-ui .palette-trigger, .platform-ui .logout { background: transparent; padding: 10px 13px; color: #18231d; }.platform-ui .palette-trigger:hover { background: #edf5ef; }.platform-ui .logout { font-size: 18px; }
+.platform-ui .palette-popover { position: absolute; z-index: 5; right: 7vw; top: 75px; width: 220px; background: white; padding: 16px; border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 12px 30px #0002; }.platform-ui .palette-popover strong { display: block; margin-bottom: 12px; }.platform-ui .palette-options { display: flex; flex-direction: column; gap: 6px; }.platform-ui .palette-options button { border: 0; background: transparent; text-align: left; padding: 8px; border-radius: 8px; display: flex; align-items: center; gap: 9px; }.platform-ui .palette-options button:hover, .platform-ui .palette-options .selected { background: #f1f6f2; }.platform-ui .palette-options span { width: 19px; height: 19px; border-radius: 50%; }
+.platform-ui .subnav { padding: 0 max(7vw, 30px); height: 58px; display: flex; align-items: end; gap: 22px; background: #fff; border-bottom: 1px solid var(--line); }.platform-ui .subnav button { display: flex; gap: 8px; align-items: center; background: none; border: 0; padding: 0 5px 15px; color: #718078; font-weight: 700; border-bottom: 3px solid transparent; }.platform-ui .subnav button.active { color: var(--brand, #009b55); border-color: var(--brand, #009b55); }
+.platform-ui .screen-content, .platform-ui .detail-content { width: min(1370px, 86%); margin: 0 auto; padding: 60px 0; }.platform-ui .page-heading { display: flex; gap: 18px; align-items: flex-start; }.platform-ui .heading-icon { flex: 0 0 auto; width: 62px; height: 62px; display: grid; place-items: center; border-radius: 20px; background: var(--brand, #009b55); color: white; box-shadow: 0 9px 15px #009b5530; }.platform-ui .page-heading h1 { margin: 7px 0 14px; font-size: 44px; letter-spacing: -2px; }.platform-ui .page-heading p { color: var(--muted); font-size: 20px; line-height: 1.55; max-width: 850px; }
+.platform-ui .dashboard-grid { display: grid; grid-template-columns: 1.03fr 1fr; gap: 90px; align-items: start; margin-top: 30px; }.platform-ui .panel { background: #fff; border: 1px solid #cfdcd4; border-radius: 22px; padding: 34px; box-shadow: 0 2px 4px #00000012; }.platform-ui .section-kicker { color: var(--brand, #009b55); font-size: 13px; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; display: flex; align-items: center; gap: 7px; margin-bottom: 18px; }.platform-ui .panel h2 { font-size: 24px; margin-bottom: 12px; }.platform-ui .panel > p { font-size: 17px; margin-bottom: 27px; }.platform-ui .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }.platform-ui .secondary-button { background: #fff; border: 1px solid #cfdcd4; padding: 11px 16px; margin-top: 20px; }.platform-ui .secondary-button:hover, .platform-ui .manage-button:hover { background: #edf6ef; }.platform-ui .create-panel .platform-ui .primary-button { display: flex; margin-top: 22px; }
+.platform-ui .list-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }.platform-ui .list-title h2 { font-size: 27px; margin: 0; }.platform-ui .list-title h2 span { color: var(--muted); }.platform-ui .status-dot { color: var(--brand, #009b55); font-size: 13px; font-weight: 700; }.platform-ui .establishment-list { display: flex; flex-direction: column; gap: 12px; }.platform-ui .establishment-item { min-height: 88px; padding: 18px 18px 18px 24px; border-radius: 20px; display: grid; grid-template-columns: 1fr auto auto; gap: 20px; align-items: center; background: var(--soft, #c6fb80); }.platform-ui .establishment-item strong, .platform-ui .establishment-item code { display: block; }.platform-ui .establishment-item code, .platform-ui .detail-heading code { color: #47574d; margin-top: 5px; }.platform-ui .count { color: #405047; }.platform-ui .manage-button { padding: 11px 13px; background: #f8fff2a8; border: 1px solid #c0d8a7; }.platform-ui .detail-content { max-width: 1020px; }.platform-ui .back-link { color: var(--muted); background: none; padding: 0; margin-bottom: 38px; }.platform-ui .detail-heading h1 { margin-bottom: 8px; font-size: 36px; }.platform-ui .detail-heading code { font-size: 19px; }.platform-ui .detail-heading p { color: var(--muted); margin-top: 17px; }.platform-ui .edit-panel { margin-top: 35px; }.platform-ui .edit-panel > p { max-width: 870px; }.platform-ui .warning { display: block; color: #b44812; margin-top: 11px; font-size: 14px; }.platform-ui .access-box { margin-top: 28px; border: 1px solid #d4dfd8; background: #f8fbf9; border-radius: 20px; padding: 25px 23px; }.platform-ui .access-box h3 { margin-bottom: 14px; }.platform-ui .check-row { display: flex; gap: 16px; align-items: flex-start; margin: 27px 0 0; font-weight: 400; }.platform-ui .check-row input { width: 19px; margin-top: 2px; box-shadow: none; accent-color: var(--brand, #009b55); }.platform-ui .check-row b, .platform-ui .check-row small { display: block; }.platform-ui .check-row small { color: var(--muted); margin-top: 8px; }
+@media (max-width: 850px) { .platform-ui.login-page { padding: 25px 18px; background: #f3f9f5; }.platform-ui .login-hero { margin-top: 45px; padding: 22px 15px; }.platform-ui .login-hero h1 { font-size: 30px; }.platform-ui .login-hero p { font-size: 16px; }.platform-ui .login-card { padding: 35px 24px; }.platform-ui .login-card h2 { font-size: 31px; }.platform-ui .dashboard-grid { grid-template-columns: 1fr; gap: 32px; }.platform-ui .screen-content, .platform-ui .detail-content { width: calc(100% - 36px); padding: 38px 0; }.platform-ui .page-heading h1 { font-size: 34px; }.platform-ui .page-heading p { font-size: 16px; }.platform-ui .topbar { padding: 0 18px; height: 72px; }.platform-ui .topbar .platform-ui .brand { font-size: 20px; }.platform-ui .logout { font-size: 0; }.platform-ui .subnav { padding: 0 18px; }.platform-ui .two-columns { gap: 12px; }.platform-ui .establishment-item { grid-template-columns: 1fr auto; gap: 4px 12px; }.platform-ui .count { grid-column: 1; font-size: 13px; }.platform-ui .manage-button { grid-column: 2; grid-row: 1 / span 2; }.platform-ui .palette-trigger { font-size: 0; }.platform-ui .palette-popover { right: 18px; } }
+.platform-ui .form-error {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 15px;
+  font-weight: 600;
+}
+.platform-ui .success-panel {
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--brand, #009b55) 35%, transparent);
+  background: color-mix(in srgb, var(--brand, #009b55) 8%, white);
+}
+.platform-ui .success-panel h3 {
+  margin: 0 0 12px;
+  color: var(--brand, #009b55);
+  font-size: 18px;
+}
+.platform-ui .success-panel p {
+  margin: 6px 0;
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+}
+.platform-ui .slug-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.platform-ui .slug-hint code {
+  font-weight: 700;
+  color: var(--foreground);
+}
+.platform-ui .info-banner {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #065f46;
+  font-size: 15px;
+}
+.platform-ui .topbar-wrap {
+  position: relative;
+}
+.platform-ui a.brand-link {
+  text-decoration: none;
+  color: inherit;
+}
+.platform-ui .subnav a {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 0 5px 15px;
+  color: #718078;
+  font-weight: 700;
+  border-bottom: 3px solid transparent;
+  text-decoration: none;
+}
+.platform-ui .subnav a.active {
+  color: var(--brand, #009b55);
+  border-color: var(--brand, #009b55);
+}
+.platform-ui .primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.platform-ui .subnav button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.platform-ui a.manage-button {
+  text-decoration: none;
+  color: inherit;
+}

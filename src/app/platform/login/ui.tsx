@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChefHat } from "lucide-react";
-import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { PlatformBrand } from "@/components/platform/PlatformBrand";
+import { usePlatformPalette } from "@/components/platform/PlatformPaletteProvider";
 
 export function PlatformLoginClient() {
+  const { style } = usePlatformPalette();
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -39,89 +37,57 @@ export function PlatformLoginClient() {
   }
 
   return (
-    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-x-hidden overflow-y-auto px-4 py-24 sm:py-28">
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 flex">
-        <div className="w-1/2 bg-background" />
-        <div className="w-1/2 bg-black" />
+    <main className="platform-ui login-page" style={style}>
+      <div className="login-brand">
+        <Link href="/" className="brand-link">
+          <PlatformBrand />
+        </Link>
       </div>
-      <Link
-        href="/"
-        className="absolute top-6 left-6 z-20 flex items-center gap-3 sm:top-8 sm:left-8"
-      >
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
-          <ChefHat className="h-5 w-5" aria-hidden />
-        </span>
-        <span className="text-lg font-bold tracking-tight text-foreground">Cantine360</span>
-      </Link>
-      <p
-        aria-hidden
-        className="pointer-events-none absolute bottom-2 left-0 z-0 w-1/2 max-w-none select-none px-3 text-balance bg-gradient-to-br from-emerald-300/40 via-emerald-400/22 to-emerald-600/12 bg-clip-text text-center font-extrabold leading-[0.88] tracking-[-0.03em] text-transparent text-[clamp(2.25rem,9vw,6rem)] sm:bottom-4 sm:px-6 md:bottom-6"
-      >
-        Accès plateforme
-      </p>
-      <p
-        aria-hidden
-        className="pointer-events-none absolute right-0 bottom-2 z-0 w-1/2 max-w-none select-none px-3 text-balance bg-gradient-to-br from-emerald-200/35 via-emerald-300/22 to-white/10 bg-clip-text text-center font-extrabold leading-[0.88] tracking-[-0.03em] text-transparent text-[clamp(2.25rem,9vw,6rem)] sm:bottom-4 sm:px-6 md:bottom-6"
-      >
-        Accès plateforme
-      </p>
 
-      <div className="relative z-10 my-auto flex w-full max-w-3xl flex-col items-center gap-6 sm:gap-8">
-        <header className="w-full space-y-3 rounded-2xl bg-background/90 px-4 py-4 text-center shadow-sm backdrop-blur-md sm:px-6">
-          <MenusCantineColorTitle
-            text="ADMINISTRATION CANTINE360"
-            className="text-[1.65rem] leading-tight sm:text-3xl md:text-4xl lg:text-5xl"
-          />
-          <hr
-            className="mx-auto h-1 w-full max-w-2xl rounded-full border-0 bg-emerald-500"
-            aria-hidden
-          />
-          <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg">
-            Créez et gérez les établissements — accès réservé à l’équipe plateforme.
-          </p>
-        </header>
-
-        <Card className="w-full max-w-xl border-border/50 bg-card/95 shadow-md backdrop-blur-sm">
-          <CardHeader className="space-y-3 px-8 pb-4 pt-8">
-            <CardTitle className="text-2xl md:text-3xl">Accès plateforme</CardTitle>
-            <CardDescription className="text-base leading-relaxed">
-              Réservé à l’équipe qui provisionne les établissements. Ce formulaire n’est pas
-              l’accès cantine (admin / cuisine).
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 pb-8">
-            <form onSubmit={onSubmit} className="space-y-6">
-              <div className="space-y-3">
-                <Label htmlFor="platform-pin" className="text-base">
-                  Code plateforme
-                </Label>
-                <Input
-                  id="platform-pin"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  inputMode="numeric"
-                  autoComplete="off"
-                  className="h-14 text-xl tracking-widest"
-                  placeholder="••••••"
-                />
-              </div>
-              {error ? (
-                <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
-              ) : null}
-              <Button
-                type="submit"
-                size="lg"
-                className="h-12 w-full text-base"
-                disabled={busy || pin.trim().length === 0}
-              >
-                {busy ? "Connexion…" : "Entrer"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+      <div className="login-hero">
+        <h1>
+          <span>ADMINISTRATION</span> <span>CANTINE360</span>
+        </h1>
+        <div className="hero-line" aria-hidden />
+        <p>
+          Créez et gérez les établissements — accès réservé à
+          <br /> l’équipe plateforme.
+        </p>
       </div>
-    </div>
+
+      <section className="login-card">
+        <h2>Accès plateforme</h2>
+        <p>
+          Réservé à l’équipe qui provisionne les établissements. Ce formulaire n’est pas l’accès
+          cantine (admin / cuisine).
+        </p>
+        <form onSubmit={onSubmit}>
+          <label htmlFor="platform-pin">Code plateforme</label>
+          <input
+            id="platform-pin"
+            type="password"
+            placeholder="••••••"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            inputMode="numeric"
+            autoComplete="off"
+          />
+          {error ? <p className="form-error">{error}</p> : null}
+          <button
+            type="submit"
+            className="primary-button wide"
+            disabled={busy || pin.trim().length === 0}
+          >
+            {busy ? "Connexion…" : "Entrer"} <ArrowRight size={18} aria-hidden />
+          </button>
+        </form>
+      </section>
+
+      <div className="login-watermark" aria-hidden>
+        Accès
+        <br />
+        plateforme
+      </div>
+    </main>
   );
 }

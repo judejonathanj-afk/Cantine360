@@ -1,34 +1,86 @@
 "use client";
 
 import Link from "next/link";
-import { Building2, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { Building2, LogOut, Palette, Settings2 } from "lucide-react";
+import { PlatformBrand } from "@/components/platform/PlatformBrand";
+import { usePlatformPalette } from "@/components/platform/PlatformPaletteProvider";
 
 export function PlatformShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const { palette, setPalette, style, palettes } = usePlatformPalette();
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  const establishmentsActive =
+    pathname === "/platform/establishments" ||
+    pathname.startsWith("/platform/establishments/");
+
   async function logout() {
     await fetch("/api/auth/platform-logout", { method: "POST" });
     window.location.assign("/platform/login");
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col">
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 flex">
-        <div className="w-1/2 bg-background" />
-        <div className="w-1/2 bg-black" />
-      </div>
-      <header className="relative z-10 border-b border-border/50 bg-card/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/platform/establishments" className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" aria-hidden />
-            <span className="font-semibold text-foreground">Cantine360 — Plateforme</span>
+    <div className="platform-ui app-shell" style={style}>
+      <div className="topbar-wrap">
+        <header className="topbar">
+          <Link href="/platform/establishments" className="brand-link">
+            <PlatformBrand />
           </Link>
-          <Button variant="ghost" size="sm" className="gap-2" onClick={() => void logout()}>
-            <LogOut className="h-4 w-4" aria-hidden />
-            Déconnexion
-          </Button>
-        </div>
-      </header>
-      <main className="relative z-10 w-full flex-1">{children}</main>
+          <div className="header-actions">
+            <button
+              type="button"
+              className="palette-trigger"
+              onClick={() => setPaletteOpen((o) => !o)}
+            >
+              <Palette size={17} aria-hidden />
+              Couleurs
+            </button>
+            <button type="button" className="logout" onClick={() => void logout()}>
+              <LogOut size={17} aria-hidden />
+              Déconnexion
+            </button>
+          </div>
+        </header>
+        {paletteOpen ? (
+          <div className="palette-popover" role="dialog" aria-label="Choisir une ambiance">
+            <strong>Choisir une ambiance</strong>
+            <div className="palette-options">
+              {palettes.map((option) => (
+                <button
+                  key={option.name}
+                  type="button"
+                  className={palette.name === option.name ? "selected" : ""}
+                  onClick={() => {
+                    setPalette(option);
+                    setPaletteOpen(false);
+                  }}
+                >
+                  <span style={{ background: option.value }} aria-hidden />
+                  {option.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      <nav className="subnav" aria-label="Navigation plateforme">
+        <Link
+          href="/platform/establishments"
+          className={establishmentsActive ? "active" : undefined}
+        >
+          <Building2 size={17} aria-hidden />
+          Établissements
+        </Link>
+        <button type="button" disabled title="Bientôt disponible">
+          <Settings2 size={17} aria-hidden />
+          Paramètres
+        </button>
+      </nav>
+
+      {children}
     </div>
   );
 }
