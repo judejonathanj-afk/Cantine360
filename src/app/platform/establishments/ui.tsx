@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Building2 } from "lucide-react";
 import { slugFromEstablishmentName } from "@/lib/establishmentSlug";
-import { randomEstablishmentPin } from "@/lib/platformPins";
+import { randomDistinctEstablishmentPins } from "@/lib/platformPins";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,8 +29,9 @@ export function PlatformEstablishmentsClient() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  const [adminPin, setAdminPin] = useState(() => randomEstablishmentPin());
-  const [kitchenPin, setKitchenPin] = useState(() => randomEstablishmentPin());
+  const [accessPins, setAccessPins] = useState(randomDistinctEstablishmentPins);
+  const adminPin = accessPins.adminPin;
+  const kitchenPin = accessPins.kitchenPin;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [listError, setListError] = useState<string | null>(null);
@@ -132,8 +133,7 @@ export function PlatformEstablishmentsClient() {
       });
       setName("");
       setSlug("");
-      setAdminPin(randomEstablishmentPin());
-      setKitchenPin(randomEstablishmentPin());
+      setAccessPins(randomDistinctEstablishmentPins());
       await load();
     } finally {
       setBusy(false);
@@ -186,10 +186,21 @@ export function PlatformEstablishmentsClient() {
                 className="font-mono text-sm lowercase"
                 placeholder={slugPreview || "auto depuis le nom"}
               />
-              {slugPreview ? (
+              {name.trim() || slug.trim() ? (
                 <p className="text-xs text-muted-foreground">
-                  Sera enregistré comme :{" "}
-                  <span className="font-mono font-medium text-foreground">{slugPreview}</span>
+                  {slug.trim() ? (
+                    <>
+                      Code saisi (normalisé) :{" "}
+                      <span className="font-mono font-medium text-foreground">{slugPreview}</span>
+                    </>
+                  ) : (
+                    <>
+                      Sera enregistré comme :{" "}
+                      <span className="font-mono font-medium text-foreground">
+                        {slugPreview || "— code trop court, précisez le nom ou le code"}
+                      </span>
+                    </>
+                  )}
                 </p>
               ) : null}
             </div>
@@ -199,7 +210,9 @@ export function PlatformEstablishmentsClient() {
                 <Input
                   id="est-admin-pin"
                   value={adminPin}
-                  onChange={(e) => setAdminPin(e.target.value)}
+                  onChange={(e) =>
+                    setAccessPins((p) => ({ ...p, adminPin: e.target.value }))
+                  }
                   inputMode="numeric"
                   className="font-mono tracking-widest"
                   required
@@ -210,7 +223,9 @@ export function PlatformEstablishmentsClient() {
                 <Input
                   id="est-kitchen-pin"
                   value={kitchenPin}
-                  onChange={(e) => setKitchenPin(e.target.value)}
+                  onChange={(e) =>
+                    setAccessPins((p) => ({ ...p, kitchenPin: e.target.value }))
+                  }
                   inputMode="numeric"
                   className="font-mono tracking-widest"
                   required
@@ -222,10 +237,7 @@ export function PlatformEstablishmentsClient() {
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  setAdminPin(randomEstablishmentPin());
-                  setKitchenPin(randomEstablishmentPin());
-                }}
+                onClick={() => setAccessPins(randomDistinctEstablishmentPins())}
               >
                 Regénérer les codes
               </Button>

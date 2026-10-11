@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
-import { randomEstablishmentPin } from "@/lib/platformPins";
+import {
+  randomDistinctEstablishmentPins,
+  randomEstablishmentPin,
+} from "@/lib/platformPins";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -153,8 +156,9 @@ export function PlatformEstablishmentEditClient({
   function resetBothPins() {
     setChangeAdminPin(true);
     setChangeKitchenPin(true);
-    setAdminPin(randomEstablishmentPin());
-    setKitchenPin(randomEstablishmentPin());
+    const pins = randomDistinctEstablishmentPins();
+    setAdminPin(pins.adminPin);
+    setKitchenPin(pins.kitchenPin);
   }
 
   if (loading) {

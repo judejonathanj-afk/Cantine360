@@ -2,6 +2,8 @@
 export function normalizeEstablishmentSlug(raw: string) {
   return raw
     .trim()
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "")
