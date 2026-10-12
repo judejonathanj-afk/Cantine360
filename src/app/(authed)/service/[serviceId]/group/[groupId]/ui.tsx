@@ -191,6 +191,15 @@ export function GroupMetricsEditor({
           </p>
         ) : null}
 
+        <p
+          className={[
+            "text-center text-base font-semibold sm:text-lg",
+            level === "MATERNELLE" ? "text-sky-800" : "text-emerald-800",
+          ].join(" ")}
+        >
+          Compteur
+        </p>
+
         <div className="grid gap-3 sm:grid-cols-2">
           <Counter
             label="Présents"
