@@ -12,7 +12,7 @@ type Props = {
   /** Si omis, pas de plafond (seule la borne min s’applique). */
   max?: number;
   className?: string;
-  /** Fond vert (primaire) ou bleu (maternelle) derrière les boutons + chiffre. */
+  /** Fond de carte vert (primaire) ou bleu (maternelle) ; boutons et chiffre restent blancs. */
   level?: SchoolLevel;
 };
 
@@ -35,21 +35,17 @@ export function Counter({
 
   return (
     <div
-      className={[
-        "rounded-2xl border-2 bg-white p-4",
+      className={cn(
+        "rounded-2xl border-2 p-4",
+        level ? "bg-transparent" : "bg-white",
         className ?? "border-zinc-200",
-      ].join(" ")}
+      )}
+      style={level ? { backgroundColor: LEVEL_CARD_COLORS[level] } : undefined}
     >
       <div className="text-base font-semibold leading-snug text-black sm:text-lg">
         {label}
       </div>
-      <div
-        className={cn(
-          "mt-3 flex items-center justify-between gap-4 rounded-xl px-2 py-2",
-          !level && "px-0 py-0",
-        )}
-        style={level ? { backgroundColor: LEVEL_CARD_COLORS[level] } : undefined}
-      >
+      <div className="mt-3 flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={dec}
