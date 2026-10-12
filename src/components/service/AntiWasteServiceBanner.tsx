@@ -1,14 +1,19 @@
 import { AlertTriangle, Recycle, Baby, GraduationCap, Lightbulb } from "lucide-react";
 import type { AntiWasteKitchenAdvice } from "@/lib/antiWasteKitchenAdvice";
+import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { cn } from "@/lib/utils";
 
 export function AntiWasteServiceBanner({
   advice,
   asConclusion = false,
+  variant = "full",
+  className,
 }: {
   advice: AntiWasteKitchenAdvice;
   /** Affiché après enregistrement des déchets — conclusion de service. */
   asConclusion?: boolean;
+  variant?: "full" | "compact";
+  className?: string;
 }) {
   const tipClass =
     advice.tipTone === "watch"
@@ -18,6 +23,70 @@ export function AntiWasteServiceBanner({
         : "border-sky-200 bg-sky-50 text-sky-950";
 
   const alert = advice.riskyDishAlert ?? null;
+
+  if (variant === "compact") {
+    const mat = advice.portions.find((p) => p.level === "MATERNELLE");
+    const prim = advice.portions.find((p) => p.level === "PRIMAIRE");
+
+    const portionLine = [mat, prim]
+      .filter((p): p is NonNullable<typeof p> => p != null)
+      .map((p) => {
+        if (p.headcount <= 0) {
+          return `${p.levelLabel} : à saisir`;
+        }
+        const grams =
+          p.gramsPerPlate != null ? ` ~${p.gramsPerPlate} g/assiette` : "";
+        return `${p.levelLabel} ${p.headcount} ${p.basisLabel}${grams}`;
+      })
+      .join(" · ");
+
+    return (
+      <ServiceInsightCard
+        tone="soft"
+        dense
+        icon={Recycle}
+        title={
+          asConclusion
+            ? "Service enregistré — Antigaspillage"
+            : "Antigaspillage"
+        }
+        subtitle={
+          asConclusion
+            ? "Conclusion du service"
+            : advice.totalPlannedKgLabel
+              ? `~${advice.totalPlannedKgLabel} au total · repères mat. / prim.`
+              : "Repères mat. / prim. pour le service"
+        }
+        metric={
+          alert ? (
+            <span className="text-sm font-semibold leading-snug text-rose-800">
+              Plat à risque n°{alert.rank} : « {alert.label} »
+            </span>
+          ) : mat?.gramsPerPlate != null || prim?.gramsPerPlate != null ? (
+            <span className="text-base font-semibold">
+              {mat?.gramsPerPlate != null ? `Mat. ~${mat.gramsPerPlate} g` : null}
+              {mat?.gramsPerPlate != null && prim?.gramsPerPlate != null ? " · " : null}
+              {prim?.gramsPerPlate != null ? `Prim. ~${prim.gramsPerPlate} g` : null}
+            </span>
+          ) : (
+            "Portions du jour"
+          )
+        }
+        className={cn("h-auto", className)}
+      >
+        {alert ? (
+          <p className="line-clamp-2 rounded-lg border border-rose-200/80 bg-rose-50 px-2 py-1.5 text-[11px] leading-snug text-rose-950">
+            {alert.tip}
+          </p>
+        ) : null}
+        {portionLine ? <p className={alert ? "mt-1.5" : undefined}>{portionLine}</p> : null}
+        <p className={cn("line-clamp-2", (alert || portionLine) && "mt-1")}>
+          <span className="font-medium text-zinc-700">Conseil : </span>
+          {advice.tip}
+        </p>
+      </ServiceInsightCard>
+    );
+  }
 
   return (
     <section

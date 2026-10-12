@@ -8,6 +8,7 @@ import { ServiceDietStudentsPanel } from "@/components/service/ServiceDietStuden
 import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
+import { ServiceAntiWasteInsightPanel } from "@/components/service/ServiceAntiWasteInsightPanel";
 import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
@@ -137,12 +138,32 @@ export default async function ServicePage({
             ) : null}
           </div>
         ) : null}
-        <ServiceGrammagePanel
-          serviceId={serviceId}
-          menuItems={menuItems}
-          metrics={metricsGrammage}
-          className="h-auto w-full sm:w-auto sm:min-w-[min(100%,16rem)] sm:max-w-xs"
-        />
+        <div className="flex min-w-0 w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-start">
+          <ServiceGrammagePanel
+            serviceId={serviceId}
+            menuItems={menuItems}
+            metrics={metricsGrammage}
+            className="h-auto w-full sm:min-w-[min(100%,16rem)] sm:max-w-xs"
+          />
+          {antiWaste.antiWasteModeEnabled && kitchenAdvice ? (
+            <ServiceAntiWasteInsightPanel
+              serviceId={serviceId}
+              kitchenAdvice={kitchenAdvice}
+              classCounts={classCards.map((card) => ({
+                groupId: card.groupId,
+                level: card.level,
+                presentCount: card.presentCount,
+                servedCount: card.servedCount,
+                rabCount: card.rabCount,
+                refusedCount: card.refusedCount,
+              }))}
+              initialWasteWeightG={service.wasteWeightG}
+              initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
+              initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
+              className="h-auto w-full sm:min-w-[min(100%,18rem)] sm:max-w-sm"
+            />
+          ) : null}
+        </div>
       </div>
 
       {service.metrics.length === 0 ? (
@@ -172,7 +193,6 @@ export default async function ServicePage({
         initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
         initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
         antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
-        kitchenAdvice={kitchenAdvice}
         classCounts={classCards.map((card) => ({
           groupId: card.groupId,
           level: card.level,

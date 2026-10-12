@@ -17,12 +17,8 @@ import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useQueuedMetrics } from "@/hooks/useQueuedMetrics";
 import { overlayQueuedCounts } from "@/lib/mergeQueuedMetrics";
 import { buildEndOfServiceBilanTips } from "@/lib/antiWasteEndOfServiceBilan";
-import {
-  buildLevelPortionSuggestions,
-  type AntiWasteKitchenAdvice,
-} from "@/lib/antiWasteKitchenAdvice";
 import { AntiWasteEndOfServiceBilan } from "@/components/service/AntiWasteEndOfServiceBilan";
-import { AntiWasteServiceBanner } from "@/components/service/AntiWasteServiceBanner";
+import { WASTE_SAVED_EVENT } from "@/components/service/ServiceAntiWasteInsightPanel";
 import { cn } from "@/lib/utils";
 
 function gramsToInput(grams: number | null): string {
@@ -65,7 +61,6 @@ export function ServiceWasteWeightPanel({
   initialWasteWeightMaternelleG,
   initialWasteWeightPrimaireG,
   antiWasteModeEnabled = false,
-  kitchenAdvice = null,
   servedCount = 0,
   rabCount = 0,
   refusedCount = 0,
@@ -80,7 +75,6 @@ export function ServiceWasteWeightPanel({
   initialWasteWeightMaternelleG?: number | null;
   initialWasteWeightPrimaireG?: number | null;
   antiWasteModeEnabled?: boolean;
-  kitchenAdvice?: AntiWasteKitchenAdvice | null;
   servedCount?: number;
   rabCount?: number;
   refusedCount?: number;
@@ -110,29 +104,6 @@ export function ServiceWasteWeightPanel({
       refusedCount: rows.reduce((sum, row) => sum + row.refusedCount, 0),
     };
   }, [classCounts, queued, servedCount, rabCount, refusedCount]);
-  const liveAdvice = useMemo(() => {
-    if (!kitchenAdvice || !classCounts || classCounts.length === 0) return kitchenAdvice;
-    const rows = overlayQueuedCounts(classCounts, queued);
-    const portions = buildLevelPortionSuggestions(
-      kitchenAdvice.perPlateBase,
-      rows.map((row) => ({
-        level: row.level,
-        presentCount: row.presentCount,
-        servedCount: row.servedCount,
-      })),
-    );
-    const total = portions.reduce((sum, portion) => sum + (portion.plannedGrams ?? 0), 0);
-    const hasPlanned = portions.some(
-      (portion) => portion.plannedGrams != null && portion.plannedGrams > 0,
-    );
-    return {
-      ...kitchenAdvice,
-      portions,
-      totalPlannedGrams: hasPlanned ? total : null,
-      totalPlannedKgLabel: hasPlanned ? formatKgFromGrams(total) : null,
-    };
-  }, [classCounts, kitchenAdvice, queued]);
-
   const initialLevels = (): LevelWeights => {
     const mat = initialWasteWeightMaternelleG ?? null;
     const prim = initialWasteWeightPrimaireG ?? null;
@@ -219,6 +190,9 @@ export function ServiceWasteWeightPanel({
       setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
       setStatus("offline");
       setSavedAck(true);
+      window.dispatchEvent(
+        new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+      );
       return true;
     }
 
@@ -234,6 +208,9 @@ export function ServiceWasteWeightPanel({
         setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
         setStatus("offline");
         setSavedAck(true);
+        window.dispatchEvent(
+          new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+        );
         return false;
       }
       const data = (await res.json()) as {
@@ -253,6 +230,9 @@ export function ServiceWasteWeightPanel({
       setPrimInput(gramsToInput(next.PRIMAIRE));
       setStatus("saved");
       setSavedAck(true);
+      window.dispatchEvent(
+        new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+      );
       window.setTimeout(() => setStatus("idle"), 800);
       return true;
     } catch {
@@ -260,6 +240,9 @@ export function ServiceWasteWeightPanel({
       setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
       setStatus("offline");
       setSavedAck(true);
+      window.dispatchEvent(
+        new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+      );
       return false;
     }
   }, [online, serviceId, invalidMat, invalidPrim, parsedMat, parsedPrim]);
@@ -278,11 +261,6 @@ export function ServiceWasteWeightPanel({
           allLabels,
         })
       : [];
-
-  const showAntiWasteBanner =
-    antiWasteModeEnabled && liveAdvice != null;
-  const antiWasteAsConclusion =
-    savedAck || (totalSaved > 0 && !dirty);
 
   const statusMessage = invalidMat || invalidPrim ? (
     "Saisissez un nombre de grammes valide"
@@ -408,12 +386,6 @@ export function ServiceWasteWeightPanel({
       </div>
     </div>
 
-    {showAntiWasteBanner && liveAdvice ? (
-      <AntiWasteServiceBanner
-        advice={liveAdvice}
-        asConclusion={antiWasteAsConclusion}
-      />
-    ) : null}
     </div>
   );
 }
