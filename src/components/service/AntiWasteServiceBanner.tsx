@@ -28,62 +28,89 @@ export function AntiWasteServiceBanner({
     const mat = advice.portions.find((p) => p.level === "MATERNELLE");
     const prim = advice.portions.find((p) => p.level === "PRIMAIRE");
 
-    const portionLine = [mat, prim]
-      .filter((p): p is NonNullable<typeof p> => p != null)
-      .map((p) => {
-        if (p.headcount <= 0) {
-          return `${p.levelLabel} : à saisir`;
-        }
-        const grams =
-          p.gramsPerPlate != null ? ` ~${p.gramsPerPlate} g/assiette` : "";
-        return `${p.levelLabel} ${p.headcount} ${p.basisLabel}${grams}`;
-      })
+    const shortServisLine = [mat, prim]
+      .filter((p): p is NonNullable<typeof p> => p != null && p.headcount > 0)
+      .map((p) => `${p.levelLabel} ${p.headcount} servis`)
       .join(" · ");
+
+    const alertAction =
+      alert && alert.tip.includes(" — ")
+        ? alert.tip.slice(alert.tip.indexOf(" — ") + 3).trim()
+        : null;
+
+    const gramsMetric =
+      mat?.gramsPerPlate != null || prim?.gramsPerPlate != null ? (
+        <span className="text-base font-semibold">
+          {mat?.gramsPerPlate != null ? `Mat. ~${mat.gramsPerPlate} g` : null}
+          {mat?.gramsPerPlate != null && prim?.gramsPerPlate != null ? " · " : null}
+          {prim?.gramsPerPlate != null ? `Prim. ~${prim.gramsPerPlate} g` : null}
+        </span>
+      ) : (
+        "Portions du jour"
+      );
+
+    if (asConclusion) {
+      return (
+        <ServiceInsightCard
+          tone="soft"
+          dense
+          icon={Recycle}
+          title="Service enregistré — Antigaspillage"
+          subtitle="Conclusion du service"
+          metric={
+            alert ? (
+              <span className="text-sm font-semibold leading-snug text-rose-800">
+                Plat à risque n°{alert.rank} : « {alert.label} »
+              </span>
+            ) : (
+              gramsMetric
+            )
+          }
+          className={cn("h-auto", className)}
+        >
+          {alert && alertAction ? (
+            <p className="line-clamp-2">{alertAction}</p>
+          ) : shortServisLine ? (
+            <p>{shortServisLine}</p>
+          ) : null}
+        </ServiceInsightCard>
+      );
+    }
 
     return (
       <ServiceInsightCard
         tone="soft"
         dense
         icon={Recycle}
-        title={
-          asConclusion
-            ? "Service enregistré — Antigaspillage"
-            : "Antigaspillage"
-        }
+        title="Antigaspillage"
         subtitle={
-          asConclusion
-            ? "Conclusion du service"
-            : advice.totalPlannedKgLabel
-              ? `~${advice.totalPlannedKgLabel} au total · repères mat. / prim.`
-              : "Repères mat. / prim. pour le service"
+          advice.totalPlannedKgLabel
+            ? `~${advice.totalPlannedKgLabel} au total`
+            : "Repères mat. / prim."
         }
         metric={
           alert ? (
             <span className="text-sm font-semibold leading-snug text-rose-800">
               Plat à risque n°{alert.rank} : « {alert.label} »
             </span>
-          ) : mat?.gramsPerPlate != null || prim?.gramsPerPlate != null ? (
-            <span className="text-base font-semibold">
-              {mat?.gramsPerPlate != null ? `Mat. ~${mat.gramsPerPlate} g` : null}
-              {mat?.gramsPerPlate != null && prim?.gramsPerPlate != null ? " · " : null}
-              {prim?.gramsPerPlate != null ? `Prim. ~${prim.gramsPerPlate} g` : null}
-            </span>
           ) : (
-            "Portions du jour"
+            gramsMetric
           )
         }
         className={cn("h-auto", className)}
       >
-        {alert ? (
-          <p className="line-clamp-2 rounded-lg border border-rose-200/80 bg-rose-50 px-2 py-1.5 text-[11px] leading-snug text-rose-950">
-            {alert.tip}
-          </p>
-        ) : null}
-        {portionLine ? <p className={alert ? "mt-1.5" : undefined}>{portionLine}</p> : null}
-        <p className={cn("line-clamp-2", (alert || portionLine) && "mt-1")}>
-          <span className="font-medium text-zinc-700">Conseil : </span>
-          {advice.tip}
-        </p>
+        {alert && alertAction ? (
+          <p className="line-clamp-2">{alertAction}</p>
+        ) : (
+          <>
+            {shortServisLine ? <p>{shortServisLine}</p> : null}
+            {!alert && advice.tip ? (
+              <p className={cn("line-clamp-2", shortServisLine && "mt-1")}>
+                {advice.tip}
+              </p>
+            ) : null}
+          </>
+        )}
       </ServiceInsightCard>
     );
   }
