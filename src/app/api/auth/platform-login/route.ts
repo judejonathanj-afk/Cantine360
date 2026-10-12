@@ -7,6 +7,7 @@ import {
   clientIpFromRequest,
   consumeLoginAttempt,
 } from "@/server/loginRateLimit";
+import { verifyPlatformLoginPin } from "@/server/platformPin";
 
 const BodySchema = z.object({
   pin: z.string().min(1),
@@ -17,8 +18,8 @@ function normalizePin(raw: string) {
 }
 
 export async function POST(req: Request) {
-  const expected = process.env.PLATFORM_PIN?.replace(/\D/g, "") ?? "";
-  if (expected.length < 6) {
+  const envPin = process.env.PLATFORM_PIN?.replace(/\D/g, "") ?? "";
+  if (envPin.length < 6) {
     return NextResponse.json(
       {
         error:
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
   }
 
   const pin = normalizePin(parsed.data.pin);
-  if (pin !== expected) {
+  if (!(await verifyPlatformLoginPin(pin))) {
     return NextResponse.json({ error: "Code plateforme incorrect." }, { status: 401 });
   }
 

@@ -15,6 +15,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
   const establishmentsActive =
     pathname === "/platform/establishments" ||
     pathname.startsWith("/platform/establishments/");
+  const settingsActive = pathname === "/platform/settings";
 
   async function logout() {
     await fetch("/api/auth/platform-logout", { method: "POST" });
@@ -74,10 +75,10 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
           <Building2 size={17} aria-hidden />
           Établissements
         </Link>
-        <button type="button" disabled title="Bientôt disponible">
+        <Link href="/platform/settings" className={settingsActive ? "active" : undefined}>
           <Settings2 size={17} aria-hidden />
           Paramètres
-        </button>
+        </Link>
       </nav>
 
       {children}

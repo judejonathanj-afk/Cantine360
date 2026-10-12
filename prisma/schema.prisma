@@ -216,3 +216,10 @@ model AttendanceImport {
 
   @@index([establishmentId])
 }
+
+/** Code plateforme Omnerys (optionnel) : si `platformPinHash` est défini, il remplace PLATFORM_PIN (.env). */
+model PlatformSettings {
+  id              String   @id @default("singleton")
+  platformPinHash String?
+  updatedAt       DateTime @updatedAt
+}
