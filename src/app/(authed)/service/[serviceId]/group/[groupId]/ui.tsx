@@ -197,12 +197,14 @@ export function GroupMetricsEditor({
             value={m.presentCount}
             onChange={(presentCount) => setM((s) => ({ ...s, presentCount }))}
             className={counterBorder}
+            level={level}
           />
           <Counter
             label="Portions servies"
             value={m.servedCount}
             onChange={(servedCount) => setM((s) => ({ ...s, servedCount }))}
             className={counterBorder}
+            level={level}
           />
           <div className="sm:col-span-2">
             <Counter
@@ -210,6 +212,7 @@ export function GroupMetricsEditor({
               value={m.rabCount}
               onChange={(rabCount) => setM((s) => ({ ...s, rabCount }))}
               className={counterBorder}
+              level={level}
             />
           </div>
           <div className="sm:col-span-2">
@@ -218,6 +221,7 @@ export function GroupMetricsEditor({
               value={m.refusedCount}
               onChange={(refusedCount) => setM((s) => ({ ...s, refusedCount }))}
               className={counterBorder}
+              level={level}
             />
           </div>
         </div>

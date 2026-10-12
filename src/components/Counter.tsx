@@ -1,5 +1,9 @@
 "use client";
 
+import type { SchoolLevel } from "@/lib/schoolLevel";
+import { LEVEL_CARD_COLORS } from "@/lib/schoolLevel";
+import { cn } from "@/lib/utils";
+
 type Props = {
   label: string;
   value: number;
@@ -8,6 +12,8 @@ type Props = {
   /** Si omis, pas de plafond (seule la borne min s’applique). */
   max?: number;
   className?: string;
+  /** Fond vert (primaire) ou bleu (maternelle) derrière les boutons + chiffre. */
+  level?: SchoolLevel;
 };
 
 export function Counter({
@@ -17,6 +23,7 @@ export function Counter({
   min = 0,
   max,
   className,
+  level,
 }: Props) {
   const clamp = (n: number) => {
     const lower = Math.max(min, n);
@@ -36,11 +43,17 @@ export function Counter({
       <div className="text-base font-semibold leading-snug text-black sm:text-lg">
         {label}
       </div>
-      <div className="mt-3 flex items-center justify-between gap-4">
+      <div
+        className={cn(
+          "mt-3 flex items-center justify-between gap-4 rounded-xl px-2 py-2",
+          !level && "px-0 py-0",
+        )}
+        style={level ? { backgroundColor: LEVEL_CARD_COLORS[level] } : undefined}
+      >
         <button
           type="button"
           onClick={dec}
-          className="h-12 w-12 rounded-2xl border border-zinc-300 text-xl font-semibold hover:bg-zinc-50"
+          className="h-12 w-12 rounded-2xl border border-zinc-300 bg-white/90 text-xl font-semibold hover:bg-white"
           aria-label={`${label} -1`}
         >
           −
@@ -54,7 +67,7 @@ export function Counter({
             else onChange(min);
           }}
           inputMode="numeric"
-          className="w-28 rounded-xl border border-zinc-300 px-3 py-3 text-center text-xl font-semibold outline-none focus:border-zinc-900"
+          className="w-28 rounded-xl border border-zinc-300/80 bg-white px-3 py-3 text-center text-xl font-semibold outline-none focus:border-zinc-900"
         />
 
         <button
