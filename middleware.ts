@@ -62,16 +62,12 @@ async function readActiveEstablishmentRole(
   return null;
 }
 
-async function readSessionKind(req: NextRequest): Promise<SessionKind> {
+async function readEstablishmentSessionKind(
+  req: NextRequest,
+): Promise<SessionKind> {
   const getCookie = (name: string) => req.cookies.get(name)?.value;
-
-  const platformToken = readPlatformTokenFromCookies(getCookie);
-  if (platformToken) {
-    const kind = await verifyTokenKind(platformToken);
-    if (kind === "platform") return "platform";
-  }
-
   const pathname = req.nextUrl.pathname;
+
   const active = readActiveEstablishmentToken(getCookie, pathname);
   if (active) {
     const kind = await verifyTokenKind(active.token);
@@ -82,6 +78,29 @@ async function readSessionKind(req: NextRequest): Promise<SessionKind> {
 
   const legacy = getCookie(LEGACY_SESSION_COOKIE_NAME);
   if (legacy) return verifyTokenKind(legacy);
+
+  return null;
+}
+
+async function readPlatformSessionKind(req: NextRequest): Promise<SessionKind> {
+  const getCookie = (name: string) => req.cookies.get(name)?.value;
+  const platformToken = readPlatformTokenFromCookies(getCookie);
+  if (!platformToken) return null;
+  const kind = await verifyTokenKind(platformToken);
+  return kind === "platform" ? "platform" : null;
+}
+
+async function readSessionKind(req: NextRequest): Promise<SessionKind> {
+  const { pathname } = req.nextUrl;
+
+  // Routes plateforme : jeton Omnerys uniquement (ne pas confondre avec cantine).
+  if (pathname.startsWith("/platform")) {
+    return readPlatformSessionKind(req);
+  }
+
+  // Cantine (admin / cuisine) : priorité établissement même si session plateforme ouverte.
+  const establishment = await readEstablishmentSessionKind(req);
+  if (establishment === "establishment") return "establishment";
 
   return null;
 }

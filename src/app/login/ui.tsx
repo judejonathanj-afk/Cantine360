@@ -114,6 +114,7 @@ export function LoginClient() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           slug: normalizedSlug,
