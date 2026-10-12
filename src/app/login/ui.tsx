@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Eye, EyeOff, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { normalizeEstablishmentSlug } from "@/lib/establishmentSlug";
 import { rememberActiveServiceId } from "@/lib/activeService";
+
+const LAST_ESTABLISHMENT_SLUG_KEY = "c360_last_establishment_slug";
 
 function LoginDecorPanel({
   src,
@@ -57,8 +59,22 @@ export function LoginClient() {
   const [pin, setPin] = useState("");
   const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [slugHighlight, setSlugHighlight] = useState(false);
   const [busy, setBusy] = useState(false);
   const sp = useSearchParams();
+
+  function focusSlugField() {
+    document.getElementById("slug")?.focus();
+  }
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LAST_ESTABLISHMENT_SLUG_KEY);
+      if (saved?.trim()) setSlug(saved.trim());
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const nextPath = useMemo(() => sp.get("next"), [sp]);
   const sessionReason = useMemo(() => sp.get("reason"), [sp]);
@@ -71,20 +87,36 @@ export function LoginClient() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
     setError(null);
+    setSlugHighlight(false);
+
+    const normalizedSlug = normalizeEstablishmentSlug(slug);
+    if (!slug.trim()) {
+      setError("Saisissez le code établissement (ex. anne-frank) — obligatoire avant le code accès.");
+      setSlugHighlight(true);
+      focusSlugField();
+      return;
+    }
+    if (normalizedSlug.length < 2) {
+      setError("Code établissement trop court ou invalide.");
+      setSlugHighlight(true);
+      focusSlugField();
+      return;
+    }
+
     const digitsOnly = pin.replace(/\D/g, "");
     if (digitsOnly.length === 0) {
       setError("Le code accès doit contenir uniquement des chiffres.");
-      setBusy(false);
       return;
     }
+
+    setBusy(true);
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          slug: normalizeEstablishmentSlug(slug),
+          slug: normalizedSlug,
           pin: digitsOnly,
           ...(nextPath ? { next: nextPath } : {}),
         }),
@@ -98,7 +130,11 @@ export function LoginClient() {
         return;
       }
       const data = (await res.json()) as { redirectTo: string };
-      // Nouvelle session = service fermé (pas de Menu & allergènes résiduel).
+      try {
+        localStorage.setItem(LAST_ESTABLISHMENT_SLUG_KEY, normalizedSlug);
+      } catch {
+        /* ignore */
+      }
       rememberActiveServiceId(null);
       window.location.assign(data.redirectTo);
     } catch (err) {
@@ -187,10 +223,15 @@ export function LoginClient() {
                 <Input
                   id="slug"
                   value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
+                  onChange={(e) => {
+                    setSlug(e.target.value);
+                    setSlugHighlight(false);
+                  }}
                   autoComplete="organization"
                   spellCheck={false}
-                  className="h-12 font-mono text-base normal-case"
+                  required
+                  aria-invalid={slugHighlight}
+                  className={`h-12 font-mono text-base normal-case ${slugHighlight ? "border-destructive ring-2 ring-destructive/30" : ""}`}
                   style={{ textTransform: "none" }}
                   autoCapitalize="words"
                   placeholder="ex. anne-frank"
@@ -206,9 +247,10 @@ export function LoginClient() {
                     ) : null}
                   </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Code affiché sur la plateforme Omnerys (pas le nom complet de
-                    l’école).
+                  <p className="text-sm font-medium text-amber-800">
+                    Obligatoire — code affiché sur la plateforme Omnerys (ex.{" "}
+                    <span className="font-mono">anne-frank</span>), pas seulement le
+                    code accès.
                   </p>
                 )}
               </div>
@@ -252,9 +294,7 @@ export function LoginClient() {
                 type="submit"
                 size="lg"
                 className="h-12 w-full text-base"
-                disabled={
-                  busy || slug.trim().length === 0 || pin.trim().length === 0
-                }
+                disabled={busy}
               >
                 {busy ? "Connexion… (patientez)" : "Se connecter"}
               </Button>
