@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getPlatformSession } from "@/server/auth";
-import { PLATFORM_SESSION_MAX_AGE } from "@/server/auth-cookies";
 import { platformPinSource } from "@/server/platformPin";
+
+/** Aligné sur PLATFORM_SESSION_MAX_AGE (auth-cookies). */
+const PLATFORM_SESSION_HOURS = 12;
 
 export async function GET() {
   const session = await getPlatformSession();
@@ -10,7 +12,7 @@ export async function GET() {
   }
 
   const pinSource = await platformPinSource();
-  const sessionHours = Math.round(PLATFORM_SESSION_MAX_AGE / 3600);
+  const sessionHours = PLATFORM_SESSION_HOURS;
 
   return NextResponse.json({
     loginPath: "/platform/login",
