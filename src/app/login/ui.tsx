@@ -64,6 +64,11 @@ export function LoginClient() {
   const sessionReason = useMemo(() => sp.get("reason"), [sp]);
   const sessionExpired = sessionReason === "expired";
 
+  const slugPreview = useMemo(
+    () => normalizeEstablishmentSlug(slug),
+    [slug],
+  );
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -166,9 +171,11 @@ export function LoginClient() {
                 <p className="font-semibold">Session expirée</p>
                 <p className="mt-1 text-amber-900/90">
                   Reconnectez-vous avec le code{" "}
-                  <strong>cuisine</strong> ou <strong>admin</strong>. Si l’autre
-                  compte est encore ouvert dans un autre onglet, il reste actif
-                  — seul ce profil doit se reconnecter.
+                  <strong>cuisine</strong> ou <strong>admin</strong> (6 chiffres
+                  en général). Si les codes ont été régénérés sur la plateforme,
+                  utilisez les <strong>nouveaux</strong>. Si l’autre compte est
+                  encore ouvert dans un autre onglet, il reste actif — seul ce
+                  profil doit se reconnecter.
                 </p>
               </div>
             ) : null}
@@ -186,8 +193,24 @@ export function LoginClient() {
                   className="h-12 font-mono text-base normal-case"
                   style={{ textTransform: "none" }}
                   autoCapitalize="words"
-                  placeholder="ex. Anne Frank"
+                  placeholder="ex. anne-frank"
                 />
+                {slug.trim() ? (
+                  <p className="text-sm text-muted-foreground">
+                    Connexion avec le code{" "}
+                    <span className="font-mono font-medium text-foreground">
+                      {slugPreview || "— invalide"}
+                    </span>
+                    {slugPreview && slugPreview !== slug.trim().toLowerCase() ? (
+                      <span> (normalisé depuis votre saisie)</span>
+                    ) : null}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Code affiché sur la plateforme Omnerys (pas le nom complet de
+                    l’école).
+                  </p>
+                )}
               </div>
               <div className="space-y-2.5">
                 <Label htmlFor="pin" className="text-base">
