@@ -40,9 +40,10 @@ export function ServiceGrammagePanel({
 
   return (
     <ServiceInsightCard
-      tone="black"
+      tone="soft"
+      dense
       icon={Scale}
-      title="Grammage du service"
+      title="Grammage"
       subtitle={
         summary.hasGrammage
           ? summary.basisCount > 0
@@ -52,26 +53,22 @@ export function ServiceGrammagePanel({
       }
       metric={
         summary.hasGrammage ? (
-          <>
-            {summary.perPlate}
-            <span className="ml-1 text-lg font-semibold">g / assiette</span>
-          </>
+          <span className="text-base font-semibold">{summary.perPlate} g / assiette</span>
         ) : (
           "—"
         )
       }
       className={cn(className)}
-      compact
     >
       {!summary.hasGrammage ? (
-        <p>Ajoutez les grammes dans Menu &amp; allergènes.</p>
-      ) : (
-        <p>
+        <p>Grammes dans Menu &amp; allergènes.</p>
+      ) : summary.itemsWithGrammage.length > 0 ? (
+        <p className="line-clamp-2">
           {summary.itemsWithGrammage
-            .map((i) => `${i.label} — ${i.grammageG} g`)
+            .map((i) => `${i.label} ${i.grammageG} g`)
             .join(" · ")}
         </p>
-      )}
+      ) : null}
     </ServiceInsightCard>
   );
 }

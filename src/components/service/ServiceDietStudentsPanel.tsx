@@ -112,36 +112,31 @@ function DietStudentsCollapsible({
       id="regimes-a-adapter"
       className={cn("group w-full scroll-mt-24", className)}
     >
-      <div className="flex flex-col overflow-hidden rounded-2xl border border-[#1a2d4a] bg-[#0a1628] shadow-md">
+      <div className="flex flex-col overflow-hidden rounded-xl border border-amber-200/90 bg-amber-50/90 shadow-sm">
         <CollapsibleTrigger
           className={cn(
-            "flex w-full shrink-0 flex-col px-4 outline-none hover:bg-white/10",
-            open ? "py-3.5" : "py-3",
+            "flex w-full shrink-0 flex-col px-3 outline-none hover:bg-amber-100/80",
+            open ? "py-2.5" : "py-2",
           )}
         >
-          <div className="relative flex items-center gap-3">
-            <h2
-              className={cn(
-                "flex-1 text-center font-bold leading-snug text-white",
-                open ? "text-lg sm:text-xl" : "text-base sm:text-lg",
-              )}
-            >
-              <span className="tabular-nums text-yellow-300">{total}</span> Régimes à
-              adapter
+          <div className="relative flex items-center gap-2">
+            <h2 className="flex-1 text-left text-sm font-semibold leading-snug text-amber-950">
+              <span className="tabular-nums font-bold text-amber-800">{total}</span> régime
+              {total > 1 ? "s" : ""} à adapter — détail
             </h2>
             <ChevronDown
               className={cn(
-                "shrink-0 text-white/70 transition-transform",
-                open ? "h-5 w-5 rotate-180" : "h-5 w-5",
+                "shrink-0 text-amber-700/80 transition-transform",
+                open ? "h-4 w-4 rotate-180" : "h-4 w-4",
               )}
             />
           </div>
         </CollapsibleTrigger>
-        <CollapsibleContent className="flex min-h-0 flex-1 flex-col border-t border-white/15 bg-[#0a1628] px-3 pb-3 pt-2 text-white">
-          <p className="shrink-0 rounded-md border border-white/20 bg-white/10 px-2 py-1 text-[10px] leading-snug">
+        <CollapsibleContent className="flex min-h-0 flex-1 flex-col border-t border-amber-200/80 bg-white px-2.5 pb-2.5 pt-2 text-zinc-900">
+          <p className="shrink-0 text-[10px] leading-snug text-zinc-600">
             Hors allergènes UE-14 — alternative sans porc / végétarienne.
           </p>
-          <ul className="mt-2 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[26rem]">
+          <ul className="mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto sm:max-h-[18rem]">
             {list}
           </ul>
         </CollapsibleContent>

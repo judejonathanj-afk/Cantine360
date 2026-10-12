@@ -124,24 +124,24 @@ export default async function ServicePage({
         </ol>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[7fr_3fr]">
-        {allergenSummary && allergenSummary.totalDietAffected > 0 ? (
-          <div className="flex flex-col gap-2 rounded-3xl border-2 border-zinc-900 p-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-start">
+        {allergenSummary ? (
+          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:min-w-[min(100%,18rem)] sm:max-w-md">
             <ServiceDietBanner summary={allergenSummary} />
-            <ServiceDietStudentsPanel
-              groups={allergenSummary.groups}
-              hasMenu={allergenSummary.hasMenu}
-              groupLevelById={groupLevelById}
-            />
+            {allergenSummary.totalDietAffected > 0 ? (
+              <ServiceDietStudentsPanel
+                groups={allergenSummary.groups}
+                hasMenu={allergenSummary.hasMenu}
+                groupLevelById={groupLevelById}
+              />
+            ) : null}
           </div>
-        ) : allergenSummary ? (
-          <ServiceDietBanner summary={allergenSummary} />
         ) : null}
         <ServiceGrammagePanel
           serviceId={serviceId}
           menuItems={menuItems}
           metrics={metricsGrammage}
-          className="h-auto self-start"
+          className="h-auto w-full sm:w-auto sm:min-w-[min(100%,16rem)] sm:max-w-xs"
         />
       </div>
 

@@ -16,9 +16,10 @@ export function ServiceDietBanner({
 
   return (
     <ServiceInsightCard
-      tone="black"
+      tone="soft"
+      dense
       icon={Salad}
-      title="Régimes — menu du jour"
+      title="Régimes (menu)"
       subtitle={
         !summary.hasMenu
           ? "Menu non renseigné"
@@ -27,16 +28,11 @@ export function ServiceDietBanner({
             : "Aucun plat conflictuel aujourd’hui"
       }
       metric={
-        <>
-          {summary.totalNoPork}
-          <span className="ml-1 text-lg font-semibold">sans porc</span>
-          <span className="mx-1.5 text-white/70">·</span>
-          {summary.totalVegetarian}
-          <span className="ml-1 text-lg font-semibold">végétarien{summary.totalVegetarian > 1 ? "s" : ""}</span>
-        </>
+        <span className="text-base font-semibold">
+          {summary.totalNoPork} sans porc · {summary.totalVegetarian} végét.
+        </span>
       }
       className={cn(className)}
-      compact
     >
       {!summary.hasMenu ? (
         <p>Complétez le menu (cochez porc / viande sur les plats) pour voir les adaptations.</p>

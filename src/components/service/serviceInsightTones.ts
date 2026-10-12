@@ -1,4 +1,11 @@
-export type ServiceInsightTone = "emerald" | "amber" | "sky" | "violet" | "slate" | "black";
+export type ServiceInsightTone =
+  | "emerald"
+  | "amber"
+  | "sky"
+  | "violet"
+  | "slate"
+  | "black"
+  | "soft";
 
 export const SERVICE_INSIGHT_TONES: Record<
   ServiceInsightTone,
@@ -86,5 +93,17 @@ export const SERVICE_INSIGHT_TONES: Record<
     hover: "hover:bg-white/5",
     chevron: "text-white/70",
     nested: "bg-white/10 text-white ring-1 ring-white/15",
+  },
+  soft: {
+    shell: "border-zinc-200 bg-white shadow-sm",
+    icon: "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200/80",
+    text: "text-zinc-900",
+    title: "text-zinc-800",
+    muted: "text-zinc-600",
+    expand: "bg-zinc-50",
+    expandBorder: "border-zinc-200",
+    hover: "hover:bg-zinc-50",
+    chevron: "text-zinc-500",
+    nested: "bg-zinc-50 text-zinc-900 ring-1 ring-zinc-200",
   },
 };

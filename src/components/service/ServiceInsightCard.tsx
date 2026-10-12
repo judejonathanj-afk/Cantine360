@@ -16,6 +16,8 @@ type Props = {
   children?: React.ReactNode;
   className?: string;
   compact?: boolean;
+  /** Bandeau cuisine : peu haut, texte réduit */
+  dense?: boolean;
   centeredHeader?: boolean;
 };
 
@@ -28,16 +30,23 @@ export function ServiceInsightCard({
   children,
   className,
   compact = false,
+  dense = false,
   centeredHeader = false,
 }: Props) {
   const t = SERVICE_INSIGHT_TONES[tone];
+  const isDense = dense || (compact && tone === "soft");
 
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-2xl border p-4 shadow-md",
-        compact ? "min-h-[10.5rem]" : "min-h-0",
-        centeredHeader && "p-5 sm:p-6",
+        "flex h-full flex-col border",
+        isDense
+          ? "min-h-0 rounded-xl p-3 shadow-sm"
+          : cn(
+              "rounded-2xl p-4 shadow-md",
+              compact ? "min-h-[10.5rem]" : "min-h-0",
+              centeredHeader && "p-5 sm:p-6",
+            ),
         t.shell,
         className,
       )}
@@ -64,19 +73,36 @@ export function ServiceInsightCard({
           ) : null}
         </div>
       ) : (
-        <div className="flex items-start gap-3">
+        <div className={cn("flex items-start gap-2.5", isDense && "items-center")}>
           <span
             className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+              "flex shrink-0 items-center justify-center rounded-lg",
+              isDense ? "h-8 w-8" : "h-10 w-10 rounded-xl",
               t.icon,
             )}
           >
-            <Icon className="h-5 w-5" aria-hidden />
+            <Icon className={cn(isDense ? "h-4 w-4" : "h-5 w-5")} aria-hidden />
           </span>
           <div className={cn("min-w-0 flex-1", t.text)}>
-            <h2 className={cn("text-base font-semibold leading-snug", t.title)}>{title}</h2>
+            <h2
+              className={cn(
+                "font-semibold leading-snug",
+                isDense ? "text-sm" : "text-base",
+                t.title,
+              )}
+            >
+              {title}
+            </h2>
             {subtitle ? (
-              <p className={cn("mt-1 text-sm leading-relaxed", t.muted)}>{subtitle}</p>
+              <p
+                className={cn(
+                  "leading-snug",
+                  isDense ? "mt-0.5 text-xs" : "mt-1 text-sm leading-relaxed",
+                  t.muted,
+                )}
+              >
+                {subtitle}
+              </p>
             ) : null}
           </div>
         </div>
@@ -85,7 +111,8 @@ export function ServiceInsightCard({
       {metric ? (
         <div
           className={cn(
-            "mt-3 text-3xl font-bold tracking-tight",
+            "font-bold tracking-tight",
+            isDense ? "mt-1.5 text-lg" : "mt-3 text-3xl",
             centeredHeader && "text-center",
             t.text,
           )}
@@ -97,7 +124,8 @@ export function ServiceInsightCard({
       {children ? (
         <div
           className={cn(
-            "mt-3 flex-1 text-base leading-relaxed",
+            "flex-1 leading-snug",
+            isDense ? "mt-1.5 text-xs" : "mt-3 text-base leading-relaxed",
             centeredHeader && "text-center",
             t.muted,
           )}
