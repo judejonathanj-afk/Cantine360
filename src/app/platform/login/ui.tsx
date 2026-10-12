@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { PlatformBrand } from "@/components/platform/PlatformBrand";
 import { usePlatformPalette } from "@/components/platform/PlatformPaletteProvider";
 
 export function PlatformLoginClient() {
   const { style } = usePlatformPalette();
   const [pin, setPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -63,15 +64,25 @@ export function PlatformLoginClient() {
         </p>
         <form onSubmit={onSubmit}>
           <label htmlFor="platform-pin">Code plateforme</label>
-          <input
-            id="platform-pin"
-            type="password"
-            placeholder="••••••"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            inputMode="numeric"
-            autoComplete="off"
-          />
+          <div className="input-with-toggle">
+            <input
+              id="platform-pin"
+              type={showPin ? "text" : "password"}
+              placeholder="••••••"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              inputMode="numeric"
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              className="input-toggle-btn"
+              onClick={() => setShowPin((v) => !v)}
+              aria-label={showPin ? "Masquer le code plateforme" : "Afficher le code plateforme"}
+            >
+              {showPin ? <EyeOff size={20} aria-hidden /> : <Eye size={20} aria-hidden />}
+            </button>
+          </div>
           {error ? <p className="form-error">{error}</p> : null}
           <button
             type="submit"

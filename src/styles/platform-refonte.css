@@ -131,3 +131,27 @@ input:focus { border-color: var(--brand, #009b55); box-shadow: 0 0 0 3px color-m
   text-decoration: none;
   color: inherit;
 }
+.platform-ui .input-with-toggle {
+  position: relative;
+}
+.platform-ui .input-with-toggle input {
+  padding-right: 52px;
+}
+.platform-ui .input-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+}
+.platform-ui .input-toggle-btn:hover {
+  background: #edf5ef;
+  color: var(--foreground);
+}
