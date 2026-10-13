@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Check, RefreshCw } from "lucide-react";
+import { ArrowLeft, Check, RefreshCw, Trash2 } from "lucide-react";
 import {
   randomDistinctEstablishmentPins,
   randomEstablishmentPin,
@@ -40,6 +41,10 @@ export function PlatformEstablishmentEditClient({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedCodes | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [deleteConfirmSlug, setDeleteConfirmSlug] = useState("");
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const router = useRouter();
 
   const load = useCallback(async () => {
     setError(null);
@@ -156,6 +161,28 @@ export function PlatformEstablishmentEditClient({
     setKitchenPin(pins.kitchenPin);
   }
 
+  async function onDeleteEstablishment() {
+    if (!detail) return;
+    setDeleteBusy(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`/api/platform/establishments/${establishmentId}`, {
+        method: "DELETE",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ confirmSlug: deleteConfirmSlug.trim() }),
+      });
+      const data = (await res.json().catch(() => null)) as { error?: string } | null;
+      if (!res.ok) {
+        setDeleteError(data?.error ?? "Suppression impossible.");
+        return;
+      }
+      router.push("/platform/establishments");
+      router.refresh();
+    } finally {
+      setDeleteBusy(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="detail-content">
@@ -174,6 +201,9 @@ export function PlatformEstablishmentEditClient({
       </div>
     );
   }
+
+  const deleteSlugOk =
+    deleteConfirmSlug.trim().toLowerCase() === detail.slug.toLowerCase();
 
   return (
     <div className="detail-content">
@@ -284,6 +314,35 @@ export function PlatformEstablishmentEditClient({
             {busy ? "Enregistrement…" : "Enregistrer les modifications"}
           </button>
         </form>
+      </section>
+
+      <section className="panel danger-panel">
+        <h2>Supprimer l’établissement</h2>
+        <p>
+          Action <strong>irréversible</strong> : groupes, élèves, menus, services et pesées
+          seront effacés. Les codes admin et cuisine ne fonctionneront plus.
+        </p>
+        <label htmlFor="delete-confirm-slug">
+          Tapez le code établissement <code>{detail.slug}</code> pour confirmer
+        </label>
+        <input
+          id="delete-confirm-slug"
+          value={deleteConfirmSlug}
+          onChange={(e) => setDeleteConfirmSlug(e.target.value)}
+          className="lowercase"
+          autoComplete="off"
+          placeholder={detail.slug}
+        />
+        {deleteError ? <p className="form-error">{deleteError}</p> : null}
+        <button
+          type="button"
+          className="danger-button"
+          disabled={deleteBusy || !deleteSlugOk}
+          onClick={() => void onDeleteEstablishment()}
+        >
+          <Trash2 size={17} aria-hidden />{" "}
+          {deleteBusy ? "Suppression…" : "Supprimer définitivement"}
+        </button>
       </section>
 
       {saved ? (

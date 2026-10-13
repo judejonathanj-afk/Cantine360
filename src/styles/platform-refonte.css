@@ -97,6 +97,39 @@ input:focus { border-color: var(--brand, #009b55); box-shadow: 0 0 0 3px color-m
   color: #065f46;
   font-size: 15px;
 }
+.platform-ui .danger-panel {
+  margin-top: 32px;
+  border-color: #fecaca;
+  background: #fffbfb;
+}
+.platform-ui .danger-panel h2 {
+  color: #991b1b;
+}
+.platform-ui .danger-panel > p {
+  color: #7f1d1d;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.platform-ui .danger-button {
+  margin-top: 20px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 13px;
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  font-weight: 700;
+  background: #dc2626;
+  color: white;
+  transition: 0.2s ease;
+}
+.platform-ui .danger-button:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+.platform-ui .danger-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .platform-ui .topbar-wrap {
   position: relative;
 }

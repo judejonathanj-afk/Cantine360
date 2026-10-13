@@ -28,6 +28,10 @@ const PatchSchema = z
     { message: "Aucune modification." },
   );
 
+const DeleteSchema = z.object({
+  confirmSlug: z.string().trim().min(1).max(64),
+});
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ establishmentId: string }> },
@@ -202,6 +206,57 @@ export async function PATCH(
     return NextResponse.json(
       { error: "Ce code établissement est déjà utilisé par un autre site." },
       { status: 409 },
+    );
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ establishmentId: string }> },
+) {
+  const session = await getPlatformSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { establishmentId } = await params;
+  const existing = await db.establishment.findUnique({
+    where: { id: establishmentId },
+    select: { id: true, name: true, slug: true },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Établissement introuvable." }, { status: 404 });
+  }
+
+  const json = await req.json().catch(() => null);
+  const parsed = DeleteSchema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Confirmez en indiquant le code établissement." },
+      { status: 400 },
+    );
+  }
+
+  const confirm = resolveEstablishmentSlug(existing.name, parsed.data.confirmSlug);
+  if ("error" in confirm) {
+    return NextResponse.json({ error: confirm.error }, { status: 400 });
+  }
+  if (confirm.slug !== existing.slug) {
+    return NextResponse.json(
+      {
+        error: `Le code saisi ne correspond pas. Attendu : « ${existing.slug} ».`,
+      },
+      { status: 400 },
+    );
+  }
+
+  try {
+    await db.establishment.delete({ where: { id: establishmentId } });
+    return NextResponse.json({ deleted: true, slug: existing.slug });
+  } catch {
+    return NextResponse.json(
+      { error: "Suppression impossible — réessayez ou contactez le support." },
+      { status: 500 },
     );
   }
 }
