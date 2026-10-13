@@ -382,7 +382,7 @@ export function MenuEditor({
           disabled={busy}
           className="shrink-0 rounded-xl border border-emerald-700 bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-50 sm:min-w-[11rem]"
         >
-          {busy ? "Sauvegarde..." : "Sauvegarder"}
+          {busy ? "Enregistrement…" : "Enregistrer"}
         </button>
       </div>
     </div>
