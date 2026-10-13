@@ -13,7 +13,7 @@ export function AntiWasteEndOfServiceBilan({
 
   return (
     <div
-      className="w-full max-w-xl rounded-2xl border border-emerald-300 bg-emerald-50/90 px-4 py-3 text-left shadow-sm"
+      className="mx-auto w-full max-w-xl rounded-2xl border border-emerald-300 bg-emerald-50/90 px-4 py-3 text-left shadow-sm"
       role="status"
     >
       <div className="flex items-center gap-2">
