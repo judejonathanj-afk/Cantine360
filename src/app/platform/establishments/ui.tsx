@@ -46,11 +46,12 @@ export function PlatformEstablishmentsClient() {
     ): EstablishmentRow[] => {
       if (!res.ok) {
         setList([]);
+        const apiError = data?.error?.trim();
         setListError(
-          data?.error ??
-            (res.status === 401
-              ? "Session plateforme expirée — reconnectez-vous sur /platform/login."
-              : "Impossible de charger la liste (vérifiez DATABASE_URL sur Vercel)."),
+          res.status === 401 || apiError === "Unauthorized"
+            ? "Session plateforme expirée — reconnectez-vous sur /platform/login."
+            : (apiError ??
+                "Impossible de charger la liste (vérifiez DATABASE_URL sur Vercel)."),
         );
         return [];
       }

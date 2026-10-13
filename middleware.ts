@@ -90,11 +90,15 @@ async function readPlatformSessionKind(req: NextRequest): Promise<SessionKind> {
   return kind === "platform" ? "platform" : null;
 }
 
+function isPlatformScopePath(pathname: string): boolean {
+  return pathname.startsWith("/platform") || pathname.startsWith("/api/platform");
+}
+
 async function readSessionKind(req: NextRequest): Promise<SessionKind> {
   const { pathname } = req.nextUrl;
 
-  // Routes plateforme : jeton Omnerys uniquement (ne pas confondre avec cantine).
-  if (pathname.startsWith("/platform")) {
+  // Plateforme Omnerys (pages + API) : jeton dédié, indépendant de la cantine.
+  if (isPlatformScopePath(pathname)) {
     return readPlatformSessionKind(req);
   }
 
