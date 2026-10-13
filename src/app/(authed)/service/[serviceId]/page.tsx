@@ -138,12 +138,18 @@ export default async function ServicePage({
             ) : null}
           </div>
         ) : null}
-        <div className="flex min-w-0 w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-start">
+        <div
+          className={
+            antiWaste.antiWasteModeEnabled && kitchenAdvice
+              ? "grid min-w-0 w-full grid-cols-1 items-start gap-2 sm:w-auto sm:grid-cols-2"
+              : "min-w-0 w-full sm:w-auto"
+          }
+        >
           <ServiceGrammagePanel
             serviceId={serviceId}
             menuItems={menuItems}
             metrics={metricsGrammage}
-            className="h-auto w-full sm:min-w-[min(100%,16rem)] sm:max-w-xs"
+            className="h-auto w-full min-w-0 sm:max-w-xs"
           />
           {antiWaste.antiWasteModeEnabled && kitchenAdvice ? (
             <ServiceAntiWasteInsightPanel
@@ -160,7 +166,7 @@ export default async function ServicePage({
               initialWasteWeightG={service.wasteWeightG}
               initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
               initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
-              className="h-auto w-full sm:min-w-[min(100%,18rem)] sm:max-w-sm"
+              className="h-auto w-full min-w-0 sm:max-w-sm"
             />
           ) : null}
         </div>
