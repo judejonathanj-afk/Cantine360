@@ -239,9 +239,9 @@ export function GroupMetricsEditor({
       {allergenStudents ? (
         <section className="space-y-4">
           <div className="border-t border-zinc-300 pt-6" role="separator" aria-hidden />
-          <h2 className="flex items-center justify-center gap-2.5 text-2xl font-semibold text-zinc-900 sm:text-3xl">
+          <h2 className="flex items-center justify-center gap-2 text-lg font-semibold text-zinc-900 sm:text-xl">
             <AlertTriangle
-              className="h-7 w-7 shrink-0 text-yellow-500 sm:h-8 sm:w-8"
+              className="h-5 w-5 shrink-0 text-yellow-500 sm:h-6 sm:w-6"
               aria-hidden
             />
             Élèves concernés par le menu
