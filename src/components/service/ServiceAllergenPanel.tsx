@@ -84,44 +84,57 @@ export function GroupAllergenBadge({
   }
 
   return (
-    <div className="mt-3 space-y-1.5">
+    <div className="mt-3 space-y-2">
       {studentsWithAllergens > 0 ? (
-        <div className="flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2.5 text-sm font-semibold text-zinc-800 shadow-sm sm:text-base">
+        <div className="flex items-start gap-2.5 rounded-xl border-2 border-amber-500 bg-amber-50 px-3 py-2.5 shadow-sm ring-1 ring-amber-600/25 sm:py-3">
           <AlertTriangle
-            className="h-5 w-5 shrink-0 text-yellow-500"
+            className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"
             aria-hidden
           />
-          <span>
-            <span>
+          <p className="text-sm leading-snug sm:text-base">
+            <span className="font-extrabold text-amber-950">
               {studentsWithAllergens} allergie{studentsWithAllergens > 1 ? "s" : ""}
             </span>
             {hasMenu ? (
-              <span className="font-medium text-zinc-600">
-                {" "}
-                ·{" "}
-                <span className={affectedByMenu > 0 ? "font-bold text-amber-900" : ""}>
+              <>
+                <span className="font-bold text-amber-900/80"> · </span>
+                <span
+                  className={
+                    affectedByMenu > 0
+                      ? "font-extrabold text-rose-800 underline decoration-rose-400/80 decoration-2 underline-offset-2"
+                      : "font-bold text-amber-900"
+                  }
+                >
                   {affectedByMenu} concerné{affectedByMenu > 1 ? "s" : ""} menu
                 </span>
-              </span>
+              </>
             ) : null}
-          </span>
+          </p>
         </div>
       ) : null}
       {studentsNoPork > 0 || studentsVegetarian > 0 ? (
-        <div className="flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm">
-          <span>
-            {studentsNoPork > 0 ? `${studentsNoPork} sans porc` : null}
-            {studentsNoPork > 0 && studentsVegetarian > 0 ? " · " : null}
-            {studentsVegetarian > 0
-              ? `${studentsVegetarian} végétarien${studentsVegetarian > 1 ? "s" : ""}`
-              : null}
-            {hasMenu && dietAffectedByMenu > 0 ? (
-              <span className="font-bold text-sky-900">
-                {" "}
-                · {dietAffectedByMenu} à adapter
+        <div className="rounded-xl border-2 border-zinc-900 bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-900/10 sm:py-3">
+          <p className="text-sm font-extrabold leading-snug text-zinc-900 sm:text-base">
+            {studentsNoPork > 0 ? (
+              <span className="text-zinc-950">{studentsNoPork} sans porc</span>
+            ) : null}
+            {studentsNoPork > 0 && studentsVegetarian > 0 ? (
+              <span className="font-bold text-zinc-500"> · </span>
+            ) : null}
+            {studentsVegetarian > 0 ? (
+              <span className="text-zinc-950">
+                {studentsVegetarian} végétarien{studentsVegetarian > 1 ? "s" : ""}
               </span>
             ) : null}
-          </span>
+            {hasMenu && dietAffectedByMenu > 0 ? (
+              <>
+                <span className="font-bold text-zinc-500"> · </span>
+                <span className="text-rose-800 underline decoration-rose-500/70 decoration-2 underline-offset-2">
+                  {dietAffectedByMenu} à adapter
+                </span>
+              </>
+            ) : null}
+          </p>
         </div>
       ) : null}
     </div>
