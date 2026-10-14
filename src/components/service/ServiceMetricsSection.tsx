@@ -95,7 +95,7 @@ export function ServiceMetricsSection({
           />
         </div>
       )}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <ServiceSchoolFilter
           cards={liveCards}
           value={schoolFilter}
@@ -105,11 +105,13 @@ export function ServiceMetricsSection({
             if (school === "all") setLevelFilter("all");
           }}
         />
-        <ServiceLevelFilter
-          cards={liveCards}
-          value={levelFilter}
-          onChange={setLevelFilter}
-        />
+        <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end">
+          <ServiceLevelFilter
+            cards={liveCards}
+            value={levelFilter}
+            onChange={setLevelFilter}
+          />
+        </div>
       </div>
       <ServiceClassGrid serviceId={serviceId} cards={filtered} hasMenu={hasMenu} />
     </div>
