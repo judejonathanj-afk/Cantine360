@@ -399,7 +399,7 @@ export default function DashboardPanels({
           title="Flux du repas"
           hint="Présents → servis → RAB / refus, jour par jour."
         />
-        <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
+        <div className="grid grid-cols-1 gap-5">
           {chartLevels.map((level) => (
             <DashboardInsightCard
               key={`meal-flow-${level}`}
