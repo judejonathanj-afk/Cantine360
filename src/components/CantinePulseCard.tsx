@@ -343,21 +343,47 @@ type StatProps = {
   tileClass: string;
 };
 
-function StatTile({ icon, label, value, hint, tileClass }: StatProps) {
+function StatTile({
+  icon,
+  label,
+  value,
+  hint,
+  tileClass,
+  inDarkPanel = false,
+}: StatProps & { inDarkPanel?: boolean }) {
   return (
     <div
       className={cn(
         "flex flex-col gap-1 rounded-2xl border px-3 py-3 shadow-sm transition-colors sm:min-h-[5.25rem]",
-        tileClass,
+        inDarkPanel ? "border-zinc-700 bg-zinc-900" : tileClass,
       )}
     >
-      <div className="flex items-center gap-1.5 text-zinc-600">
-        <span className="text-emerald-600 [&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
+      <div
+        className={cn(
+          "flex items-center gap-1.5",
+          inDarkPanel ? "text-zinc-400" : "text-zinc-600",
+        )}
+      >
+        <span className="text-emerald-500 [&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
         <dt className="text-sm font-semibold">{label}</dt>
       </div>
-      <dd className="text-xl font-bold tabular-nums tracking-tight text-zinc-900">{value}</dd>
+      <dd
+        className={cn(
+          "text-xl font-bold tabular-nums tracking-tight",
+          inDarkPanel ? "text-white" : "text-zinc-900",
+        )}
+      >
+        {value}
+      </dd>
       {hint ? (
-        <p className="text-xs leading-snug text-zinc-500">{hint}</p>
+        <p
+          className={cn(
+            "text-xs leading-snug",
+            inDarkPanel ? "text-zinc-500" : "text-zinc-500",
+          )}
+        >
+          {hint}
+        </p>
       ) : null}
     </div>
   );
@@ -536,8 +562,8 @@ export function CantinePulseCard({
           </p>
         ) : null}
 
-        <div>
-          <p className="mb-3 text-sm font-semibold text-zinc-900">Les chiffres</p>
+        <div className="rounded-2xl bg-zinc-950 px-4 py-4 sm:px-5 sm:py-5">
+          <p className="mb-3 text-sm font-semibold text-white">Les chiffres</p>
           <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
             <StatTile
               icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
@@ -545,6 +571,7 @@ export function CantinePulseCard({
               value={String(curr.served)}
               hint={periodLabel}
               tileClass={STAT_TILE}
+              inDarkPanel
             />
             <StatTile
               icon={<Activity className="h-3.5 w-3.5" />}
@@ -556,6 +583,7 @@ export function CantinePulseCard({
                   : periodLabel
               }
               tileClass={STAT_TILE}
+              inDarkPanel
             />
             <StatTile
               icon={<Trash2 className="h-3.5 w-3.5" />}
@@ -573,6 +601,7 @@ export function CantinePulseCard({
                     : "saisir en fin de service"
               }
               tileClass={STAT_TILE}
+              inDarkPanel
             />
             <StatTile
               icon={<Percent className="h-3.5 w-3.5" />}
@@ -584,6 +613,7 @@ export function CantinePulseCard({
                   : "pas encore de déchets"
               }
               tileClass={STAT_TILE}
+              inDarkPanel
             />
             <StatTile
               icon={<Activity className="h-3.5 w-3.5" />}
@@ -591,53 +621,49 @@ export function CantinePulseCard({
               value={evolLabel}
               hint={evolHint}
               tileClass={STAT_TILE}
+              inDarkPanel
             />
           </dl>
-        </div>
 
-        <div
-          className={cn(
-            "rounded-2xl border px-4 py-3.5",
-            pulse.headline === "Plus de déchets qu’avant."
-              ? "border-[#1c3f78] bg-[#102848]"
-              : cn(
-                  pulse.mood === "attention" && "border-rose-200 bg-rose-50",
-                  pulse.mood === "great" && "border-emerald-200 bg-emerald-50",
-                  pulse.mood === "ok" && "border-amber-200 bg-amber-50",
-                  pulse.mood === "pending" && "border-zinc-200 bg-zinc-50",
-                ),
-          )}
-        >
-          <p
+          <div
             className={cn(
-              "text-lg font-bold leading-snug sm:text-xl",
+              "mt-4 rounded-xl border px-4 py-3.5",
               pulse.headline === "Plus de déchets qu’avant."
-                ? "text-[#ffe14a]"
-                : cn(
-                    pulse.mood === "attention" && "text-rose-800",
-                    pulse.mood === "great" && "text-emerald-800",
-                    pulse.mood === "ok" && "text-amber-900",
-                    pulse.mood === "pending" && "text-zinc-900",
-                  ),
+                ? "border-[#1c3f78] bg-[#102848]"
+                : "border-zinc-700 bg-zinc-900",
             )}
           >
-            {pulse.headline}
-          </p>
-          <p
-            className={cn(
-              "mt-1.5 text-base font-medium leading-relaxed",
-              pulse.headline === "Plus de déchets qu’avant."
-                ? "text-[#ffe14a]"
-                : cn(
-                    pulse.mood === "attention" && "text-rose-700",
-                    pulse.mood === "great" && "text-emerald-700",
-                    pulse.mood === "ok" && "text-amber-800",
-                    pulse.mood === "pending" && "text-zinc-700",
-                  ),
-            )}
-          >
-            {pulse.subline}
-          </p>
+            <p
+              className={cn(
+                "text-lg font-bold leading-snug sm:text-xl",
+                pulse.headline === "Plus de déchets qu’avant."
+                  ? "text-[#ffe14a]"
+                  : cn(
+                      pulse.mood === "attention" && "text-rose-300",
+                      pulse.mood === "great" && "text-emerald-300",
+                      pulse.mood === "ok" && "text-amber-200",
+                      pulse.mood === "pending" && "text-zinc-100",
+                    ),
+              )}
+            >
+              {pulse.headline}
+            </p>
+            <p
+              className={cn(
+                "mt-1.5 text-base font-medium leading-relaxed",
+                pulse.headline === "Plus de déchets qu’avant."
+                  ? "text-[#ffe14a]/90"
+                  : cn(
+                      pulse.mood === "attention" && "text-rose-200/90",
+                      pulse.mood === "great" && "text-emerald-200/90",
+                      pulse.mood === "ok" && "text-amber-100/90",
+                      pulse.mood === "pending" && "text-zinc-400",
+                    ),
+              )}
+            >
+              {pulse.subline}
+            </p>
+          </div>
         </div>
 
         {showEco ? (
