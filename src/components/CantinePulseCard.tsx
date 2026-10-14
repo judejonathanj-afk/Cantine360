@@ -9,7 +9,14 @@ import {
   Trash2,
   UtensilsCrossed,
 } from "lucide-react";
-import { computeCantinePulse, buildCantinePulseDailySeries, type CantinePulseWindowDays, type CantineServiceRow, type CantineWasteDayRow } from "@/lib/cantinePulse";
+import {
+  buildCantinePulseDailySeries,
+  buildCantinePulseSituationConclusion,
+  computeCantinePulse,
+  type CantinePulseWindowDays,
+  type CantineServiceRow,
+  type CantineWasteDayRow,
+} from "@/lib/cantinePulse";
 import { mealTypeLabelFr } from "@/lib/mealType";
 import {
   leftoversReductionVsPriorPct,
@@ -412,6 +419,8 @@ export function CantinePulseCard({
   eco = null,
   showBrandTitle = true,
   levelFilter = "all",
+  antiWasteModeEnabled = false,
+  antiWasteTargetGPer100 = null,
 }: {
   rows: CantineServiceRow[];
   wasteRows?: CantineWasteDayRow[];
@@ -421,6 +430,8 @@ export function CantinePulseCard({
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
   levelFilter?: "all" | SchoolLevel;
+  antiWasteModeEnabled?: boolean;
+  antiWasteTargetGPer100?: number | null;
 }) {
   const [ecoPanelOpen, setEcoPanelOpen] = useState(false);
   const periodLabel = days === 30 ? "30 jours" : "7 jours";
@@ -431,6 +442,15 @@ export function CantinePulseCard({
   const pulse = useMemo(
     () => computeCantinePulse(rows, mealType, { windowDays: days, wasteRows }),
     [rows, wasteRows, mealType, days],
+  );
+  const situationConclusion = useMemo(
+    () =>
+      buildCantinePulseSituationConclusion(pulse, {
+        windowDays: days,
+        antiWasteModeEnabled,
+        antiWasteTargetGPer100,
+      }),
+    [pulse, days, antiWasteModeEnabled, antiWasteTargetGPer100],
   );
   const s = MOOD_STYLES[pulse.mood];
   const wrCurr = pulse.meta.curr.wasteGramsPer100Served.toFixed(1);
@@ -663,6 +683,20 @@ export function CantinePulseCard({
             >
               {pulse.subline}
             </p>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-zinc-600/80 bg-zinc-950/80 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+              Conclusion
+            </p>
+            <p className="mt-1.5 text-sm font-medium leading-relaxed text-zinc-200">
+              {situationConclusion.situation}
+            </p>
+            {situationConclusion.antiWaste ? (
+              <p className="mt-2 border-t border-zinc-700/80 pt-2 text-sm leading-relaxed text-emerald-200/95">
+                {situationConclusion.antiWaste}
+              </p>
+            ) : null}
           </div>
         </div>
 

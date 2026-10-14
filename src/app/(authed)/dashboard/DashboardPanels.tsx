@@ -154,6 +154,8 @@ export default function DashboardPanels({
   mealFlowByLevel,
   wasteByLevel,
   levelComparisonTotals,
+  antiWasteModeEnabled = false,
+  antiWasteTargetGPer100 = null,
 }: {
   days: 7 | 30;
   schoolNames: string[];
@@ -186,6 +188,8 @@ export default function DashboardPanels({
   >;
   wasteByLevel: Record<SchoolLevel, WastePerDayRowInput[]>;
   levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
+  antiWasteModeEnabled?: boolean;
+  antiWasteTargetGPer100?: number | null;
 }) {
   const isKitchen = role === "KITCHEN";
   const chartLevels =
@@ -391,6 +395,8 @@ export default function DashboardPanels({
               }
             : null
         }
+        antiWasteModeEnabled={antiWasteModeEnabled}
+        antiWasteTargetGPer100={antiWasteTargetGPer100}
       />
 
       <section>

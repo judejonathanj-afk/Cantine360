@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { computeCantinePulse, type CantineServiceRow } from "@/lib/cantinePulse";
+import {
+  buildCantinePulseSituationConclusion,
+  computeCantinePulse,
+  type CantineServiceRow,
+} from "@/lib/cantinePulse";
 
 const NOW = new Date("2026-06-18T12:00:00");
 
@@ -133,5 +137,25 @@ describe("computeCantinePulse", () => {
     );
     expect(pulse.score).toBeNull();
     expect(pulse.meta.curr.served).toBe(0);
+  });
+});
+
+describe("buildCantinePulseSituationConclusion", () => {
+  it("inclut un paragraphe Antigaspillage quand le mode est activé", () => {
+    const pulse = computeCantinePulse(
+      [row("2026-06-18", { servedCount: 100, rabCount: 5 })],
+      "LUNCH",
+      {
+        now: NOW,
+        wasteRows: [{ date: "2026-06-18", mealType: "LUNCH", wasteWeightG: 2000 }],
+      },
+    );
+    const c = buildCantinePulseSituationConclusion(pulse, {
+      windowDays: 7,
+      antiWasteModeEnabled: true,
+      antiWasteTargetGPer100: 80,
+    });
+    expect(c.situation).toMatch(/note Cantine\+/);
+    expect(c.antiWaste).toMatch(/Antigaspillage/);
   });
 });

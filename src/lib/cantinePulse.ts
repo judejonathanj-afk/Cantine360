@@ -1,3 +1,4 @@
+import { antiWasteStatus } from "@/lib/antiWasteStatus";
 import { formatServiceDateKey } from "@/lib/serviceDate";
 
 export type CantineMood = "great" | "ok" | "attention" | "pending";
@@ -471,4 +472,108 @@ export function buildCantinePulseDailySeries(
   }
 
   return points;
+}
+
+const PULSE_MOOD_LABEL: Record<CantineMood, string> = {
+  great: "situation favorable",
+  ok: "à suivre",
+  attention: "à améliorer",
+  pending: "données incomplètes",
+};
+
+export type CantinePulseSituationConclusion = {
+  situation: string;
+  antiWaste: string | null;
+};
+
+/** Texte de synthèse pour le bloc « Les chiffres » (Cantine+). */
+export function buildCantinePulseSituationConclusion(
+  pulse: CantinePulseResult,
+  opts: {
+    windowDays: CantinePulseWindowDays;
+    antiWasteModeEnabled?: boolean;
+    antiWasteTargetGPer100?: number | null;
+  },
+): CantinePulseSituationConclusion {
+  const { curr, prev, deltas, weeksWithServed } = pulse.meta;
+  const period =
+    opts.windowDays === 30 ? "les 30 derniers jours" : "les 7 derniers jours";
+  const prior =
+    opts.windowDays === 30 ? "la période précédente" : "la semaine précédente";
+
+  if (pulse.mood === "pending" || !weeksWithServed.current) {
+    return {
+      situation:
+        "Données insuffisantes sur la période : renseignez présents, portions servies et poids des déchets en fin de service pour obtenir une conclusion fiable.",
+      antiWaste: opts.antiWasteModeEnabled
+        ? "Le mode Antigaspillage est activé ; il pourra comparer vos pesées à l’objectif dès que les services seront complets."
+        : null,
+    };
+  }
+
+  const sentences: string[] = [];
+
+  if (pulse.score != null) {
+    sentences.push(
+      `Sur ${period}, la note Cantine+ est de ${pulse.score}/100 (${PULSE_MOOD_LABEL[pulse.mood]}).`,
+    );
+  }
+
+  const served = Math.round(curr.served);
+  if (served > 0) {
+    let line = `${served} assiette${served > 1 ? "s" : ""} servie${served > 1 ? "s" : ""}`;
+    if (curr.rab > 0) {
+      line += `, dont ${curr.rab} RAB (${(curr.rabRate * 100).toFixed(1)} % des servis)`;
+    }
+    line += ".";
+    sentences.push(line);
+  }
+
+  if (curr.wasteWeightG > 0 && curr.served > 0) {
+    sentences.push(
+      `Le gaspillage représente ${curr.wasteGramsPer100Served.toFixed(1)} g de déchets pour 100 assiettes servies (${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g au total).`,
+    );
+  } else {
+    sentences.push(
+      "Le poids des déchets n’est pas renseigné : la lecture repose surtout sur le RAB et les refus.",
+    );
+  }
+
+  if (curr.refused > 0) {
+    sentences.push(
+      `${curr.refused} refus enregistré${curr.refused > 1 ? "s" : ""} sur la période.`,
+    );
+  }
+
+  if (weeksWithServed.previous && (prev.wasteWeightG > 0 || curr.wasteWeightG > 0)) {
+    const d = deltas.wasteGramsPct;
+    if (d <= -8) {
+      sentences.push(
+        `Par rapport à ${prior}, le niveau de déchets recule d’environ ${Math.round(Math.abs(d))} % — poursuivez les bonnes pratiques.`,
+      );
+    } else if (d >= 12) {
+      sentences.push(
+        `Par rapport à ${prior}, les déchets augmentent d’environ ${Math.round(d)} % : ajustez portions et service, surtout si le RAB reste élevé.`,
+      );
+    } else {
+      sentences.push(
+        `Par rapport à ${prior}, le niveau de déchets reste globalement comparable.`,
+      );
+    }
+  }
+
+  let antiWaste: string | null = null;
+  if (opts.antiWasteModeEnabled) {
+    const gPer100 =
+      curr.served > 0 && curr.wasteWeightG > 0
+        ? curr.wasteGramsPer100Served
+        : null;
+    const status = antiWasteStatus(gPer100, opts.antiWasteTargetGPer100 ?? null);
+    antiWaste = `Antigaspillage — ${status.title} ${status.hint}`;
+  }
+
+  return {
+    situation: sentences.join(" "),
+    antiWaste,
+  };
 }

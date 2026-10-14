@@ -18,6 +18,7 @@ import {
   ecoRestesParenFr,
 } from "@/lib/ecoObjectivePeriod";
 import { getEstablishmentEcoSettings } from "@/server/establishmentEco";
+import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { getGroupsForAdmin } from "@/server/groupsForAdmin";
 import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
 import { formatGroupLabel } from "@/lib/groupLabel";
@@ -157,13 +158,18 @@ export default async function DashboardPage({
     ecoReductionTargetPct: number | null;
   }> = [];
   let schoolNames: string[] = [];
+  let antiWasteModeEnabled = false;
+  let antiWasteTargetGPer100: number | null = null;
 
   try {
-    const [est, agList, schoolsList] = await Promise.all([
+    const [est, agList, schoolsList, antiWaste] = await Promise.all([
       getEstablishmentEcoSettings(db, session.establishmentId),
       getGroupsForAdmin(db, session.establishmentId, { activeOnly: true }),
       getSchoolsForAdmin(db, session.establishmentId),
+      getEstablishmentAntiWasteSettings(db, session.establishmentId),
     ]);
+    antiWasteModeEnabled = antiWaste.antiWasteModeEnabled;
+    antiWasteTargetGPer100 = antiWaste.antiWasteTargetGPer100;
     establishment = est;
     activeGroupsList = agList;
     schoolNames = schoolsList.filter((s) => s.active).map((s) => s.name);
@@ -575,6 +581,8 @@ export default async function DashboardPage({
       mealFlowByLevel={mealFlowByLevel}
       wasteByLevel={wasteByLevel}
       levelComparisonTotals={levelComparisonTotals}
+      antiWasteModeEnabled={antiWasteModeEnabled}
+      antiWasteTargetGPer100={antiWasteTargetGPer100}
     />
   );
 }
