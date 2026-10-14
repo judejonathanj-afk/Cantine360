@@ -297,15 +297,15 @@ export function ServiceWasteWeightPanel({
       </div>
 
       <div className="space-y-4 px-4 py-4 sm:px-5">
-        <div className="mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl bg-white px-4 py-3 text-zinc-900">
-          <Scale className="h-5 w-5 text-zinc-500" aria-hidden />
+        <div className="mx-auto flex w-full max-w-sm items-center justify-center gap-3 rounded-xl border border-zinc-300/80 bg-white px-4 py-3.5 text-zinc-950 shadow-sm">
+          <Scale className="h-5 w-5 text-zinc-700" aria-hidden />
           <div className="text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+            <p className="text-xs font-bold uppercase tracking-wide text-zinc-700">
               Total
             </p>
-            <p className="text-2xl font-bold leading-none">
+            <p className="text-2xl font-extrabold leading-none text-zinc-950 sm:text-3xl">
               {shownTotal.toLocaleString("fr-FR")} g{" "}
-              <span className="text-base font-medium text-zinc-500">
+              <span className="text-base font-semibold text-zinc-700 sm:text-lg">
                 ({formatKgFromGrams(shownTotal)})
               </span>
             </p>
@@ -320,7 +320,13 @@ export function ServiceWasteWeightPanel({
             const tone = LEVEL_PANEL[level];
             const Icon = tone.icon;
             return (
-              <div key={level} className={cn("rounded-xl px-4 py-4", tone.shell)}>
+              <div
+                key={level}
+                className={cn(
+                  "rounded-xl border border-zinc-900/10 px-4 py-4 shadow-sm",
+                  tone.shell,
+                )}
+              >
                 <div className="mb-3 flex items-center gap-2.5">
                   <span
                     className={cn(
@@ -332,7 +338,7 @@ export function ServiceWasteWeightPanel({
                   </span>
                   <Label
                     htmlFor={`waste-${level}-${serviceId}`}
-                    className="text-base font-bold text-zinc-900"
+                    className="text-base font-extrabold text-zinc-950 sm:text-lg"
                   >
                     {schoolLevelLabelFr(level)} (g)
                   </Label>
@@ -344,9 +350,9 @@ export function ServiceWasteWeightPanel({
                   placeholder="Ex. 4200"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
-                  className="h-11 border-zinc-200 bg-white text-center text-base text-zinc-900 shadow-sm placeholder:text-zinc-400"
+                  className="h-12 border-2 border-zinc-300 bg-white text-center text-lg font-bold text-zinc-950 shadow-sm placeholder:text-zinc-400"
                 />
-                <p className="mt-2 text-center text-xs text-zinc-500">
+                <p className="mt-2 text-center text-sm font-semibold text-zinc-800">
                   {parsed != null && parsed > 0
                     ? `= ${formatKgFromGrams(parsed)}`
                     : "Pesée du bac / zone"}
@@ -356,7 +362,7 @@ export function ServiceWasteWeightPanel({
           })}
         </div>
 
-        <p className="flex items-center justify-center gap-1.5 pb-1 text-center text-sm text-zinc-500">
+        <p className="flex items-center justify-center gap-1.5 pb-1 text-center text-sm font-semibold text-zinc-800">
           {statusMessage}
         </p>
       </div>
@@ -364,7 +370,7 @@ export function ServiceWasteWeightPanel({
 
     <div className="flex flex-col items-center gap-2">
       {savedAck && !dirty ? (
-        <p className="text-center text-sm font-medium text-emerald-700" role="status">
+        <p className="text-center text-base font-bold text-emerald-800" role="status">
           Déchets enregistrés
         </p>
       ) : null}
