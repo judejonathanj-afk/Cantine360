@@ -356,30 +356,35 @@ export function ServiceWasteWeightPanel({
           })}
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <Button
-            type="button"
-            disabled={!canSave}
-            onClick={() => void save()}
-            className={cn(
-              "h-9 w-fit rounded-lg px-5 text-sm font-medium shadow-none",
-              canSave
-                ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                : "bg-zinc-200 text-zinc-500 hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100",
-            )}
-          >
-            <Save className="h-4 w-4 shrink-0" aria-hidden />
-            {status === "saving" ? "Enregistrement…" : "Enregistrer"}
-          </Button>
-          {savedAck && !dirty ? (
-            <p className="text-sm font-medium text-emerald-700" role="status">
-              Déchets enregistrés
-            </p>
-          ) : null}
-        </div>
         <p className="flex items-center justify-center gap-1.5 text-center text-sm text-zinc-500">
           {statusMessage}
         </p>
+        <div className="border-t border-zinc-300/90 pt-4">
+          {savedAck && !dirty ? (
+            <p
+              className="mb-2 text-center text-sm font-medium text-emerald-700"
+              role="status"
+            >
+              Déchets enregistrés
+            </p>
+          ) : null}
+          <div className="flex justify-center pb-1">
+            <Button
+              type="button"
+              disabled={!canSave}
+              onClick={() => void save()}
+              className={cn(
+                "h-10 w-full max-w-xs rounded-lg px-5 text-sm font-semibold shadow-none sm:w-auto sm:min-w-[12rem]",
+                canSave
+                  ? "bg-emerald-600 text-white hover:bg-emerald-700"
+                  : "bg-zinc-200 text-zinc-500 hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100",
+              )}
+            >
+              <Save className="h-4 w-4 shrink-0" aria-hidden />
+              {status === "saving" ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+          </div>
+        </div>
         {bilanTips.length > 0 ? (
           <AntiWasteEndOfServiceBilan tips={bilanTips} />
         ) : null}
