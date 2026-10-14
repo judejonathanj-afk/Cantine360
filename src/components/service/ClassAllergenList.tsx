@@ -130,47 +130,59 @@ export function ClassAllergenList({
   );
   const dietConcerned = students.filter((s) => s.dietAffectedByMenu);
 
+  const scrollMany = concerned.length + dietConcerned.length > 1;
+
   return (
     <div className="space-y-4 rounded-2xl border-2 border-yellow-400 bg-[#e8eef5] p-4 shadow-sm sm:p-5">
       <RgpdNotice />
-      <div className="text-base font-semibold text-[#0a1628]">
-        Élèves concernés par le menu ({concerned.length})
-      </div>
-
-      {!hasMenu ? (
-        <p className="text-base text-[#0a1628]">
-          Renseignez le menu du jour pour voir les élèves concernés.
-        </p>
-      ) : concerned.length === 0 ? (
-        <p className="text-base text-[#0a1628]">
-          Aucun élève de cette classe n’est concerné par le menu du jour.
-        </p>
-      ) : (
-        <ul className="space-y-2.5">
-          {concerned.map((s) => (
-            <StudentAllergenRowItem key={s.id} student={s} />
-          ))}
-        </ul>
-      )}
-
-      {hasMenu ? (
-        <div className="space-y-2 border-t border-[#1a2d4a]/15 pt-4">
-          <div className="text-base font-semibold text-sky-950">
-            Régimes à adapter ({dietConcerned.length})
+      <div
+        className={
+          scrollMany
+            ? "max-h-[min(26rem,55vh)] space-y-4 overflow-y-auto overscroll-y-contain scroll-smooth pr-1 sm:max-h-[min(28rem,58vh)]"
+            : "space-y-4"
+        }
+      >
+        <div>
+          <div className="text-base font-semibold text-[#0a1628]">
+            Élèves concernés par le menu ({concerned.length})
           </div>
-          {dietConcerned.length === 0 ? (
-            <p className="text-base text-[#0a1628]">
-              Aucun régime sans porc / végétarien en conflit avec le menu.
+
+          {!hasMenu ? (
+            <p className="mt-2 text-base text-[#0a1628]">
+              Renseignez le menu du jour pour voir les élèves concernés.
+            </p>
+          ) : concerned.length === 0 ? (
+            <p className="mt-2 text-base text-[#0a1628]">
+              Aucun élève de cette classe n’est concerné par le menu du jour.
             </p>
           ) : (
-            <ul className="space-y-2.5">
-              {dietConcerned.map((s) => (
-                <StudentDietRowItem key={`diet-${s.id}`} student={s} />
+            <ul className="mt-2 space-y-2.5">
+              {concerned.map((s) => (
+                <StudentAllergenRowItem key={s.id} student={s} />
               ))}
             </ul>
           )}
         </div>
-      ) : null}
+
+        {hasMenu ? (
+          <div className="space-y-2 border-t border-[#1a2d4a]/15 pt-4">
+            <div className="text-base font-semibold text-sky-950">
+              Régimes à adapter ({dietConcerned.length})
+            </div>
+            {dietConcerned.length === 0 ? (
+              <p className="text-base text-[#0a1628]">
+                Aucun régime sans porc / végétarien en conflit avec le menu.
+              </p>
+            ) : (
+              <ul className="space-y-2.5">
+                {dietConcerned.map((s) => (
+                  <StudentDietRowItem key={`diet-${s.id}`} student={s} />
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
