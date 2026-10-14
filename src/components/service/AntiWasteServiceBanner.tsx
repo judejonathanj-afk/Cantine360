@@ -50,30 +50,51 @@ export function AntiWasteServiceBanner({
       );
 
     if (asConclusion) {
+      const actionText =
+        alertAction && alertAction.length > 0
+          ? alertAction.charAt(0).toUpperCase() + alertAction.slice(1)
+          : null;
+
       return (
-        <ServiceInsightCard
-          tone="soft"
-          dense
-          icon={Recycle}
-          title="Service enregistré — Antigaspillage"
-          subtitle="Conclusion du service"
-          metric={
-            alert ? (
-              <span className="text-sm font-semibold leading-snug text-rose-800">
-                Plat à risque n°{alert.rank} : « {alert.label} »
-              </span>
-            ) : (
-              gramsMetric
-            )
-          }
-          className={cn("h-auto", className)}
+        <div
+          className={cn(
+            "flex h-full min-h-0 flex-col rounded-xl border border-zinc-200 bg-white p-3 shadow-sm",
+            className,
+          )}
         >
-          {alert && alertAction ? (
-            <p className="line-clamp-2">{alertAction}</p>
-          ) : shortServisLine ? (
-            <p>{shortServisLine}</p>
-          ) : null}
-        </ServiceInsightCard>
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200/80">
+              <Recycle className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-semibold leading-snug text-zinc-800">
+                Service enregistré
+              </h2>
+              <p className="mt-0.5 text-xs leading-snug text-zinc-500">
+                Antigaspillage — conclusion du service
+              </p>
+            </div>
+          </div>
+
+          {alert ? (
+            <div
+              className="mt-2.5 rounded-lg border border-rose-200/90 bg-rose-50 px-2.5 py-2 text-xs leading-relaxed text-rose-950"
+              role="status"
+            >
+              <p className="font-semibold leading-snug">
+                Plat à risque n°{alert.rank} : « {alert.label} »
+              </p>
+              {actionText ? (
+                <p className="mt-1.5 text-rose-900/95">{actionText}</p>
+              ) : null}
+            </div>
+          ) : (
+            <div className="mt-2.5 space-y-1.5 text-xs leading-snug text-zinc-700">
+              <div className="font-semibold text-zinc-900">{gramsMetric}</div>
+              {shortServisLine ? <p>{shortServisLine}</p> : null}
+            </div>
+          )}
+        </div>
       );
     }
 

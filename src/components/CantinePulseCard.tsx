@@ -162,7 +162,7 @@ function CantinePlusGlobalChart({
 
   return (
     <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
-      <p className="text-sm font-semibold text-zinc-700">Lecture globale</p>
+      <p className="text-sm font-semibold text-zinc-900">Lecture globale</p>
       <div className="mt-4 space-y-4">
         <div className="min-w-0 space-y-4">
           <div className="flex flex-wrap items-end gap-6">
@@ -537,7 +537,7 @@ export function CantinePulseCard({
         ) : null}
 
         <div>
-          <p className="mb-3 text-sm font-semibold text-zinc-600">Les chiffres</p>
+          <p className="mb-3 text-sm font-semibold text-zinc-900">Les chiffres</p>
           <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
             <StatTile
               icon={<UtensilsCrossed className="h-3.5 w-3.5" />}

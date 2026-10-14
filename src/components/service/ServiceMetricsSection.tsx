@@ -88,12 +88,16 @@ export function ServiceMetricsSection({
           <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
         </>
       ) : (
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-3">
+          <div className="hidden sm:block" aria-hidden />
           <ServiceAttendanceImport
             serviceId={serviceId}
             presentTotal={livePresent}
+            className="items-center"
           />
-          <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
+          <div className="flex justify-center sm:justify-end">
+            <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
+          </div>
         </div>
       )}
       <ServiceSchoolFilter

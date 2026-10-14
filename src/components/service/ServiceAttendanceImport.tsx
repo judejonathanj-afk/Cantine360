@@ -115,7 +115,7 @@ export function ServiceAttendanceImport({
 
   if (!showCsvImport) {
     return (
-      <div className={cn("flex flex-col items-start gap-2", className)}>
+      <div className={cn("flex flex-col items-center gap-2 text-center", className)}>
         <Button
           type="button"
           variant="default"
@@ -127,10 +127,12 @@ export function ServiceAttendanceImport({
           <History className="h-4 w-4 shrink-0" aria-hidden />
         </Button>
         {errorMessage ? (
-          <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p>
+          <p className="max-w-md rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
+            {errorMessage}
+          </p>
         ) : null}
         {resultMessage ? (
-          <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <p className="max-w-md rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             {resultMessage}
           </p>
         ) : null}
