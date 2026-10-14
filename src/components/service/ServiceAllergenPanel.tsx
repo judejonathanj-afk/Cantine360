@@ -101,7 +101,7 @@ export function GroupAllergenBadge({
                 <span
                   className={
                     affectedByMenu > 0
-                      ? "font-extrabold text-rose-800 underline decoration-rose-400/80 decoration-2 underline-offset-2"
+                      ? "font-extrabold text-amber-950"
                       : "font-bold text-amber-900"
                   }
                 >
@@ -129,7 +129,7 @@ export function GroupAllergenBadge({
             {hasMenu && dietAffectedByMenu > 0 ? (
               <>
                 <span className="font-bold text-zinc-500"> · </span>
-                <span className="text-rose-800 underline decoration-rose-500/70 decoration-2 underline-offset-2">
+                <span className="text-zinc-950">
                   {dietAffectedByMenu} à adapter
                 </span>
               </>
