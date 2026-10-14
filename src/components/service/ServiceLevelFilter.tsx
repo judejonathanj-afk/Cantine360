@@ -1,8 +1,18 @@
 "use client";
 
 import type { SchoolLevel } from "@/lib/schoolLevel";
+import { schoolLevelLabelFr } from "@/lib/schoolLevel";
 
 type LevelFilterCard = { level: SchoolLevel };
+
+function levelButtonClass(active: boolean) {
+  return [
+    "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+    active
+      ? "bg-zinc-900 text-white"
+      : "bg-white text-zinc-700 ring-1 ring-zinc-200 hover:bg-zinc-50",
+  ].join(" ");
+}
 
 export function ServiceLevelFilter({
   cards,
@@ -23,32 +33,23 @@ export function ServiceLevelFilter({
   }
 
   return (
-    <div className="flex justify-center gap-3">
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <span className="text-sm font-medium text-zinc-700">Niveau :</span>
       <button
         type="button"
         disabled={primaireCount === 0}
         onClick={() => toggle("PRIMAIRE")}
-        className={[
-          "min-w-[8.5rem] rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100",
-          value === "PRIMAIRE"
-            ? "bg-emerald-600 text-white shadow-sm"
-            : "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-300 hover:bg-emerald-200",
-        ].join(" ")}
+        className={levelButtonClass(value === "PRIMAIRE")}
       >
-        Primaire
+        {schoolLevelLabelFr("PRIMAIRE")} ({primaireCount})
       </button>
       <button
         type="button"
         disabled={maternelleCount === 0}
         onClick={() => toggle("MATERNELLE")}
-        className={[
-          "min-w-[8.5rem] rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100",
-          value === "MATERNELLE"
-            ? "bg-sky-600 text-white shadow-sm"
-            : "bg-sky-100 text-sky-900 ring-1 ring-sky-300 hover:bg-sky-200",
-        ].join(" ")}
+        className={levelButtonClass(value === "MATERNELLE")}
       >
-        Maternelle
+        {schoolLevelLabelFr("MATERNELLE")} ({maternelleCount})
       </button>
     </div>
   );
