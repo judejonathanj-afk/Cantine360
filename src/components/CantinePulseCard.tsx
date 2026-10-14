@@ -685,15 +685,15 @@ export function CantinePulseCard({
             </p>
           </div>
 
-          <div className="mt-3 rounded-xl border border-zinc-600/80 bg-zinc-950/80 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-              Conclusion
+          <div className="mt-3 rounded-xl border border-zinc-600/80 bg-zinc-950/80 px-4 py-3.5 sm:px-5 sm:py-4">
+            <p className="text-sm font-semibold tracking-wide text-zinc-400">
+              Lecture de la période
             </p>
-            <p className="mt-1.5 text-sm font-medium leading-relaxed text-zinc-200">
+            <p className="mt-2 text-base font-medium leading-relaxed text-zinc-100 sm:text-[17px] sm:leading-7">
               {situationConclusion.situation}
             </p>
             {situationConclusion.antiWaste ? (
-              <p className="mt-2 border-t border-zinc-700/80 pt-2 text-sm leading-relaxed text-emerald-200/95">
+              <p className="mt-2.5 border-t border-zinc-700/80 pt-2.5 text-base leading-relaxed text-emerald-200/95 sm:text-[17px] sm:leading-7">
                 {situationConclusion.antiWaste}
               </p>
             ) : null}
