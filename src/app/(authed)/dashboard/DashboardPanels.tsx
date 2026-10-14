@@ -488,6 +488,8 @@ export default function DashboardPanels({
         </div>
       </section>
 
+      {!isKitchen ? (
+      <>
       <section>
         <DashboardSectionHeading
           icon={Layers}
@@ -659,6 +661,8 @@ export default function DashboardPanels({
           )}
         </div>
       </section>
+      </>
+      ) : null}
 
       {!isKitchen ? (
         <footer className="flex items-center justify-center gap-2 pt-2 text-xs font-medium text-black/80">
