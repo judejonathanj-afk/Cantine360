@@ -55,6 +55,7 @@ export async function PATCH(req: Request) {
     revalidatePath("/antigaspillage");
     revalidatePath("/service", "layout");
     revalidatePath("/dashboard");
+    revalidatePath("/admin/dashboard");
     return NextResponse.json({
       ok: true,
       antiWasteModeEnabled: saved.antiWasteModeEnabled,

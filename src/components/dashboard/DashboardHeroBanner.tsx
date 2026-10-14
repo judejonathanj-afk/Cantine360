@@ -88,7 +88,7 @@ export function DashboardHeroBanner({
             )}
           >
             <ChefHat className="size-3.5" aria-hidden />
-            {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord anti-gaspillage"}
+            {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord Cantine+"}
           </div>
 
           <div className="flex items-center gap-4">

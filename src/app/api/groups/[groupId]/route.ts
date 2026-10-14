@@ -75,6 +75,7 @@ export async function PATCH(
 
     if (p.ecoRestesServisTargetPct !== undefined || p.ecoReductionTargetPct !== undefined) {
       revalidatePath("/dashboard");
+      revalidatePath("/admin/dashboard");
       revalidatePath("/admin/groups");
     }
 
@@ -101,6 +102,7 @@ export async function PATCH(
     });
     if (p.ecoRestesServisTargetPct !== undefined || p.ecoReductionTargetPct !== undefined) {
       revalidatePath("/dashboard");
+      revalidatePath("/admin/dashboard");
       revalidatePath("/admin/groups");
     }
     return NextResponse.json({

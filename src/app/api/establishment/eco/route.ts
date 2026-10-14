@@ -64,6 +64,7 @@ export async function PATCH(req: Request) {
       data: fullData,
     });
     revalidatePath("/dashboard");
+    revalidatePath("/admin/dashboard");
     revalidatePath("/admin/groups");
     return NextResponse.json({ ok: true });
   } catch (e) {
@@ -86,6 +87,7 @@ export async function PATCH(req: Request) {
         data: legacyData,
       });
       revalidatePath("/dashboard");
+      revalidatePath("/admin/dashboard");
       revalidatePath("/admin/groups");
       return NextResponse.json({
         ok: true,

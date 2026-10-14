@@ -91,51 +91,53 @@ export function downloadSuiviJourPdf(
     margin: { left: 10, right: 10 },
   });
 
-  const afterDetails = (doc as jsPDF & { lastAutoTable?: { finalY: number } })
-    .lastAutoTable?.finalY;
-  const contextStart = (afterDetails ?? 26) + 10;
+  if (!opts.isKitchen) {
+    const afterDetails = (doc as jsPDF & { lastAutoTable?: { finalY: number } })
+      .lastAutoTable?.finalY;
+    const contextStart = (afterDetails ?? 26) + 10;
 
-  doc.setFontSize(12);
-  doc.text(`Contexte du service — ${levelLabel}`, 14, contextStart);
+    doc.setFontSize(12);
+    doc.text(`Contexte du service — ${levelLabel}`, 14, contextStart);
 
-  autoTable(doc, {
-    startY: contextStart + 4,
-    head: [
-      [
-        "Date",
-        "g / 100",
-        "Pesée",
-        "Écoles",
-        "Classes",
-        "Menu",
-        "Élèves concernés",
-        "Δ servis",
-        "Δ déchets",
+    autoTable(doc, {
+      startY: contextStart + 4,
+      head: [
+        [
+          "Date",
+          "g / 100",
+          "Pesée",
+          "Écoles",
+          "Classes",
+          "Menu",
+          "Élèves concernés",
+          "Δ servis",
+          "Δ déchets",
+        ],
       ],
-    ],
-    body: rows.map((row) => [
-      row.date,
-      row.wasteGramsPer100 != null
-        ? row.wasteGramsPer100.toLocaleString("fr-FR", { maximumFractionDigits: 1 })
-        : "—",
-      row.weighLabel,
-      row.schools,
-      cell(row.classCount),
-      row.menuSummary,
-      row.concernedStudents > 0
-        ? row.concernedStudents.toLocaleString("fr-FR")
-        : "—",
-      formatDelta(row.servedDelta),
-      formatDelta(row.wasteDelta),
-    ]),
-    styles: { fontSize: 7, cellPadding: 1.2 },
-    headStyles: { fillColor: [2, 132, 199], textColor: 255 },
-    columnStyles: {
-      3: { cellWidth: 35 },
-      5: { cellWidth: 55 },
-    },
-    margin: { left: 10, right: 10 },
-  });
+      body: rows.map((row) => [
+        row.date,
+        row.wasteGramsPer100 != null
+          ? row.wasteGramsPer100.toLocaleString("fr-FR", { maximumFractionDigits: 1 })
+          : "—",
+        row.weighLabel,
+        row.schools,
+        cell(row.classCount),
+        row.menuSummary,
+        row.concernedStudents > 0
+          ? row.concernedStudents.toLocaleString("fr-FR")
+          : "—",
+        formatDelta(row.servedDelta),
+        formatDelta(row.wasteDelta),
+      ]),
+      styles: { fontSize: 7, cellPadding: 1.2 },
+      headStyles: { fillColor: [2, 132, 199], textColor: 255 },
+      columnStyles: {
+        3: { cellWidth: 35 },
+        5: { cellWidth: 55 },
+      },
+      margin: { left: 10, right: 10 },
+    });
+  }
 
   const levelSlug =
     opts.levelFilter === "all" ? "tous" : opts.levelFilter.toLowerCase();
