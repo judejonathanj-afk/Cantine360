@@ -399,6 +399,7 @@ export default function DashboardPanels({
         antiWasteTargetGPer100={antiWasteTargetGPer100}
       />
 
+      {!isKitchen ? (
       <section>
         <DashboardSectionHeading
           icon={Utensils}
@@ -427,6 +428,7 @@ export default function DashboardPanels({
           ))}
         </div>
       </section>
+      ) : null}
 
       {!isKitchen ? (
         <section>
@@ -459,6 +461,7 @@ export default function DashboardPanels({
         </section>
       ) : null}
 
+      {!isKitchen ? (
       <section>
         <DashboardSectionHeading
           icon={Trash2}
@@ -487,6 +490,7 @@ export default function DashboardPanels({
           ))}
         </div>
       </section>
+      ) : null}
 
       {!isKitchen ? (
       <>
