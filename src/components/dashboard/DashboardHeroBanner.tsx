@@ -7,12 +7,18 @@ export function DashboardHeroBanner({
   days,
   isKitchen,
   establishmentId,
+  establishmentLabel = "",
 }: {
   schoolNames: string[];
   days: 7 | 30;
   isKitchen: boolean;
   establishmentId: string;
+  establishmentLabel?: string;
 }) {
+  const adminWelcomeTitle = establishmentLabel
+    ? `Bienvenue, espace admin — ${establishmentLabel}`
+    : "Bienvenue sur votre espace admin";
+
   return (
     <section
       className={cn(
@@ -95,7 +101,7 @@ export function DashboardHeroBanner({
             )}
             <div className="min-w-0">
               <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
-                {isKitchen ? "Pilotage cuisine" : "Suivi anti-gaspi"}
+                {isKitchen ? "Pilotage cuisine" : adminWelcomeTitle}
               </h1>
               <p
                 className={cn(

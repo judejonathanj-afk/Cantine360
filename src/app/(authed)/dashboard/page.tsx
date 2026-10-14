@@ -160,14 +160,24 @@ export default async function DashboardPage({
   let schoolNames: string[] = [];
   let antiWasteModeEnabled = false;
   let antiWasteTargetGPer100: number | null = null;
+  let establishmentLabel = "";
 
   try {
-    const [est, agList, schoolsList, antiWaste] = await Promise.all([
+    const [est, agList, schoolsList, antiWaste, establishmentRow] =
+      await Promise.all([
       getEstablishmentEcoSettings(db, session.establishmentId),
       getGroupsForAdmin(db, session.establishmentId, { activeOnly: true }),
       getSchoolsForAdmin(db, session.establishmentId),
       getEstablishmentAntiWasteSettings(db, session.establishmentId),
+      db.establishment.findUnique({
+        where: { id: session.establishmentId },
+        select: { name: true, slug: true },
+      }),
     ]);
+    establishmentLabel =
+      establishmentRow?.name?.trim() ||
+      establishmentRow?.slug?.trim() ||
+      "";
     antiWasteModeEnabled = antiWaste.antiWasteModeEnabled;
     antiWasteTargetGPer100 = antiWaste.antiWasteTargetGPer100;
     establishment = est;
@@ -563,6 +573,7 @@ export default async function DashboardPage({
       schoolNames={schoolNames}
       role={session.role}
       establishmentId={session.establishmentId}
+      establishmentLabel={establishmentLabel}
       exportYear={now.getFullYear()}
       levelFilter={levelFilter}
       pulseRows={pulseRows}

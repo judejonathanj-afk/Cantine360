@@ -136,6 +136,7 @@ export default function DashboardPanels({
   schoolNames,
   role,
   establishmentId,
+  establishmentLabel = "",
   exportYear,
   levelFilter,
   pulseRows,
@@ -161,6 +162,7 @@ export default function DashboardPanels({
   schoolNames: string[];
   role: "ADMIN" | "KITCHEN";
   establishmentId: string;
+  establishmentLabel?: string;
   exportYear: number;
   levelFilter: "all" | SchoolLevel;
   pulseRows: CantineServiceRow[];
@@ -257,6 +259,7 @@ export default function DashboardPanels({
         days={days}
         isKitchen={isKitchen}
         establishmentId={establishmentId}
+        establishmentLabel={establishmentLabel}
       />
 
       <div className="flex flex-wrap items-center gap-3">
