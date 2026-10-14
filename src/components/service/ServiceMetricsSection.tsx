@@ -85,30 +85,32 @@ export function ServiceMetricsSection({
             presentTotal={livePresent}
             className="w-full"
           />
-          <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
         </>
       ) : (
-        <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-3">
-          <div className="hidden sm:block" aria-hidden />
+        <div className="flex justify-center">
           <ServiceAttendanceImport
             serviceId={serviceId}
             presentTotal={livePresent}
             className="items-center"
           />
-          <div className="flex justify-center sm:justify-end">
-            <ServiceLevelFilter cards={liveCards} value={levelFilter} onChange={setLevelFilter} />
-          </div>
         </div>
       )}
-      <ServiceSchoolFilter
-        cards={liveCards}
-        value={schoolFilter}
-        onChange={(school) => {
-          setSchoolFilter(school);
-          // « Toutes » = toutes les écoles et tous les niveaux
-          if (school === "all") setLevelFilter("all");
-        }}
-      />
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <ServiceSchoolFilter
+          cards={liveCards}
+          value={schoolFilter}
+          onChange={(school) => {
+            setSchoolFilter(school);
+            // « Toutes » = toutes les écoles et tous les niveaux
+            if (school === "all") setLevelFilter("all");
+          }}
+        />
+        <ServiceLevelFilter
+          cards={liveCards}
+          value={levelFilter}
+          onChange={setLevelFilter}
+        />
+      </div>
       <ServiceClassGrid serviceId={serviceId} cards={filtered} hasMenu={hasMenu} />
     </div>
   );

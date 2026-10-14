@@ -33,7 +33,7 @@ export function ServiceLevelFilter({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <span className="text-sm font-medium text-zinc-700">Niveau :</span>
       <button
         type="button"
