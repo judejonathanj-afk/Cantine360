@@ -81,9 +81,12 @@ export default async function ServiceMenuPage({
               size="sm"
             />
           </p>
-          <MenusCantineColorTitle />
+          <MenusCantineColorTitle
+            text="Menu du jour"
+            className="text-xl md:text-2xl lg:text-3xl"
+          />
           <hr
-            className="mx-auto mt-3 h-1 w-full max-w-4xl rounded-full border-0 bg-emerald-500"
+            className="mx-auto mt-2 h-0.5 w-full max-w-2xl rounded-full border-0 bg-emerald-500"
             aria-hidden
           />
         </div>
