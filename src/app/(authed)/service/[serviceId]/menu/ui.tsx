@@ -148,23 +148,27 @@ export function MenuEditor({
 
   return (
     <div className="space-y-4">
-      <p className="mx-auto max-w-3xl text-center text-base leading-relaxed text-zinc-600 md:text-lg">
-        Renseignez les <strong className="font-medium text-zinc-900">🥬 entrées</strong>,{" "}
+      <p className="mx-auto max-w-5xl px-2 text-center text-base leading-relaxed text-zinc-600 md:text-lg lg:max-w-6xl">
+        Pour chaque plat, indiquez un <strong className="font-medium text-zinc-900">intitulé</strong>{" "}
+        clair, puis complétez les rubriques{" "}
+        <strong className="font-medium text-zinc-900">🥬 entrées</strong>,{" "}
         <strong className="font-medium text-zinc-900">🥘 plats</strong>,{" "}
-        <strong className="font-medium text-zinc-900">🧁 desserts</strong> et la rubrique{" "}
-        <strong className="font-medium text-zinc-900">autres</strong> si besoin, puis les
-        allergènes (<em>Gluten</em> = « Céréales contenant du gluten »), les
-        drapeaux <strong className="font-medium text-zinc-900">porc / viande</strong>{" "}
-        (régimes, hors allergènes) et le{" "}
-        <strong className="font-medium text-zinc-900">grammage (g/assiette)</strong>.{" "}
-        <strong className="font-medium text-zinc-900">Enregistrez tout en bas</strong> une fois le
-        menu complet.
+        <strong className="font-medium text-zinc-900">🧁 desserts</strong> et{" "}
+        <strong className="font-medium text-zinc-900">autres</strong> si besoin. Cochez les{" "}
+        <strong className="font-medium text-zinc-900">allergènes UE-14</strong> concernés (
+        <em>Gluten</em> = « Céréales contenant du gluten »), activez les drapeaux{" "}
+        <strong className="font-medium text-zinc-900">porc / viande</strong> pour les régimes
+        alimentaires (hors allergènes), et renseignez le{" "}
+        <strong className="font-medium text-zinc-900">grammage (g par assiette)</strong> servi en
+        cuisine. Ce menu alimente la fiche service, les alertes élèves et le suivi des déchets.{" "}
+        <strong className="font-medium text-zinc-900">Enregistrez en bas de page</strong> une fois
+        toutes les lignes du jour complétées.
         {antiWasteModeEnabled ? (
           <>
             {" "}
-            Le mode Antigaspillage propose un grammage à droite selon
-            l&apos;intitulé du plat et le gaspillage constaté les fois
-            précédentes — cliquez pour l&apos;appliquer.
+            Avec le mode Antigaspillage, une suggestion de grammage apparaît à droite dès que
+            l&apos;intitulé du plat est renseigné : elle s&apos;appuie sur le gaspillage observé
+            lors des services précédents — cliquez sur la proposition pour l&apos;appliquer.
           </>
         ) : null}
       </p>
