@@ -84,11 +84,14 @@ export function DashboardHeroBanner({
               "mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1 backdrop-blur",
               isKitchen
                 ? "bg-white/25 text-white ring-white/30"
-                : "bg-zinc-100 text-zinc-700 ring-zinc-200",
+                : "bg-zinc-100 text-yellow-500 ring-zinc-200",
             )}
           >
-            <ChefHat className="size-3.5" aria-hidden />
-            {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord Cantine+"}
+            <ChefHat
+              className={cn("size-3.5", isKitchen ? "text-white" : "text-green-600")}
+              aria-hidden
+            />
+            {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord Cantine360"}
           </div>
 
           <div className="flex items-center gap-4">
