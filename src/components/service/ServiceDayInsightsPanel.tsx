@@ -110,7 +110,7 @@ export function ServiceDayInsightsPanel({
         <ServiceDietStudentsExpandedContent
           list={dietList.list}
           className={cn(
-            "col-span-full border-x-0 border-b-0 border-t-0 px-4 sm:px-5",
+            "col-span-full rounded-b-[19px] border-x-0 border-b-0 border-t-0 px-4 sm:px-5",
             "md:col-span-2 lg:col-span-3",
           )}
         />

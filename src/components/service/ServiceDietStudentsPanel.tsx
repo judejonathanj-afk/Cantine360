@@ -13,6 +13,10 @@ import type { SchoolLevel } from "@/lib/schoolLevel";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import { cn } from "@/lib/utils";
 
+/** Jaune repère régimes (capture produit) */
+const DIET_PANEL_BG = "#FDEE5A";
+const DIET_PANEL_BORDER = "#E8D84C";
+
 export function useDietStudentsList({
   groups,
   hasMenu,
@@ -124,19 +128,23 @@ export function ServiceDietStudentsTrigger({
   return (
     <CollapsibleTrigger
       className={cn(
-        "flex w-full shrink-0 flex-col rounded-xl border border-amber-200/90 bg-amber-50/90 px-3 shadow-sm outline-none hover:bg-amber-100/80",
-        open ? "py-2.5" : "py-2",
+        "flex w-full shrink-0 flex-col border px-3 shadow-sm outline-none transition-colors hover:brightness-[0.97]",
+        open ? "rounded-t-2xl py-2.5" : "rounded-full py-2",
         className,
       )}
+      style={{
+        backgroundColor: DIET_PANEL_BG,
+        borderColor: DIET_PANEL_BORDER,
+      }}
     >
       <div className="relative flex items-center gap-2">
-        <h2 className="flex-1 text-left text-sm font-semibold leading-snug text-amber-950">
-          <span className="tabular-nums font-bold text-amber-800">{total}</span> régime
+        <h2 className="flex-1 text-left text-sm font-bold leading-snug text-amber-950">
+          <span className="tabular-nums">{total}</span> régime
           {total > 1 ? "s" : ""} à adapter — détail
         </h2>
         <ChevronDown
           className={cn(
-            "h-4 w-4 shrink-0 text-amber-700/80 transition-transform",
+            "h-4 w-4 shrink-0 text-amber-950/80 transition-transform",
             open ? "rotate-180" : "",
           )}
         />
@@ -155,9 +163,13 @@ export function ServiceDietStudentsExpandedContent({
   return (
     <CollapsibleContent
       className={cn(
-        "flex min-h-0 flex-col border border-t-0 border-amber-200/90 bg-white pb-3 pt-2 text-zinc-900 sm:pb-4",
+        "flex min-h-0 flex-col border border-t-0 pb-3 pt-2 text-zinc-900 sm:pb-4",
         className,
       )}
+      style={{
+        backgroundColor: DIET_PANEL_BG,
+        borderColor: DIET_PANEL_BORDER,
+      }}
     >
       <p className="shrink-0 text-[10px] leading-snug text-zinc-600 sm:text-xs">
         Hors allergènes UE-14 — alternative sans porc / végétarienne.
