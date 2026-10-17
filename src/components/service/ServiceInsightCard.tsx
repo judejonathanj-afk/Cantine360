@@ -94,7 +94,7 @@ export function ServiceInsightCard({
           <div className={cn("min-w-0 flex-1", t.text)}>
             <h2
               className={cn(
-                "font-semibold leading-snug",
+                "font-bold leading-snug",
                 isDense ? "text-sm" : "text-base",
                 t.title,
               )}
@@ -120,7 +120,7 @@ export function ServiceInsightCard({
         <div
           className={cn(
             "font-bold tracking-tight",
-            isDense ? "mt-1.5 text-lg" : "mt-3 text-3xl",
+            isDense ? "mt-1.5 text-lg font-extrabold" : "mt-3 text-3xl",
             centeredHeader && "text-center",
             t.text,
           )}

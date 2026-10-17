@@ -56,7 +56,7 @@ export function ServiceGrammagePanel({
       }
       metric={
         summary.hasGrammage ? (
-          <span className="text-base font-semibold">{summary.perPlate} g / assiette</span>
+          <span className="text-lg font-extrabold">{summary.perPlate} g / assiette</span>
         ) : (
           "—"
         )

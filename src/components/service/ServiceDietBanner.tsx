@@ -31,7 +31,7 @@ export function ServiceDietBanner({
             : "Aucun plat conflictuel aujourd’hui"
       }
       metric={
-        <span className="text-base font-semibold">
+        <span className="text-lg font-extrabold">
           {summary.totalNoPork} sans porc · {summary.totalVegetarian} végét.
         </span>
       }

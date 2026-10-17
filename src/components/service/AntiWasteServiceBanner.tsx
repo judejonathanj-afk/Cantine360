@@ -42,7 +42,7 @@ export function AntiWasteServiceBanner({
 
     const gramsMetric =
       mat?.gramsPerPlate != null || prim?.gramsPerPlate != null ? (
-        <span className="text-base font-semibold">
+        <span className="text-base font-bold">
           {mat?.gramsPerPlate != null ? `Mat. ~${mat.gramsPerPlate} g` : null}
           {mat?.gramsPerPlate != null && prim?.gramsPerPlate != null ? " · " : null}
           {prim?.gramsPerPlate != null ? `Prim. ~${prim.gramsPerPlate} g` : null}
@@ -72,7 +72,7 @@ export function AntiWasteServiceBanner({
               <Recycle className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-semibold leading-snug text-zinc-800">
+              <h2 className="text-sm font-bold leading-snug text-zinc-800">
                 Service enregistré
               </h2>
               <p className="mt-0.5 text-xs leading-snug text-zinc-500">
@@ -95,7 +95,7 @@ export function AntiWasteServiceBanner({
             </div>
           ) : (
             <div className="mt-2.5 space-y-1.5 text-xs leading-snug text-zinc-700">
-              <div className="font-semibold text-zinc-900">{gramsMetric}</div>
+              <div className="text-lg font-extrabold text-zinc-900">{gramsMetric}</div>
               {shortServisLine ? <p>{shortServisLine}</p> : null}
             </div>
           )}
