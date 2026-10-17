@@ -113,7 +113,12 @@ export function ServiceMetricsSection({
           />
         </div>
       </div>
-      <ServiceClassGrid serviceId={serviceId} cards={filtered} hasMenu={hasMenu} />
+      <ServiceClassGrid
+        serviceId={serviceId}
+        cards={filtered}
+        hasMenu={hasMenu}
+        expandGroupId={scrollGroupId}
+      />
     </div>
   );
 }
