@@ -3,12 +3,9 @@ import { Suspense } from "react";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
-import { ServiceDietBanner } from "@/components/service/ServiceDietBanner";
-import { ServiceDietStudentsPanel } from "@/components/service/ServiceDietStudentsPanel";
 import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
-import { ServiceGrammagePanel } from "@/components/service/ServiceGrammagePanel";
-import { ServiceAntiWasteInsightPanel } from "@/components/service/ServiceAntiWasteInsightPanel";
+import { ServiceDayInsightsPanel } from "@/components/service/ServiceDayInsightsPanel";
 import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
@@ -127,52 +124,26 @@ export default async function ServicePage({
         </ol>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-start">
-        {allergenSummary ? (
-          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:min-w-[min(100%,18rem)] sm:max-w-md">
-            <ServiceDietBanner summary={allergenSummary} />
-            {allergenSummary.totalDietAffected > 0 ? (
-              <ServiceDietStudentsPanel
-                groups={allergenSummary.groups}
-                hasMenu={allergenSummary.hasMenu}
-                groupLevelById={groupLevelById}
-              />
-            ) : null}
-          </div>
-        ) : null}
-        <div
-          className={
-            antiWaste.antiWasteModeEnabled && kitchenAdvice
-              ? "grid min-w-0 w-full grid-cols-1 items-stretch gap-2 sm:w-auto sm:grid-cols-2"
-              : "min-w-0 w-full sm:w-auto"
-          }
-        >
-          <ServiceGrammagePanel
-            serviceId={serviceId}
-            menuItems={menuItems}
-            metrics={metricsGrammage}
-            className="h-full w-full min-w-0 sm:max-w-xs"
-          />
-          {antiWaste.antiWasteModeEnabled && kitchenAdvice ? (
-            <ServiceAntiWasteInsightPanel
-              serviceId={serviceId}
-              kitchenAdvice={kitchenAdvice}
-              classCounts={classCards.map((card) => ({
-                groupId: card.groupId,
-                level: card.level,
-                presentCount: card.presentCount,
-                servedCount: card.servedCount,
-                rabCount: card.rabCount,
-                refusedCount: card.refusedCount,
-              }))}
-              initialWasteWeightG={service.wasteWeightG}
-              initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
-              initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
-              className="h-full w-full min-w-0 sm:max-w-sm"
-            />
-          ) : null}
-        </div>
-      </div>
+      <ServiceDayInsightsPanel
+        serviceId={serviceId}
+        allergenSummary={allergenSummary}
+        groupLevelById={groupLevelById}
+        menuItems={menuItems}
+        metricsGrammage={metricsGrammage}
+        antiWasteModeEnabled={antiWaste.antiWasteModeEnabled}
+        kitchenAdvice={kitchenAdvice}
+        classCounts={classCards.map((card) => ({
+          groupId: card.groupId,
+          level: card.level,
+          presentCount: card.presentCount,
+          servedCount: card.servedCount,
+          rabCount: card.rabCount,
+          refusedCount: card.refusedCount,
+        }))}
+        initialWasteWeightG={service.wasteWeightG}
+        initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
+        initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
+      />
 
       {service.metrics.length === 0 ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-4">

@@ -7,12 +7,14 @@ export function AntiWasteServiceBanner({
   advice,
   asConclusion = false,
   variant = "full",
+  embedded = false,
   className,
 }: {
   advice: AntiWasteKitchenAdvice;
   /** Affiché après enregistrement des déchets — conclusion de service. */
   asConclusion?: boolean;
   variant?: "full" | "compact";
+  embedded?: boolean;
   className?: string;
 }) {
   const tipClass =
@@ -58,7 +60,10 @@ export function AntiWasteServiceBanner({
       return (
         <div
           className={cn(
-            "flex h-full min-h-0 flex-col rounded-xl border border-zinc-200 bg-white p-3 shadow-sm",
+            "flex h-full min-h-0 flex-col",
+            embedded
+              ? "border-0 bg-transparent p-0 shadow-none"
+              : "rounded-xl border border-zinc-200 bg-white p-3 shadow-sm",
             className,
           )}
         >
@@ -102,6 +107,7 @@ export function AntiWasteServiceBanner({
       <ServiceInsightCard
         tone="soft"
         dense
+        embedded={embedded}
         icon={Recycle}
         title="Antigaspillage"
         subtitle={

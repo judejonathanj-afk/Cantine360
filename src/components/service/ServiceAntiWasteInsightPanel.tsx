@@ -30,6 +30,7 @@ export function ServiceAntiWasteInsightPanel({
   initialWasteWeightMaternelleG,
   initialWasteWeightPrimaireG,
   className,
+  embedded = false,
 }: {
   serviceId: string;
   kitchenAdvice: AntiWasteKitchenAdvice;
@@ -38,6 +39,7 @@ export function ServiceAntiWasteInsightPanel({
   initialWasteWeightMaternelleG?: number | null;
   initialWasteWeightPrimaireG?: number | null;
   className?: string;
+  embedded?: boolean;
 }) {
   const liveAdvice = useLiveKitchenAdvice(kitchenAdvice, serviceId, classCounts);
   const [asConclusion, setAsConclusion] = useState(() =>
@@ -64,6 +66,7 @@ export function ServiceAntiWasteInsightPanel({
       advice={liveAdvice}
       asConclusion={asConclusion}
       variant="compact"
+      embedded={embedded}
       className={cn(className)}
     />
   );

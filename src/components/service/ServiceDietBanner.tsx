@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
 export function ServiceDietBanner({
   summary,
   className,
+  embedded = false,
 }: {
   summary: ServiceAllergenSummary;
   className?: string;
+  embedded?: boolean;
 }) {
   if (summary.totalNoPork === 0 && summary.totalVegetarian === 0) return null;
 
@@ -18,6 +20,7 @@ export function ServiceDietBanner({
     <ServiceInsightCard
       tone="soft"
       dense
+      embedded={embedded}
       icon={Salad}
       title="Régimes (menu)"
       subtitle={

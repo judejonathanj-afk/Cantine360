@@ -18,6 +18,8 @@ type Props = {
   compact?: boolean;
   /** Bandeau cuisine : peu haut, texte réduit */
   dense?: boolean;
+  /** Contenu dans une carte groupée (sans bordure propre). */
+  embedded?: boolean;
   centeredHeader?: boolean;
 };
 
@@ -31,6 +33,7 @@ export function ServiceInsightCard({
   className,
   compact = false,
   dense = false,
+  embedded = false,
   centeredHeader = false,
 }: Props) {
   const t = SERVICE_INSIGHT_TONES[tone];
@@ -39,15 +42,20 @@ export function ServiceInsightCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col border",
-        isDense
-          ? "min-h-0 rounded-xl p-3 shadow-sm"
+        "flex h-full flex-col",
+        embedded
+          ? "min-h-0 border-0 bg-transparent p-0 shadow-none"
           : cn(
-              "rounded-2xl p-4 shadow-md",
-              compact ? "min-h-[10.5rem]" : "min-h-0",
-              centeredHeader && "p-5 sm:p-6",
+              "border",
+              isDense
+                ? "min-h-0 rounded-xl p-3 shadow-sm"
+                : cn(
+                    "rounded-2xl p-4 shadow-md",
+                    compact ? "min-h-[10.5rem]" : "min-h-0",
+                    centeredHeader && "p-5 sm:p-6",
+                  ),
+              t.shell,
             ),
-        t.shell,
         className,
       )}
     >

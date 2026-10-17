@@ -18,11 +18,13 @@ export function ServiceGrammagePanel({
   menuItems,
   metrics,
   className,
+  embedded = false,
 }: {
   serviceId?: string;
   menuItems: MenuItemGrammage[];
   metrics: ServiceMetricsGrammage[];
   className?: string;
+  embedded?: boolean;
 }) {
   const queued = useQueuedMetrics(serviceId ?? "");
   const live = useMemo(() => {
@@ -42,6 +44,7 @@ export function ServiceGrammagePanel({
     <ServiceInsightCard
       tone="soft"
       dense
+      embedded={embedded}
       icon={Scale}
       title="Grammage"
       subtitle={
