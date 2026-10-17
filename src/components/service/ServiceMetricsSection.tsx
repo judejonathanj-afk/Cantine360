@@ -35,6 +35,7 @@ export function ServiceMetricsSection({
   const livePresent = liveCards.reduce((sum, card) => sum + card.presentCount, 0);
   const [schoolFilter, setSchoolFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState<"all" | SchoolLevel>("all");
+  const [classesOpen, setClassesOpen] = useState(false);
   const scrolledToGroup = useRef(false);
 
   const filtered = useMemo(() => {
@@ -47,6 +48,9 @@ export function ServiceMetricsSection({
 
   useEffect(() => {
     if (!scrollGroupId || scrolledToGroup.current) return;
+
+    setClassesOpen(true);
+    if (!classesOpen) return;
 
     const card = liveCards.find((c) => c.groupId === scrollGroupId);
     if (!card) return;
@@ -73,19 +77,17 @@ export function ServiceMetricsSection({
     }, 700);
 
     return () => window.clearTimeout(timeout);
-  }, [liveCards, levelFilter, router, schoolFilter, scrollGroupId, serviceId]);
+  }, [classesOpen, liveCards, levelFilter, router, schoolFilter, scrollGroupId, serviceId]);
 
-  return (
-    <div className="space-y-4">
+  const classToolbar = (
+    <>
       {showCsvImport ? (
-        <>
-          <ServiceAttendanceImport
-            serviceId={serviceId}
-            showCsvImport
-            presentTotal={livePresent}
-            className="w-full"
-          />
-        </>
+        <ServiceAttendanceImport
+          serviceId={serviceId}
+          showCsvImport
+          presentTotal={livePresent}
+          className="w-full"
+        />
       ) : (
         <div className="flex justify-center">
           <ServiceAttendanceImport
@@ -101,7 +103,6 @@ export function ServiceMetricsSection({
           value={schoolFilter}
           onChange={(school) => {
             setSchoolFilter(school);
-            // « Toutes » = toutes les écoles et tous les niveaux
             if (school === "all") setLevelFilter("all");
           }}
         />
@@ -113,12 +114,19 @@ export function ServiceMetricsSection({
           />
         </div>
       </div>
-      <ServiceClassGrid
-        serviceId={serviceId}
-        cards={filtered}
-        hasMenu={hasMenu}
-        expandGroupId={scrollGroupId}
-      />
-    </div>
+    </>
+  );
+
+  return (
+    <ServiceClassGrid
+      serviceId={serviceId}
+      cards={filtered}
+      summaryCards={liveCards}
+      hasMenu={hasMenu}
+      open={classesOpen}
+      onOpenChange={setClassesOpen}
+      expandGroupId={scrollGroupId}
+      toolbar={classToolbar}
+    />
   );
 }
