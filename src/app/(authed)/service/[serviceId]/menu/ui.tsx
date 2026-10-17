@@ -94,6 +94,10 @@ export function MenuEditor({
     setOpenCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
   }
 
+  function closeCategory(cat: Category) {
+    setOpenCategories((prev) => ({ ...prev, [cat]: false }));
+  }
+
   const grouped = useMemo(() => {
     const out: Record<Category, Item[]> = {
       STARTER: [],
@@ -407,6 +411,16 @@ export function MenuEditor({
                         Contient de la viande
                       </button>
                     </div>
+                  </div>
+
+                  <div className="mt-6 flex justify-end border-t border-zinc-600/80 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => closeCategory(cat)}
+                      className="rounded-xl border border-emerald-700 bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-emerald-700 active:bg-emerald-800"
+                    >
+                      Valider
+                    </button>
                   </div>
                 </div>
               );
