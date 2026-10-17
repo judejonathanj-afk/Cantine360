@@ -15,7 +15,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "node scripts/prisma-migrate-deploy.mjs",
     "prisma:studio": "prisma studio",
-    "cantine-guard:run": "node scripts/cantine-guard-run.mjs"
+    "cantine-guard:run": "node scripts/cantine-guard-run.mjs",
+    "export:dashboard-screenshot": "node scripts/export-admin-dashboard-fullpage.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -85,6 +86,7 @@
     "eslint": "^9",
     "eslint-config-next": "^16.2.7",
     "happy-dom": "^17.6.3",
+    "playwright": "^1.51.1",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5",

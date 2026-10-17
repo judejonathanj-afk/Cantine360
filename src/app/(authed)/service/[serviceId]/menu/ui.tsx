@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Recycle } from "lucide-react";
+import { ChevronDown, Recycle } from "lucide-react";
 import { EU14_ALLERGENS, allergenButtonLabel } from "@/lib/allergens";
 import { resolveGrammageSuggestion } from "@/lib/antiWasteGrammageSuggestion";
 import type { DishWasteHistory } from "@/lib/antiWasteGrammageSuggestion";
@@ -81,8 +81,18 @@ export function MenuEditor({
 }) {
   const router = useRouter();
   const [items, setItems] = useState<Item[]>(() => initializeMenuItems(initialItems));
+  const [openCategories, setOpenCategories] = useState<Record<Category, boolean>>({
+    STARTER: false,
+    MAIN: false,
+    DESSERT: false,
+    OTHER: false,
+  });
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+
+  function toggleCategory(cat: Category) {
+    setOpenCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
+  }
 
   const grouped = useMemo(() => {
     const out: Record<Category, Item[]> = {
@@ -94,6 +104,13 @@ export function MenuEditor({
     for (const i of items) out[i.category].push(i);
     return out;
   }, [items]);
+
+  function categorySummary(cat: Category) {
+    const labels = grouped[cat].map((i) => i.label.trim()).filter(Boolean);
+    if (labels.length === 0) return "À compléter — appuyez pour ouvrir";
+    if (labels.length === 1) return labels[0]!;
+    return `${labels[0]!} · +${labels.length - 1} autre${labels.length > 2 ? "s" : ""}`;
+  }
 
   async function save() {
     setBusy(true);
@@ -135,6 +152,7 @@ export function MenuEditor({
   }
 
   function add(category: Category) {
+    setOpenCategories((prev) => ({ ...prev, [category]: true }));
     setItems((all) => [...all, emptyItem(category)]);
   }
 
@@ -155,7 +173,8 @@ export function MenuEditor({
         <strong className="font-medium text-zinc-900">autres</strong> : intitulé, allergènes,{" "}
         <strong className="font-medium text-zinc-900">porc / viande</strong> et{" "}
         <strong className="font-medium text-zinc-900">grammage (g/assiette)</strong>.{" "}
-        <strong className="font-medium text-zinc-900">Enregistrez en bas</strong> quand c&apos;est
+        <strong className="font-medium text-zinc-900">Ouvrez chaque rubrique</strong> pour saisir,
+        puis <strong className="font-medium text-zinc-900">enregistrez en bas</strong> quand c&apos;est
         prêt.
         {antiWasteModeEnabled ? (
           <>
@@ -166,42 +185,61 @@ export function MenuEditor({
         ) : null}
       </p>
 
-      <div className="space-y-10">
-      {(Object.keys(CATEGORY_LABEL) as Category[]).map((cat) => (
-        <section key={cat} className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-              {CATEGORY_LABEL[cat]}
-            </h2>
-            <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className="mx-auto max-w-4xl space-y-4">
+      {(Object.keys(CATEGORY_LABEL) as Category[]).map((cat) => {
+        const isOpen = openCategories[cat];
+        return (
+        <section
+          key={cat}
+          className="overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)]"
+        >
+          <div className="flex items-stretch gap-2 border-b border-zinc-100 bg-white sm:gap-3">
+            <button
+              type="button"
+              onClick={() => toggleCategory(cat)}
+              aria-expanded={isOpen}
+              className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50/80 sm:px-5"
+            >
+              <span
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#d2ff5a] text-lg sm:h-10 sm:w-10`}
+                aria-hidden
+              >
+                {CATEGORY_LABEL[cat].split(" ")[0]}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+                  Rubrique
+                </span>
+                <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
+                  {CATEGORY_LABEL[cat].replace(/^[^\s]+\s/, "")}
+                </span>
+                {!isOpen ? (
+                  <span className="mt-0.5 block truncate text-sm text-zinc-500">
+                    {categorySummary(cat)}
+                  </span>
+                ) : null}
+              </span>
+              <ChevronDown
+                className={`h-5 w-5 shrink-0 text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            <div className="flex shrink-0 items-center border-l border-zinc-100 px-3 sm:px-4">
               <button
                 type="button"
                 onClick={() => add(cat)}
-                className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 ease-out hover:scale-105 hover:bg-emerald-700 active:bg-emerald-800"
+                className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700 active:bg-emerald-800 sm:text-sm"
               >
                 Ajouter
               </button>
-              {items.map((it, idx) =>
-                it.category !== cat ? null : (
-                  <button
-                    key={`del-${cat}-${idx}`}
-                    type="button"
-                    onClick={() => remove(idx)}
-                    className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 ease-out hover:scale-105 hover:bg-emerald-700 active:bg-emerald-800"
-                  >
-                    Supprimer
-                    {grouped[cat].length > 1 && it.label.trim()
-                      ? ` ${it.label.trim()}`
-                      : ""}
-                  </button>
-                ),
-              )}
             </div>
           </div>
 
+          {isOpen ? (
+          <div className="space-y-3 bg-zinc-100/80 p-3 sm:p-4">
           {grouped[cat].length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-4 text-sm text-zinc-600">
-              Aucun élément.
+            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
+              Aucun élément — utilisez « Ajouter ».
             </div>
           ) : null}
 
@@ -221,6 +259,16 @@ export function MenuEditor({
                   key={`${cat}-${idx}`}
                   className="rounded-2xl border-[2.5px] border-zinc-900 bg-zinc-700 p-4 shadow-sm"
                 >
+                  <div className="mb-3 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => remove(idx)}
+                      className="rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-900"
+                    >
+                      Supprimer
+                      {it.label.trim() ? ` « ${it.label.trim()} »` : ""}
+                    </button>
+                  </div>
                   <label className="block">
                     <span className="text-lg font-bold text-white">
                       Intitulé
@@ -364,8 +412,11 @@ export function MenuEditor({
               );
             })}
           </div>
+          </div>
+          ) : null}
         </section>
-      ))}
+      );
+      })}
       </div>
 
       <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-center">
