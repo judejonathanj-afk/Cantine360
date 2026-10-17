@@ -109,9 +109,9 @@ export default async function ServicePage({
         <ol className="mx-auto w-full max-w-5xl list-decimal space-y-1.5 pl-5 text-left text-base leading-relaxed text-zinc-600 sm:text-lg">
           <li>
             <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
-            allergènes et grammage. Appuyez sur la{" "}
-            <strong className="font-semibold text-zinc-800">barre classe</strong> pour afficher la
-            carte, puis <strong className="font-semibold text-zinc-800">Saisir</strong> pour les
+            allergènes et grammage. Appuyez sur{" "}
+            <strong className="font-semibold text-zinc-800">Ouvrir les classes</strong>, puis sur
+            une <strong className="font-semibold text-zinc-800">carte</strong> pour saisir les
             compteurs.
           </li>
           <li>
