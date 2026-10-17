@@ -121,7 +121,8 @@ export default async function ServicePage({
           </li>
           <li>
             <strong className="font-semibold text-zinc-900">Fin de service</strong> — saisissez le
-            poids des déchets en grammes, puis « Fin de service » en haut à droite.
+            <strong className="font-semibold text-zinc-800">Ouvrir le poids des déchets</strong>,
+            saisissez en grammes, puis « Fin de service » en haut à droite.
           </li>
         </ol>
       </div>

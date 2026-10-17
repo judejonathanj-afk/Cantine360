@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Baby, CloudOff, GraduationCap, Save, Scale, Trash2 } from "lucide-react";
+import {
+  Baby,
+  ChevronDown,
+  CloudOff,
+  GraduationCap,
+  Save,
+  Scale,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -124,6 +132,7 @@ export function ServiceWasteWeightPanel({
     "idle",
   );
   const [savedAck, setSavedAck] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
 
   const parsedMat = parseGramsInput(matInput);
   const parsedPrim = parseGramsInput(primInput);
@@ -281,8 +290,49 @@ export function ServiceWasteWeightPanel({
 
   const shownTotal = parsedTotal ?? totalSaved;
 
+  const closedSummary =
+    shownTotal > 0
+      ? `${shownTotal.toLocaleString("fr-FR")} g (${formatKgFromGrams(shownTotal)}) · maternelle / primaire`
+      : "Après le service — appuyez pour afficher la pesée";
+
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn("mx-auto max-w-6xl space-y-4 px-1 sm:space-y-6 sm:px-2", className)}>
+      <section className="overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.015] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100">
+        <button
+          type="button"
+          onClick={() => setPanelOpen((open) => !open)}
+          aria-expanded={panelOpen}
+          className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50/80 sm:px-5 sm:py-5"
+        >
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#d2ff5a] text-zinc-900 sm:h-11 sm:w-11"
+            aria-hidden
+          >
+            <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+              Fin de service
+            </span>
+            <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
+              {panelOpen ? "Masquer le poids des déchets" : "Ouvrir le poids des déchets"}
+            </span>
+            {!panelOpen ? (
+              <span className="mt-0.5 block text-sm text-zinc-500">{closedSummary}</span>
+            ) : null}
+          </span>
+          <ChevronDown
+            className={cn(
+              "h-5 w-5 shrink-0 text-zinc-500 transition-transform duration-200",
+              panelOpen && "rotate-180",
+            )}
+            aria-hidden
+          />
+        </button>
+      </section>
+
+      {panelOpen ? (
+        <>
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-200 shadow-md">
       <div className="flex items-center gap-3 bg-[#1e2a3a] px-4 py-4 text-white sm:px-5">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">
@@ -393,6 +443,8 @@ export function ServiceWasteWeightPanel({
     {bilanTips.length > 0 ? (
       <AntiWasteEndOfServiceBilan tips={bilanTips} />
     ) : null}
+        </>
+      ) : null}
 
     </div>
   );
