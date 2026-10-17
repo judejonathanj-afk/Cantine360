@@ -185,13 +185,13 @@ export function MenuEditor({
         ) : null}
       </p>
 
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="mx-auto max-w-4xl space-y-4 px-1 sm:px-2">
       {(Object.keys(CATEGORY_LABEL) as Category[]).map((cat) => {
         const isOpen = openCategories[cat];
         return (
         <section
           key={cat}
-          className="overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)]"
+          className="relative overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.025] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100"
         >
           <div className="flex items-stretch gap-2 border-b border-zinc-100 bg-white sm:gap-3">
             <button
