@@ -6,7 +6,7 @@
   overflow: hidden;
   min-height: calc(100dvh - 4rem);
   padding: 44px clamp(20px, 7vw, 112px) 32px;
-  background: radial-gradient(circle at 75% 12%, #fff 0, #EBBFE0 35%, #EBBFE0 100%);
+  background: #fff;
   color: #14231d;
 }
 

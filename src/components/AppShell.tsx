@@ -238,7 +238,7 @@ export function AppShell({
         "service-area-shell",
         nightMode
           ? "service-area-shell--night bg-black"
-          : "service-area-shell--day bg-[#EBBFE0]",
+          : "service-area-shell--day bg-white",
       )
     : null;
 
