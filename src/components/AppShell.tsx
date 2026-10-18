@@ -132,6 +132,8 @@ export function AppShell({
   }
 
   const isServiceHome = pathname === "/service";
+  const isServiceArea =
+    isServiceHome || (pathname.startsWith("/service/") && pathname.length > "/service/".length);
   const pathnameServiceId = activeServiceIdFromPathname(pathname);
 
   useEffect(() => {
@@ -231,7 +233,7 @@ export function AppShell({
     <div
       className={cn(
         "relative flex min-h-screen flex-1 flex-col pb-20 md:pb-0",
-        isServiceHome ? "bg-[#f5f7f2]" : "bg-background",
+        isServiceArea ? "bg-[#EBBFE0]" : "bg-background",
       )}
     >
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
@@ -292,8 +294,10 @@ export function AppShell({
         className={cn(
           "relative z-10 mx-auto w-full flex-1",
           isServiceHome
-            ? "max-w-none bg-[#f5f7f2] px-0 py-0"
-            : "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
+            ? "max-w-none bg-[#EBBFE0] px-0 py-0"
+            : isServiceArea
+              ? "max-w-7xl bg-[#EBBFE0] px-4 py-8 sm:px-6 lg:px-8"
+              : "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
         )}
       >
         {children}
