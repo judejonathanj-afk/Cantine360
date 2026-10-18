@@ -471,3 +471,23 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* Zone Service — fond nuit (noir) vs jour (rose lavande) */
+.service-area-shell--night {
+  color: rgb(244 244 245);
+}
+.service-area-shell--night .text-zinc-900,
+.service-area-shell--night .text-zinc-950 {
+  color: rgb(250 250 250);
+}
+.service-area-shell--night .text-zinc-800 {
+  color: rgb(228 228 231);
+}
+.service-area-shell--night .text-zinc-600,
+.service-area-shell--night .text-zinc-700 {
+  color: rgb(212 212 216);
+}
+.service-area-shell--night .service-home {
+  background: #000;
+  color: #f4f4f5;
+}

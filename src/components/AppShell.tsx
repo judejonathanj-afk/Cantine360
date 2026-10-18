@@ -8,6 +8,8 @@ import {
   BarChart3,
   FileDown,
   LogOut,
+  Moon,
+  Sun,
   ChefHat,
   Users,
   ClipboardList,
@@ -24,6 +26,7 @@ import {
   readRememberedServiceId,
   rememberActiveServiceId,
 } from "@/lib/activeService";
+import { useNightMode } from "@/hooks/useNightMode";
 
 type Props = {
   role: "ADMIN" | "KITCHEN";
@@ -110,6 +113,7 @@ export function AppShell({
   children,
 }: Props) {
   const pathname = usePathname();
+  const { nightMode, toggleNightMode } = useNightMode();
   const [busy, setBusy] = useState(false);
   const [rememberedServiceId, setRememberedServiceId] = useState<string | null>(
     initialServiceId,
@@ -229,11 +233,20 @@ export function AppShell({
           ]
         : [...serviceNavItems, ...(antiWasteNav ? [antiWasteNav] : [])];
 
+  const serviceShellClass = isServiceArea
+    ? cn(
+        "service-area-shell",
+        nightMode
+          ? "service-area-shell--night bg-black"
+          : "service-area-shell--day bg-[#EBBFE0]",
+      )
+    : null;
+
   return (
     <div
       className={cn(
         "relative flex min-h-screen flex-1 flex-col pb-20 md:pb-0",
-        isServiceArea ? "bg-[#EBBFE0]" : "bg-background",
+        serviceShellClass ?? "bg-background",
       )}
     >
       <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
@@ -269,22 +282,41 @@ export function AppShell({
             {renderNavItems("desktop", navItems, pathname)}
           </nav>
 
-          {showEndServiceButton ? (
-            <EndServiceButton compact className="max-w-[9.5rem] shrink-0 sm:max-w-none" />
-          ) : (
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <Button
+              type="button"
               variant="ghost"
               size="sm"
-              className="shrink-0 gap-2"
-              onClick={logout}
-              disabled={busy}
+              className="gap-2"
+              onClick={toggleNightMode}
+              aria-pressed={nightMode}
             >
-              <LogOut className="h-4 w-4" />
+              {nightMode ? (
+                <Sun className="h-4 w-4 shrink-0" aria-hidden />
+              ) : (
+                <Moon className="h-4 w-4 shrink-0" aria-hidden />
+              )}
               <span className="hidden sm:inline">
-                {busy ? "..." : "Déconnexion"}
+                {nightMode ? "Mode jour" : "Mode nuit"}
               </span>
             </Button>
-          )}
+            {showEndServiceButton ? (
+              <EndServiceButton compact className="max-w-[9.5rem] sm:max-w-none" />
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2"
+                onClick={logout}
+                disabled={busy}
+              >
+                <LogOut className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">
+                  {busy ? "..." : "Déconnexion"}
+                </span>
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -294,9 +326,12 @@ export function AppShell({
         className={cn(
           "relative z-10 mx-auto w-full flex-1",
           isServiceHome
-            ? "max-w-none bg-[#EBBFE0] px-0 py-0"
+            ? cn("max-w-none px-0 py-0", serviceShellClass)
             : isServiceArea
-              ? "max-w-7xl bg-[#EBBFE0] px-4 py-8 sm:px-6 lg:px-8"
+              ? cn(
+                  "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
+                  serviceShellClass,
+                )
               : "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
         )}
       >
