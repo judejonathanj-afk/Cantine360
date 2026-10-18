@@ -492,6 +492,9 @@
 .service-area-shell--night .service-on-dark .text-zinc-500 {
   color: rgb(161 161 170);
 }
+.service-area-shell--night .service-on-dark .text-zinc-400 {
+  color: rgb(161 161 170);
+}
 
 /* Cartes / panneaux blancs : conserver un texte sombre lisible */
 .service-area-shell--night .service-surface-light,

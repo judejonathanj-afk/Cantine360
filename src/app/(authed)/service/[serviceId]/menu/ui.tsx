@@ -170,7 +170,7 @@ export function MenuEditor({
 
   return (
     <div className="space-y-4">
-      <p className="mx-auto max-w-4xl px-2 text-center text-base leading-relaxed text-zinc-600 md:text-lg">
+      <p className="service-on-dark mx-auto max-w-4xl px-2 text-center text-base leading-relaxed text-zinc-600 md:text-lg">
         Renseignez <strong className="font-medium text-zinc-900">🥬 entrées</strong>,{" "}
         <strong className="font-medium text-zinc-900">🥘 plats</strong>,{" "}
         <strong className="font-medium text-zinc-900">🧁 desserts</strong> et{" "}
@@ -195,7 +195,7 @@ export function MenuEditor({
         return (
         <section
           key={cat}
-          className="relative overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.025] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100"
+          className="service-surface-light relative overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.025] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100"
         >
           <div className="flex items-stretch gap-2 border-b border-zinc-100 bg-white sm:gap-3">
             <button
