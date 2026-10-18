@@ -164,7 +164,11 @@ export function AppShell({
     pathnameServiceId ??
     (role === "ADMIN" || isServiceHome ? null : rememberedServiceId) ??
     null;
-  const showEndServiceButton = pathnameServiceId != null;
+  const isServiceSaisiePage =
+    pathnameServiceId != null &&
+    new RegExp(`^/service/${pathnameServiceId}$`).test(pathname);
+  const showEndServiceButton =
+    pathnameServiceId != null && !isServiceSaisiePage;
 
   const serviceNavItems: NavItem[] = serviceId
     ? [

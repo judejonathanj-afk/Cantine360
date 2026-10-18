@@ -7,6 +7,7 @@ import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceDayInsightsPanel } from "@/components/service/ServiceDayInsightsPanel";
 import { ServiceWasteWeightPanel } from "@/components/service/ServiceWasteWeightPanel";
+import { EndServiceButton } from "@/components/service/EndServiceButton";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { getAntiWasteKitchenAdvice } from "@/server/getAntiWasteKitchenAdvice";
@@ -119,7 +120,7 @@ export default async function ServicePage({
           <li>
             <strong className="font-semibold text-zinc-900">Fin de service</strong> — saisissez le
             <strong className="font-semibold text-zinc-800">Ouvrir le poids des déchets</strong>,
-            saisissez en grammes, puis « Fin de service » en haut à droite.
+            saisissez en grammes, puis « Fin de service » ci-dessous.
           </li>
         </ol>
       </div>
@@ -188,6 +189,10 @@ export default async function ServicePage({
           .filter((i) => i.label.trim())
           .map((i) => i.label)}
       />
+
+      <div className="mx-auto flex max-w-6xl justify-center px-1 pt-2 sm:px-2">
+        <EndServiceButton className="h-12 w-full max-w-md rounded-xl text-base shadow-md sm:min-w-[14rem]" />
+      </div>
     </div>
   );
 }
