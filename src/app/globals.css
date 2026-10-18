@@ -476,17 +476,61 @@
 .service-area-shell--night {
   color: rgb(244 244 245);
 }
-.service-area-shell--night .text-zinc-900,
-.service-area-shell--night .text-zinc-950 {
+
+/* Texte sur fond noir (intro, titres de page) */
+.service-area-shell--night .service-on-dark .text-zinc-900,
+.service-area-shell--night .service-on-dark .text-zinc-950 {
   color: rgb(250 250 250);
 }
-.service-area-shell--night .text-zinc-800 {
+.service-area-shell--night .service-on-dark .text-zinc-800 {
   color: rgb(228 228 231);
 }
-.service-area-shell--night .text-zinc-600,
-.service-area-shell--night .text-zinc-700 {
+.service-area-shell--night .service-on-dark .text-zinc-600,
+.service-area-shell--night .service-on-dark .text-zinc-700 {
   color: rgb(212 212 216);
 }
+.service-area-shell--night .service-on-dark .text-zinc-500 {
+  color: rgb(161 161 170);
+}
+
+/* Cartes / panneaux blancs : conserver un texte sombre lisible */
+.service-area-shell--night .service-surface-light,
+.service-area-shell--night .bg-white {
+  color: rgb(24 24 27);
+}
+.service-area-shell--night .service-surface-light .text-zinc-900,
+.service-area-shell--night .bg-white .text-zinc-900 {
+  color: rgb(24 24 27);
+}
+.service-area-shell--night .service-surface-light .text-zinc-950,
+.service-area-shell--night .bg-white .text-zinc-950 {
+  color: rgb(9 9 11);
+}
+.service-area-shell--night .service-surface-light .text-zinc-800,
+.service-area-shell--night .bg-white .text-zinc-800 {
+  color: rgb(39 39 42);
+}
+.service-area-shell--night .service-surface-light .text-zinc-700,
+.service-area-shell--night .bg-white .text-zinc-700 {
+  color: rgb(63 63 70);
+}
+.service-area-shell--night .service-surface-light .text-zinc-600,
+.service-area-shell--night .bg-white .text-zinc-600 {
+  color: rgb(82 82 91);
+}
+.service-area-shell--night .service-surface-light .text-zinc-500,
+.service-area-shell--night .bg-white .text-zinc-500 {
+  color: rgb(113 113 122);
+}
+.service-area-shell--night .service-surface-light .text-zinc-400,
+.service-area-shell--night .bg-white .text-zinc-400 {
+  color: rgb(161 161 170);
+}
+.service-area-shell--night .service-surface-light .text-emerald-800,
+.service-area-shell--night .bg-white .text-emerald-800 {
+  color: rgb(6 95 70);
+}
+
 .service-area-shell--night .service-home {
   background: #000;
   color: #f4f4f5;
