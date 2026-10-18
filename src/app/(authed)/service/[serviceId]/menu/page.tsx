@@ -73,7 +73,7 @@ export default async function ServiceMenuPage({
         >
           Retour
         </Link>
-        <div className="service-on-dark flex flex-col items-center gap-1 px-2 text-center sm:px-24">
+        <div className="flex flex-col items-center gap-1 px-2 text-center sm:px-24">
           <p className="text-zinc-600">
             <ServiceMealTitle
               mealType={service.mealType}

@@ -121,7 +121,7 @@ export function ServiceDayInsightsPanel({
   return (
     <section
       aria-label="Repères du service — régimes, grammage et antigaspillage"
-      className="service-surface-light mx-auto max-w-6xl overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)]"
+      className="mx-auto max-w-6xl overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)]"
     >
       {dietList.visible ? (
         <Collapsible

@@ -97,7 +97,7 @@ export default async function ServicePage({
 
   return (
     <div className="space-y-6">
-      <div className="service-on-dark min-w-0 space-y-3 text-center">
+      <div className="min-w-0 space-y-3 text-center">
         <h1 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">Saisie par classe</h1>
         <ServiceMealTitle
           mealType={service.mealType}

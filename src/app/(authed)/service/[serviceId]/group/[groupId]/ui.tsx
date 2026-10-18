@@ -114,9 +114,9 @@ export function GroupMetricsEditor({
 
   return (
     <div className="space-y-6">
-      <div className="service-on-dark relative px-2">
+      <div className="relative px-2">
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1fr)] sm:items-start">
-          <div className="service-surface-light rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-left sm:mt-1 sm:max-w-[16rem]">
+          <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-left sm:mt-1 sm:max-w-[16rem]">
             <p className="text-xs font-bold uppercase tracking-wide text-zinc-700">
               À faire
             </p>
@@ -163,7 +163,7 @@ export function GroupMetricsEditor({
         </div>
       </div>
 
-      <div className="service-on-dark space-y-4">
+      <div className="space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm text-zinc-600">
             {status === "offline" ? (
@@ -179,13 +179,13 @@ export function GroupMetricsEditor({
                     : "À jour"}
             </span>
           </div>
-          <div className="service-surface-light rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
+          <div className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
             Autosave
           </div>
         </div>
 
         {!online ? (
-          <p className="service-surface-light rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
+          <p className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
             Hors ligne : les chiffres sont gardés sur cet appareil et seront
             synchronisés au retour du réseau.
           </p>
@@ -237,8 +237,8 @@ export function GroupMetricsEditor({
       </div>
 
       {allergenStudents ? (
-        <section className="service-on-dark space-y-4">
-          <div className="border-t border-zinc-600/40 pt-6" role="separator" aria-hidden />
+        <section className="space-y-4">
+          <div className="border-t border-zinc-300 pt-6" role="separator" aria-hidden />
           <h2 className="flex items-center justify-center gap-2 text-lg font-semibold text-zinc-900 sm:text-xl">
             <AlertTriangle
               className="h-5 w-5 shrink-0 text-yellow-500 sm:h-6 sm:w-6"

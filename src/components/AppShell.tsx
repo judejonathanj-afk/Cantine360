@@ -8,8 +8,6 @@ import {
   BarChart3,
   FileDown,
   LogOut,
-  Moon,
-  Sun,
   ChefHat,
   Users,
   ClipboardList,
@@ -26,8 +24,6 @@ import {
   readRememberedServiceId,
   rememberActiveServiceId,
 } from "@/lib/activeService";
-import { useNightMode } from "@/hooks/useNightMode";
-
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
@@ -113,8 +109,16 @@ export function AppShell({
   children,
 }: Props) {
   const pathname = usePathname();
-  const { nightMode, toggleNightMode } = useNightMode();
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+    try {
+      localStorage.removeItem("cantine360-night-mode");
+    } catch {
+      /* ignore */
+    }
+  }, []);
   const [rememberedServiceId, setRememberedServiceId] = useState<string | null>(
     initialServiceId,
   );
@@ -233,14 +237,7 @@ export function AppShell({
           ]
         : [...serviceNavItems, ...(antiWasteNav ? [antiWasteNav] : [])];
 
-  const serviceShellClass = isServiceArea
-    ? cn(
-        "service-area-shell",
-        nightMode
-          ? "service-area-shell--night bg-black"
-          : "service-area-shell--day bg-white",
-      )
-    : null;
+  const serviceShellClass = isServiceArea ? "bg-white" : null;
 
   return (
     <div
@@ -282,41 +279,22 @@ export function AppShell({
             {renderNavItems("desktop", navItems, pathname)}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          {showEndServiceButton ? (
+            <EndServiceButton compact className="max-w-[9.5rem] shrink-0 sm:max-w-none" />
+          ) : (
             <Button
-              type="button"
               variant="ghost"
               size="sm"
-              className="gap-2"
-              onClick={toggleNightMode}
-              aria-pressed={nightMode}
+              className="shrink-0 gap-2"
+              onClick={logout}
+              disabled={busy}
             >
-              {nightMode ? (
-                <Sun className="h-4 w-4 shrink-0" aria-hidden />
-              ) : (
-                <Moon className="h-4 w-4 shrink-0" aria-hidden />
-              )}
+              <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">
-                {nightMode ? "Mode jour" : "Mode nuit"}
+                {busy ? "..." : "Déconnexion"}
               </span>
             </Button>
-            {showEndServiceButton ? (
-              <EndServiceButton compact className="max-w-[9.5rem] sm:max-w-none" />
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-2"
-                onClick={logout}
-                disabled={busy}
-              >
-                <LogOut className="h-4 w-4 shrink-0" />
-                <span className="hidden sm:inline">
-                  {busy ? "..." : "Déconnexion"}
-                </span>
-              </Button>
-            )}
-          </div>
+          )}
         </div>
       </header>
 

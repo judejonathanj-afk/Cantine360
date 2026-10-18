@@ -301,7 +301,7 @@ export function ServiceWasteWeightPanel({
 
   return (
     <div className={cn("mx-auto max-w-6xl space-y-4 px-1 sm:space-y-6 sm:px-2", className)}>
-      <section className="service-surface-light overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.015] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100">
+      <section className="overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.015] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100">
         <button
           type="button"
           onClick={() => setPanelOpen((open) => !open)}
