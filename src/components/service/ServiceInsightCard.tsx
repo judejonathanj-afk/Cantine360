@@ -96,7 +96,7 @@ export function ServiceInsightCard({
               className={cn(
                 "font-bold leading-snug",
                 isDense ? "text-sm" : "text-base",
-                t.title,
+                embedded ? "text-emerald-800" : t.title,
               )}
             >
               {title}

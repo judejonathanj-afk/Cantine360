@@ -72,7 +72,7 @@ export function AntiWasteServiceBanner({
               <Recycle className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <h2 className="text-sm font-bold leading-snug text-zinc-800">
+              <h2 className="text-sm font-bold leading-snug text-emerald-800">
                 Service enregistré
               </h2>
               <p className="mt-0.5 text-xs leading-snug text-zinc-500">
