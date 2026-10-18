@@ -199,6 +199,7 @@ export function ServiceWasteWeightPanel({
       setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
       setStatus("offline");
       setSavedAck(true);
+      setPanelOpen(false);
       window.dispatchEvent(
         new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
       );
@@ -217,6 +218,7 @@ export function ServiceWasteWeightPanel({
         setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
         setStatus("offline");
         setSavedAck(true);
+        setPanelOpen(false);
         window.dispatchEvent(
           new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
         );
@@ -239,6 +241,7 @@ export function ServiceWasteWeightPanel({
       setPrimInput(gramsToInput(next.PRIMAIRE));
       setStatus("saved");
       setSavedAck(true);
+      setPanelOpen(false);
       window.dispatchEvent(
         new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
       );
@@ -249,6 +252,7 @@ export function ServiceWasteWeightPanel({
       setSaved({ MATERNELLE: parsedMat, PRIMAIRE: parsedPrim });
       setStatus("offline");
       setSavedAck(true);
+      setPanelOpen(false);
       window.dispatchEvent(
         new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
       );
