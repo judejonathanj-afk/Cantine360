@@ -19,7 +19,9 @@ export function ServiceSchoolFilter({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-zinc-700">École :</span>
+      <span className="service-filter-label text-sm font-semibold text-zinc-700">
+        École :
+      </span>
       <button
         type="button"
         onClick={() => onChange("all")}

@@ -105,9 +105,11 @@ export function ServiceClassGrid({
 
       {open ? (
         <div className="space-y-4">
-          {toolbar}
+          {toolbar ? (
+            <div className="service-on-dark space-y-4">{toolbar}</div>
+          ) : null}
           {cards.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
+            <p className="service-surface-light rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
               Aucune classe pour ce filtre école / niveau.
             </p>
           ) : (

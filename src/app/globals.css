@@ -503,6 +503,10 @@
 .service-area-shell--night .service-on-dark .text-emerald-800 {
   color: rgb(110 231 183);
 }
+.service-area-shell--night .service-on-dark .service-filter-label,
+.service-area-shell--night .service-on-dark .text-zinc-700 {
+  color: rgb(228 228 231);
+}
 
 /* Cartes / panneaux blancs : conserver un texte sombre lisible */
 .service-area-shell--night .service-surface-light,
