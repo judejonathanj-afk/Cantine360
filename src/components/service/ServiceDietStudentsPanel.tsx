@@ -163,13 +163,9 @@ export function ServiceDietStudentsExpandedContent({
   return (
     <CollapsibleContent
       className={cn(
-        "flex min-h-0 flex-col border border-t-0 pb-3 pt-2 text-zinc-900 sm:pb-4",
+        "flex min-h-0 flex-col border border-t-0 border-[#E8D84C] bg-white pb-3 pt-2 text-zinc-900 sm:pb-4",
         className,
       )}
-      style={{
-        backgroundColor: DIET_PANEL_BG,
-        borderColor: DIET_PANEL_BORDER,
-      }}
     >
       <p className="shrink-0 text-[10px] leading-snug text-zinc-600 sm:text-xs">
         Hors allergènes UE-14 — alternative sans porc / végétarienne.
