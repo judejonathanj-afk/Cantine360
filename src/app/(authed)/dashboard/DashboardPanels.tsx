@@ -255,8 +255,7 @@ export default function DashboardPanels({
   return (
     <div
       className={cn(
-        "dashboard-v2 space-y-8",
-        !isKitchen && "dashboard-v2--admin",
+        "dashboard-v2 dashboard-v2--admin space-y-8",
       )}
     >
       <DashboardHeroBanner
