@@ -13,10 +13,11 @@ import {
   ClipboardList,
   GraduationCap,
   Recycle,
+  Menu,
+  X,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { OfflineSyncBanner } from "@/components/service/OfflineSyncBanner";
 import { EndServiceButton } from "@/components/service/EndServiceButton";
 import {
@@ -54,52 +55,12 @@ const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
 ];
 
-function renderNavItems(
-  variant: "desktop" | "mobile",
-  navItems: NavItem[],
-  pathname: string,
-) {
-  return navItems.map((item) => {
-    const Icon = item.icon;
-    const active = item.isActive
-      ? item.isActive(pathname)
-      : pathname === item.href || pathname.startsWith(item.href + "/");
-    if (variant === "desktop") {
-      return (
-        <Link
-          key={item.href}
-          href={item.href}
-          className={cn(
-            "relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-            active
-              ? "text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground",
-          )}
-        >
-          {active ? (
-            <span className="absolute inset-0 rounded-full bg-primary shadow-lg shadow-primary/25" />
-          ) : null}
-          <span className="relative z-10 flex items-center gap-2">
-            <Icon className="h-4 w-4" />
-            {item.label}
-          </span>
-        </Link>
-      );
-    }
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        className={cn(
-          "flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium",
-          active ? "text-primary" : "text-muted-foreground",
-        )}
-      >
-        <Icon className="h-5 w-5" />
-        {item.label}
-      </Link>
-    );
-  });
+const LIME = "#d1f18d";
+
+function isNavActive(item: NavItem, pathname: string) {
+  return item.isActive
+    ? item.isActive(pathname)
+    : pathname === item.href || pathname.startsWith(item.href + "/");
 }
 
 export function AppShell({
@@ -110,6 +71,7 @@ export function AppShell({
 }: Props) {
   const pathname = usePathname();
   const [busy, setBusy] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.remove("dark");
@@ -239,62 +201,153 @@ export function AppShell({
 
   const serviceShellClass = isServiceArea ? "bg-white" : null;
 
+  const homeHref = role === "ADMIN" ? "/admin/dashboard" : "/service";
+
   return (
     <div
       className={cn(
-        "relative flex min-h-screen flex-1 flex-col pb-20 md:pb-0",
+        "relative flex min-h-screen flex-1 flex-col",
         serviceShellClass ?? "bg-background",
       )}
     >
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
-          <Link
-            href={role === "ADMIN" ? "/admin/dashboard" : "/service"}
-            className="flex min-w-0 max-w-[45%] shrink items-center gap-2 sm:max-w-[14rem] sm:gap-3 md:max-w-[16rem]"
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
-              <ChefHat className="h-5 w-5" />
-            </div>
-            <div className="min-w-0 flex flex-col">
-              <span className="truncate text-lg font-bold text-foreground">Cantine360</span>
-              <div className="mt-0.5 flex min-w-0 items-center gap-1">
-                <Badge variant="secondary" className="shrink-0 text-xs">
-                  <ChefHat className="mr-1 h-3 w-3" />
-                  {role === "ADMIN" ? "Admin" : "Cuisine"}
-                </Badge>
-                {establishmentLabel ? (
-                  <Badge
-                    variant="outline"
-                    className="min-w-0 max-w-[5.5rem] shrink text-xs sm:max-w-[8rem] md:max-w-[10rem]"
-                    title={establishmentLabel}
-                  >
-                    <span className="block truncate">{establishmentLabel}</span>
-                  </Badge>
-                ) : null}
-              </div>
-            </div>
-          </Link>
-
-          <nav className="hidden shrink-0 items-center gap-1 rounded-full bg-secondary/50 p-1 md:flex">
-            {renderNavItems("desktop", navItems, pathname)}
-          </nav>
-
-          {showEndServiceButton ? (
-            <EndServiceButton compact className="max-w-[9.5rem] shrink-0 sm:max-w-none" />
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="shrink-0 gap-2"
-              onClick={logout}
-              disabled={busy}
+      <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex items-center justify-between gap-3 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-4 sm:px-5 sm:py-2.5">
+            <Link
+              href={homeHref}
+              className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3"
+              onClick={() => setMenuOpen(false)}
             >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">
-                {busy ? "..." : "Déconnexion"}
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black sm:h-11 sm:w-11 sm:rounded-[14px]">
+                <ChefHat className="h-5 w-5 text-[#d1f18d]" strokeWidth={2} />
               </span>
-            </Button>
-          )}
+              <span className="min-w-0">
+                <span className="block truncate text-[17px] font-extrabold uppercase tracking-[-0.04em] text-black sm:text-[19px]">
+                  Cantine360
+                </span>
+                <span className="mt-0.5 hidden truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-black/45 sm:block">
+                  {role === "ADMIN" ? "Admin" : "Cuisine"}
+                  {establishmentLabel ? ` · ${establishmentLabel}` : ""}
+                </span>
+              </span>
+            </Link>
+
+            <nav
+              aria-label="Navigation principale"
+              className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:gap-8 lg:flex"
+            >
+              {navItems.map((item) => {
+                const active = isNavActive(item, pathname);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "whitespace-nowrap py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors",
+                      active ? "text-black" : "text-[#1a1a1a]/70 hover:text-black",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="flex shrink-0 items-center gap-2">
+              {showEndServiceButton ? (
+                <EndServiceButton capsule />
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    disabled={busy}
+                    className="group hidden items-stretch overflow-hidden rounded-full bg-black disabled:opacity-60 sm:flex"
+                  >
+                    <span className="flex items-center px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:px-5 sm:text-[11px]">
+                      {busy ? "..." : "Déconnexion"}
+                    </span>
+                    <span
+                      className="flex w-11 items-center justify-center transition-transform group-hover:scale-105 sm:w-12"
+                      style={{ backgroundColor: LIME }}
+                    >
+                      <LogOut size={16} strokeWidth={2.5} className="text-black" />
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Déconnexion"
+                    onClick={logout}
+                    disabled={busy}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black sm:hidden"
+                  >
+                    <span
+                      className="flex h-8 w-8 items-center justify-center rounded-full"
+                      style={{ backgroundColor: LIME }}
+                    >
+                      <LogOut size={15} className="text-black" />
+                    </span>
+                  </button>
+                </>
+              )}
+
+              <button
+                type="button"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 lg:hidden"
+                aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                aria-expanded={menuOpen}
+                aria-controls="app-mobile-navigation"
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
+          </div>
+
+          {menuOpen ? (
+            <nav
+              id="app-mobile-navigation"
+              aria-label="Navigation mobile"
+              className="mt-3 rounded-3xl border border-black/[0.06] bg-white p-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] lg:hidden"
+            >
+              {navItems.map((item) => {
+                const active = isNavActive(item, pathname);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={cn(
+                      "block border-b border-zinc-100 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] last:border-0",
+                      active ? "text-black" : "text-black/70",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+              {showEndServiceButton ? (
+                <div className="mt-3">
+                  <EndServiceButton className="w-full rounded-full" />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={logout}
+                  disabled={busy}
+                  className="mt-3 flex w-full items-center justify-between rounded-full bg-black px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white disabled:opacity-60"
+                >
+                  {busy ? "..." : "Déconnexion"}
+                  <span
+                    className="flex h-9 w-9 items-center justify-center rounded-full"
+                    style={{ backgroundColor: LIME }}
+                  >
+                    <ArrowRight size={16} className="text-black" />
+                  </span>
+                </button>
+              )}
+            </nav>
+          ) : null}
         </div>
       </header>
 
@@ -306,21 +359,12 @@ export function AppShell({
           isServiceHome
             ? cn("max-w-none px-0 py-0", serviceShellClass)
             : isServiceArea
-              ? cn(
-                  "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
-                  serviceShellClass,
-                )
+              ? cn("max-w-7xl px-4 py-8 sm:px-6 lg:px-8", serviceShellClass)
               : "max-w-7xl px-4 py-8 sm:px-6 lg:px-8",
         )}
       >
         {children}
       </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-card/90 backdrop-blur-xl md:hidden">
-        <div className="flex justify-around py-2">
-          {renderNavItems("mobile", navItems, pathname)}
-        </div>
-      </nav>
     </div>
   );
 }
