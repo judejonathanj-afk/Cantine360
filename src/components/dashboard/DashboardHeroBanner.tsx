@@ -104,7 +104,7 @@ export function DashboardHeroBanner({
             )}
             <div className="min-w-0">
               <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
-                {isKitchen ? "Pilotage cuisine" : adminWelcomeTitle}
+                {isKitchen ? "Vue cuisine" : adminWelcomeTitle}
               </h1>
               <p
                 className={cn(
