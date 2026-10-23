@@ -234,19 +234,23 @@ export function AppShell({
 
             <nav
               aria-label="Navigation principale"
-              className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:gap-8 lg:flex"
+              className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:gap-2 lg:flex"
             >
               {navItems.map((item) => {
+                const Icon = item.icon;
                 const active = isNavActive(item, pathname);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "whitespace-nowrap py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors",
-                      active ? "text-black" : "text-[#1a1a1a]/70 hover:text-black",
+                      "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[12px] font-extrabold uppercase tracking-[0.08em] transition-colors xl:px-3.5 xl:text-[13px]",
+                      active
+                        ? "bg-black text-white"
+                        : "text-black hover:bg-black/[0.06]",
                     )}
                   >
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2.25} />
                     {item.label}
                   </Link>
                 );
@@ -311,6 +315,7 @@ export function AppShell({
               className="mt-3 rounded-3xl border border-black/[0.06] bg-white p-4 shadow-[0_12px_40px_rgba(0,0,0,0.08)] lg:hidden"
             >
               {navItems.map((item) => {
+                const Icon = item.icon;
                 const active = isNavActive(item, pathname);
                 return (
                   <Link
@@ -318,10 +323,11 @@ export function AppShell({
                     href={item.href}
                     onClick={() => setMenuOpen(false)}
                     className={cn(
-                      "block border-b border-zinc-100 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] last:border-0",
-                      active ? "text-black" : "text-black/70",
+                      "flex items-center gap-2.5 border-b border-zinc-100 py-3.5 text-sm font-extrabold uppercase tracking-[0.08em] last:border-0",
+                      active ? "text-black" : "text-black/75",
                     )}
                   >
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={2.25} />
                     {item.label}
                   </Link>
                 );
