@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Recycle } from "lucide-react";
+import { Check, ChevronDown, Recycle } from "lucide-react";
 import { EU14_ALLERGENS, allergenButtonLabel } from "@/lib/allergens";
 import { resolveGrammageSuggestion } from "@/lib/antiWasteGrammageSuggestion";
 import type { DishWasteHistory } from "@/lib/antiWasteGrammageSuggestion";
@@ -433,18 +433,31 @@ export function MenuEditor({
       })}
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4 text-center">
-        <p className="max-w-xl text-sm text-emerald-950">
-          {status ??
-            "Quand tout est saisi, un seul clic enregistre tout le menu (toutes les rubriques)."}
-        </p>
+      <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-[#0d3b2e]"
+            aria-hidden
+          >
+            <Check className="h-5 w-5" strokeWidth={3} />
+          </span>
+          <div className="min-w-0">
+            <p className="text-base font-extrabold leading-tight text-white">
+              Tout est prêt ?
+            </p>
+            <p className="mt-0.5 text-sm leading-snug text-white/80">
+              {status ??
+                "Un seul clic suffit pour enregistrer l’ensemble du menu."}
+            </p>
+          </div>
+        </div>
         <button
           type="button"
           onClick={save}
           disabled={busy}
-          className="shrink-0 rounded-xl border border-emerald-700 bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-50 sm:min-w-[11rem]"
+          className="shrink-0 rounded-2xl bg-[#00c46a] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#00b05f] active:bg-[#009e55] disabled:opacity-50 sm:min-w-[11.5rem]"
         >
-          {busy ? "Enregistrement…" : "Enregistrer"}
+          {busy ? "Enregistrement…" : "Enregistrer le menu"}
         </button>
       </div>
     </div>
