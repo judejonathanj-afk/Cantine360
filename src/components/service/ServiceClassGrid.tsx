@@ -113,7 +113,7 @@ export function ServiceClassGrid({
       </section>
 
       {open ? (
-        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#eef4ef] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
+        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
           {toolbar}
           {cards.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
