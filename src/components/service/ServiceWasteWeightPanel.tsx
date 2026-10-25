@@ -336,7 +336,7 @@ export function ServiceWasteWeightPanel({
       </section>
 
       {panelOpen ? (
-        <>
+        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#eef4ef] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-200 shadow-md">
       <div className="flex items-center gap-3 bg-[#1e2a3a] px-4 py-4 text-white sm:px-5">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">
@@ -447,7 +447,7 @@ export function ServiceWasteWeightPanel({
     {bilanTips.length > 0 ? (
       <AntiWasteEndOfServiceBilan tips={bilanTips} />
     ) : null}
-        </>
+        </div>
       ) : null}
 
     </div>
