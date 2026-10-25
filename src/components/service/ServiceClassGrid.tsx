@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, type ReactNode, type WheelEvent } from "react";
 import { ChevronDown, GraduationCap } from "lucide-react";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
@@ -20,6 +20,15 @@ export type ServiceClassCard = {
   refusedCount: number;
   groupSummary: GroupAllergenSummary | undefined;
 };
+
+function chainPageScroll(event: WheelEvent<HTMLDivElement>) {
+  const el = event.currentTarget;
+  const atTop = el.scrollTop <= 0;
+  const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+  if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+    window.scrollBy({ top: event.deltaY });
+  }
+}
 
 function countDone(cards: ServiceClassCard[]) {
   return cards.filter(
@@ -111,7 +120,10 @@ export function ServiceClassGrid({
               Aucune classe pour ce filtre école / niveau.
             </p>
           ) : (
-            <div className="max-h-[calc(2*21.5rem+1.25rem)] overflow-y-auto overflow-x-hidden overscroll-y-contain pr-2 [scrollbar-gutter:stable] sm:max-h-[calc(2*22.5rem+1.5rem)] lg:max-h-[calc(2*24rem+2rem)] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
+            <div
+              onWheel={chainPageScroll}
+              className="max-h-[calc(2*21.5rem+1.25rem)] overflow-y-auto overflow-x-hidden overscroll-y-auto pr-2 [scrollbar-gutter:stable] sm:max-h-[calc(2*22.5rem+1.5rem)] lg:max-h-[calc(2*24rem+2rem)] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200"
+            >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
               {cards.map((m) => {
                 const done =
