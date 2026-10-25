@@ -115,6 +115,7 @@ export function ServiceClassGrid({
       {open ? (
         <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
           {toolbar}
+          <div className="overflow-hidden rounded-[20px] bg-white p-3 sm:p-4">
           {cards.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
               Aucune classe pour ce filtre école / niveau.
@@ -122,7 +123,7 @@ export function ServiceClassGrid({
           ) : (
             <div
               onWheel={chainPageScroll}
-              className="max-h-[calc(2*21.5rem+1.25rem)] overflow-y-auto overflow-x-hidden overscroll-y-auto pr-2 [scrollbar-gutter:stable] sm:max-h-[calc(2*22.5rem+1.5rem)] lg:max-h-[calc(2*24rem+2rem)] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200"
+              className="max-h-[calc(2*21.5rem+1.25rem)] overflow-y-auto overflow-x-hidden overscroll-y-auto pr-2 [scrollbar-gutter:stable] sm:max-h-[calc(2*22.5rem+1.5rem)] lg:max-h-[calc(2*24rem+2rem)] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
             >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
               {cards.map((m) => {
@@ -189,6 +190,7 @@ export function ServiceClassGrid({
             </div>
             </div>
           )}
+          </div>
 
           <div className="flex justify-end">
             <button
