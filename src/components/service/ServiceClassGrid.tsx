@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, type ReactNode, type WheelEvent } from "react";
-import { ChevronDown, GraduationCap } from "lucide-react";
+import { Check, ChevronDown, GraduationCap } from "lucide-react";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
@@ -113,7 +113,7 @@ export function ServiceClassGrid({
       </section>
 
       {open ? (
-        <div className="space-y-4">
+        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#eef4ef] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
           {toolbar}
           {cards.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
@@ -189,6 +189,32 @@ export function ServiceClassGrid({
             </div>
             </div>
           )}
+
+          <div className="flex flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-[#0d3b2e]"
+                aria-hidden
+              >
+                <Check className="h-5 w-5" strokeWidth={3} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-base font-extrabold leading-tight text-white">
+                  Tout est prêt ?
+                </p>
+                <p className="mt-0.5 text-sm leading-snug text-white/80">
+                  Un clic enregistre et referme la liste des classes.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="shrink-0 rounded-2xl bg-[#00c46a] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#00b05f] active:bg-[#009e55] sm:min-w-[11.5rem]"
+            >
+              Enregistrer
+            </button>
+          </div>
         </div>
       ) : null}
     </div>
