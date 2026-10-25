@@ -197,7 +197,7 @@ export function MenuEditor({
           key={cat}
           className="relative overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.025] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100"
         >
-          <div className="flex items-stretch gap-2 border-b border-zinc-100 bg-white sm:gap-3">
+          <div className="flex items-stretch border-b border-zinc-100 bg-white">
             <button
               type="button"
               onClick={() => toggleCategory(cat)}
@@ -228,15 +228,13 @@ export function MenuEditor({
                 aria-hidden
               />
             </button>
-            <div className="flex shrink-0 items-center border-l border-zinc-100 px-3 sm:px-4">
-              <button
-                type="button"
-                onClick={() => add(cat)}
-                className="rounded-xl border border-emerald-700 bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700 active:bg-emerald-800 sm:text-sm"
-              >
-                Ajouter
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => add(cat)}
+              className="flex w-[7.25rem] shrink-0 items-center justify-center bg-emerald-600 px-3 text-sm font-bold text-white transition hover:bg-emerald-700 active:bg-emerald-800 sm:w-[9.25rem] sm:text-base"
+            >
+              Ajouter +
+            </button>
           </div>
 
           {isOpen ? (
