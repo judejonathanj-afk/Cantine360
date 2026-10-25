@@ -190,8 +190,8 @@ export default async function ServicePage({
           .map((i) => i.label)}
       />
 
-      <div className="mx-auto flex max-w-6xl justify-center px-1 pt-2 sm:px-2">
-        <EndServiceButton className="h-12 w-full max-w-md rounded-xl text-base shadow-md sm:min-w-[14rem]" />
+      <div className="mx-auto max-w-6xl px-1 pt-2 sm:px-2">
+        <EndServiceButton banner />
       </div>
     </div>
   );

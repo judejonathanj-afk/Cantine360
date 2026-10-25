@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -22,19 +22,52 @@ type Props = {
   className?: string;
   compact?: boolean;
   capsule?: boolean;
+  banner?: boolean;
 };
 
 export function EndServiceButton({
   className,
   compact = false,
   capsule = false,
+  banner = false,
 }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      {capsule ? (
+      {banner ? (
+        <div
+          className={cn(
+            "flex w-full flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] sm:flex-row sm:items-center sm:justify-between sm:px-5",
+            className,
+          )}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-[#0d3b2e]"
+              aria-hidden
+            >
+              <Check className="h-5 w-5" strokeWidth={3} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-base font-extrabold leading-tight text-white">
+                Service terminé ?
+              </p>
+              <p className="mt-0.5 text-sm leading-snug text-white/80">
+                Un clic clôture le service et revient au choix de la date.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="shrink-0 rounded-2xl bg-[#00c46a] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#00b05f] active:bg-[#009e55] sm:min-w-[11.5rem]"
+          >
+            Fin de service
+          </button>
+        </div>
+      ) : capsule ? (
         <>
           <button
             type="button"
