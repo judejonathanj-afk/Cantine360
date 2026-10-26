@@ -96,14 +96,19 @@ export function ServiceClassGrid({
             <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
               {open ? "Masquer les classes" : "Ouvrir les classes"}
             </span>
-            {!open ? (
-              <span className="mt-0.5 block text-sm text-zinc-500">
-                {summaryCards.length} classe{summaryCards.length > 1 ? "s" : ""}
-                {doneCount > 0
-                  ? ` · ${doneCount} saisie${doneCount > 1 ? "s" : ""}`
-                  : " · appuyez pour afficher la grille"}
-              </span>
-            ) : null}
+            <span className="mt-0.5 block text-sm leading-snug text-zinc-500">
+              {!open ? (
+                <>
+                  {summaryCards.length} classe{summaryCards.length > 1 ? "s" : ""}
+                  {doneCount > 0
+                    ? ` · ${doneCount} saisie${doneCount > 1 ? "s" : ""}`
+                    : ""}
+                  {" — "}
+                </>
+              ) : null}
+              Ouvrez, appuyez sur une classe, saisissez présents, servis, RAB et
+              refus, puis Enregistrer.
+            </span>
           </span>
           <ChevronDown
             className={`h-5 w-5 shrink-0 text-zinc-500 transition-transform duration-200 ${open ? "rotate-180" : ""}`}

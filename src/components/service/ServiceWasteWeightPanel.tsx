@@ -292,11 +292,6 @@ export function ServiceWasteWeightPanel({
 
   const shownTotal = parsedTotal ?? totalSaved;
 
-  const closedSummary =
-    shownTotal > 0
-      ? `${shownTotal.toLocaleString("fr-FR")} g (${formatKgFromGrams(shownTotal)}) · maternelle / primaire`
-      : "Après le service — appuyez pour afficher la pesée";
-
   return (
     <div className={cn("mx-auto max-w-6xl space-y-4 px-1 sm:space-y-6 sm:px-2", className)}>
       <section className="overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.015] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100">
@@ -319,9 +314,13 @@ export function ServiceWasteWeightPanel({
             <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
               {panelOpen ? "Masquer le poids des déchets" : "Ouvrir le poids des déchets"}
             </span>
-            {!panelOpen ? (
-              <span className="mt-0.5 block text-sm text-zinc-500">{closedSummary}</span>
-            ) : null}
+            <span className="mt-0.5 block text-sm leading-snug text-zinc-500">
+              {!panelOpen && shownTotal > 0
+                ? `${shownTotal.toLocaleString("fr-FR")} g (${formatKgFromGrams(shownTotal)}) — `
+                : null}
+              Après le repas, saisissez le poids des bacs en grammes (maternelle et
+              primaire), puis Enregistrer.
+            </span>
           </span>
           <ChevronDown
             className={cn(
