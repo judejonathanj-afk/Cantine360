@@ -252,10 +252,10 @@ export function GroupAllergenBadge({
             const dishes = [
               ...new Set([...student.affectedDishes, ...student.dietDishes]),
             ];
-            const dishesLine =
-              dishes.length > 0
-                ? `plats à ne pas servir / à adapter : ${dishes.join(", ")}.`
-                : null;
+            if (dishes.length > 0) {
+              phrases.push(`plats à ne pas servir / à adapter : ${dishes.join(", ")}`);
+            }
+            const lines = phrases.map((phrase) => `${phrase}.`);
             return (
               <li
                 key={student.id}
@@ -265,15 +265,15 @@ export function GroupAllergenBadge({
                   <span className="mr-1.5 inline-flex rounded-full bg-black px-2.5 py-0.5 text-base font-extrabold text-white">
                     {formatStudentKitchenName(student.firstName, student.lastName)}
                   </span>
-                  {phrases.length > 0 ? (
-                    <span className="font-bold text-zinc-950">
-                      {phrases.join(". ")}.
-                    </span>
+                  {lines[0] ? (
+                    <span className="font-bold text-zinc-950">{lines[0]}</span>
                   ) : null}
                 </p>
-                {dishesLine ? (
-                  <p className="mt-0.5 font-bold text-zinc-950">{dishesLine}</p>
-                ) : null}
+                {lines.slice(1).map((line) => (
+                  <p key={line} className="mt-0.5 font-bold text-zinc-950">
+                    {line}
+                  </p>
+                ))}
               </li>
             );
           })}
