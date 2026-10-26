@@ -2,7 +2,6 @@
 
 import { useEffect, type ReactNode } from "react";
 import { ChevronDown, GraduationCap } from "lucide-react";
-import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
 import { ClassCardCounters } from "@/components/service/ClassCardCounters";
 import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
@@ -147,10 +146,25 @@ export function ServiceClassGrid({
                       borderColor: cardColor,
                     }}
                   >
-                    <div className="relative px-10">
+                    <div className="relative flex items-center gap-2 pr-16">
+                      <p className="min-w-0 flex-1 truncate text-center text-sm font-bold leading-none text-black">
+                        {m.schoolName ? (
+                          <span className="font-semibold uppercase tracking-wide text-black/70">
+                            {m.schoolName}
+                          </span>
+                        ) : null}
+                        {m.schoolName ? (
+                          <span className="mx-1.5 font-semibold text-black/40">·</span>
+                        ) : null}
+                        <span className="font-extrabold uppercase tracking-wide">
+                          {m.groupName}
+                        </span>
+                        <span className="mx-1.5 font-semibold text-black/40">·</span>
+                        <span className="font-extrabold">{schoolLevelLabelFr(m.level)}</span>
+                      </p>
                       <span
                         className={[
-                          "absolute right-0 top-0 rounded-full px-2 py-1 text-xs font-semibold",
+                          "absolute right-0 top-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-xs font-semibold",
                           done
                             ? "bg-emerald-50 text-emerald-800"
                             : "bg-white/70 text-zinc-800",
@@ -158,16 +172,6 @@ export function ServiceClassGrid({
                       >
                         {done ? "Saisi" : "À faire"}
                       </span>
-                      <div className="flex flex-col items-center gap-1">
-                        <GroupNameBadge
-                          name={m.groupName}
-                          schoolName={m.schoolName}
-                          align="center"
-                        />
-                        <p className="inline-flex w-fit rounded-full border-2 border-zinc-900 bg-white px-2.5 py-0.5 text-xs font-bold text-zinc-950">
-                          {schoolLevelLabelFr(m.level)}
-                        </p>
-                      </div>
                     </div>
 
                     <GroupAllergenBadge groupSummary={m.groupSummary} hasMenu={hasMenu} />
