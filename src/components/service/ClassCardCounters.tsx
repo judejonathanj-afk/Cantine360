@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Counter } from "@/components/Counter";
 import { enqueueMetricsSave } from "@/lib/offlineMetricsQueue";
 
@@ -67,14 +66,6 @@ export function ClassCardCounters({
         value={m.refusedCount}
         onChange={(refusedCount) => update({ ...m, refusedCount })}
       />
-      <p className="col-span-2 text-right">
-        <Link
-          href={`/service/${serviceId}/group/${groupId}`}
-          className="text-sm font-semibold text-zinc-700 underline-offset-2 hover:underline"
-        >
-          Fiche allergènes
-        </Link>
-      </p>
       </div>
     </div>
   );
