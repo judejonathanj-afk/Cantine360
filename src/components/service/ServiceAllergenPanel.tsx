@@ -3,6 +3,7 @@ import type {
   ServiceAllergenSummary,
   StudentAllergenRow,
 } from "@/server/serviceAllergenSummary";
+import type { ReactNode } from "react";
 import { AlertTriangle } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
@@ -186,7 +187,7 @@ export function GroupAllergenBadge({
     return null;
   }
 
-  const summaryParts: string[] = [];
+  const summaryParts: ReactNode[] = [];
   if (studentsWithAllergens > 0) {
     summaryParts.push(
       `${studentsWithAllergens} allergie${studentsWithAllergens > 1 ? "s" : ""}`,
@@ -198,15 +199,27 @@ export function GroupAllergenBadge({
     );
   }
   if (studentsNoPork > 0) {
-    summaryParts.push(`${studentsNoPork} sans porc`);
+    summaryParts.push(
+      <>
+        {studentsNoPork}{" "}
+        <span className="text-yellow-500">sans porc</span>
+      </>,
+    );
   }
   if (studentsVegetarian > 0) {
     summaryParts.push(
-      `${studentsVegetarian} végétarien${studentsVegetarian > 1 ? "s" : ""}`,
+      <>
+        {studentsVegetarian}{" "}
+        <span className="text-green-600">
+          végétarien{studentsVegetarian > 1 ? "s" : ""}
+        </span>
+      </>,
     );
   }
   if (hasMenu && dietAffectedByMenu > 0) {
-    summaryParts.push(`${dietAffectedByMenu} assiette${dietAffectedByMenu > 1 ? "s" : ""} à adapter`);
+    summaryParts.push(
+      `${dietAffectedByMenu} assiette${dietAffectedByMenu > 1 ? "s" : ""} à adapter`,
+    );
   }
 
   const detailRows = padPreviewStudents(
@@ -229,33 +242,57 @@ export function GroupAllergenBadge({
       </p>
       <div className="rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
       <p className="text-base font-bold leading-snug text-zinc-950">
-        {summaryParts.join(" · ")}
+        {summaryParts.map((part, index) => (
+          <span key={index}>
+            {index > 0 ? " · " : null}
+            {part}
+          </span>
+        ))}
       </p>
       {detailRows.length > 0 ? (
         <ul className="mt-2.5 max-h-[7.5rem] space-y-1.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
           {detailRows.map((student) => {
-            const phrases: string[] = [];
+            const lines: { key: string; content: ReactNode }[] = [];
             if (student.allergens.length > 0) {
               const note = student.allergenNotes?.trim();
-              phrases.push(
-                note
-                  ? `${student.allergens.join(", ")} — ${note}`
-                  : `à ne pas servir : ${student.allergens.join(", ")}`,
-              );
+              lines.push({
+                key: "allergens",
+                content: note
+                  ? `${student.allergens.join(", ")} — ${note}.`
+                  : `à ne pas servir : ${student.allergens.join(", ")}.`,
+              });
             }
             if (student.noPork) {
-              phrases.push("sans porc — ne pas servir de porc");
+              lines.push({
+                key: "no-pork",
+                content: (
+                  <>
+                    <span className="text-yellow-500">sans porc</span>
+                    {" — ne pas servir de porc."}
+                  </>
+                ),
+              });
             }
             if (student.vegetarian) {
-              phrases.push("végétarien — adapter l’assiette");
+              lines.push({
+                key: "vegetarian",
+                content: (
+                  <>
+                    <span className="text-green-600">végétarien</span>
+                    {" — adapter l’assiette."}
+                  </>
+                ),
+              });
             }
             const dishes = [
               ...new Set([...student.affectedDishes, ...student.dietDishes]),
             ];
             if (dishes.length > 0) {
-              phrases.push(`plats à ne pas servir / à adapter : ${dishes.join(", ")}`);
+              lines.push({
+                key: "dishes",
+                content: `plats à ne pas servir / à adapter : ${dishes.join(", ")}.`,
+              });
             }
-            const lines = phrases.map((phrase) => `${phrase}.`);
             return (
               <li
                 key={student.id}
@@ -266,12 +303,12 @@ export function GroupAllergenBadge({
                     {formatStudentKitchenName(student.firstName, student.lastName)}
                   </span>
                   {lines[0] ? (
-                    <span className="font-bold text-zinc-950">{lines[0]}</span>
+                    <span className="font-bold text-zinc-950">{lines[0].content}</span>
                   ) : null}
                 </p>
                 {lines.slice(1).map((line) => (
-                  <p key={line} className="mt-0.5 font-bold text-zinc-950">
-                    {line}
+                  <p key={line.key} className="mt-0.5 font-bold text-zinc-950">
+                    {line.content}
                   </p>
                 ))}
               </li>
