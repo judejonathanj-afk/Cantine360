@@ -38,7 +38,11 @@ export function ClassCardCounters({
   }
 
   return (
-    <div className="mt-4 grid grid-cols-2 gap-2.5">
+    <div className="mt-3">
+      <p className="mb-1.5 text-left text-sm font-extrabold text-zinc-950 sm:text-base">
+        Compteurs
+      </p>
+      <div className="grid grid-cols-2 gap-2.5">
       <Counter
         size="compact"
         label="Présents"
@@ -71,6 +75,7 @@ export function ClassCardCounters({
           Fiche allergènes
         </Link>
       </p>
+      </div>
     </div>
   );
 }
