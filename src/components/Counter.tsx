@@ -50,7 +50,7 @@ export function Counter({
       <div
         className={cn(
           "font-semibold leading-snug text-black",
-          compact ? "text-sm text-zinc-600" : "text-base sm:text-lg",
+          compact ? "text-base text-zinc-600" : "text-base sm:text-lg",
         )}
       >
         {label}
@@ -80,7 +80,7 @@ export function Counter({
           inputMode="numeric"
           className={cn(
             "rounded-xl border border-zinc-300/80 bg-white text-center font-semibold outline-none focus:border-zinc-900",
-            compact ? "w-16 px-1.5 py-2 text-lg" : "w-28 px-3 py-3 text-xl",
+            compact ? "w-[4.5rem] px-1.5 py-2 text-xl" : "w-28 px-3 py-3 text-xl",
           )}
         />
 

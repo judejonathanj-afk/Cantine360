@@ -39,7 +39,7 @@ export function ClassCardCounters({
 
   return (
     <div className="mt-3">
-      <p className="mb-1.5 text-left text-sm font-extrabold text-zinc-950 sm:text-base">
+      <p className="mb-1.5 text-left text-base font-extrabold text-zinc-950 sm:text-lg">
         Compteurs
       </p>
       <div className="grid grid-cols-2 gap-2.5">
@@ -70,7 +70,7 @@ export function ClassCardCounters({
       <p className="col-span-2 text-right">
         <Link
           href={`/service/${serviceId}/group/${groupId}`}
-          className="text-xs font-semibold text-zinc-700 underline-offset-2 hover:underline"
+          className="text-sm font-semibold text-zinc-700 underline-offset-2 hover:underline"
         >
           Fiche allergènes
         </Link>

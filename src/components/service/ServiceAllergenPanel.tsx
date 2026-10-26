@@ -223,16 +223,16 @@ export function GroupAllergenBadge({
 
   return (
     <div className="mt-3">
-      <p className="mb-1.5 flex items-center gap-1.5 text-left text-sm font-extrabold text-zinc-950 sm:text-base">
-        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-700" aria-hidden />
+      <p className="mb-1.5 flex items-center gap-1.5 text-left text-base font-extrabold text-zinc-950 sm:text-lg">
+        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-700" aria-hidden />
         Allergies et régimes
       </p>
       <div className="rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
-      <p className="text-sm font-bold leading-snug text-zinc-950">
+      <p className="text-base font-bold leading-snug text-zinc-950">
         {summaryParts.join(" · ")}
       </p>
       {detailRows.length > 0 ? (
-        <ul className="mt-2.5 max-h-[6.5rem] space-y-1.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
+        <ul className="mt-2.5 max-h-[7.5rem] space-y-1.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
           {detailRows.map((student) => {
             const bits: string[] = [];
             if (student.allergens.length > 0) {
@@ -249,9 +249,9 @@ export function GroupAllergenBadge({
             return (
               <li
                 key={student.id}
-                className="rounded-lg bg-amber-50/80 px-2.5 py-1.5 text-sm leading-snug text-zinc-800"
+                className="rounded-lg bg-amber-50/80 px-2.5 py-1.5 text-base leading-snug text-zinc-800"
               >
-                <span className="mr-1.5 inline-flex rounded-full bg-black px-2 py-0.5 text-sm font-extrabold text-white">
+                <span className="mr-1.5 inline-flex rounded-full bg-black px-2.5 py-0.5 text-base font-extrabold text-white">
                   {formatStudentKitchenName(student.firstName, student.lastName)}
                 </span>
                 {bits.length > 0 ? (
