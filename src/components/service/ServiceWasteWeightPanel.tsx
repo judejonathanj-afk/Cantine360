@@ -6,11 +6,9 @@ import {
   ChevronDown,
   CloudOff,
   GraduationCap,
-  Save,
   Scale,
   Trash2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatKgFromGrams } from "@/lib/serviceGrammage";
@@ -422,26 +420,20 @@ export function ServiceWasteWeightPanel({
       </div>
     </div>
 
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-end gap-2">
       {savedAck && !dirty ? (
-        <p className="text-center text-base font-bold text-emerald-800" role="status">
+        <p className="w-full text-center text-base font-bold text-emerald-800" role="status">
           Déchets enregistrés
         </p>
       ) : null}
-      <Button
+      <button
         type="button"
         disabled={!canSave}
         onClick={() => void save()}
-        className={cn(
-          "h-11 w-full max-w-md rounded-xl px-6 text-base font-semibold shadow-sm sm:min-w-[14rem]",
-          canSave
-            ? "bg-emerald-600 text-white hover:bg-emerald-700"
-            : "bg-zinc-200 text-zinc-500 hover:bg-zinc-200 disabled:bg-zinc-200 disabled:text-zinc-500 disabled:opacity-100",
-        )}
+        className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,196,106,0.35)] transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] active:bg-[#009e55] disabled:bg-[#00c46a] disabled:text-white disabled:opacity-100 motion-reduce:hover:scale-100"
       >
-        <Save className="h-4 w-4 shrink-0" aria-hidden />
         {status === "saving" ? "Enregistrement…" : "Enregistrer"}
-      </Button>
+      </button>
     </div>
 
     {bilanTips.length > 0 ? (
