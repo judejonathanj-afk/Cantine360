@@ -340,9 +340,9 @@ export function ServiceWasteWeightPanel({
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
         labelledBy="saisie-dechets-title"
-        className="max-w-4xl"
+        className="max-w-5xl"
       >
-        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-5">
+        <div className="flex min-h-0 max-h-[96vh] flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-3">
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-md">
       <div className="flex items-center gap-3 bg-[#1e2a3a] px-4 py-4 text-white sm:px-5">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">

@@ -116,20 +116,20 @@ export function ServiceClassGrid({
         open={open}
         onClose={() => onOpenChange(false)}
         labelledBy="saisie-classes-title"
-        className="max-w-6xl"
+        className="max-w-[92rem]"
       >
-        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-5">
-          {toolbar}
-          <div className="overflow-hidden rounded-[20px] bg-white p-3 sm:p-4">
+        <div className="flex h-[96vh] min-h-0 w-full flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:gap-3.5 sm:p-3">
+          <div className="shrink-0">{toolbar}</div>
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] bg-white p-2.5 sm:p-3">
           {cards.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
               Aucune classe pour ce filtre école / niveau.
             </p>
           ) : (
             <div
-              className="max-h-[min(52vh,calc(2*22rem))] overflow-y-auto overflow-x-hidden overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+              className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
             >
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
               {cards.map((m) => {
                 const done =
                   m.presentCount > 0 ||
@@ -143,7 +143,7 @@ export function ServiceClassGrid({
                     key={m.groupId}
                     id={`group-${m.groupId}`}
                     href={`/service/${serviceId}/group/${m.groupId}`}
-                    className="relative scroll-my-24 rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-xl active:scale-[0.98]"
+                    className="relative rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 ease-out hover:z-10 hover:scale-[1.03] hover:shadow-xl active:scale-[0.98]"
                     style={{
                       backgroundColor: cardColor,
                       borderColor: cardColor,
@@ -196,7 +196,7 @@ export function ServiceClassGrid({
           )}
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex shrink-0 justify-end">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
