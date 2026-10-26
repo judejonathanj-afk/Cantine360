@@ -252,21 +252,27 @@ export function GroupAllergenBadge({
             const dishes = [
               ...new Set([...student.affectedDishes, ...student.dietDishes]),
             ];
-            if (dishes.length > 0) {
-              phrases.push(`plats à ne pas servir / à adapter : ${dishes.join(", ")}`);
-            }
+            const dishesLine =
+              dishes.length > 0
+                ? `plats à ne pas servir / à adapter : ${dishes.join(", ")}.`
+                : null;
             return (
               <li
                 key={student.id}
                 className="rounded-lg bg-amber-50/80 px-2.5 py-1.5 text-base leading-snug text-zinc-800"
               >
-                <span className="mr-1.5 inline-flex rounded-full bg-black px-2.5 py-0.5 text-base font-extrabold text-white">
-                  {formatStudentKitchenName(student.firstName, student.lastName)}
-                </span>
-                {phrases.length > 0 ? (
-                  <span className="font-bold text-zinc-950">
-                    {phrases.join(". ")}.
+                <p>
+                  <span className="mr-1.5 inline-flex rounded-full bg-black px-2.5 py-0.5 text-base font-extrabold text-white">
+                    {formatStudentKitchenName(student.firstName, student.lastName)}
                   </span>
+                  {phrases.length > 0 ? (
+                    <span className="font-bold text-zinc-950">
+                      {phrases.join(". ")}.
+                    </span>
+                  ) : null}
+                </p>
+                {dishesLine ? (
+                  <p className="mt-0.5 font-bold text-zinc-950">{dishesLine}</p>
                 ) : null}
               </li>
             );
