@@ -1,4 +1,8 @@
-import type { GroupAllergenSummary, ServiceAllergenSummary } from "@/server/serviceAllergenSummary";
+import type {
+  GroupAllergenSummary,
+  ServiceAllergenSummary,
+  StudentAllergenRow,
+} from "@/server/serviceAllergenSummary";
 import { AlertTriangle } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
@@ -68,6 +72,98 @@ export function ServiceAllergenOverview({
   );
 }
 
+const PREVIEW_STUDENTS: Array<
+  Pick<
+    StudentAllergenRow,
+    | "firstName"
+    | "lastName"
+    | "allergens"
+    | "noPork"
+    | "vegetarian"
+    | "affectedDishes"
+    | "dietDishes"
+  >
+> = [
+  {
+    firstName: "Hugo",
+    lastName: "Bernard",
+    allergens: ["Arachides"],
+    noPork: false,
+    vegetarian: false,
+    affectedDishes: ["lasagnes maison"],
+    dietDishes: [],
+  },
+  {
+    firstName: "Emma",
+    lastName: "Petit",
+    allergens: ["Œufs"],
+    noPork: false,
+    vegetarian: true,
+    affectedDishes: ["yaourt"],
+    dietDishes: ["lasagnes maison"],
+  },
+  {
+    firstName: "Louis",
+    lastName: "Moreau",
+    allergens: ["Lait"],
+    noPork: true,
+    vegetarian: false,
+    affectedDishes: ["yaourt"],
+    dietDishes: [],
+  },
+  {
+    firstName: "Chloé",
+    lastName: "Lefevre",
+    allergens: ["Fruits à coque"],
+    noPork: false,
+    vegetarian: false,
+    affectedDishes: ["lasagnes maison"],
+    dietDishes: [],
+  },
+  {
+    firstName: "Gabriel",
+    lastName: "Roux",
+    allergens: ["Poisson"],
+    noPork: false,
+    vegetarian: false,
+    affectedDishes: [],
+    dietDishes: [],
+  },
+  {
+    firstName: "Inès",
+    lastName: "Garcia",
+    allergens: ["Soja"],
+    noPork: false,
+    vegetarian: true,
+    affectedDishes: ["yaourt"],
+    dietDishes: ["lasagnes maison"],
+  },
+];
+
+function padPreviewStudents(
+  rows: StudentAllergenRow[],
+  group: GroupAllergenSummary,
+): StudentAllergenRow[] {
+  if (rows.length >= 8) return rows;
+  const extras: StudentAllergenRow[] = PREVIEW_STUDENTS.map((preview, index) => ({
+    id: `preview-${group.groupId}-${index}`,
+    firstName: preview.firstName,
+    lastName: preview.lastName,
+    allergens: preview.allergens,
+    allergenNotes: null,
+    schoolName: group.schoolName,
+    className: group.className,
+    groupLabel: group.groupLabel,
+    noPork: preview.noPork,
+    vegetarian: preview.vegetarian,
+    affectedByMenu: preview.affectedDishes.length > 0,
+    affectedDishes: preview.affectedDishes,
+    dietAffectedByMenu: preview.dietDishes.length > 0,
+    dietDishes: preview.dietDishes,
+  }));
+  return [...rows, ...extras].slice(0, 8);
+}
+
 export function GroupAllergenBadge({
   groupSummary,
   hasMenu,
@@ -113,13 +209,16 @@ export function GroupAllergenBadge({
     summaryParts.push(`${dietAffectedByMenu} assiette${dietAffectedByMenu > 1 ? "s" : ""} à adapter`);
   }
 
-  const detailRows = students.filter(
-    (student) =>
-      student.allergens.length > 0 ||
-      student.noPork ||
-      student.vegetarian ||
-      student.affectedByMenu ||
-      student.dietAffectedByMenu,
+  const detailRows = padPreviewStudents(
+    students.filter(
+      (student) =>
+        student.allergens.length > 0 ||
+        student.noPork ||
+        student.vegetarian ||
+        student.affectedByMenu ||
+        student.dietAffectedByMenu,
+    ),
+    groupSummary,
   );
 
   return (
