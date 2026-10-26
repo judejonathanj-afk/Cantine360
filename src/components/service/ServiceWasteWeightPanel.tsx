@@ -295,30 +295,30 @@ export function ServiceWasteWeightPanel({
 
   return (
     <div className={cn("mx-auto max-w-6xl space-y-4 px-1 sm:space-y-6 sm:px-2", className)}>
-      <section className="overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.015] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100">
+      <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
         <button
           type="button"
           onClick={() => setPanelOpen((open) => !open)}
           aria-expanded={panelOpen}
-          className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50/80 sm:px-5 sm:py-5"
+          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
         >
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#d2ff5a] text-zinc-900 sm:h-11 sm:w-11"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-[#0d3b2e] sm:h-11 sm:w-11"
             aria-hidden
           >
             <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
               Fin de service
             </span>
             <span
               id="saisie-dechets-title"
-              className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg"
+              className="block text-base font-extrabold tracking-tight text-white sm:text-lg"
             >
               {panelOpen ? "Masquer le poids des déchets" : "Ouvrir le poids des déchets"}
             </span>
-            <span className="mt-0.5 block text-sm leading-snug text-zinc-500">
+            <span className="mt-0.5 block text-sm leading-snug text-white/80">
               {!panelOpen && shownTotal > 0
                 ? `${shownTotal.toLocaleString("fr-FR")} g (${formatKgFromGrams(shownTotal)}) — `
                 : null}
@@ -328,7 +328,7 @@ export function ServiceWasteWeightPanel({
           </span>
           <ChevronDown
             className={cn(
-              "h-5 w-5 shrink-0 text-zinc-500 transition-transform duration-200",
+              "h-5 w-5 shrink-0 text-white/70 transition-transform duration-200",
               panelOpen && "rotate-180",
             )}
             aria-hidden
