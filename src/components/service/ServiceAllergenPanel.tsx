@@ -123,18 +123,15 @@ export function GroupAllergenBadge({
   );
 
   return (
-    <div className="mt-3 rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
-      <div className="flex items-start gap-2.5">
-        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-extrabold text-amber-950 sm:text-base">
-            Allergies et régimes
-          </p>
-          <p className="mt-0.5 text-sm font-semibold leading-snug text-zinc-800">
-            {summaryParts.join(" · ")}
-          </p>
-        </div>
-      </div>
+    <div className="mt-3">
+      <p className="mb-1.5 flex items-center gap-1.5 text-left text-sm font-extrabold text-zinc-950 sm:text-base">
+        <AlertTriangle className="h-4 w-4 shrink-0 text-amber-700" aria-hidden />
+        Allergies et régimes
+      </p>
+      <div className="rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
+      <p className="text-sm font-semibold leading-snug text-zinc-800">
+        {summaryParts.join(" · ")}
+      </p>
       {detailRows.length > 0 ? (
         <ul className="mt-2.5 max-h-36 space-y-1.5 overflow-y-auto overscroll-contain pr-1">
           {detailRows.map((student) => {
@@ -166,6 +163,7 @@ export function GroupAllergenBadge({
           })}
         </ul>
       ) : null}
+      </div>
     </div>
   );
 }
