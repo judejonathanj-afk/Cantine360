@@ -234,17 +234,26 @@ export function GroupAllergenBadge({
       {detailRows.length > 0 ? (
         <ul className="mt-2.5 max-h-[7.5rem] space-y-1.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
           {detailRows.map((student) => {
-            const bits: string[] = [];
+            const phrases: string[] = [];
             if (student.allergens.length > 0) {
-              bits.push(student.allergens.join(", "));
+              const note = student.allergenNotes?.trim();
+              phrases.push(
+                note
+                  ? `${student.allergens.join(", ")} — ${note}`
+                  : `à ne pas servir : ${student.allergens.join(", ")}`,
+              );
             }
-            if (student.noPork) bits.push("sans porc");
-            if (student.vegetarian) bits.push("végétarien");
-            if (student.affectedDishes.length > 0) {
-              bits.push(`menu : ${student.affectedDishes.join(", ")}`);
+            if (student.noPork) {
+              phrases.push("sans porc — ne pas servir de porc");
             }
-            if (student.dietDishes.length > 0) {
-              bits.push(`adapter : ${student.dietDishes.join(", ")}`);
+            if (student.vegetarian) {
+              phrases.push("végétarien — adapter l’assiette");
+            }
+            const dishes = [
+              ...new Set([...student.affectedDishes, ...student.dietDishes]),
+            ];
+            if (dishes.length > 0) {
+              phrases.push(`plats à ne pas servir / à adapter : ${dishes.join(", ")}`);
             }
             return (
               <li
@@ -254,8 +263,10 @@ export function GroupAllergenBadge({
                 <span className="mr-1.5 inline-flex rounded-full bg-black px-2.5 py-0.5 text-base font-extrabold text-white">
                   {formatStudentKitchenName(student.firstName, student.lastName)}
                 </span>
-                {bits.length > 0 ? (
-                  <span className="font-bold text-zinc-950">{bits.join(" · ")}</span>
+                {phrases.length > 0 ? (
+                  <span className="font-bold text-zinc-950">
+                    {phrases.join(". ")}.
+                  </span>
                 ) : null}
               </li>
             );
