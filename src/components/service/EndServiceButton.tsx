@@ -39,7 +39,7 @@ export function EndServiceButton({
       {banner ? (
         <div
           className={cn(
-            "flex w-full flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:flex-row sm:items-center sm:justify-between sm:px-5",
+            "flex w-fit max-w-full flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:flex-row sm:items-center sm:gap-6 sm:px-5",
             className,
           )}
         >
@@ -62,7 +62,7 @@ export function EndServiceButton({
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="shrink-0 rounded-2xl bg-[#00c46a] px-5 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] active:bg-[#009e55] motion-reduce:hover:scale-100 sm:min-w-[11.5rem]"
+            className="w-fit shrink-0 rounded-2xl bg-[#00c46a] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] active:bg-[#009e55] motion-reduce:hover:scale-100"
           >
             Fin de service
           </button>
