@@ -129,11 +129,11 @@ export function GroupAllergenBadge({
         Allergies et régimes
       </p>
       <div className="rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
-      <p className="text-sm font-semibold leading-snug text-zinc-800">
+      <p className="text-sm font-bold leading-snug text-zinc-950">
         {summaryParts.join(" · ")}
       </p>
       {detailRows.length > 0 ? (
-        <ul className="mt-2.5 max-h-36 space-y-1.5 overflow-y-auto overscroll-contain pr-1">
+        <ul className="mt-2.5 max-h-[6.5rem] space-y-1.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
           {detailRows.map((student) => {
             const bits: string[] = [];
             if (student.allergens.length > 0) {
@@ -156,7 +156,7 @@ export function GroupAllergenBadge({
                   {formatStudentKitchenName(student.firstName, student.lastName)}
                 </span>
                 {bits.length > 0 ? (
-                  <span className="text-zinc-700">{bits.join(" · ")}</span>
+                  <span className="font-bold text-zinc-950">{bits.join(" · ")}</span>
                 ) : null}
               </li>
             );
