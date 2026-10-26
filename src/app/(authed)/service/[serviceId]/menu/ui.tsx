@@ -431,7 +431,7 @@ export function MenuEditor({
       })}
       </div>
 
-      <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <div className="mx-auto flex w-fit max-w-full flex-col gap-3 rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:flex-row sm:items-center sm:gap-6 sm:px-5">
         <div className="flex min-w-0 items-center gap-3">
           <span
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-[#0d3b2e]"
