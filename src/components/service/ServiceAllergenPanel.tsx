@@ -152,11 +152,11 @@ export function GroupAllergenBadge({
                 key={student.id}
                 className="rounded-lg bg-amber-50/80 px-2.5 py-1.5 text-sm leading-snug text-zinc-800"
               >
-                <span className="font-extrabold text-zinc-950">
+                <span className="mr-1.5 inline-flex rounded-full bg-black px-2 py-0.5 text-sm font-extrabold text-white">
                   {formatStudentKitchenName(student.firstName, student.lastName)}
                 </span>
                 {bits.length > 0 ? (
-                  <span className="text-zinc-700"> — {bits.join(" · ")}</span>
+                  <span className="text-zinc-700">{bits.join(" · ")}</span>
                 ) : null}
               </li>
             );
