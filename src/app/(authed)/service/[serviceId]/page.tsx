@@ -104,25 +104,6 @@ export default async function ServicePage({
           dateLabel={dateLabel}
           className="w-full justify-center"
         />
-        <ol className="mx-auto w-full max-w-5xl list-decimal space-y-1.5 pl-5 text-left text-base leading-relaxed text-zinc-600 sm:text-lg">
-          <li>
-            <strong className="font-semibold text-zinc-900">Avant le repas</strong> — menu,
-            allergènes et grammage. Appuyez sur{" "}
-            <strong className="font-semibold text-zinc-800">Ouvrir les classes</strong>, puis sur
-            une <strong className="font-semibold text-zinc-800">carte</strong> pour saisir les
-            compteurs.
-          </li>
-          <li>
-            <strong className="font-semibold text-zinc-900">Pendant / après</strong> — remplissez
-            servis, RAB et refus, puis{" "}
-            <strong className="font-semibold text-zinc-800">Enregistrer</strong>.
-          </li>
-          <li>
-            <strong className="font-semibold text-zinc-900">Fin de service</strong> — saisissez le
-            <strong className="font-semibold text-zinc-800">Ouvrir le poids des déchets</strong>,
-            saisissez en grammes, puis « Fin de service » ci-dessous.
-          </li>
-        </ol>
       </div>
 
       <ServiceDayInsightsPanel
