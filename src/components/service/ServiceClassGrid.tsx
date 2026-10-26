@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, type ReactNode, type WheelEvent } from "react";
+import { useEffect, type ReactNode } from "react";
 import { ChevronDown, GraduationCap } from "lucide-react";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
+import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import { LEVEL_CARD_COLORS, schoolLevelLabelFr } from "@/lib/schoolLevel";
@@ -20,15 +21,6 @@ export type ServiceClassCard = {
   refusedCount: number;
   groupSummary: GroupAllergenSummary | undefined;
 };
-
-function chainPageScroll(event: WheelEvent<HTMLDivElement>) {
-  const el = event.currentTarget;
-  const atTop = el.scrollTop <= 0;
-  const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-  if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
-    window.scrollBy({ top: event.deltaY });
-  }
-}
 
 function countDone(cards: ServiceClassCard[]) {
   return cards.filter(
@@ -93,7 +85,10 @@ export function ServiceClassGrid({
             <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
               Saisie
             </span>
-            <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
+            <span
+              id="saisie-classes-title"
+              className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg"
+            >
               {open ? "Masquer les classes" : "Ouvrir les classes"}
             </span>
             <span className="mt-0.5 block text-sm leading-snug text-zinc-500">
@@ -117,8 +112,13 @@ export function ServiceClassGrid({
         </button>
       </section>
 
-      {open ? (
-        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
+      <ServiceSaisieOverlay
+        open={open}
+        onClose={() => onOpenChange(false)}
+        labelledBy="saisie-classes-title"
+        className="max-w-6xl"
+      >
+        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-5">
           {toolbar}
           <div className="overflow-hidden rounded-[20px] bg-white p-3 sm:p-4">
           {cards.length === 0 ? (
@@ -127,8 +127,7 @@ export function ServiceClassGrid({
             </p>
           ) : (
             <div
-              onWheel={chainPageScroll}
-              className="max-h-[calc(2*21.5rem+1.25rem)] overflow-y-auto overflow-x-hidden overscroll-y-auto pr-2 [scrollbar-gutter:stable] sm:max-h-[calc(2*22.5rem+1.5rem)] lg:max-h-[calc(2*24rem+2rem)] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+              className="max-h-[min(52vh,calc(2*22rem))] overflow-y-auto overflow-x-hidden overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
             >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
               {cards.map((m) => {
@@ -207,7 +206,7 @@ export function ServiceClassGrid({
             </button>
           </div>
         </div>
-      ) : null}
+      </ServiceSaisieOverlay>
     </div>
   );
 }

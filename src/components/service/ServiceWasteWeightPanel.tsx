@@ -24,6 +24,7 @@ import { useQueuedMetrics } from "@/hooks/useQueuedMetrics";
 import { overlayQueuedCounts } from "@/lib/mergeQueuedMetrics";
 import { buildEndOfServiceBilanTips } from "@/lib/antiWasteEndOfServiceBilan";
 import { AntiWasteEndOfServiceBilan } from "@/components/service/AntiWasteEndOfServiceBilan";
+import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
 import { WASTE_SAVED_EVENT } from "@/components/service/ServiceAntiWasteInsightPanel";
 import { cn } from "@/lib/utils";
 
@@ -311,7 +312,10 @@ export function ServiceWasteWeightPanel({
             <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
               Fin de service
             </span>
-            <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
+            <span
+              id="saisie-dechets-title"
+              className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg"
+            >
               {panelOpen ? "Masquer le poids des déchets" : "Ouvrir le poids des déchets"}
             </span>
             <span className="mt-0.5 block text-sm leading-snug text-zinc-500">
@@ -332,8 +336,13 @@ export function ServiceWasteWeightPanel({
         </button>
       </section>
 
-      {panelOpen ? (
-        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_10px_32px_rgba(24,24,27,0.06)] sm:p-5">
+      <ServiceSaisieOverlay
+        open={panelOpen}
+        onClose={() => setPanelOpen(false)}
+        labelledBy="saisie-dechets-title"
+        className="max-w-4xl"
+      >
+        <div className="space-y-4 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-4 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-5">
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-md">
       <div className="flex items-center gap-3 bg-[#1e2a3a] px-4 py-4 text-white sm:px-5">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">
@@ -439,7 +448,7 @@ export function ServiceWasteWeightPanel({
       <AntiWasteEndOfServiceBilan tips={bilanTips} />
     ) : null}
         </div>
-      ) : null}
+      </ServiceSaisieOverlay>
 
     </div>
   );
