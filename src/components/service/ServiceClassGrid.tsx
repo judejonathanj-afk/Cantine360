@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, type ReactNode } from "react";
 import { ChevronDown, GraduationCap } from "lucide-react";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { GroupAllergenBadge } from "@/components/service/ServiceAllergenPanel";
+import { ClassCardCounters } from "@/components/service/ClassCardCounters";
 import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import type { SchoolLevel } from "@/lib/schoolLevel";
@@ -101,8 +101,7 @@ export function ServiceClassGrid({
                   {" — "}
                 </>
               ) : null}
-              Ouvrez, appuyez sur une classe, saisissez présents, servis, RAB et
-              refus, puis Enregistrer.
+              Saisissez les compteurs sur chaque carte, puis Enregistrer.
             </span>
           </span>
           <ChevronDown
@@ -129,7 +128,7 @@ export function ServiceClassGrid({
             <div
               className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
             >
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
               {cards.map((m) => {
                 const done =
                   m.presentCount > 0 ||
@@ -139,11 +138,10 @@ export function ServiceClassGrid({
                 const cardColor = LEVEL_CARD_COLORS[m.level] ?? LEVEL_CARD_COLORS.PRIMAIRE;
 
                 return (
-                  <Link
+                  <article
                     key={m.groupId}
                     id={`group-${m.groupId}`}
-                    href={`/service/${serviceId}/group/${m.groupId}`}
-                    className="relative rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 ease-out hover:z-10 hover:scale-[1.03] hover:shadow-xl active:scale-[0.98]"
+                    className="relative rounded-[22px] border-2 p-5 shadow-sm"
                     style={{
                       backgroundColor: cardColor,
                       borderColor: cardColor,
@@ -170,25 +168,17 @@ export function ServiceClassGrid({
 
                     <GroupAllergenBadge groupSummary={m.groupSummary} hasMenu={hasMenu} />
 
-                    <div className="mt-3 grid grid-cols-2 gap-2.5 text-zinc-800">
-                      <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                        <div className="text-sm font-medium text-zinc-600">Présents</div>
-                        <div className="text-xl font-bold tabular-nums">{m.presentCount}</div>
-                      </div>
-                      <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                        <div className="text-sm font-medium text-zinc-600">Servis</div>
-                        <div className="text-xl font-bold tabular-nums">{m.servedCount}</div>
-                      </div>
-                      <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                        <div className="text-sm font-medium text-zinc-600">RAB</div>
-                        <div className="text-xl font-bold tabular-nums">{m.rabCount}</div>
-                      </div>
-                      <div className="rounded-xl bg-white px-3.5 py-3 shadow-sm">
-                        <div className="text-sm font-medium text-zinc-600">Refus</div>
-                        <div className="text-xl font-bold tabular-nums">{m.refusedCount}</div>
-                      </div>
-                    </div>
-                  </Link>
+                    <ClassCardCounters
+                      serviceId={serviceId}
+                      groupId={m.groupId}
+                      initial={{
+                        presentCount: m.presentCount,
+                        servedCount: m.servedCount,
+                        rabCount: m.rabCount,
+                        refusedCount: m.refusedCount,
+                      }}
+                    />
+                  </article>
                 );
               })}
             </div>
