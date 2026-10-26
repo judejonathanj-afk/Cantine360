@@ -236,12 +236,12 @@ export function GroupAllergenBadge({
 
   return (
     <div className="mt-3">
-      <p className="mb-1.5 flex items-center gap-1.5 text-left text-base font-extrabold text-zinc-950 sm:text-lg">
-        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-700" aria-hidden />
+      <p className="mb-2 flex items-center gap-2 text-left text-lg font-extrabold text-zinc-950 sm:text-xl">
+        <AlertTriangle className="h-6 w-6 shrink-0 text-amber-700" aria-hidden />
         Allergies et régimes
       </p>
-      <div className="rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
-      <p className="text-base font-bold leading-snug text-zinc-950">
+      <div className="rounded-2xl border-2 border-amber-500 bg-white px-4 py-4 shadow-sm ring-1 ring-amber-600/20">
+      <p className="text-lg font-bold leading-snug text-zinc-950">
         {summaryParts.map((part, index) => (
           <span key={index}>
             {index > 0 ? " · " : null}
@@ -250,7 +250,7 @@ export function GroupAllergenBadge({
         ))}
       </p>
       {detailRows.length > 0 ? (
-        <ul className="mt-2.5 max-h-[7.5rem] space-y-1.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
+        <ul className="mt-3 min-h-[14rem] max-h-[20rem] space-y-2.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
           {detailRows.map((student) => {
             const lines: { key: string; content: ReactNode }[] = [];
             if (student.allergens.length > 0) {
@@ -296,10 +296,10 @@ export function GroupAllergenBadge({
             return (
               <li
                 key={student.id}
-                className="rounded-lg bg-amber-50/80 px-2.5 py-1.5 text-base leading-snug text-zinc-800"
+                className="rounded-xl bg-amber-50/80 px-3 py-2.5 text-lg leading-snug text-zinc-800"
               >
                 <p>
-                  <span className="mr-1.5 inline-flex rounded-full bg-black px-2.5 py-0.5 text-base font-extrabold text-white">
+                  <span className="mr-1.5 inline-flex rounded-full bg-black px-3 py-1 text-lg font-extrabold text-white">
                     {formatStudentKitchenName(student.firstName, student.lastName)}
                   </span>
                   {lines[0] ? (
