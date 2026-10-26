@@ -1,7 +1,6 @@
 import type {
   GroupAllergenSummary,
   ServiceAllergenSummary,
-  StudentAllergenRow,
 } from "@/server/serviceAllergenSummary";
 import type { ReactNode } from "react";
 import { AlertTriangle } from "lucide-react";
@@ -73,98 +72,6 @@ export function ServiceAllergenOverview({
   );
 }
 
-const PREVIEW_STUDENTS: Array<
-  Pick<
-    StudentAllergenRow,
-    | "firstName"
-    | "lastName"
-    | "allergens"
-    | "noPork"
-    | "vegetarian"
-    | "affectedDishes"
-    | "dietDishes"
-  >
-> = [
-  {
-    firstName: "Hugo",
-    lastName: "Bernard",
-    allergens: ["Arachides"],
-    noPork: false,
-    vegetarian: false,
-    affectedDishes: ["lasagnes maison"],
-    dietDishes: [],
-  },
-  {
-    firstName: "Emma",
-    lastName: "Petit",
-    allergens: ["Œufs"],
-    noPork: false,
-    vegetarian: true,
-    affectedDishes: ["yaourt"],
-    dietDishes: ["lasagnes maison"],
-  },
-  {
-    firstName: "Louis",
-    lastName: "Moreau",
-    allergens: ["Lait"],
-    noPork: true,
-    vegetarian: false,
-    affectedDishes: ["yaourt"],
-    dietDishes: [],
-  },
-  {
-    firstName: "Chloé",
-    lastName: "Lefevre",
-    allergens: ["Fruits à coque"],
-    noPork: false,
-    vegetarian: false,
-    affectedDishes: ["lasagnes maison"],
-    dietDishes: [],
-  },
-  {
-    firstName: "Gabriel",
-    lastName: "Roux",
-    allergens: ["Poisson"],
-    noPork: false,
-    vegetarian: false,
-    affectedDishes: [],
-    dietDishes: [],
-  },
-  {
-    firstName: "Inès",
-    lastName: "Garcia",
-    allergens: ["Soja"],
-    noPork: false,
-    vegetarian: true,
-    affectedDishes: ["yaourt"],
-    dietDishes: ["lasagnes maison"],
-  },
-];
-
-function padPreviewStudents(
-  rows: StudentAllergenRow[],
-  group: GroupAllergenSummary,
-): StudentAllergenRow[] {
-  if (rows.length >= 8) return rows;
-  const extras: StudentAllergenRow[] = PREVIEW_STUDENTS.map((preview, index) => ({
-    id: `preview-${group.groupId}-${index}`,
-    firstName: preview.firstName,
-    lastName: preview.lastName,
-    allergens: preview.allergens,
-    allergenNotes: null,
-    schoolName: group.schoolName,
-    className: group.className,
-    groupLabel: group.groupLabel,
-    noPork: preview.noPork,
-    vegetarian: preview.vegetarian,
-    affectedByMenu: preview.affectedDishes.length > 0,
-    affectedDishes: preview.affectedDishes,
-    dietAffectedByMenu: preview.dietDishes.length > 0,
-    dietDishes: preview.dietDishes,
-  }));
-  return [...rows, ...extras].slice(0, 8);
-}
-
 export function GroupAllergenBadge({
   groupSummary,
   hasMenu,
@@ -174,65 +81,61 @@ export function GroupAllergenBadge({
 }) {
   if (!groupSummary) return null;
 
-  const {
-    students,
-    studentsWithAllergens,
-    affectedByMenu,
-    studentsNoPork,
-    studentsVegetarian,
-    dietAffectedByMenu,
-  } = groupSummary;
+  const { students } = groupSummary;
 
-  if (studentsWithAllergens === 0 && studentsNoPork === 0 && studentsVegetarian === 0) {
+  const detailRows = students.filter(
+    (student) =>
+      student.allergens.length > 0 ||
+      student.noPork ||
+      student.vegetarian ||
+      student.affectedByMenu ||
+      student.dietAffectedByMenu,
+  );
+
+  if (detailRows.length === 0) {
     return null;
   }
 
-  const summaryParts: ReactNode[] = [];
-  if (studentsWithAllergens > 0) {
+  const allergyCount = detailRows.filter((student) => student.allergens.length > 0).length;
+  const menuCount = detailRows.filter(
+    (student) =>
+      student.affectedByMenu ||
+      student.dietAffectedByMenu ||
+      student.affectedDishes.length > 0 ||
+      student.dietDishes.length > 0,
+  ).length;
+  const noPorkCount = detailRows.filter((student) => student.noPork).length;
+  const vegetarianCount = detailRows.filter((student) => student.vegetarian).length;
+
+  const summaryParts: ReactNode[] = [
+    `${detailRows.length} élève${detailRows.length > 1 ? "s" : ""} concerné${detailRows.length > 1 ? "s" : ""}`,
+  ];
+  if (allergyCount > 0) {
+    summaryParts.push(`${allergyCount} allergie${allergyCount > 1 ? "s" : ""}`);
+  }
+  if (hasMenu && menuCount > 0) {
     summaryParts.push(
-      `${studentsWithAllergens} allergie${studentsWithAllergens > 1 ? "s" : ""}`,
+      `${menuCount} concerné${menuCount > 1 ? "s" : ""} par le menu`,
     );
   }
-  if (hasMenu) {
-    summaryParts.push(
-      `${affectedByMenu} concerné${affectedByMenu > 1 ? "s" : ""} par le menu`,
-    );
-  }
-  if (studentsNoPork > 0) {
+  if (noPorkCount > 0) {
     summaryParts.push(
       <>
-        {studentsNoPork}{" "}
+        {noPorkCount}{" "}
         <span className="text-yellow-500">sans porc</span>
       </>,
     );
   }
-  if (studentsVegetarian > 0) {
+  if (vegetarianCount > 0) {
     summaryParts.push(
       <>
-        {studentsVegetarian}{" "}
+        {vegetarianCount}{" "}
         <span className="text-green-600">
-          végétarien{studentsVegetarian > 1 ? "s" : ""}
+          végétarien{vegetarianCount > 1 ? "s" : ""}
         </span>
       </>,
     );
   }
-  if (hasMenu && dietAffectedByMenu > 0) {
-    summaryParts.push(
-      `${dietAffectedByMenu} assiette${dietAffectedByMenu > 1 ? "s" : ""} à adapter`,
-    );
-  }
-
-  const detailRows = padPreviewStudents(
-    students.filter(
-      (student) =>
-        student.allergens.length > 0 ||
-        student.noPork ||
-        student.vegetarian ||
-        student.affectedByMenu ||
-        student.dietAffectedByMenu,
-    ),
-    groupSummary,
-  );
 
   return (
     <div className="mt-3">
@@ -250,7 +153,7 @@ export function GroupAllergenBadge({
         ))}
       </p>
       {detailRows.length > 0 ? (
-        <ul className="mt-3 min-h-[14rem] max-h-[20rem] space-y-2.5 overflow-y-scroll overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
+        <ul className="mt-3 max-h-[20rem] space-y-2.5 overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
           {detailRows.map((student) => {
             const lines: { key: string; content: ReactNode }[] = [];
             if (student.allergens.length > 0) {
