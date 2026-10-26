@@ -195,43 +195,43 @@ export function MenuEditor({
         return (
         <section
           key={cat}
-          className="relative overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)] transition-[transform,box-shadow] duration-200 ease-out hover:z-10 hover:scale-[1.025] hover:shadow-[0_22px_52px_rgba(24,24,27,0.14)] motion-reduce:transition-none motion-reduce:hover:scale-100"
+          className="relative overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100"
         >
-          <div className="flex items-stretch border-b border-zinc-100 bg-white">
+          <div className={`flex items-stretch${isOpen ? " border-b border-white/10" : ""}`}>
             <button
               type="button"
               onClick={() => toggleCategory(cat)}
               aria-expanded={isOpen}
-              className="flex min-w-0 flex-1 items-center gap-3 px-4 py-4 text-left transition hover:bg-zinc-50/80 sm:px-5"
+              className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
             >
               <span
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#d2ff5a] text-lg sm:h-10 sm:w-10`}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-lg text-[#0d3b2e] sm:h-10 sm:w-10"
                 aria-hidden
               >
                 {CATEGORY_LABEL[cat].split(" ")[0]}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
                   Rubrique
                 </span>
-                <span className="block text-base font-extrabold tracking-tight text-zinc-900 sm:text-lg">
+                <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
                   {CATEGORY_LABEL[cat].replace(/^[^\s]+\s/, "")}
                 </span>
                 {!isOpen ? (
-                  <span className="mt-0.5 block truncate text-sm text-zinc-500">
+                  <span className="mt-0.5 block truncate text-sm text-white/80">
                     {categorySummary(cat)}
                   </span>
                 ) : null}
               </span>
               <ChevronDown
-                className={`h-5 w-5 shrink-0 text-zinc-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                className={`h-5 w-5 shrink-0 text-white/70 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                 aria-hidden
               />
             </button>
             <button
               type="button"
               onClick={() => add(cat)}
-              className="flex w-[7.25rem] shrink-0 items-center justify-center bg-emerald-600 px-3 text-sm font-bold text-white transition hover:bg-emerald-700 active:bg-emerald-800 sm:w-[9.25rem] sm:text-base"
+              className="flex w-[7.25rem] shrink-0 items-center justify-center bg-[#00c46a] px-3 text-sm font-bold text-white transition hover:bg-[#00b05f] active:bg-[#009e55] sm:w-[9.25rem] sm:text-base"
             >
               Ajouter +
             </button>
