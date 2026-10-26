@@ -1,6 +1,7 @@
 import type { GroupAllergenSummary, ServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { AlertTriangle } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
+import { formatStudentKitchenName } from "@/lib/studentDisplayName";
 import { cn } from "@/lib/utils";
 
 export function ServiceAllergenOverview({
@@ -76,66 +77,94 @@ export function GroupAllergenBadge({
 }) {
   if (!groupSummary) return null;
 
-  const { studentsWithAllergens, affectedByMenu, studentsNoPork, studentsVegetarian, dietAffectedByMenu } =
-    groupSummary;
+  const {
+    students,
+    studentsWithAllergens,
+    affectedByMenu,
+    studentsNoPork,
+    studentsVegetarian,
+    dietAffectedByMenu,
+  } = groupSummary;
 
   if (studentsWithAllergens === 0 && studentsNoPork === 0 && studentsVegetarian === 0) {
     return null;
   }
 
+  const summaryParts: string[] = [];
+  if (studentsWithAllergens > 0) {
+    summaryParts.push(
+      `${studentsWithAllergens} allergie${studentsWithAllergens > 1 ? "s" : ""}`,
+    );
+  }
+  if (hasMenu) {
+    summaryParts.push(
+      `${affectedByMenu} concerné${affectedByMenu > 1 ? "s" : ""} par le menu`,
+    );
+  }
+  if (studentsNoPork > 0) {
+    summaryParts.push(`${studentsNoPork} sans porc`);
+  }
+  if (studentsVegetarian > 0) {
+    summaryParts.push(
+      `${studentsVegetarian} végétarien${studentsVegetarian > 1 ? "s" : ""}`,
+    );
+  }
+  if (hasMenu && dietAffectedByMenu > 0) {
+    summaryParts.push(`${dietAffectedByMenu} assiette${dietAffectedByMenu > 1 ? "s" : ""} à adapter`);
+  }
+
+  const detailRows = students.filter(
+    (student) =>
+      student.allergens.length > 0 ||
+      student.noPork ||
+      student.vegetarian ||
+      student.affectedByMenu ||
+      student.dietAffectedByMenu,
+  );
+
   return (
-    <div className="mt-3 space-y-2">
-      {studentsWithAllergens > 0 ? (
-        <div className="flex items-start gap-2.5 rounded-xl border-2 border-amber-500 bg-amber-50 px-3 py-2.5 shadow-sm ring-1 ring-amber-600/25 sm:py-3">
-          <AlertTriangle
-            className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"
-            aria-hidden
-          />
-          <p className="text-sm leading-snug sm:text-base">
-            <span className="font-extrabold text-amber-950">
-              {studentsWithAllergens} allergie{studentsWithAllergens > 1 ? "s" : ""}
-            </span>
-            {hasMenu ? (
-              <>
-                <span className="font-bold text-amber-900/80"> · </span>
-                <span
-                  className={
-                    affectedByMenu > 0
-                      ? "font-extrabold text-amber-950"
-                      : "font-bold text-amber-900"
-                  }
-                >
-                  {affectedByMenu} concerné{affectedByMenu > 1 ? "s" : ""} menu
-                </span>
-              </>
-            ) : null}
+    <div className="mt-3 rounded-xl border-2 border-amber-500 bg-white px-3 py-3 shadow-sm ring-1 ring-amber-600/20">
+      <div className="flex items-start gap-2.5">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-extrabold text-amber-950 sm:text-base">
+            Allergies et régimes
+          </p>
+          <p className="mt-0.5 text-sm font-semibold leading-snug text-zinc-800">
+            {summaryParts.join(" · ")}
           </p>
         </div>
-      ) : null}
-      {studentsNoPork > 0 || studentsVegetarian > 0 ? (
-        <div className="rounded-xl border-2 border-zinc-900 bg-white px-3 py-2.5 shadow-sm ring-1 ring-zinc-900/10 sm:py-3">
-          <p className="text-sm font-extrabold leading-snug text-zinc-900 sm:text-base">
-            {studentsNoPork > 0 ? (
-              <span className="text-zinc-950">{studentsNoPork} sans porc</span>
-            ) : null}
-            {studentsNoPork > 0 && studentsVegetarian > 0 ? (
-              <span className="font-bold text-zinc-500"> · </span>
-            ) : null}
-            {studentsVegetarian > 0 ? (
-              <span className="text-zinc-950">
-                {studentsVegetarian} végétarien{studentsVegetarian > 1 ? "s" : ""}
-              </span>
-            ) : null}
-            {hasMenu && dietAffectedByMenu > 0 ? (
-              <>
-                <span className="font-bold text-zinc-500"> · </span>
-                <span className="text-zinc-950">
-                  {dietAffectedByMenu} à adapter
+      </div>
+      {detailRows.length > 0 ? (
+        <ul className="mt-2.5 max-h-36 space-y-1.5 overflow-y-auto overscroll-contain pr-1">
+          {detailRows.map((student) => {
+            const bits: string[] = [];
+            if (student.allergens.length > 0) {
+              bits.push(student.allergens.join(", "));
+            }
+            if (student.noPork) bits.push("sans porc");
+            if (student.vegetarian) bits.push("végétarien");
+            if (student.affectedDishes.length > 0) {
+              bits.push(`menu : ${student.affectedDishes.join(", ")}`);
+            }
+            if (student.dietDishes.length > 0) {
+              bits.push(`adapter : ${student.dietDishes.join(", ")}`);
+            }
+            return (
+              <li
+                key={student.id}
+                className="rounded-lg bg-amber-50/80 px-2.5 py-1.5 text-sm leading-snug text-zinc-800"
+              >
+                <span className="font-extrabold text-zinc-950">
+                  {formatStudentKitchenName(student.firstName, student.lastName)}
                 </span>
-              </>
-            ) : null}
-          </p>
-        </div>
+                {bits.length > 0 ? (
+                  <span className="text-zinc-700"> — {bits.join(" · ")}</span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
       ) : null}
     </div>
   );
