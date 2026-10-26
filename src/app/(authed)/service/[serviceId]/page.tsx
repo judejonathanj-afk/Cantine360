@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
@@ -96,13 +97,22 @@ export default async function ServicePage({
     : null;
 
   return (
-    <div className="space-y-6">
-      <div className="min-w-0 space-y-3 text-center">
-        <h1 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">Saisie par classe</h1>
-        <ServiceMealTitle
-          mealType={service.mealType}
-          dateLabel={dateLabel}
-          className="w-full justify-center"
+    <div className="-mt-3 space-y-6 md:-mt-5">
+      <div className="flex flex-col items-center gap-1 px-2 text-center">
+        <p className="text-zinc-600">
+          <ServiceMealTitle
+            mealType={service.mealType}
+            dateLabel={dateLabel}
+            size="sm"
+          />
+        </p>
+        <MenusCantineColorTitle
+          text="Saisie par classe"
+          className="text-xl md:text-2xl lg:text-3xl"
+        />
+        <hr
+          className="mx-auto mt-2 h-0.5 w-full max-w-2xl rounded-full border-0 bg-emerald-500"
+          aria-hidden
         />
       </div>
 
