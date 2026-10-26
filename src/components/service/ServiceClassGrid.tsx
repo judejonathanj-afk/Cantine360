@@ -117,7 +117,7 @@ export function ServiceClassGrid({
         labelledBy="saisie-classes-title"
         className="max-w-[92rem]"
       >
-        <div className="flex h-[96vh] min-h-0 w-full flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:gap-3.5 sm:p-3">
+        <div className="flex h-[96vh] min-h-0 w-full flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-white p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:gap-3.5 sm:p-3">
           <div className="shrink-0">{toolbar}</div>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] bg-white p-2.5 sm:p-3">
           {cards.length === 0 ? (
