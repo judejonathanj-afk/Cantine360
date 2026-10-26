@@ -147,20 +147,17 @@ export function ServiceClassGrid({
                     }}
                   >
                     <div className="relative flex items-center gap-2 pr-16">
-                      <p className="min-w-0 flex-1 truncate text-center text-sm font-bold leading-none text-black">
+                      <p className="flex min-w-0 flex-1 items-center justify-center gap-2 truncate text-center text-sm font-bold leading-none text-black">
                         {m.schoolName ? (
-                          <span className="font-semibold uppercase tracking-wide text-black/70">
+                          <span className="shrink truncate font-semibold uppercase tracking-wide text-black/70">
                             {m.schoolName}
                           </span>
                         ) : null}
-                        {m.schoolName ? (
-                          <span className="mx-1.5 font-semibold text-black/40">·</span>
-                        ) : null}
-                        <span className="font-extrabold uppercase tracking-wide">
+                        <span className="inline-flex shrink-0 items-center rounded-full bg-black px-2.5 py-1 text-xs font-extrabold uppercase tracking-wide text-white sm:text-sm">
                           {m.groupName}
+                          <span className="mx-1.5 font-semibold text-white/50">·</span>
+                          {schoolLevelLabelFr(m.level)}
                         </span>
-                        <span className="mx-1.5 font-semibold text-black/40">·</span>
-                        <span className="font-extrabold">{schoolLevelLabelFr(m.level)}</span>
                       </p>
                       <span
                         className={[
