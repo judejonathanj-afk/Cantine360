@@ -48,7 +48,7 @@ export function CantinePlusFold({ children }: { children: ReactNode }) {
         open={open}
         onClose={() => setOpen(false)}
         labelledBy="cantine-plus-overlay-title"
-        className="max-w-6xl"
+        className="w-[calc(100vw-1rem)] max-w-[92rem]"
       >
         <div className="mb-2 px-1">
           <h2
@@ -62,8 +62,8 @@ export function CantinePlusFold({ children }: { children: ReactNode }) {
             Note, RAB et déchets — lecture globale en graphique et en chiffres.
           </p>
         </div>
-        <div className="flex min-h-0 max-h-[86vh] flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-3">
-          <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden rounded-2xl bg-white p-3 shadow-md">
+        <div className="flex min-h-0 max-h-[94vh] flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4">
+          <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             {children}
           </div>
           <div className="flex shrink-0 justify-end">
