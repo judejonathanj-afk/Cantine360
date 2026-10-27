@@ -339,10 +339,22 @@ export function ServiceWasteWeightPanel({
       <ServiceSaisieOverlay
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
-        labelledBy="saisie-dechets-title"
+        labelledBy="poids-dechets-overlay-title"
         className="max-w-5xl"
       >
-        <div className="flex min-h-0 max-h-[96vh] flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-3">
+        <div className="mb-2 px-1">
+          <h2
+            id="poids-dechets-overlay-title"
+            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+          >
+            <Trash2 className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+            Les déchets
+          </h2>
+          <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+            Après le repas, saisissez le poids des bacs en grammes (maternelle et primaire).
+          </p>
+        </div>
+        <div className="flex min-h-0 max-h-[90vh] flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-3">
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-md">
       <div className="flex items-center gap-3 bg-[#1e2a3a] px-4 py-4 text-white sm:px-5">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20">
