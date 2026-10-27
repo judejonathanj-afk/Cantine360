@@ -136,11 +136,7 @@ export function AppShell({
     pathnameServiceId ??
     (role === "ADMIN" || isServiceHome ? null : rememberedServiceId) ??
     null;
-  const isServiceSaisiePage =
-    pathnameServiceId != null &&
-    new RegExp(`^/service/${pathnameServiceId}$`).test(pathname);
-  const showEndServiceButton =
-    pathnameServiceId != null && !isServiceSaisiePage;
+  const showEndServiceButton = pathnameServiceId != null;
 
   const serviceNavItems: NavItem[] = serviceId
     ? [
@@ -266,7 +262,7 @@ export function AppShell({
                     type="button"
                     onClick={logout}
                     disabled={busy}
-                    className="group hidden items-stretch overflow-hidden rounded-full bg-black disabled:opacity-60 sm:flex"
+                    className="group hidden items-stretch overflow-hidden rounded-full bg-red-600 hover:bg-red-700 disabled:opacity-60 sm:flex"
                   >
                     <span className="flex items-center px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:px-5 sm:text-[11px]">
                       {busy ? "..." : "Déconnexion"}
@@ -283,7 +279,7 @@ export function AppShell({
                     aria-label="Déconnexion"
                     onClick={logout}
                     disabled={busy}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-black sm:hidden"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-red-600 sm:hidden"
                   >
                     <span
                       className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -341,7 +337,7 @@ export function AppShell({
                   type="button"
                   onClick={logout}
                   disabled={busy}
-                  className="mt-3 flex w-full items-center justify-between rounded-full bg-black px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white disabled:opacity-60"
+                  className="mt-3 flex w-full items-center justify-between rounded-full bg-red-600 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.12em] text-white hover:bg-red-700 disabled:opacity-60"
                 >
                   {busy ? "..." : "Déconnexion"}
                   <span
