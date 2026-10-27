@@ -43,7 +43,7 @@ export function ServiceGrammagePanel({
   return (
     <ServiceInsightCard
       tone="soft"
-      dense
+      dense={!embedded}
       embedded={embedded}
       icon={Scale}
       title="Grammage"
@@ -56,7 +56,7 @@ export function ServiceGrammagePanel({
       }
       metric={
         summary.hasGrammage ? (
-          <span className="text-lg font-extrabold">{summary.perPlate} g / assiette</span>
+          <span className="text-xl font-extrabold">{summary.perPlate} g / assiette</span>
         ) : (
           "—"
         )

@@ -41,36 +41,38 @@ export function useDietStudentsList({
       const cardColor = LEVEL_CARD_COLORS[level];
       return (
         <li key={g.groupId}>
-          <p className="text-sm font-bold uppercase tracking-wide">{g.groupLabel}</p>
+          <p className="text-base font-extrabold uppercase tracking-wide text-zinc-950">
+            {g.groupLabel}
+          </p>
           <ul className="mt-1.5 space-y-1.5">
             {g.concerned.map((s) => (
               <li
                 key={s.id}
-                className="w-full rounded-xl border-2 px-4 py-2.5 text-base text-zinc-900 shadow-sm"
+                className="w-full rounded-xl border-2 px-4 py-3 text-lg text-zinc-950 shadow-sm"
                 style={{
                   backgroundColor: cardColor,
                   borderColor: cardColor,
                 }}
               >
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
+                  <span className="rounded-full bg-zinc-900 px-3 py-1 text-base font-extrabold text-white sm:text-lg">
                     {formatStudentKitchenName(s.firstName, s.lastName)}
                   </span>
                   {s.noPork ? (
-                    <span className="rounded-full bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
+                    <span className="rounded-full bg-sky-800 px-2.5 py-1 text-sm font-extrabold text-white sm:text-base">
                       Sans porc
                     </span>
                   ) : null}
                   {s.vegetarian ? (
-                    <span className="rounded-full bg-emerald-800 px-2 py-0.5 text-sm font-bold text-white">
+                    <span className="rounded-full bg-emerald-800 px-2.5 py-1 text-sm font-extrabold text-white sm:text-base">
                       Végétarien
                     </span>
                   ) : null}
                 </div>
                 {s.dietDishes.length > 0 ? (
-                  <div className="mt-1.5 space-y-0.5 text-sm font-medium text-zinc-900">
+                  <div className="mt-2 space-y-1 text-base font-bold leading-snug text-zinc-950">
                     <p>
-                      <span className="font-semibold">Plats :</span>{" "}
+                      <span className="font-extrabold">Plats :</span>{" "}
                       {s.dietDishes.join(", ")}
                     </p>
                     {s.noPork ? (
@@ -137,7 +139,7 @@ export function ServiceDietStudentsTrigger({
         borderColor: DIET_PANEL_BORDER,
       }}
     >
-      <h2 className="text-left text-sm font-bold leading-snug text-amber-950">
+      <h2 className="text-left text-base font-extrabold leading-snug text-amber-950 sm:text-lg">
         <span className="tabular-nums">{total}</span> régime
         {total > 1 ? "s" : ""} à adapter — détail
       </h2>
@@ -165,13 +167,13 @@ export function ServiceDietStudentsExpandedContent({
         className,
       )}
     >
-      <p className="shrink-0 text-base font-extrabold text-zinc-950 sm:text-lg">
+      <p className="shrink-0 text-xl font-extrabold text-zinc-950 sm:text-2xl">
         Élèves concernés
       </p>
-      <p className="mt-0.5 shrink-0 text-sm font-semibold leading-snug text-zinc-700">
+      <p className="mt-1 shrink-0 text-base font-bold leading-snug text-zinc-950">
         Régimes sans porc et végétarien — ce n’est pas la liste des allergies.
       </p>
-      <ul className="mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto sm:max-h-[20rem] lg:max-h-[22rem]">
+      <ul className="mt-3 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[20rem] lg:max-h-[22rem]">
         {list}
       </ul>
     </CollapsibleContent>

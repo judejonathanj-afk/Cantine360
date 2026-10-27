@@ -19,7 +19,7 @@ export function ServiceDietBanner({
   return (
     <ServiceInsightCard
       tone="soft"
-      dense
+      dense={!embedded}
       embedded={embedded}
       icon={Salad}
       title="Régimes (menu)"
@@ -31,7 +31,7 @@ export function ServiceDietBanner({
             : "Aucun plat conflictuel aujourd’hui"
       }
       metric={
-        <span className="text-lg font-extrabold">
+        <span className="text-xl font-extrabold">
           {summary.totalNoPork} sans porc · {summary.totalVegetarian} végét.
         </span>
       }
