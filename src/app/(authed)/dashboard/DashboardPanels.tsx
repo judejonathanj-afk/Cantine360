@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
+import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
@@ -385,26 +386,31 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      <CantinePulseCard
-        rows={pulseRows}
-        wasteRows={pulseWasteRows}
-        mealType="LUNCH"
-        days={days}
-        showBrandTitle
-        levelFilter={levelFilter}
-        eco={
-          !isKitchen && eco
-            ? {
-                groups: eco.groups,
-                periodTitle: eco.periodTitle,
-                restesParen: eco.restesParen,
-                priorPhrase: eco.priorPhrase,
-              }
-            : null
-        }
-        antiWasteModeEnabled={antiWasteModeEnabled}
-        antiWasteTargetGPer100={antiWasteTargetGPer100}
-      />
+      {(() => {
+        const pulseCard = (
+          <CantinePulseCard
+            rows={pulseRows}
+            wasteRows={pulseWasteRows}
+            mealType="LUNCH"
+            days={days}
+            showBrandTitle
+            levelFilter={levelFilter}
+            eco={
+              !isKitchen && eco
+                ? {
+                    groups: eco.groups,
+                    periodTitle: eco.periodTitle,
+                    restesParen: eco.restesParen,
+                    priorPhrase: eco.priorPhrase,
+                  }
+                : null
+            }
+            antiWasteModeEnabled={antiWasteModeEnabled}
+            antiWasteTargetGPer100={antiWasteTargetGPer100}
+          />
+        );
+        return isKitchen ? pulseCard : <CantinePlusFold>{pulseCard}</CantinePlusFold>;
+      })()}
 
       {!isKitchen ? (
       <section>
