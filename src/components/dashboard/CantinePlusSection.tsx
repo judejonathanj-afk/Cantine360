@@ -3,19 +3,20 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
+import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
 import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
-/** Barre de rangement admin, inspirée d’« Ouvrir les classes ». */
+/** Barre de rangement admin, fenêtre floutée comme le poids des déchets. */
 export function CantinePlusFold({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-4">
+    <div>
       <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
         <button
           type="button"
-          onClick={() => setOpen((value) => !value)}
+          onClick={() => setOpen(true)}
           aria-expanded={open}
           className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
         >
@@ -29,23 +30,53 @@ export function CantinePlusFold({ children }: { children: ReactNode }) {
             <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
               Cantine+
             </span>
-            <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
-              {open ? "Masquer Cantine+" : "Ouvrir Cantine+"}
+            <span
+              id="cantine-plus-open-title"
+              className="block text-base font-extrabold tracking-tight text-white sm:text-lg"
+            >
+              Ouvrir Cantine+
             </span>
             <span className="mt-0.5 block text-sm leading-snug text-white/80">
               Note, RAB et déchets — lecture globale en graphique et en chiffres.
             </span>
           </span>
-          <ChevronDown
-            className={cn(
-              "h-5 w-5 shrink-0 text-white/70 transition-transform duration-200",
-              open && "rotate-180",
-            )}
-            aria-hidden
-          />
+          <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
         </button>
       </section>
-      {open ? children : null}
+
+      <ServiceSaisieOverlay
+        open={open}
+        onClose={() => setOpen(false)}
+        labelledBy="cantine-plus-overlay-title"
+        className="max-w-6xl"
+      >
+        <div className="mb-2 px-1">
+          <h2
+            id="cantine-plus-overlay-title"
+            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+          >
+            <Sparkles className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+            Cantine+
+          </h2>
+          <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+            Note, RAB et déchets — lecture globale en graphique et en chiffres.
+          </p>
+        </div>
+        <div className="flex min-h-0 max-h-[86vh] flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-[#d6ef98] p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-3">
+          <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden rounded-2xl bg-white p-3 shadow-md">
+            {children}
+          </div>
+          <div className="flex shrink-0 justify-end">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </ServiceSaisieOverlay>
     </div>
   );
 }
