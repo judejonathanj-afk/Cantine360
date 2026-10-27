@@ -165,7 +165,10 @@ export function ServiceDietStudentsExpandedContent({
         className,
       )}
     >
-      <p className="shrink-0 text-[10px] leading-snug text-zinc-600 sm:text-xs">
+      <p className="shrink-0 text-base font-extrabold text-zinc-950 sm:text-lg">
+        Élèves concernés
+      </p>
+      <p className="mt-0.5 shrink-0 text-[10px] leading-snug text-zinc-600 sm:text-xs">
         Hors allergènes UE-14 — alternative sans porc / végétarienne.
       </p>
       <ul className="mt-2 min-h-0 flex-1 space-y-2 overflow-y-auto sm:max-h-[20rem] lg:max-h-[22rem]">
