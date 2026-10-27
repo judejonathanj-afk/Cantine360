@@ -120,11 +120,11 @@ export function ServiceAttendanceImport({
           type="button"
           variant="default"
           disabled={busy}
-          className="h-11 w-fit gap-2.5 rounded-full px-5 text-sm font-semibold shadow-sm transition-transform duration-200 ease-out hover:scale-105"
+          className="h-8 w-fit gap-1.5 rounded-full px-3 text-xs font-semibold shadow-sm transition-transform duration-200 ease-out hover:scale-105 sm:h-9 sm:px-3.5 sm:text-sm"
           onClick={() => void copyPrevious()}
         >
           {busy ? "Chargement…" : "Reprendre les présents de la veille"}
-          <History className="h-4 w-4 shrink-0" aria-hidden />
+          <History className="h-3.5 w-3.5 shrink-0" aria-hidden />
         </Button>
         {errorMessage ? (
           <p className="max-w-md rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
