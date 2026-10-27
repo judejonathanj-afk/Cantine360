@@ -269,13 +269,13 @@ export function MenuEditor({
               return (
                 <div
                   key={`${cat}-${idx}`}
-                  className="rounded-2xl border-[2.5px] border-zinc-900 bg-zinc-700 p-4 shadow-sm"
+                  className="rounded-2xl border-[2.5px] border-[#0a2f24] bg-[#0d3b2e] p-4 shadow-sm"
                 >
                   <div className="mb-3 flex justify-end">
                     <button
                       type="button"
                       onClick={() => remove(idx)}
-                      className="rounded-lg border border-zinc-500 bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-900"
+                      className="rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20"
                     >
                       Supprimer
                       {it.label.trim() ? ` « ${it.label.trim()} »` : ""}
@@ -421,7 +421,7 @@ export function MenuEditor({
                     </div>
                   </div>
 
-                  <div className="mt-6 flex justify-end border-t border-zinc-600/80 pt-4">
+                  <div className="mt-6 flex justify-end border-t border-white/15 pt-4">
                     <button
                       type="button"
                       onClick={() => closeCategory(cat)}
