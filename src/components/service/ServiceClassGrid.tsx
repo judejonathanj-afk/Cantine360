@@ -116,9 +116,9 @@ export function ServiceClassGrid({
         labelledBy="saisie-classes-title"
         className="max-w-[92rem]"
       >
-        <div className="flex h-[96vh] min-h-0 w-full flex-col gap-3 rounded-[24px] border border-zinc-200/80 bg-white p-2.5 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:gap-3.5 sm:p-3">
-          <div className="shrink-0">{toolbar}</div>
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] bg-white p-2.5 sm:p-3">
+        <div className="flex h-[99vh] min-h-0 w-full flex-col gap-1 rounded-2xl border border-zinc-200/80 bg-white p-1 shadow-[0_24px_60px_rgba(24,24,27,0.28)]">
+          <div className="shrink-0 px-1 pt-0.5">{toolbar}</div>
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {cards.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-zinc-300 bg-white p-4 text-sm text-zinc-600">
               Aucune classe pour ce filtre école / niveau.
