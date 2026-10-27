@@ -24,17 +24,17 @@ export function DashboardHeroBanner({
       className={cn(
         "relative overflow-hidden rounded-[28px]",
         isKitchen
-          ? "bg-gradient-to-r from-[#ff9a32] via-[#ff7a22] to-[#f26522] text-white shadow-[0_18px_40px_-18px_rgba(242,101,34,0.55)]"
+          ? "bg-gradient-to-r from-[#0d3b2e] via-[#114a3a] to-[#0d3b2e] text-white shadow-[0_18px_40px_-18px_rgba(13,59,46,0.55)]"
           : "bg-white text-zinc-900 shadow-[0_18px_40px_-18px_rgba(24,24,27,0.18)] ring-1 ring-zinc-200",
       )}
     >
       {isKitchen ? (
-      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#ffb15a]/35 blur-2xl" />
+      <div className="pointer-events-none absolute -left-16 top-8 h-40 w-64 rounded-full bg-[#DFF59A]/20 blur-2xl" />
       ) : null}
       <svg
         className={cn(
           "pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full",
-          isKitchen ? "text-[#c2410c]/25" : "hidden",
+          isKitchen ? "text-[#0a2f24]/40" : "hidden",
         )}
         viewBox="0 0 1200 160"
         preserveAspectRatio="none"
@@ -137,7 +137,7 @@ export function DashboardHeroBanner({
               {schoolNames.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#fff6ea] px-3 py-1 text-xs font-semibold text-[#9a4b12] shadow-sm"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#DFF59A] px-3 py-1 text-xs font-semibold text-[#0d3b2e] shadow-sm"
                 >
                   <Leaf className="size-3.5 text-emerald-600" aria-hidden />
                   {s}
