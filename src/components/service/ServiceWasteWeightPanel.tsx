@@ -340,7 +340,7 @@ export function ServiceWasteWeightPanel({
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
         labelledBy="poids-dechets-overlay-title"
-        className="max-w-5xl"
+        className="max-w-6xl"
       >
         <div className="mb-2 px-1">
           <h2
