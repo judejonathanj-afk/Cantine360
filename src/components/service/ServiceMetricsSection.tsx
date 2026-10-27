@@ -88,15 +88,7 @@ export function ServiceMetricsSection({
           presentTotal={livePresent}
           className="w-full"
         />
-      ) : (
-        <div className="mb-2 flex justify-end">
-          <ServiceAttendanceImport
-            serviceId={serviceId}
-            presentTotal={livePresent}
-            className="items-center"
-          />
-        </div>
-      )}
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <ServiceSchoolFilter
           cards={liveCards}
@@ -106,7 +98,14 @@ export function ServiceMetricsSection({
             if (school === "all") setLevelFilter("all");
           }}
         />
-        <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end">
+        <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-3">
+          {showCsvImport ? null : (
+            <ServiceAttendanceImport
+              serviceId={serviceId}
+              presentTotal={livePresent}
+              className="items-end"
+            />
+          )}
           <ServiceLevelFilter
             cards={liveCards}
             value={levelFilter}
