@@ -16,6 +16,9 @@ import { cn } from "@/lib/utils";
 /** Jaune repère régimes (capture produit) */
 const DIET_PANEL_BG = "#FDEE5A";
 const DIET_PANEL_BORDER = "#E8D84C";
+/** Vert capture pour entourer « Élèves concernés » */
+const CONCERNED_GREEN = "#DFF59A";
+const CONCERNED_GREEN_BORDER = "#C8E86A";
 
 export function useDietStudentsList({
   groups,
@@ -41,7 +44,13 @@ export function useDietStudentsList({
       const cardColor = LEVEL_CARD_COLORS[level];
       return (
         <li key={g.groupId}>
-          <p className="text-base font-extrabold uppercase tracking-wide text-zinc-950">
+          <p
+            className="inline-flex rounded-full border-2 px-3 py-1 text-base font-extrabold uppercase tracking-wide text-zinc-950"
+            style={{
+              backgroundColor: CONCERNED_GREEN,
+              borderColor: CONCERNED_GREEN_BORDER,
+            }}
+          >
             {g.groupLabel}
           </p>
           <ul className="mt-1.5 space-y-1.5">
@@ -167,7 +176,13 @@ export function ServiceDietStudentsExpandedContent({
         className,
       )}
     >
-      <p className="shrink-0 text-xl font-extrabold text-zinc-950 sm:text-2xl">
+      <p
+        className="inline-flex w-fit shrink-0 rounded-2xl border-2 px-4 py-2 text-xl font-extrabold text-zinc-950 sm:text-2xl"
+        style={{
+          backgroundColor: CONCERNED_GREEN,
+          borderColor: CONCERNED_GREEN_BORDER,
+        }}
+      >
         Élèves concernés
       </p>
       <p className="mt-1 shrink-0 text-base font-bold leading-snug text-zinc-950">
