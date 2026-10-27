@@ -1,8 +1,10 @@
+"use client";
+
 import type {
   GroupAllergenSummary,
   ServiceAllergenSummary,
 } from "@/server/serviceAllergenSummary";
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AlertTriangle } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
@@ -69,6 +71,39 @@ export function ServiceAllergenOverview({
         <p>Aucun élève concerné par le menu actuel.</p>
       )}
     </ServiceInsightCard>
+  );
+}
+
+const ALLERGEN_LIST_MAX_PX = 320;
+
+function AllergenDetailList({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLUListElement>(null);
+  const [overflows, setOverflows] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      setOverflows(el.scrollHeight > ALLERGEN_LIST_MAX_PX);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [children]);
+
+  return (
+    <ul
+      ref={ref}
+      className={cn(
+        "mt-3 space-y-2.5",
+        overflows
+          ? "max-h-[20rem] overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200"
+          : "overflow-visible",
+      )}
+    >
+      {children}
+    </ul>
   );
 }
 
@@ -153,7 +188,7 @@ export function GroupAllergenBadge({
         ))}
       </p>
       {detailRows.length > 0 ? (
-        <ul className="mt-3 max-h-[20rem] space-y-2.5 overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-200">
+        <AllergenDetailList>
           {detailRows.map((student) => {
             const lines: { key: string; content: ReactNode }[] = [];
             if (student.allergens.length > 0) {
@@ -217,7 +252,7 @@ export function GroupAllergenBadge({
               </li>
             );
           })}
-        </ul>
+        </AllergenDetailList>
       ) : null}
       </div>
     </div>
