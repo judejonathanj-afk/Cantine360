@@ -303,7 +303,7 @@ export function ServiceWasteWeightPanel({
           className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
         >
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-[#0d3b2e] sm:h-11 sm:w-11"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#DFF59A] text-[#0d3b2e] sm:h-11 sm:w-11"
             aria-hidden
           >
             <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
