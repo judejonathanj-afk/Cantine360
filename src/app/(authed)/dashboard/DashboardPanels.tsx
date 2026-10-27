@@ -24,10 +24,7 @@ import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart"
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
 import { DashboardHeroBanner } from "@/components/dashboard/DashboardHeroBanner";
-import {
-  DashboardInsightCard,
-  DashboardSectionHeading,
-} from "@/components/dashboard/DashboardDesignShell";
+import { DashboardInsightCard } from "@/components/dashboard/DashboardDesignShell";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
@@ -514,17 +511,18 @@ export default function DashboardPanels({
 
       {!isKitchen ? (
       <>
-      <section>
-        <DashboardSectionHeading
-          icon={Layers}
-          title="Contexte du service"
-          lineClassName="dashboard-section-line--red"
-          hint={
-            levelFilter !== "all"
-              ? `Menus, pesées et écarts — ${schoolLevelLabelFr(levelFilter)}.`
-              : "Menus, pesées et écarts par jour de service."
-          }
-        />
+      <DashboardFoldOverlay
+        kicker="Contexte du service"
+        openLabel="Ouvrir Contexte du service"
+        overlayTitle="Contexte du service"
+        hint={
+          levelFilter !== "all"
+            ? `Menus, pesées et écarts — ${schoolLevelLabelFr(levelFilter)}.`
+            : "Menus, pesées et écarts par jour de service."
+        }
+        icon={Layers}
+        labelledBy="service-context-overlay-title"
+      >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
             <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
@@ -591,19 +589,16 @@ export default function DashboardPanels({
             </div>
           )}
         </div>
-      </section>
+      </DashboardFoldOverlay>
 
-      <section>
-        <DashboardSectionHeading
-          icon={TableIcon}
-          title="Suivi jour par jour"
-          lineClassName="dashboard-section-line--blue"
-          hint={
-            isKitchen
-              ? "Aperçu du jour — présents, servis, RAB, refus et déchets."
-              : "Détail complet par service — présents, servis, RAB, refus et déchets."
-          }
-        />
+      <DashboardFoldOverlay
+        kicker="Suivi jour par jour"
+        openLabel="Ouvrir Suivi jour par jour"
+        overlayTitle="Suivi jour par jour"
+        hint="Détail complet par service — présents, servis, RAB, refus et déchets."
+        icon={TableIcon}
+        labelledBy="day-tracking-overlay-title"
+      >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
             <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
@@ -684,7 +679,7 @@ export default function DashboardPanels({
             </div>
           )}
         </div>
-      </section>
+      </DashboardFoldOverlay>
       </>
       ) : null}
 
