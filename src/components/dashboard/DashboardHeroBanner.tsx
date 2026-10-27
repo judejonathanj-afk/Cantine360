@@ -51,11 +51,18 @@ export function DashboardHeroBanner({
         />
       </svg>
       {isKitchen ? (
-        <img
-          src="/dashboard/banner-cuisine-droite.jpg?v=5"
-          alt=""
-          className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-auto max-w-[58%] object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_18%)] sm:block"
-        />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden h-full w-[min(58%,42rem)] sm:block">
+          <img
+            src="/dashboard/banner-cuisine-droite.jpg?v=5"
+            alt=""
+            className="h-full w-full object-cover object-right [mask-image:linear-gradient(to_right,transparent,black_18%)]"
+          />
+          <div
+            className="absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_18%)]"
+            style={{ backgroundColor: "#0d3b2e", mixBlendMode: "color" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0d3b2e] via-[#0d3b2e]/65 to-transparent" />
+        </div>
       ) : (
         <svg
           className="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-[min(48%,32rem)]"
