@@ -92,7 +92,11 @@ export function ServiceDayInsightsPanel({
             )}
           >
             {dietDetailOpen ? insightsGrid : null}
-            <div className={cn(dietDetailOpen && "px-4 pb-2 sm:px-5")}>
+            <div
+              className={cn(
+                dietDetailOpen ? "px-4 pb-2 sm:px-5" : "flex justify-center",
+              )}
+            >
               <ServiceDietStudentsTrigger
                 total={dietList.total}
                 open={dietDetailOpen}

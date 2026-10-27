@@ -128,7 +128,7 @@ export function ServiceDietStudentsTrigger({
   return (
     <CollapsibleTrigger
       className={cn(
-        "flex w-full shrink-0 flex-col border px-3 shadow-sm outline-none transition-colors hover:brightness-[0.97]",
+        "flex w-fit max-w-full shrink-0 items-center gap-2 border px-4 shadow-sm outline-none transition-colors hover:brightness-[0.97]",
         open ? "rounded-t-2xl py-2.5" : "rounded-full py-2",
         className,
       )}
@@ -137,18 +137,16 @@ export function ServiceDietStudentsTrigger({
         borderColor: DIET_PANEL_BORDER,
       }}
     >
-      <div className="relative flex items-center gap-2">
-        <h2 className="flex-1 text-left text-sm font-bold leading-snug text-amber-950">
-          <span className="tabular-nums">{total}</span> régime
-          {total > 1 ? "s" : ""} à adapter — détail
-        </h2>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 shrink-0 text-amber-950/80 transition-transform",
-            open ? "rotate-180" : "",
-          )}
-        />
-      </div>
+      <h2 className="text-left text-sm font-bold leading-snug text-amber-950">
+        <span className="tabular-nums">{total}</span> régime
+        {total > 1 ? "s" : ""} à adapter — détail
+      </h2>
+      <ChevronDown
+        className={cn(
+          "h-4 w-4 shrink-0 text-amber-950/80 transition-transform",
+          open ? "rotate-180" : "",
+        )}
+      />
     </CollapsibleTrigger>
   );
 }
