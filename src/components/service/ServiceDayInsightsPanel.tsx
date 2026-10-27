@@ -102,6 +102,12 @@ export function ServiceDayInsightsPanel({
                 open={dietDetailOpen}
               />
             </div>
+            {dietDetailOpen ? (
+              <hr
+                className="mx-4 mb-1 h-1 rounded-full border-0 bg-[#FDEE5A] sm:mx-5"
+                aria-hidden
+              />
+            ) : null}
             {dietDetailOpen ? insightsGrid : null}
             <ServiceDietStudentsExpandedContent
               list={dietList.list}
