@@ -15,11 +15,14 @@ const DEFAULT_TEXT = "MENU CANTINE & ALLERGÈNES";
 export function MenusCantineColorTitle({
   text = DEFAULT_TEXT,
   className,
+  tone = "color",
 }: {
   text?: string;
   className?: string;
+  tone?: "color" | "black";
 }) {
   let colorIndex = 0;
+  const ink = "#09090b";
 
   return (
     <h1
@@ -38,7 +41,10 @@ export function MenusCantineColorTitle({
           return (
             <span
               key={`amp-${i}`}
-              style={{ color: groupCardColorForIndex(colorIndex++) }}
+              style={{
+                color:
+                  tone === "black" ? ink : groupCardColorForIndex(colorIndex++),
+              }}
               className="mx-0.5 inline-block"
             >
               &
@@ -46,7 +52,8 @@ export function MenusCantineColorTitle({
           );
         }
         if (char === "+") {
-          const color = groupCardColorForIndex(colorIndex++);
+          const color =
+            tone === "black" ? ink : groupCardColorForIndex(colorIndex++);
           return (
             <span
               key={`plus-${i}`}
@@ -58,7 +65,8 @@ export function MenusCantineColorTitle({
             </span>
           );
         }
-        const color = groupCardColorForIndex(colorIndex++);
+        const color =
+          tone === "black" ? ink : groupCardColorForIndex(colorIndex++);
         return (
           <span key={`${char}-${i}`} style={{ color }} className="inline-block leading-none">
             {char}

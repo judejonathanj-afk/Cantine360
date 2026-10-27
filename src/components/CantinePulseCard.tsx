@@ -522,9 +522,10 @@ export function CantinePulseCard({
 
         <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4">
           {showBrandTitle ? (
-            <div className="inline-flex shrink-0 items-center rounded-full bg-[#06101c] px-4 py-1.5 shadow-md ring-1 ring-zinc-200 sm:px-5 sm:py-2">
+            <div className="inline-flex shrink-0 items-center">
               <MenusCantineColorTitle
                 text="CANTINE +"
+                tone="black"
                 className="text-base tracking-[0.16em] sm:text-lg md:text-lg lg:text-lg"
               />
             </div>
