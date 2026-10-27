@@ -58,7 +58,7 @@ function AntiWasteOffHeader() {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Cantine 360
         </p>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-black sm:text-3xl">
+        <h1 className="mt-2 inline-block rounded-2xl bg-white px-5 py-2 font-display text-2xl font-bold tracking-tight text-black sm:text-3xl">
           Mode anti-gaspillage
         </h1>
         <p className="mt-3 w-full text-lg leading-relaxed text-black sm:text-xl">
