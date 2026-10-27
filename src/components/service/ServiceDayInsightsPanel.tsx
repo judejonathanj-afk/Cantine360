@@ -91,20 +91,18 @@ export function ServiceDayInsightsPanel({
                 "overflow-hidden rounded-[20px] border border-zinc-200/80 bg-white shadow-[0_14px_40px_rgba(24,24,27,0.08)]",
             )}
           >
-            {dietDetailOpen ? insightsGrid : null}
             <div
               className={cn(
-                dietDetailOpen ? "px-4 pb-2 sm:px-5" : "flex justify-center",
+                "flex justify-center",
+                dietDetailOpen && "px-4 pt-4 pb-2 sm:px-5",
               )}
             >
               <ServiceDietStudentsTrigger
                 total={dietList.total}
                 open={dietDetailOpen}
-                className={
-                  dietDetailOpen ? "rounded-b-none border-b-0" : undefined
-                }
               />
             </div>
+            {dietDetailOpen ? insightsGrid : null}
             <ServiceDietStudentsExpandedContent
               list={dietList.list}
               className={cn(
