@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GraduationCap } from "lucide-react";
 import { useQueuedMetrics } from "@/hooks/useQueuedMetrics";
 import { overlayQueuedCounts } from "@/lib/mergeQueuedMetrics";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -90,11 +89,7 @@ export function ServiceMetricsSection({
           className="w-full"
         />
       ) : (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
-            <GraduationCap className="h-7 w-7 shrink-0 text-zinc-950" strokeWidth={2.25} aria-hidden />
-            Les classes
-          </h2>
+        <div className="mb-2 flex justify-end">
           <ServiceAttendanceImport
             serviceId={serviceId}
             presentTotal={livePresent}

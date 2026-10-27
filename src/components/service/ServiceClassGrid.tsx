@@ -113,10 +113,22 @@ export function ServiceClassGrid({
       <ServiceSaisieOverlay
         open={open}
         onClose={() => onOpenChange(false)}
-        labelledBy="saisie-classes-title"
+        labelledBy="classes-overlay-title"
         className="max-w-[76rem]"
       >
-        <div className="flex h-[86vh] min-h-0 w-full flex-col gap-1 rounded-2xl border border-zinc-200/80 bg-white p-1 shadow-[0_24px_60px_rgba(24,24,27,0.28)]">
+        <div className="mb-2 px-1">
+          <h2
+            id="classes-overlay-title"
+            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+          >
+            <GraduationCap className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+            Les classes
+          </h2>
+          <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+            Saisissez les compteurs sur chaque carte, puis Enregistrer.
+          </p>
+        </div>
+        <div className="flex h-[80vh] min-h-0 w-full flex-col gap-1 rounded-2xl border border-zinc-200/80 bg-white p-1 shadow-[0_24px_60px_rgba(24,24,27,0.28)]">
           <div className="shrink-0 px-1 pt-0.5">{toolbar}</div>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {cards.length === 0 ? (
