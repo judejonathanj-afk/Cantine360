@@ -90,16 +90,18 @@ export function ServiceMetricsSection({
           className="w-full"
         />
       ) : (
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
+        <div className="relative mb-4">
+          <h2 className="flex items-center justify-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
             <GraduationCap className="h-7 w-7 shrink-0 text-zinc-950" strokeWidth={2.25} aria-hidden />
             Les classes
           </h2>
-          <ServiceAttendanceImport
-            serviceId={serviceId}
-            presentTotal={livePresent}
-            className="items-end"
-          />
+          <div className="mt-1 flex justify-center sm:absolute sm:right-0 sm:top-0 sm:mt-0">
+            <ServiceAttendanceImport
+              serviceId={serviceId}
+              presentTotal={livePresent}
+              className="items-center"
+            />
+          </div>
         </div>
       )}
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
