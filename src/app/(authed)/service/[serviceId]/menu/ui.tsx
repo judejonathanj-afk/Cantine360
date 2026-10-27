@@ -156,8 +156,18 @@ export function MenuEditor({
   }
 
   function add(category: Category) {
+    const alreadyOpen = openCategories[category];
     setOpenCategories((prev) => ({ ...prev, [category]: true }));
-    setItems((all) => [...all, emptyItem(category)]);
+    setItems((all) => {
+      const inCategory = all.filter((item) => item.category === category);
+      const hasBlank = inCategory.some((item) => !item.label.trim());
+      if (!alreadyOpen) {
+        if (inCategory.length === 0) return [...all, emptyItem(category)];
+        return all;
+      }
+      if (hasBlank) return all;
+      return [...all, emptyItem(category)];
+    });
   }
 
   function remove(idx: number) {
