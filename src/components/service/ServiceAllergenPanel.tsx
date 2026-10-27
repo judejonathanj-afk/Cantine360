@@ -173,7 +173,7 @@ export function GroupAllergenBadge({
   }
 
   return (
-    <div className="mt-3">
+    <div className="mt-2">
       <p className="mb-2 flex items-center gap-2 text-left text-lg font-extrabold text-zinc-950 sm:text-xl">
         <AlertTriangle className="h-6 w-6 shrink-0 text-amber-700" aria-hidden />
         Allergies et régimes

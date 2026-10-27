@@ -127,7 +127,7 @@ export function ServiceClassGrid({
             <div
               className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
             >
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
+            <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2 lg:gap-4">
               {cards.map((m) => {
                 const done =
                   m.presentCount > 0 ||
@@ -140,7 +140,7 @@ export function ServiceClassGrid({
                   <article
                     key={m.groupId}
                     id={`group-${m.groupId}`}
-                    className="relative rounded-[22px] border-2 p-5 shadow-sm"
+                    className="relative rounded-[18px] border-2 p-3.5 shadow-sm"
                     style={{
                       backgroundColor: cardColor,
                       borderColor: cardColor,
