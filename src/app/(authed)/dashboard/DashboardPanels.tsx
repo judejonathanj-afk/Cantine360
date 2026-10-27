@@ -447,12 +447,14 @@ export default function DashboardPanels({
       ) : null}
 
       {!isKitchen ? (
-        <section>
-          <DashboardSectionHeading
-            icon={GitCompareArrows}
-            title="Taux du cycle"
-            hint={`Taux de service, RAB et refus sur ${days} jours.`}
-          />
+        <DashboardFoldOverlay
+          kicker="Taux du cycle"
+          openLabel="Ouvrir Taux du cycle"
+          overlayTitle="Taux du cycle"
+          hint={`Taux de service, RAB et refus sur ${days} jours.`}
+          icon={GitCompareArrows}
+          labelledBy="cycle-rates-overlay-title"
+        >
           <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
             {chartLevels.map((level) => (
               <DashboardInsightCard
@@ -474,16 +476,18 @@ export default function DashboardPanels({
               </DashboardInsightCard>
             ))}
           </div>
-        </section>
+        </DashboardFoldOverlay>
       ) : null}
 
       {!isKitchen ? (
-      <section>
-        <DashboardSectionHeading
-          icon={Trash2}
-          title="Évolution des déchets"
-          hint="Poids des déchets et grammes pour 100 assiettes dans le temps."
-        />
+      <DashboardFoldOverlay
+        kicker="Évolution des déchets"
+        openLabel="Ouvrir Évolution des déchets"
+        overlayTitle="Évolution des déchets"
+        hint="Poids des déchets et grammes pour 100 assiettes dans le temps."
+        icon={Trash2}
+        labelledBy="waste-evolution-overlay-title"
+      >
         <div className="grid grid-cols-1 gap-5">
           {chartLevels.map((level) => (
             <DashboardInsightCard
@@ -505,7 +509,7 @@ export default function DashboardPanels({
             </DashboardInsightCard>
           ))}
         </div>
-      </section>
+      </DashboardFoldOverlay>
       ) : null}
 
       {!isKitchen ? (
