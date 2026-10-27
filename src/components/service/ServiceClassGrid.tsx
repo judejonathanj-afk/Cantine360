@@ -140,7 +140,7 @@ export function ServiceClassGrid({
                   <article
                     key={m.groupId}
                     id={`group-${m.groupId}`}
-                    className="relative rounded-[18px] border-2 p-3.5 shadow-sm"
+                    className="relative flex h-full flex-col rounded-[18px] border-2 p-3.5 shadow-sm"
                     style={{
                       backgroundColor: cardColor,
                       borderColor: cardColor,
@@ -171,7 +171,9 @@ export function ServiceClassGrid({
                       </span>
                     </div>
 
-                    <GroupAllergenBadge groupSummary={m.groupSummary} hasMenu={hasMenu} />
+                    <div className="min-h-0 flex-1">
+                      <GroupAllergenBadge groupSummary={m.groupSummary} hasMenu={hasMenu} />
+                    </div>
 
                     <ClassCardCounters
                       serviceId={serviceId}

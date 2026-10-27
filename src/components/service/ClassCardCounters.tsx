@@ -37,7 +37,7 @@ export function ClassCardCounters({
   }
 
   return (
-    <div className="mt-2">
+    <div className="mt-auto pt-2">
       <p className="mb-1.5 text-left text-base font-extrabold text-zinc-950 sm:text-lg">
         Compteurs
       </p>
