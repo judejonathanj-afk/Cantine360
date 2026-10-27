@@ -1,0 +1,91 @@
+"use client";
+
+import { useState, type ReactNode } from "react";
+import { ChevronDown, type LucideIcon } from "lucide-react";
+import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
+
+export function DashboardFoldOverlay({
+  kicker,
+  openLabel,
+  overlayTitle,
+  hint,
+  icon: Icon,
+  labelledBy,
+  children,
+}: {
+  kicker: string;
+  openLabel: string;
+  overlayTitle: string;
+  hint: string;
+  icon: LucideIcon;
+  labelledBy: string;
+  children: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div>
+      <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-expanded={open}
+          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
+        >
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#DFF59A] text-[#0d3b2e] sm:h-11 sm:w-11"
+            aria-hidden
+          >
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
+              {kicker}
+            </span>
+            <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
+              {openLabel}
+            </span>
+            <span className="mt-0.5 block text-sm leading-snug text-white/80">
+              {hint}
+            </span>
+          </span>
+          <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
+        </button>
+      </section>
+
+      <ServiceSaisieOverlay
+        open={open}
+        onClose={() => setOpen(false)}
+        labelledBy={labelledBy}
+        className="w-[calc(100vw-1rem)] max-w-[92rem]"
+      >
+        <div className="mb-2 px-1">
+          <h2
+            id={labelledBy}
+            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+          >
+            <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+            {overlayTitle}
+          </h2>
+          <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+            {hint}
+          </p>
+        </div>
+        <div className="flex min-h-0 max-h-[94vh] flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4">
+          <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+            {children}
+          </div>
+          <div className="flex shrink-0 justify-end">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </ServiceSaisieOverlay>
+    </div>
+  );
+}

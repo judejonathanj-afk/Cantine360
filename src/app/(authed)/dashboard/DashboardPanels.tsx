@@ -19,6 +19,7 @@ import {
 import { motion } from "framer-motion";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
+import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
@@ -413,12 +414,14 @@ export default function DashboardPanels({
       })()}
 
       {!isKitchen ? (
-      <section>
-        <DashboardSectionHeading
-          icon={Utensils}
-          title="Flux du repas"
-          hint="Présents → servis → RAB / refus, jour par jour."
-        />
+      <DashboardFoldOverlay
+        kicker="Flux du repas"
+        openLabel="Ouvrir Flux du repas"
+        overlayTitle="Flux du repas"
+        hint="Présents → servis → RAB / refus, jour par jour."
+        icon={Utensils}
+        labelledBy="meal-flow-overlay-title"
+      >
         <div className="grid grid-cols-1 gap-5">
           {chartLevels.map((level) => (
             <DashboardInsightCard
@@ -440,7 +443,7 @@ export default function DashboardPanels({
             </DashboardInsightCard>
           ))}
         </div>
-      </section>
+      </DashboardFoldOverlay>
       ) : null}
 
       {!isKitchen ? (
