@@ -475,7 +475,7 @@ export default function DashboardPanels({
           title="Évolution des déchets"
           hint="Poids des déchets et grammes pour 100 assiettes dans le temps."
         />
-        <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
+        <div className="grid grid-cols-1 gap-5">
           {chartLevels.map((level) => (
             <DashboardInsightCard
               key={`waste-${level}`}
