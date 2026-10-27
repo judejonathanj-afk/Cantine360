@@ -215,7 +215,7 @@ export function MenuEditor({
               className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
             >
               <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#3ddc84] text-lg text-[#0d3b2e] sm:h-10 sm:w-10"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DFF59A] text-lg text-[#0d3b2e] sm:h-10 sm:w-10"
                 aria-hidden
               >
                 {CATEGORY_LABEL[cat].split(" ")[0]}
@@ -241,7 +241,7 @@ export function MenuEditor({
             <button
               type="button"
               onClick={() => add(cat)}
-              className="flex w-[7.25rem] shrink-0 items-center justify-center bg-[#00c46a] px-3 text-sm font-bold text-white transition hover:bg-[#00b05f] active:bg-[#009e55] sm:w-[9.25rem] sm:text-base"
+              className="flex w-[7.25rem] shrink-0 items-center justify-center bg-[#DFF59A] px-3 text-sm font-bold text-[#0d3b2e] transition hover:bg-[#d0ec7a] active:bg-[#c3e06a] sm:w-[9.25rem] sm:text-base"
             >
               Ajouter +
             </button>
