@@ -143,7 +143,7 @@ export function GroupAllergenBadge({
         <AlertTriangle className="h-6 w-6 shrink-0 text-amber-700" aria-hidden />
         Allergies et régimes
       </p>
-      <div className="rounded-2xl border-2 border-amber-500 bg-white px-4 py-4 shadow-sm ring-1 ring-amber-600/20">
+      <div className="rounded-2xl border-2 border-[#C8E86A] bg-white px-4 py-4 shadow-sm ring-1 ring-[#C8E86A]/40">
       <p className="text-lg font-bold leading-snug text-zinc-950">
         {summaryParts.map((part, index) => (
           <span key={index}>
@@ -199,7 +199,7 @@ export function GroupAllergenBadge({
             return (
               <li
                 key={student.id}
-                className="rounded-xl bg-amber-50/80 px-3 py-2.5 text-lg leading-snug text-zinc-800"
+                className="rounded-xl border-2 border-[#C8E86A] bg-[#DFF59A] px-3 py-2.5 text-lg leading-snug text-zinc-800"
               >
                 <p>
                   <span className="mr-1.5 inline-flex rounded-full bg-black px-3 py-1 text-lg font-extrabold text-white">
