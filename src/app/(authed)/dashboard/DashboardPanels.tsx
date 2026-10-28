@@ -576,6 +576,7 @@ export default function DashboardPanels({
         hint="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Filtrez, lisez, téléchargez."
         icon={Trash2}
         labelledBy="waste-evolution-overlay-title"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
             days={days}
