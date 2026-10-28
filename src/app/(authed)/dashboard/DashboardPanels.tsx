@@ -626,16 +626,21 @@ export default function DashboardPanels({
               <div
                 key={`waste-conclusion-${level}`}
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-medium leading-relaxed text-zinc-900 sm:text-base",
+                  "rounded-2xl px-4 py-3.5 ring-1",
                   level === "MATERNELLE"
-                    ? "bg-sky-50 ring-1 ring-sky-200"
-                    : "bg-emerald-50 ring-1 ring-emerald-200",
+                    ? "bg-sky-50 ring-sky-200"
+                    : "bg-emerald-50 ring-emerald-200",
                 )}
               >
-                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-500">
+                <p
+                  className={cn(
+                    "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+                    level === "MATERNELLE" ? "bg-sky-600" : "bg-emerald-600",
+                  )}
+                >
                   Conclusion {schoolLevelLabelFr(level)}
                 </p>
-                <p className="mt-1">
+                <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg">
                   {buildWasteEvolutionConclusion(
                     buildWasteEvolutionSeries(wasteByLevel[level] ?? []),
                     { days, level },
