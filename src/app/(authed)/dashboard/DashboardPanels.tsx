@@ -30,12 +30,16 @@ import {
   type WastePerDayRowInput,
 } from "@/lib/buildWasteEvolutionSeries";
 import { buildWasteEvolutionConclusion } from "@/lib/wasteEvolutionConclusion";
-import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
+import {
+  levelTotalsHasData,
+  type LevelMealTotals,
+} from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { downloadWasteEvolutionPdf } from "@/lib/downloadWasteEvolutionPdf";
+import { downloadCycleRatesPdf } from "@/lib/downloadCycleRatesPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -539,9 +543,28 @@ export default function DashboardPanels({
           kicker="Taux du cycle"
           openLabel="Ouvrir Taux du cycle"
           overlayTitle="Taux du cycle"
-          hint={`Taux de service, RAB et refus sur ${days} jours.`}
+          subtitle="Comparez le service, le RAB et les refus par cycle, pour ajuster portions et menu."
+          hint={`Taux de service = servis / présents · RAB et refus = vs assiettes servies · ${days} jours. Filtrez, lisez, téléchargez.`}
           icon={GitCompareArrows}
           labelledBy="cycle-rates-overlay-title"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+          headerAction={
+            <OverlayTableToolbar
+              days={days}
+              levelFilter={levelFilter}
+              daysHref={daysHref}
+              levelHref={levelHref}
+              downloadDisabled={chartLevels.every(
+                (level) => !levelTotalsHasData(levelComparisonTotals[level]),
+              )}
+              onDownload={() =>
+                downloadCycleRatesPdf(levelComparisonTotals, chartLevels, {
+                  days,
+                  levelFilter,
+                })
+              }
+            />
+          }
         >
           <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
             {chartLevels.map((level) => (
