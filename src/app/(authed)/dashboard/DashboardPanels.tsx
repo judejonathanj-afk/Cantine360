@@ -611,6 +611,7 @@ export default function DashboardPanels({
         icon={Layers}
         labelledBy="service-context-overlay-title"
         dialogClassName="w-[calc(100vw-3rem)] max-w-[78rem] sm:w-[calc(100vw-5rem)]"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
             days={days}
@@ -707,6 +708,7 @@ export default function DashboardPanels({
         icon={TableIcon}
         labelledBy="day-tracking-overlay-title"
         dialogClassName="w-[calc(100vw-3rem)] max-w-[78rem] sm:w-[calc(100vw-5rem)]"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
             days={days}

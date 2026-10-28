@@ -16,6 +16,7 @@ export function DashboardFoldOverlay({
   titleClassName,
   headerAction,
   dialogClassName,
+  closeButtonClassName,
   icon: Icon,
   labelledBy,
   children,
@@ -28,6 +29,7 @@ export function DashboardFoldOverlay({
   titleClassName?: string;
   headerAction?: ReactNode;
   dialogClassName?: string;
+  closeButtonClassName?: string;
   icon: LucideIcon;
   labelledBy: string;
   children: ReactNode;
@@ -126,7 +128,10 @@ export function DashboardFoldOverlay({
             <button
               type="button"
               onClick={() => setFoldOpen(false)}
-              className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100"
+              className={cn(
+                "rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
+                closeButtonClassName,
+              )}
             >
               Fermer
             </button>
