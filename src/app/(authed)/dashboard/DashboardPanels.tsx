@@ -97,7 +97,7 @@ function OverlayTableToolbar({
       <div
         role="group"
         aria-label="Période"
-        className="inline-flex items-center rounded-full bg-[#eef6c9] p-1 shadow-sm"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
       >
         <OverlayFilterLink href={daysHref(7)} active={days === 7}>
           7 jours
@@ -109,7 +109,7 @@ function OverlayTableToolbar({
       <div
         role="group"
         aria-label="Niveau"
-        className="inline-flex items-center rounded-full bg-[#eef6c9] p-1 shadow-sm"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
       >
         <OverlayFilterLink href={levelHref("all")} active={levelFilter === "all"}>
           Tous niveaux
