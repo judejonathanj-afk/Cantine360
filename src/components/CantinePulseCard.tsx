@@ -467,7 +467,7 @@ export function CantinePulseCard({
   eco?: CantinePulseEco | null;
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
-  /** Masquer Déjeuner / icône (déjà affichés sous les boutons de la fenêtre). */
+  /** Masquer Déjeuner / icône (déjà affichés au-dessus des boutons de la fenêtre). */
   showMealHeader?: boolean;
   levelFilter?: "all" | SchoolLevel;
   antiWasteModeEnabled?: boolean;

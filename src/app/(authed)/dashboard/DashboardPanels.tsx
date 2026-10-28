@@ -523,6 +523,11 @@ export default function DashboardPanels({
             subtitle="Cantine+ suit le repas du quotidien : elle calcule une note sur 100, met en avant le RAB et le poids des déchets, et affiche les tendances pour aider cuisine et direction à réduire le gaspillage."
             headerAction={
               <div className="flex flex-col items-end gap-3">
+                <CantinePlusMealHeader
+                  mealType="LUNCH"
+                  mood={pulseMood}
+                  onDark
+                />
                 <OverlayTableToolbar
                   days={days}
                   levelFilter={levelFilter}
@@ -535,11 +540,6 @@ export default function DashboardPanels({
                       levelFilter,
                     })
                   }
-                />
-                <CantinePlusMealHeader
-                  mealType="LUNCH"
-                  mood={pulseMood}
-                  onDark
                 />
               </div>
             }
