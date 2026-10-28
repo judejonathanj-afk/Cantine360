@@ -99,7 +99,7 @@ export function DashboardFoldOverlay({
           dialogClassName,
         )}
       >
-        <div className="mb-2 flex items-start justify-between gap-3 px-1">
+        <div className="mb-2 flex items-start justify-between gap-3 px-1 pt-4 sm:pt-5">
           <div className="min-w-0">
             <h2
               id={labelledBy}
