@@ -74,7 +74,7 @@ export function WasteEvolutionChart({
         config={chartConfig}
         className={cn(
           cantinePlusChartPlotClass,
-          embedded && "aspect-auto h-[260px] w-full",
+          embedded && "aspect-auto h-[200px] w-full",
         )}
       >
         <ComposedChart

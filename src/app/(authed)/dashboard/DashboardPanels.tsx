@@ -31,6 +31,7 @@ import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
+import { downloadWasteEvolutionPdf } from "@/lib/downloadWasteEvolutionPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -570,8 +571,26 @@ export default function DashboardPanels({
         hint="Poids des déchets et grammes pour 100 assiettes dans le temps."
         icon={Trash2}
         labelledBy="waste-evolution-overlay-title"
+        headerAction={
+          <OverlayTableToolbar
+            days={days}
+            levelFilter={levelFilter}
+            daysHref={daysHref}
+            levelHref={levelHref}
+            downloadDisabled={chartLevels.every(
+              (level) =>
+                !(wasteByLevel[level] ?? []).some((row) => row.wasteWeightG > 0),
+            )}
+            onDownload={() =>
+              downloadWasteEvolutionPdf(wasteByLevel, chartLevels, {
+                days,
+                levelFilter,
+              })
+            }
+          />
+        }
       >
-        <div className="grid grid-cols-1 gap-5">
+        <div className="grid grid-cols-1 gap-3">
           {chartLevels.map((level) => (
             <DashboardInsightCard
               key={`waste-${level}`}
