@@ -32,6 +32,14 @@ import {
 import { buildWasteEvolutionConclusion } from "@/lib/wasteEvolutionConclusion";
 import { buildCycleRatesConclusion } from "@/lib/cycleRatesConclusion";
 import {
+  buildMealFlowSeries,
+  type MealFlowDayInput,
+} from "@/lib/buildMealFlowSeries";
+import {
+  buildMealFlowConclusion,
+  mealFlowHasData,
+} from "@/lib/mealFlowConclusion";
+import {
   levelTotalsHasData,
   type LevelMealTotals,
 } from "@/lib/buildLevelComparisonSeries";
@@ -41,6 +49,7 @@ import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { downloadWasteEvolutionPdf } from "@/lib/downloadWasteEvolutionPdf";
 import { downloadCycleRatesPdf } from "@/lib/downloadCycleRatesPdf";
+import { downloadMealFlowPdf } from "@/lib/downloadMealFlowPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -273,16 +282,7 @@ export default function DashboardPanels({
   servicesWithWaste: number;
   wasteGramsPer100Served: number | null;
   perDayRows: DashboardDayRow[];
-  mealFlowByLevel: Record<
-    SchoolLevel,
-    Array<{
-      date: string;
-      present: number;
-      served: number;
-      rab: number;
-      refused: number;
-    }>
-  >;
+  mealFlowByLevel: Record<SchoolLevel, MealFlowDayInput[]>;
   wasteByLevel: Record<SchoolLevel, WastePerDayRowInput[]>;
   levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
   antiWasteModeEnabled?: boolean;
@@ -511,30 +511,84 @@ export default function DashboardPanels({
         kicker="Flux du repas"
         openLabel="Ouvrir Flux du repas"
         overlayTitle="Flux du repas"
-        hint="Présents → servis → RAB / refus, jour par jour."
+        subtitle="Suivez présents, servis, RAB et refus jour par jour, comparez les cycles, puis lisez la conclusion."
+        hint="Présents → servis → RAB / refus, jour par jour. Filtrez, lisez, téléchargez."
         icon={Utensils}
         labelledBy="meal-flow-overlay-title"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        headerAction={
+          <OverlayTableToolbar
+            days={days}
+            levelFilter={levelFilter}
+            daysHref={daysHref}
+            levelHref={levelHref}
+            downloadDisabled={chartLevels.every(
+              (level) => !mealFlowHasData(mealFlowByLevel[level] ?? []),
+            )}
+            onDownload={() =>
+              downloadMealFlowPdf(mealFlowByLevel, chartLevels, {
+                days,
+                levelFilter,
+              })
+            }
+          />
+        }
       >
-        <div className="grid grid-cols-1 gap-5">
-          {chartLevels.map((level) => (
-            <DashboardInsightCard
-              key={`meal-flow-${level}`}
-              icon={Utensils}
-              title="Flux du repas"
-              level={schoolLevelLabelFr(level)}
-              headerClassName={
-                level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
-              }
-              description="Le parcours du repas en un coup d'œil — utile pour voir si l'écart présents / servis se creuse."
-            >
-              <MealFlowChart
-                days={days}
-                level={level}
-                perDayRows={mealFlowByLevel[level]}
-                embedded
-              />
-            </DashboardInsightCard>
-          ))}
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-5">
+            {chartLevels.map((level) => (
+              <DashboardInsightCard
+                key={`meal-flow-${level}`}
+                icon={Utensils}
+                title="Flux du repas"
+                level={schoolLevelLabelFr(level)}
+                headerClassName={
+                  level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
+                }
+                description="Le parcours du repas en un coup d'œil — utile pour voir si l'écart présents / servis se creuse."
+              >
+                <MealFlowChart
+                  days={days}
+                  level={level}
+                  perDayRows={mealFlowByLevel[level]}
+                  embedded
+                />
+              </DashboardInsightCard>
+            ))}
+          </div>
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-3",
+              chartLevels.length === 2 && "lg:grid-cols-2",
+            )}
+          >
+            {chartLevels.map((level) => (
+              <div
+                key={`meal-flow-conclusion-${level}`}
+                className={cn(
+                  "rounded-2xl px-4 py-3.5 ring-1",
+                  level === "MATERNELLE"
+                    ? "bg-sky-50 ring-sky-200"
+                    : "bg-emerald-50 ring-emerald-200",
+                )}
+              >
+                <p
+                  className={cn(
+                    "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+                    level === "MATERNELLE" ? "bg-sky-600" : "bg-emerald-600",
+                  )}
+                >
+                  Conclusion {schoolLevelLabelFr(level)}
+                </p>
+                <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg">
+                  {buildMealFlowConclusion(
+                    buildMealFlowSeries(mealFlowByLevel[level] ?? []),
+                    { days, level },
+                  )}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </DashboardFoldOverlay>
       ) : null}
