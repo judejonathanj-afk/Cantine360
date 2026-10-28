@@ -515,11 +515,13 @@ export default function DashboardPanels({
         kicker="Contexte du service"
         openLabel="Ouvrir Contexte du service"
         overlayTitle="Contexte du service"
+        subtitle="Menus, pesées et écarts."
         hint={
           levelFilter !== "all"
-            ? `Menus, pesées et écarts — ${schoolLevelLabelFr(levelFilter)}.`
-            : "Menus, pesées et écarts par jour de service."
+            ? `Par jour de service — ${schoolLevelLabelFr(levelFilter)}.`
+            : "Par jour de service."
         }
+        titleClassName="text-[#c2185b]"
         icon={Layers}
         labelledBy="service-context-overlay-title"
       >
