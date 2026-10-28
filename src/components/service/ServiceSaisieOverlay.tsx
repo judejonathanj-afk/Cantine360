@@ -34,7 +34,7 @@ export function ServiceSaisieOverlay({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-1">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-5">
       <button
         type="button"
         aria-label="Fermer"
@@ -46,7 +46,7 @@ export function ServiceSaisieOverlay({
         aria-modal="true"
         aria-labelledby={labelledBy}
         className={cn(
-          "relative z-10 flex max-h-[99vh] w-full flex-col overflow-hidden overscroll-contain",
+          "relative z-10 flex max-h-full w-full flex-col overflow-hidden overscroll-contain",
           className,
         )}
       >

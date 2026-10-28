@@ -99,7 +99,7 @@ export function DashboardFoldOverlay({
           dialogClassName,
         )}
       >
-        <div className="mb-2 flex items-start justify-between gap-3 px-1 pt-4 sm:pt-5">
+        <div className="mb-2 flex shrink-0 items-start justify-between gap-3 px-1 pt-1 sm:pt-2">
           <div className="min-w-0">
             <h2
               id={labelledBy}
@@ -124,7 +124,7 @@ export function DashboardFoldOverlay({
         </div>
         <div
           className={cn(
-            "flex min-h-0 max-h-[94vh] flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4",
+            "flex min-h-0 flex-1 flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4",
             panelClassName,
           )}
         >
