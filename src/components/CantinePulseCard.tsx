@@ -520,7 +520,10 @@ export function CantinePulseCard({
 
   const brandTitle = showBrandTitle ? (
     <div className="w-full text-center">
-      <p className="w-full text-base text-zinc-600 sm:text-lg">
+      <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">
+        Lecture globale graphique / chiffres
+      </h2>
+      <p className="mt-1 w-full text-base text-zinc-600 sm:text-lg">
         RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
         déchets (poids) — {periodLabel}
       </p>
@@ -620,19 +623,11 @@ export function CantinePulseCard({
           </div>
         )}
 
-        <div
-          className={cn(
-            "flex flex-wrap items-center gap-4",
-            showMealHeader ? "justify-between" : "justify-end",
-          )}
-        >
-          {showMealHeader ? (
+        {showMealHeader ? (
+          <div className="flex flex-wrap items-center justify-end gap-4">
             <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-          ) : null}
-          <h2 className="text-right text-lg font-semibold text-zinc-900 sm:text-xl">
-            Lecture globale graphique / chiffres
-          </h2>
-        </div>
+          </div>
+        ) : null}
 
         {scorePending ? null : (
           <CantinePlusGlobalChart
