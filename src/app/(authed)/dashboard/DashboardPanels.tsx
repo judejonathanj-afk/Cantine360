@@ -572,7 +572,8 @@ export default function DashboardPanels({
         kicker="Évolution des déchets"
         openLabel="Ouvrir Évolution des déchets"
         overlayTitle="Évolution des déchets"
-        hint="Poids des déchets et grammes pour 100 assiettes dans le temps."
+        subtitle="Suivez les pesées dans le temps, comparez maternelle et primaire, puis lisez la conclusion."
+        hint="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Filtrez, lisez, téléchargez."
         icon={Trash2}
         labelledBy="waste-evolution-overlay-title"
         headerAction={
