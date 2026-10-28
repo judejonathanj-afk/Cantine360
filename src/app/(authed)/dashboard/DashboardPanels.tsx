@@ -631,11 +631,11 @@ export default function DashboardPanels({
       >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
-            <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
+            <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
-              <table className="min-w-full text-sm">
-                <thead className="sticky top-0 z-10 border-b-[3px] border-[#c2185b] bg-card text-left text-xs font-bold text-black">
+              <table className="min-w-full text-base">
+                <thead className="sticky top-0 z-10 border-b-[3px] border-[#c2185b] bg-card text-left text-sm font-bold text-black">
                   <tr>
                     <th className="px-3 py-2.5">Date</th>
                     <th className="px-3 py-2.5">g / 100</th>
@@ -667,12 +667,12 @@ export default function DashboardPanels({
                       <td className="px-3 py-2.5 whitespace-nowrap">
                         {row.weighLabel}
                       </td>
-                      <td className="max-w-[10rem] px-3 py-2.5 text-xs leading-snug">
+                      <td className="max-w-[10rem] px-3 py-2.5 text-sm leading-snug">
                         {row.schools}
                       </td>
                       <td className="px-3 py-2.5">{row.classCount}</td>
                       <td
-                        className="max-w-[14rem] px-3 py-2.5 text-xs leading-snug"
+                        className="max-w-[14rem] px-3 py-2.5 text-sm leading-snug"
                         title={row.menuSummary}
                       >
                         {row.menuSummary}
@@ -727,11 +727,11 @@ export default function DashboardPanels({
       >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
-            <p className="p-4 text-sm font-medium text-black">Pas de données.</p>
+            <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
-              <table className="min-w-full text-sm">
-                <thead className="sticky top-0 z-10 border-b-[3px] border-[#0ea5e9] bg-card text-left text-xs font-bold text-black">
+              <table className="min-w-full text-base">
+                <thead className="sticky top-0 z-10 border-b-[3px] border-[#0ea5e9] bg-card text-left text-sm font-bold text-black">
                   <tr>
                     <th className="px-3 py-2.5">Date</th>
                     <th className="px-3 py-2.5">Présents</th>
