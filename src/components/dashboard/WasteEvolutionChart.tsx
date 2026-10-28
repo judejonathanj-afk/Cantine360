@@ -41,6 +41,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+function formatAxisGrams(value: number) {
+  return `${Math.round(Number(value)).toLocaleString("fr-FR")}\u00a0g`;
+}
+
 type Props = {
   days: 7 | 30;
   perDayRows: WastePerDayRowInput[];
@@ -74,12 +78,13 @@ export function WasteEvolutionChart({
         config={chartConfig}
         className={cn(
           cantinePlusChartPlotClass,
-          embedded && "aspect-auto h-[200px] w-full",
+          "overflow-visible",
+          embedded && "aspect-auto h-[200px] w-full px-1",
         )}
       >
         <ComposedChart
           data={series}
-          margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+          margin={{ top: 14, right: 12, left: 8, bottom: 4 }}
         >
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis
@@ -94,17 +99,20 @@ export function WasteEvolutionChart({
             tickLine={false}
             axisLine={false}
             allowDecimals={false}
-            width={44}
-            tickFormatter={(v) => `${v} g`}
+            width={64}
+            tick={{ fontSize: 11 }}
+            tickFormatter={formatAxisGrams}
+            domain={[0, (dataMax: number) => Math.max(dataMax * 1.1, 1)]}
           />
           <YAxis
             yAxisId="ratio"
             orientation="right"
             tickLine={false}
             axisLine={false}
-            tickFormatter={(v) => `${v} g`}
-            width={44}
-            domain={[0, "auto"]}
+            tick={{ fontSize: 11 }}
+            tickFormatter={formatAxisGrams}
+            width={64}
+            domain={[0, (dataMax: number) => Math.max(dataMax * 1.1, 1)]}
           />
           <ChartTooltip
             content={(tooltipProps) => (
