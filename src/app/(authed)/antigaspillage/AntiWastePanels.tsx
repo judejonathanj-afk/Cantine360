@@ -60,6 +60,19 @@ const STATUS_STYLES = {
   none: "bg-muted text-muted-foreground",
 } as const;
 
+function CyclePill({ level }: { level: "MATERNELLE" | "PRIMAIRE" }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex translate-y-[-1px] rounded-full px-2.5 py-0.5 align-middle text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+        level === "MATERNELLE" ? "bg-sky-600" : "bg-emerald-600",
+      )}
+    >
+      {level === "MATERNELLE" ? "Maternelle" : "Primaire"}
+    </span>
+  );
+}
+
 export function AntiWastePanels({
   days,
   targetGPer100,
@@ -575,13 +588,13 @@ export function AntiWastePanels({
                           Par cycle
                         </p>
                         <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
-                          En maternelle,{" "}
+                          En <CyclePill level="MATERNELLE" />,{" "}
                           {d.maternelleGPer100 != null
                             ? `${fmt(Math.round(d.maternelleGPer100))} g pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
                         <p className="mt-1 text-base font-medium leading-relaxed text-zinc-900">
-                          En primaire,{" "}
+                          En <CyclePill level="PRIMAIRE" />,{" "}
                           {d.primaireGPer100 != null
                             ? `${fmt(Math.round(d.primaireGPer100))} g pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
@@ -604,10 +617,8 @@ export function AntiWastePanels({
                               >
                                 <span className="min-w-0 font-medium">
                                   {c.label}
-                                  <span className="ml-1.5 text-sm font-normal text-zinc-500">
-                                    {c.level === "MATERNELLE"
-                                      ? "Maternelle"
-                                      : "Primaire"}
+                                  <span className="ml-1.5">
+                                    <CyclePill level={c.level} />
                                   </span>
                                 </span>
                                 <span className="shrink-0 font-bold tabular-nums">
