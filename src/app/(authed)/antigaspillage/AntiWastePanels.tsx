@@ -555,6 +555,9 @@ export function AntiWastePanels({
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
+                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-black">
+                          Moyenne
+                        </p>
                         <p className="font-display text-2xl font-extrabold tracking-tight text-[color:var(--aw-coral)] sm:text-3xl">
                           {grams}
                           <span className="ml-1 text-sm font-bold text-zinc-700">
