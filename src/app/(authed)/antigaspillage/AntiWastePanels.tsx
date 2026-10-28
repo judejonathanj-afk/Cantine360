@@ -586,7 +586,7 @@ export function AntiWastePanels({
                     </div>
                     <div className="mt-4 grid gap-4 border-t border-black/5 pt-4 sm:grid-cols-2">
                       <div>
-                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-500">
+                        <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
                           Par cycle
                         </p>
                         <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
@@ -603,7 +603,7 @@ export function AntiWastePanels({
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-500">
+                        <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
                           Classes à surveiller
                         </p>
                         {(d.topClasses ?? []).length === 0 ? (
