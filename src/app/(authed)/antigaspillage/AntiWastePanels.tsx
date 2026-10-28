@@ -451,11 +451,12 @@ export function AntiWastePanels({
           kicker="Plats à risque"
           openLabel="Ouvrir Plats à risque"
           overlayTitle="Plats à risque"
-          subtitle="Les plats liés aux jours de plus fort gaspillage — pour décider quoi ajuster demain."
-          hint={`Classement sur ${days} jours. Ouvrez, lisez, téléchargez.`}
+          subtitle="Repérez les plats qui pèsent le plus sur le gaspillage, pour ajuster portions et menu dès demain."
+          hint={`Classés du plus gourmand au plus léger · ${days} jours. Lisez, comparez, téléchargez.`}
           icon={Flame}
           labelledBy="risky-dishes-overlay-title"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+          bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
           headerAction={
             <button
               type="button"
@@ -473,24 +474,46 @@ export function AntiWastePanels({
           }
         >
           {riskyDishesVisible.length === 0 ? (
-            <p className="px-2 py-8 text-center text-base font-medium text-zinc-700">
-              Pas encore assez de menus + pesées sur la période pour classer
-              les plats.
+            <p className="px-3 py-10 text-center text-base font-medium leading-relaxed text-zinc-700 sm:text-lg">
+              Pas encore de classement. Dès que les menus et les pesées sont
+              saisis, les plats les plus gourmands apparaîtront ici, du plus
+              lourd au plus léger.
             </p>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <div className="space-y-3">
+              <p className="px-1 text-base font-semibold leading-snug text-zinc-800 sm:text-lg">
+                {riskyDishesVisible.length} plat
+                {riskyDishesVisible.length > 1 ? "s" : ""} classé
+                {riskyDishesVisible.length > 1 ? "s" : ""} : le n°1 est celui
+                à regarder en premier pour demain.
+              </p>
+            <ul className="flex flex-col gap-3.5">
               {riskyDishesVisible.map((d, i) => {
                 const pct = Math.max((d.avgWasteGPer100 / maxRiskG) * 100, 3);
                 const rank = i + 1;
+                const rankLabel =
+                  rank === 1
+                    ? "À prioriser"
+                    : rank === 2
+                      ? "À surveiller"
+                      : `N° ${rank}`;
+                const grams = fmt(Math.round(d.avgWasteGPer100));
                 return (
                   <li
                     key={`${d.label}-${i}`}
-                    className="rounded-2xl border border-border bg-white p-4"
+                    className={cn(
+                      "rounded-2xl border p-4 shadow-sm sm:p-5",
+                      rank === 1
+                        ? "border-rose-200 bg-rose-50/70"
+                        : rank === 2
+                          ? "border-amber-200 bg-amber-50/60"
+                          : "border-zinc-200 bg-white",
+                    )}
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-start gap-3">
                         <span
-                          className="flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-primary-foreground"
+                          className="flex size-11 shrink-0 flex-col items-center justify-center rounded-2xl text-white"
                           style={{
                             background:
                               rank === 1
@@ -500,78 +523,94 @@ export function AntiWastePanels({
                                   : "var(--aw-primary)",
                           }}
                         >
-                          {rank}
+                          <span className="text-base font-extrabold leading-none">
+                            {rank}
+                          </span>
                         </span>
                         <div className="min-w-0">
-                          <p className="truncate text-lg font-bold leading-tight text-zinc-950 capitalize">
+                          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-zinc-500">
+                            {rankLabel}
+                          </p>
+                          <p className="mt-0.5 text-xl font-extrabold leading-tight tracking-tight text-zinc-950 capitalize sm:text-2xl">
                             {d.label}
                           </p>
-                          <p className="mt-0.5 text-sm font-medium text-zinc-800">
-                            {d.serviceCount} service
-                            {d.serviceCount > 1 ? "s" : ""} avec ce plat
+                          <p className="mt-1 text-sm font-medium leading-snug text-zinc-700 sm:text-base">
+                            {d.serviceCount === 1
+                              ? "Vu sur 1 service de la période."
+                              : `Vu sur ${d.serviceCount} services de la période.`}
                           </p>
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <p className="font-display text-xl font-bold tracking-tight text-[color:var(--aw-coral)]">
-                          {fmt(Math.round(d.avgWasteGPer100))}
-                          <span className="ml-1 text-sm font-semibold text-zinc-800">
-                            g / 100
+                        <p className="font-display text-2xl font-extrabold tracking-tight text-[color:var(--aw-coral)] sm:text-3xl">
+                          {grams}
+                          <span className="ml-1 text-sm font-bold text-zinc-700">
+                            g
                           </span>
                         </p>
-                        <span className="text-xs font-bold uppercase tracking-wider text-zinc-950">
+                        <p className="text-sm font-semibold text-zinc-600">
+                          pour 100 assiettes
+                        </p>
+                        <span
+                          className={cn(
+                            "mt-1.5 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide",
+                            d.vsTarget === "above"
+                              ? "bg-rose-100 text-rose-800"
+                              : d.vsTarget === "ok"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-zinc-100 text-zinc-700",
+                          )}
+                        >
                           {d.vsTarget === "above"
-                            ? "Au-dessus objectif"
+                            ? "Au-dessus de l’objectif"
                             : d.vsTarget === "ok"
-                              ? "Sous objectif"
-                              : "Sans objectif"}
+                              ? "Sous l’objectif"
+                              : "Objectif non défini"}
                         </span>
                       </div>
                     </div>
-                    <div className="mt-4 grid gap-4 border-t border-border pt-3 sm:grid-cols-2">
+                    <div className="mt-4 grid gap-4 border-t border-black/5 pt-4 sm:grid-cols-2">
                       <div>
-                        <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
-                          Gaspillage par niveau
+                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-500">
+                          Par cycle
                         </p>
-                        <p className="mt-2 text-base font-medium text-zinc-950">
-                          Maternelle :{" "}
-                          <strong>
-                            {d.maternelleGPer100 != null
-                              ? `${fmt(Math.round(d.maternelleGPer100))} g / 100`
-                              : "—"}
-                          </strong>
+                        <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
+                          En maternelle,{" "}
+                          {d.maternelleGPer100 != null
+                            ? `${fmt(Math.round(d.maternelleGPer100))} g pour 100 assiettes.`
+                            : "pas encore de pesée sur la période."}
                         </p>
-                        <p className="mt-1 text-base font-medium text-zinc-950">
-                          Primaire :{" "}
-                          <strong>
-                            {d.primaireGPer100 != null
-                              ? `${fmt(Math.round(d.primaireGPer100))} g / 100`
-                              : "—"}
-                          </strong>
+                        <p className="mt-1 text-base font-medium leading-relaxed text-zinc-900">
+                          En primaire,{" "}
+                          {d.primaireGPer100 != null
+                            ? `${fmt(Math.round(d.primaireGPer100))} g pour 100 assiettes.`
+                            : "pas encore de pesée sur la période."}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
-                          Classes qui gaspillent le plus
+                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-500">
+                          Classes à surveiller
                         </p>
                         {(d.topClasses ?? []).length === 0 ? (
-                          <p className="mt-2 text-sm text-zinc-600">
-                            Pas encore de détail par classe.
+                          <p className="mt-2 text-base font-medium leading-relaxed text-zinc-600">
+                            Pas encore de détail par classe pour ce plat.
                           </p>
                         ) : (
                           <ul className="mt-2 space-y-1.5">
                             {(d.topClasses ?? []).map((c) => (
                               <li
                                 key={`${d.label}-${c.label}`}
-                                className="flex items-baseline justify-between gap-3 text-sm text-zinc-800"
+                                className="flex items-baseline justify-between gap-3 text-base text-zinc-800"
                               >
-                                <span className="min-w-0">
+                                <span className="min-w-0 font-medium">
                                   {c.label}
-                                  <span className="ml-1 text-xs text-zinc-500">
-                                    {c.level === "MATERNELLE" ? "Maternelle" : "Primaire"}
+                                  <span className="ml-1.5 text-sm font-normal text-zinc-500">
+                                    {c.level === "MATERNELLE"
+                                      ? "Maternelle"
+                                      : "Primaire"}
                                   </span>
                                 </span>
-                                <span className="shrink-0 font-semibold">
+                                <span className="shrink-0 font-bold tabular-nums">
                                   {fmt(Math.round(c.wasteG))} g
                                 </span>
                               </li>
@@ -580,7 +619,7 @@ export function AntiWastePanels({
                         )}
                       </div>
                     </div>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                    <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-zinc-200/80">
                       <div
                         className="aw-grow-bar h-full rounded-full"
                         style={{
@@ -595,6 +634,7 @@ export function AntiWastePanels({
                 );
               })}
             </ul>
+            </div>
           )}
         </DashboardFoldOverlay>
 
