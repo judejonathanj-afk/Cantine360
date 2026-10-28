@@ -353,7 +353,7 @@ export function CantinePlusMealHeader({
 }) {
   const s = MOOD_STYLES[mood];
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-end gap-4">
+    <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-3">
       <MealIcon />
       <div className="min-w-0">
         <p
@@ -455,7 +455,6 @@ export function CantinePulseCard({
   days = 7,
   eco = null,
   showBrandTitle = true,
-  showMealHeader = true,
   levelFilter = "all",
   antiWasteModeEnabled = false,
   antiWasteTargetGPer100 = null,
@@ -467,8 +466,6 @@ export function CantinePulseCard({
   eco?: CantinePulseEco | null;
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
-  /** Masquer Déjeuner / icône (déjà affichés au-dessus des boutons de la fenêtre). */
-  showMealHeader?: boolean;
   levelFilter?: "all" | SchoolLevel;
   antiWasteModeEnabled?: boolean;
   antiWasteTargetGPer100?: number | null;
@@ -519,19 +516,22 @@ export function CantinePulseCard({
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
   const brandTitle = showBrandTitle ? (
-    <div className="w-full text-center">
-      <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">
-        Lecture globale graphique / chiffres
-      </h2>
-      <p className="mt-1 w-full text-base text-zinc-600 sm:text-lg">
-        RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
-        déchets (poids) — {periodLabel}
-      </p>
-      {levelLabel ? (
-        <p className="mt-1 text-sm font-semibold text-emerald-700 sm:text-base">
-          {levelLabel}
+    <div className="flex w-full flex-wrap items-center gap-4">
+      <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+      <div className="min-w-0 flex-1 text-center sm:text-left">
+        <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">
+          Lecture globale graphique / chiffres
+        </h2>
+        <p className="mt-1 w-full text-base text-zinc-600 sm:text-lg">
+          RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
+          déchets (poids) — {periodLabel}
         </p>
-      ) : null}
+        {levelLabel ? (
+          <p className="mt-1 text-sm font-semibold text-emerald-700 sm:text-base">
+            {levelLabel}
+          </p>
+        ) : null}
+      </div>
     </div>
   ) : null;
 
@@ -622,12 +622,6 @@ export function CantinePulseCard({
             ) : null}
           </div>
         )}
-
-        {showMealHeader ? (
-          <div className="flex flex-wrap items-center justify-end gap-4">
-            <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-          </div>
-        ) : null}
 
         {scorePending ? null : (
           <CantinePlusGlobalChart

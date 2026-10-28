@@ -17,10 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import {
-  CantinePlusMealHeader,
-  CantinePulseCard,
-} from "@/components/CantinePulseCard";
+import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
@@ -46,11 +43,7 @@ import {
   levelTotalsHasData,
   type LevelMealTotals,
 } from "@/lib/buildLevelComparisonSeries";
-import {
-  computeCantinePulse,
-  type CantineServiceRow,
-  type CantineWasteDayRow,
-} from "@/lib/cantinePulse";
+import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
@@ -489,10 +482,6 @@ export default function DashboardPanels({
       </div>
 
       {(() => {
-        const pulseMood = computeCantinePulse(pulseRows, "LUNCH", {
-          windowDays: days,
-          wasteRows: pulseWasteRows,
-        }).mood;
         const pulseCard = (
           <CantinePulseCard
             rows={pulseRows}
@@ -500,7 +489,6 @@ export default function DashboardPanels({
             mealType="LUNCH"
             days={days}
             showBrandTitle
-            showMealHeader={isKitchen}
             levelFilter={levelFilter}
             eco={
               !isKitchen && eco
@@ -522,26 +510,19 @@ export default function DashboardPanels({
           <CantinePlusFold
             subtitle="Cantine+ suit le repas du quotidien : elle calcule une note sur 100, met en avant le RAB et le poids des déchets, et affiche les tendances pour aider cuisine et direction à réduire le gaspillage."
             headerAction={
-              <div className="flex flex-col items-end gap-3">
-                <CantinePlusMealHeader
-                  mealType="LUNCH"
-                  mood={pulseMood}
-                  onDark
-                />
-                <OverlayTableToolbar
-                  days={days}
-                  levelFilter={levelFilter}
-                  daysHref={daysHref}
-                  levelHref={levelHref}
-                  downloadDisabled={pulseRows.length === 0 && pulseWasteRows.length === 0}
-                  onDownload={() =>
-                    downloadCantinePlusPdf(pulseRows, pulseWasteRows, {
-                      days,
-                      levelFilter,
-                    })
-                  }
-                />
-              </div>
+              <OverlayTableToolbar
+                days={days}
+                levelFilter={levelFilter}
+                daysHref={daysHref}
+                levelHref={levelHref}
+                downloadDisabled={pulseRows.length === 0 && pulseWasteRows.length === 0}
+                onDownload={() =>
+                  downloadCantinePlusPdf(pulseRows, pulseWasteRows, {
+                    days,
+                    levelFilter,
+                  })
+                }
+              />
             }
           >
             {pulseCard}
