@@ -21,15 +21,24 @@ export function downloadSuiviJourPdf(
     days: 7 | 30;
     levelFilter: "all" | SchoolLevel;
     isKitchen?: boolean;
+    section?: "suivi" | "contexte" | "all";
   },
 ) {
+  const section = opts.section ?? "all";
+  const includeSuivi = section === "suivi" || section === "all";
+  const includeContexte =
+    (section === "contexte" || section === "all") && !opts.isKitchen;
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const levelLabel =
     opts.levelFilter === "all" ? "Tous niveaux" : schoolLevelLabelFr(opts.levelFilter);
   const today = new Date().toLocaleDateString("fr-FR");
+  const heading =
+    section === "contexte"
+      ? "Cantine360 — Contexte du service"
+      : "Cantine360 — Suivi jour par jour";
 
   doc.setFontSize(14);
-  doc.text("Cantine360 — Suivi jour par jour", 14, 14);
+  doc.text(heading, 14, 14);
   doc.setFontSize(10);
   doc.text(
     `${levelLabel} · ${opts.days} derniers jours · exporté le ${today}`,
@@ -38,7 +47,11 @@ export function downloadSuiviJourPdf(
   );
   doc.setFontSize(11);
   doc.text(
-    opts.isKitchen ? "Aperçu du jour" : "Détails par service",
+    section === "contexte"
+      ? "Menus, pesées et écarts"
+      : opts.isKitchen
+        ? "Aperçu du jour"
+        : "Détails par service",
     14,
     26,
   );
@@ -82,25 +95,29 @@ export function downloadSuiviJourPdf(
     row.wasteWeightG > 0 ? row.wasteWeightG.toLocaleString("fr-FR") : "—",
   ]);
 
-  autoTable(doc, {
-    startY: 30,
-    head: detailsHead,
-    body: detailsBody,
-    styles: { fontSize: 7, cellPadding: 1.2 },
-    headStyles: { fillColor: [46, 125, 50], textColor: 255 },
-    margin: { left: 10, right: 10 },
-  });
+  if (includeSuivi) {
+    autoTable(doc, {
+      startY: 30,
+      head: detailsHead,
+      body: detailsBody,
+      styles: { fontSize: 7, cellPadding: 1.2 },
+      headStyles: { fillColor: [14, 165, 233], textColor: 255 },
+      margin: { left: 10, right: 10 },
+    });
+  }
 
-  if (!opts.isKitchen) {
+  if (includeContexte) {
     const afterDetails = (doc as jsPDF & { lastAutoTable?: { finalY: number } })
       .lastAutoTable?.finalY;
-    const contextStart = (afterDetails ?? 26) + 10;
+    const contextStart = includeSuivi ? (afterDetails ?? 26) + 10 : 30;
 
-    doc.setFontSize(12);
-    doc.text(`Contexte du service — ${levelLabel}`, 14, contextStart);
+    if (includeSuivi) {
+      doc.setFontSize(12);
+      doc.text(`Contexte du service — ${levelLabel}`, 14, contextStart);
+    }
 
     autoTable(doc, {
-      startY: contextStart + 4,
+      startY: includeSuivi ? contextStart + 4 : 30,
       head: [
         [
           "Date",
@@ -130,7 +147,7 @@ export function downloadSuiviJourPdf(
         formatDelta(row.wasteDelta),
       ]),
       styles: { fontSize: 7, cellPadding: 1.2 },
-      headStyles: { fillColor: [2, 132, 199], textColor: 255 },
+      headStyles: { fillColor: [194, 24, 91], textColor: 255 },
       columnStyles: {
         3: { cellWidth: 35 },
         5: { cellWidth: 55 },
@@ -141,5 +158,7 @@ export function downloadSuiviJourPdf(
 
   const levelSlug =
     opts.levelFilter === "all" ? "tous" : opts.levelFilter.toLowerCase();
-  doc.save(`cantine360-suivi-jour-${levelSlug}-${opts.days}j.pdf`);
+  const fileStem =
+    section === "contexte" ? "contexte-service" : "suivi-jour";
+  doc.save(`cantine360-${fileStem}-${levelSlug}-${opts.days}j.pdf`);
 }

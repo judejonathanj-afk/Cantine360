@@ -12,6 +12,7 @@ export function DashboardFoldOverlay({
   hint,
   subtitle,
   titleClassName,
+  headerAction,
   icon: Icon,
   labelledBy,
   children,
@@ -22,6 +23,7 @@ export function DashboardFoldOverlay({
   hint: string;
   subtitle?: string;
   titleClassName?: string;
+  headerAction?: ReactNode;
   icon: LucideIcon;
   labelledBy: string;
   children: ReactNode;
@@ -64,25 +66,28 @@ export function DashboardFoldOverlay({
         labelledBy={labelledBy}
         className="w-[calc(100vw-1rem)] max-w-[92rem]"
       >
-        <div className="mb-2 px-1">
-          <h2
-            id={labelledBy}
-            className={cn(
-              "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
-              titleClassName,
-            )}
-          >
-            <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-            {overlayTitle}
-          </h2>
-          {subtitle ? (
-            <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
-              {subtitle}
+        <div className="mb-2 flex items-start justify-between gap-3 px-1">
+          <div className="min-w-0">
+            <h2
+              id={labelledBy}
+              className={cn(
+                "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
+                titleClassName,
+              )}
+            >
+              <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+              {overlayTitle}
+            </h2>
+            {subtitle ? (
+              <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
+                {subtitle}
+              </p>
+            ) : null}
+            <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+              {hint}
             </p>
-          ) : null}
-          <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
-            {hint}
-          </p>
+          </div>
+          {headerAction}
         </div>
         <div className="flex min-h-0 max-h-[94vh] flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4">
           <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">

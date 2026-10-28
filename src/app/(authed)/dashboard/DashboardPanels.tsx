@@ -54,6 +54,26 @@ const toneMap: Record<Tone, string> = {
   ink: "text-[color:var(--dash-ink)] bg-[color:var(--dash-ink)]/10 ring-[color:var(--dash-ink)]/15",
 };
 
+function OverlayDownloadButton({
+  onClick,
+  disabled,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
+    >
+      <Download className="size-4" aria-hidden />
+      Télécharger
+    </button>
+  );
+}
+
 function StatCard({
   icon: Icon,
   tone,
@@ -524,6 +544,19 @@ export default function DashboardPanels({
         titleClassName="text-[#c2185b]"
         icon={Layers}
         labelledBy="service-context-overlay-title"
+        headerAction={
+          <OverlayDownloadButton
+            disabled={perDayRows.length === 0}
+            onClick={() =>
+              downloadSuiviJourPdf(perDayRows, {
+                days,
+                levelFilter,
+                isKitchen,
+                section: "contexte",
+              })
+            }
+          />
+        }
       >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
@@ -602,6 +635,19 @@ export default function DashboardPanels({
         titleClassName="text-[#38bdf8]"
         icon={TableIcon}
         labelledBy="day-tracking-overlay-title"
+        headerAction={
+          <OverlayDownloadButton
+            disabled={perDayRows.length === 0}
+            onClick={() =>
+              downloadSuiviJourPdf(perDayRows, {
+                days,
+                levelFilter,
+                isKitchen,
+                section: "suivi",
+              })
+            }
+          />
+        }
       >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card p-2 shadow-sm sm:p-3">
           {perDayRows.length === 0 ? (
