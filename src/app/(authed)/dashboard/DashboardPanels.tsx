@@ -54,23 +54,89 @@ const toneMap: Record<Tone, string> = {
   ink: "text-[color:var(--dash-ink)] bg-[color:var(--dash-ink)]/10 ring-[color:var(--dash-ink)]/15",
 };
 
-function OverlayDownloadButton({
-  onClick,
-  disabled,
+function OverlayFilterLink({
+  href,
+  active,
+  children,
 }: {
-  onClick: () => void;
-  disabled?: boolean;
+  href: string;
+  active: boolean;
+  children: ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "rounded-full px-3 py-1.5 text-xs font-bold transition-colors sm:px-3.5 sm:text-sm",
+        active ? "bg-[#0d7a45] text-white shadow-sm" : "text-zinc-800 hover:text-zinc-950",
+      )}
     >
-      <Download className="size-4" aria-hidden />
-      Télécharger
-    </button>
+      {children}
+    </Link>
+  );
+}
+
+function OverlayTableToolbar({
+  days,
+  levelFilter,
+  daysHref,
+  levelHref,
+  downloadDisabled,
+  onDownload,
+}: {
+  days: 7 | 30;
+  levelFilter: "all" | SchoolLevel;
+  daysHref: (nextDays: 7 | 30) => string;
+  levelHref: (level: "all" | SchoolLevel) => string;
+  downloadDisabled?: boolean;
+  onDownload: () => void;
+}) {
+  return (
+    <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+      <div
+        role="group"
+        aria-label="Période"
+        className="inline-flex items-center rounded-full bg-[#eef6c9] p-1 shadow-sm"
+      >
+        <OverlayFilterLink href={daysHref(7)} active={days === 7}>
+          7 jours
+        </OverlayFilterLink>
+        <OverlayFilterLink href={daysHref(30)} active={days === 30}>
+          30 jours
+        </OverlayFilterLink>
+      </div>
+      <div
+        role="group"
+        aria-label="Niveau"
+        className="inline-flex items-center rounded-full bg-[#eef6c9] p-1 shadow-sm"
+      >
+        <OverlayFilterLink href={levelHref("all")} active={levelFilter === "all"}>
+          Tous niveaux
+        </OverlayFilterLink>
+        <OverlayFilterLink
+          href={levelHref("MATERNELLE")}
+          active={levelFilter === "MATERNELLE"}
+        >
+          Maternelle
+        </OverlayFilterLink>
+        <OverlayFilterLink
+          href={levelHref("PRIMAIRE")}
+          active={levelFilter === "PRIMAIRE"}
+        >
+          Primaire
+        </OverlayFilterLink>
+      </div>
+      <button
+        type="button"
+        disabled={downloadDisabled}
+        onClick={onDownload}
+        className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
+      >
+        <Download className="size-4" aria-hidden />
+        Télécharger
+      </button>
+    </div>
   );
 }
 
@@ -545,9 +611,13 @@ export default function DashboardPanels({
         icon={Layers}
         labelledBy="service-context-overlay-title"
         headerAction={
-          <OverlayDownloadButton
-            disabled={perDayRows.length === 0}
-            onClick={() =>
+          <OverlayTableToolbar
+            days={days}
+            levelFilter={levelFilter}
+            daysHref={daysHref}
+            levelHref={levelHref}
+            downloadDisabled={perDayRows.length === 0}
+            onDownload={() =>
               downloadSuiviJourPdf(perDayRows, {
                 days,
                 levelFilter,
@@ -636,9 +706,13 @@ export default function DashboardPanels({
         icon={TableIcon}
         labelledBy="day-tracking-overlay-title"
         headerAction={
-          <OverlayDownloadButton
-            disabled={perDayRows.length === 0}
-            onClick={() =>
+          <OverlayTableToolbar
+            days={days}
+            levelFilter={levelFilter}
+            daysHref={daysHref}
+            levelHref={levelHref}
+            downloadDisabled={perDayRows.length === 0}
+            onDownload={() =>
               downloadSuiviJourPdf(perDayRows, {
                 days,
                 levelFilter,

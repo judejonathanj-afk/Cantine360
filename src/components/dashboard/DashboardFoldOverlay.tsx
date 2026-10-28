@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ChevronDown, type LucideIcon } from "lucide-react";
 import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
 import { cn } from "@/lib/utils";
+
+const FOLD_STORAGE_KEY = "cantine360-dashboard-fold";
 
 export function DashboardFoldOverlay({
   kicker,
@@ -30,12 +32,34 @@ export function DashboardFoldOverlay({
 }) {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(FOLD_STORAGE_KEY) === labelledBy) {
+        setOpen(true);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [labelledBy]);
+
+  function setFoldOpen(next: boolean) {
+    setOpen(next);
+    try {
+      if (next) sessionStorage.setItem(FOLD_STORAGE_KEY, labelledBy);
+      else if (sessionStorage.getItem(FOLD_STORAGE_KEY) === labelledBy) {
+        sessionStorage.removeItem(FOLD_STORAGE_KEY);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   return (
     <div>
       <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => setFoldOpen(true)}
           aria-expanded={open}
           className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
         >
@@ -62,7 +86,7 @@ export function DashboardFoldOverlay({
 
       <ServiceSaisieOverlay
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
         className="w-[calc(100vw-1rem)] max-w-[92rem]"
       >
@@ -96,7 +120,7 @@ export function DashboardFoldOverlay({
           <div className="flex shrink-0 justify-end">
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => setFoldOpen(false)}
               className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100"
             >
               Fermer
