@@ -660,11 +660,11 @@ export default function DashboardPanels({
         kicker="Contexte du service"
         openLabel="Ouvrir Contexte du service"
         overlayTitle="Contexte du service"
-        subtitle="Menus, pesées et écarts."
+        subtitle="Comprenez un jour de service : menu, écoles, pesée et écarts par rapport à la veille."
         hint={
           levelFilter !== "all"
-            ? `Par jour de service — ${schoolLevelLabelFr(levelFilter)}.`
-            : "Par jour de service."
+            ? `g / 100, pesée, menu et Δ — ${schoolLevelLabelFr(levelFilter)}. Filtrez, lisez, téléchargez.`
+            : "g / 100, pesée, menu et Δ, une ligne par jour. Filtrez, lisez, téléchargez."
         }
         titleClassName="text-[#c2185b]"
         icon={Layers}
@@ -762,8 +762,8 @@ export default function DashboardPanels({
         kicker="Suivi jour par jour"
         openLabel="Ouvrir Suivi jour par jour"
         overlayTitle="Suivi jour par jour"
-        subtitle="Présents, servis, RAB, refus et déchets."
-        hint="Détail complet par service — une ligne par jour."
+        subtitle="Relisez les compteurs de chaque service, comparez les jours, puis téléchargez le tableau."
+        hint="Présents, servis, RAB, refus et déchets — une ligne par jour. Filtrez, lisez, téléchargez."
         titleClassName="text-[#38bdf8]"
         icon={TableIcon}
         labelledBy="day-tracking-overlay-title"
