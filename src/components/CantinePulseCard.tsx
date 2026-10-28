@@ -24,8 +24,8 @@ import {
 } from "@/lib/commissionBilan";
 import { cn } from "@/lib/utils";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
-import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
+import type { CantineMood } from "@/lib/cantinePulse";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
@@ -342,6 +342,43 @@ function MealIcon() {
   return <ChildDrawnSun className="h-12 w-12 shrink-0 sm:h-14 sm:w-14" />;
 }
 
+export function CantinePlusMealHeader({
+  mealType,
+  mood,
+  onDark = false,
+}: {
+  mealType: string;
+  mood: CantineMood;
+  onDark?: boolean;
+}) {
+  const s = MOOD_STYLES[mood];
+  return (
+    <div className="flex min-w-0 flex-wrap items-center justify-end gap-4">
+      <MealIcon />
+      <div className="min-w-0">
+        <p
+          className={cn(
+            "flex items-center gap-2 text-lg font-semibold sm:text-xl",
+            onDark ? "text-white" : "text-zinc-800",
+          )}
+        >
+          <Activity
+            className="h-5 w-5 shrink-0 text-emerald-400 sm:h-5 sm:w-5"
+            aria-hidden
+          />
+          {mealLabel(mealType)}
+        </p>
+        <Badge
+          variant="outline"
+          className={cn("mt-2.5 px-3 py-1 text-base font-semibold", s.badge)}
+        >
+          {s.label}
+        </Badge>
+      </div>
+    </div>
+  );
+}
+
 type StatProps = {
   icon: ReactNode;
   label: string;
@@ -418,6 +455,7 @@ export function CantinePulseCard({
   days = 7,
   eco = null,
   showBrandTitle = true,
+  showMealHeader = true,
   levelFilter = "all",
   antiWasteModeEnabled = false,
   antiWasteTargetGPer100 = null,
@@ -429,6 +467,8 @@ export function CantinePulseCard({
   eco?: CantinePulseEco | null;
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
+  /** Masquer Déjeuner / icône (déjà affichés sous les boutons de la fenêtre). */
+  showMealHeader?: boolean;
   levelFilter?: "all" | SchoolLevel;
   antiWasteModeEnabled?: boolean;
   antiWasteTargetGPer100?: number | null;
@@ -580,36 +620,18 @@ export function CantinePulseCard({
           </div>
         )}
 
-        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4">
-          {showBrandTitle ? (
-            <div className="inline-flex shrink-0 items-center">
-              <MenusCantineColorTitle
-                text="CANTINE +"
-                tone="black"
-                className="text-base tracking-[0.16em] sm:text-lg md:text-lg lg:text-lg"
-              />
-            </div>
-          ) : (
-            <span aria-hidden />
+        <div
+          className={cn(
+            "flex flex-wrap items-center gap-4",
+            showMealHeader ? "justify-between" : "justify-end",
           )}
-          <h2 className="text-center text-lg font-semibold text-zinc-900 sm:text-xl">
-            Lecture globale en graphique et en chiffres
+        >
+          {showMealHeader ? (
+            <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+          ) : null}
+          <h2 className="text-right text-lg font-semibold text-zinc-900 sm:text-xl">
+            Lecture globale graphique / chiffres
           </h2>
-          <div className="flex min-w-0 flex-wrap items-center justify-end gap-4">
-            <MealIcon />
-            <div className="min-w-0">
-              <p className="flex items-center gap-2 text-lg font-semibold text-zinc-800 sm:text-xl">
-                <Activity className="h-5 w-5 shrink-0 text-emerald-600 sm:h-5 sm:w-5" aria-hidden />
-                {mealLabel(mealType)}
-              </p>
-              <Badge
-                variant="outline"
-                className={cn("mt-2.5 px-3 py-1 text-base font-semibold", s.badge)}
-              >
-                {s.label}
-              </Badge>
-            </div>
-          </div>
         </div>
 
         {scorePending ? null : (
