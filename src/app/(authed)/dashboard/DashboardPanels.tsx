@@ -30,6 +30,7 @@ import {
   type WastePerDayRowInput,
 } from "@/lib/buildWasteEvolutionSeries";
 import { buildWasteEvolutionConclusion } from "@/lib/wasteEvolutionConclusion";
+import { buildCycleRatesConclusion } from "@/lib/cycleRatesConclusion";
 import {
   levelTotalsHasData,
   type LevelMealTotals,
@@ -566,26 +567,61 @@ export default function DashboardPanels({
             />
           }
         >
-          <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
-            {chartLevels.map((level) => (
-              <DashboardInsightCard
-                key={`level-rates-${level}`}
-                icon={GitCompareArrows}
-                title="Taux du cycle"
-                level={schoolLevelLabelFr(level)}
-                headerClassName={
-                  level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
-                }
-                description="Service = servis / présents · RAB et refus = vs assiettes servies. Pour ajuster portions et menu."
-              >
-                <LevelComparisonChart
-                  days={days}
-                  level={level}
-                  totals={levelComparisonTotals[level]}
-                  embedded
-                />
-              </DashboardInsightCard>
-            ))}
+          <div className="space-y-3">
+            <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
+              {chartLevels.map((level) => (
+                <DashboardInsightCard
+                  key={`level-rates-${level}`}
+                  icon={GitCompareArrows}
+                  title="Taux du cycle"
+                  level={schoolLevelLabelFr(level)}
+                  headerClassName={
+                    level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
+                  }
+                  description="Service = servis / présents · RAB et refus = vs assiettes servies. Pour ajuster portions et menu."
+                >
+                  <LevelComparisonChart
+                    days={days}
+                    level={level}
+                    totals={levelComparisonTotals[level]}
+                    embedded
+                  />
+                </DashboardInsightCard>
+              ))}
+            </div>
+            <div
+              className={cn(
+                "grid grid-cols-1 gap-3",
+                chartLevels.length === 2 && "lg:grid-cols-2",
+              )}
+            >
+              {chartLevels.map((level) => (
+                <div
+                  key={`cycle-conclusion-${level}`}
+                  className={cn(
+                    "rounded-2xl px-4 py-3.5 ring-1",
+                    level === "MATERNELLE"
+                      ? "bg-sky-50 ring-sky-200"
+                      : "bg-emerald-50 ring-emerald-200",
+                  )}
+                >
+                  <p
+                    className={cn(
+                      "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+                      level === "MATERNELLE" ? "bg-sky-600" : "bg-emerald-600",
+                    )}
+                  >
+                    Conclusion {schoolLevelLabelFr(level)}
+                  </p>
+                  <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg">
+                    {buildCycleRatesConclusion(levelComparisonTotals[level], {
+                      days,
+                      level,
+                    })}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </DashboardFoldOverlay>
       ) : null}
