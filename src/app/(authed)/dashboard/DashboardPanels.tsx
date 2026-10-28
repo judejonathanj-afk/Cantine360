@@ -25,7 +25,11 @@ import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
 import { DashboardHeroBanner } from "@/components/dashboard/DashboardHeroBanner";
 import { DashboardInsightCard } from "@/components/dashboard/DashboardDesignShell";
-import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
+import {
+  buildWasteEvolutionSeries,
+  type WastePerDayRowInput,
+} from "@/lib/buildWasteEvolutionSeries";
+import { buildWasteEvolutionConclusion } from "@/lib/wasteEvolutionConclusion";
 import type { LevelMealTotals } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
@@ -590,27 +594,56 @@ export default function DashboardPanels({
           />
         }
       >
-        <div className="grid grid-cols-1 gap-3">
-          {chartLevels.map((level) => (
-            <DashboardInsightCard
-              key={`waste-${level}`}
-              icon={Trash2}
-              title="Évolution des déchets"
-              level={schoolLevelLabelFr(level)}
-              headerClassName={
-                level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
-              }
-              description="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Pour repérer quel jour les déchets augmentent."
-            >
-              <WasteEvolutionChart
-                days={days}
-                level={level}
-                perDayRows={wasteByLevel[level]}
-                embedded
-                showConclusion
-              />
-            </DashboardInsightCard>
-          ))}
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-3">
+            {chartLevels.map((level) => (
+              <DashboardInsightCard
+                key={`waste-${level}`}
+                icon={Trash2}
+                title="Évolution des déchets"
+                level={schoolLevelLabelFr(level)}
+                headerClassName={
+                  level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
+                }
+                description="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Pour repérer quel jour les déchets augmentent."
+              >
+                <WasteEvolutionChart
+                  days={days}
+                  level={level}
+                  perDayRows={wasteByLevel[level]}
+                  embedded
+                />
+              </DashboardInsightCard>
+            ))}
+          </div>
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-3",
+              chartLevels.length === 2 && "lg:grid-cols-2",
+            )}
+          >
+            {chartLevels.map((level) => (
+              <div
+                key={`waste-conclusion-${level}`}
+                className={cn(
+                  "rounded-2xl px-4 py-3 text-sm font-medium leading-relaxed text-zinc-900 sm:text-base",
+                  level === "MATERNELLE"
+                    ? "bg-sky-50 ring-1 ring-sky-200"
+                    : "bg-emerald-50 ring-1 ring-emerald-200",
+                )}
+              >
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-500">
+                  Conclusion {schoolLevelLabelFr(level)}
+                </p>
+                <p className="mt-1">
+                  {buildWasteEvolutionConclusion(
+                    buildWasteEvolutionSeries(wasteByLevel[level] ?? []),
+                    { days, level },
+                  )}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </DashboardFoldOverlay>
       ) : null}
