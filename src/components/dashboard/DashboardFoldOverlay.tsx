@@ -3,12 +3,15 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, type LucideIcon } from "lucide-react";
 import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
+import { cn } from "@/lib/utils";
 
 export function DashboardFoldOverlay({
   kicker,
   openLabel,
   overlayTitle,
   hint,
+  subtitle,
+  titleClassName,
   icon: Icon,
   labelledBy,
   children,
@@ -17,6 +20,8 @@ export function DashboardFoldOverlay({
   openLabel: string;
   overlayTitle: string;
   hint: string;
+  subtitle?: string;
+  titleClassName?: string;
   icon: LucideIcon;
   labelledBy: string;
   children: ReactNode;
@@ -62,11 +67,19 @@ export function DashboardFoldOverlay({
         <div className="mb-2 px-1">
           <h2
             id={labelledBy}
-            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+            className={cn(
+              "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
+              titleClassName,
+            )}
           >
             <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
             {overlayTitle}
           </h2>
+          {subtitle ? (
+            <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
+              {subtitle}
+            </p>
+          ) : null}
           <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
             {hint}
           </p>

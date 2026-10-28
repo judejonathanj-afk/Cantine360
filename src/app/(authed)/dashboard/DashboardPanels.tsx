@@ -595,7 +595,9 @@ export default function DashboardPanels({
         kicker="Suivi jour par jour"
         openLabel="Ouvrir Suivi jour par jour"
         overlayTitle="Suivi jour par jour"
-        hint="Détail complet par service — présents, servis, RAB, refus et déchets."
+        subtitle="Présents, servis, RAB, refus et déchets."
+        hint="Détail complet par service — une ligne par jour."
+        titleClassName="text-[#38bdf8]"
         icon={TableIcon}
         labelledBy="day-tracking-overlay-title"
       >
