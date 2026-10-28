@@ -16,6 +16,7 @@ export function DashboardFoldOverlay({
   titleClassName,
   headerAction,
   dialogClassName,
+  panelClassName,
   closeButtonClassName,
   icon: Icon,
   labelledBy,
@@ -29,6 +30,7 @@ export function DashboardFoldOverlay({
   titleClassName?: string;
   headerAction?: ReactNode;
   dialogClassName?: string;
+  panelClassName?: string;
   closeButtonClassName?: string;
   icon: LucideIcon;
   labelledBy: string;
@@ -120,7 +122,12 @@ export function DashboardFoldOverlay({
           </div>
           {headerAction}
         </div>
-        <div className="flex min-h-0 max-h-[94vh] flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4">
+        <div
+          className={cn(
+            "flex min-h-0 max-h-[94vh] flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4",
+            panelClassName,
+          )}
+        >
           <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             {children}
           </div>

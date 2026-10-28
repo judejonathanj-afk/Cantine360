@@ -610,7 +610,8 @@ export default function DashboardPanels({
         titleClassName="text-[#c2185b]"
         icon={Layers}
         labelledBy="service-context-overlay-title"
-        dialogClassName="w-[calc(100vw-3rem)] max-w-[78rem] sm:w-[calc(100vw-5rem)]"
+        dialogClassName="w-[calc(100vw-2rem)] max-w-[88rem] sm:w-[calc(100vw-2.75rem)]"
+        panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
@@ -630,7 +631,7 @@ export default function DashboardPanels({
           />
         }
       >
-        <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card p-2 shadow-sm sm:p-3">
+        <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card">
           {perDayRows.length === 0 ? (
             <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
@@ -707,7 +708,8 @@ export default function DashboardPanels({
         titleClassName="text-[#38bdf8]"
         icon={TableIcon}
         labelledBy="day-tracking-overlay-title"
-        dialogClassName="w-[calc(100vw-3rem)] max-w-[78rem] sm:w-[calc(100vw-5rem)]"
+        dialogClassName="w-[calc(100vw-2rem)] max-w-[88rem] sm:w-[calc(100vw-2.75rem)]"
+        panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
@@ -727,7 +729,7 @@ export default function DashboardPanels({
           />
         }
       >
-        <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card p-2 shadow-sm sm:p-3">
+        <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card">
           {perDayRows.length === 0 ? (
             <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
