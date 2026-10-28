@@ -50,6 +50,7 @@ import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { downloadWasteEvolutionPdf } from "@/lib/downloadWasteEvolutionPdf";
 import { downloadCycleRatesPdf } from "@/lib/downloadCycleRatesPdf";
 import { downloadMealFlowPdf } from "@/lib/downloadMealFlowPdf";
+import { downloadCantinePlusPdf } from "@/lib/downloadCantinePlusPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -503,7 +504,30 @@ export default function DashboardPanels({
             antiWasteTargetGPer100={antiWasteTargetGPer100}
           />
         );
-        return isKitchen ? pulseCard : <CantinePlusFold>{pulseCard}</CantinePlusFold>;
+        return isKitchen ? (
+          pulseCard
+        ) : (
+          <CantinePlusFold
+            subtitle="Cantine+ suit le repas du quotidien : elle calcule une note sur 100, met en avant le RAB et le poids des déchets, et affiche les tendances pour aider cuisine et direction à réduire le gaspillage."
+            headerAction={
+              <OverlayTableToolbar
+                days={days}
+                levelFilter={levelFilter}
+                daysHref={daysHref}
+                levelHref={levelHref}
+                downloadDisabled={pulseRows.length === 0 && pulseWasteRows.length === 0}
+                onDownload={() =>
+                  downloadCantinePlusPdf(pulseRows, pulseWasteRows, {
+                    days,
+                    levelFilter,
+                  })
+                }
+              />
+            }
+          >
+            {pulseCard}
+          </CantinePlusFold>
+        );
       })()}
 
       {!isKitchen ? (

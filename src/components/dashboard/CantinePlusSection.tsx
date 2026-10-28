@@ -8,15 +8,26 @@ import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
 /** Barre de rangement admin, fenêtre floutée comme le poids des déchets. */
-export function CantinePlusFold({ children }: { children: ReactNode }) {
+export function CantinePlusFold({
+  children,
+  subtitle,
+  headerAction,
+}: {
+  children: ReactNode;
+  subtitle?: string;
+  headerAction?: ReactNode;
+}) {
   return (
     <DashboardFoldOverlay
       kicker="Cantine+"
       openLabel="Ouvrir Cantine+"
       overlayTitle="Cantine+"
-      hint="Note, RAB et déchets — lecture globale en graphique et en chiffres."
+      subtitle={subtitle}
+      hint="Note, RAB et déchets — lecture globale en graphique et en chiffres. Filtrez, lisez, téléchargez."
       icon={Sparkles}
       labelledBy="cantine-plus-overlay-title"
+      closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+      headerAction={headerAction}
     >
       {children}
     </DashboardFoldOverlay>
