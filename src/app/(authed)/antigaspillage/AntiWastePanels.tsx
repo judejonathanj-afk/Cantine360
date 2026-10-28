@@ -561,7 +561,9 @@ export function AntiWastePanels({
                             g
                           </span>
                         </p>
-                        <p className="text-sm font-semibold text-zinc-600">
+                        <p className="text-sm font-semibold leading-snug text-zinc-600">
+                          de déchets
+                          <br />
                           pour 100 assiettes
                         </p>
                         <span
@@ -590,13 +592,13 @@ export function AntiWastePanels({
                         <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
                           En <CyclePill level="MATERNELLE" />,{" "}
                           {d.maternelleGPer100 != null
-                            ? `${fmt(Math.round(d.maternelleGPer100))} g pour 100 assiettes.`
+                            ? `${fmt(Math.round(d.maternelleGPer100))} g de déchets pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
                         <p className="mt-1 text-base font-medium leading-relaxed text-zinc-900">
                           En <CyclePill level="PRIMAIRE" />,{" "}
                           {d.primaireGPer100 != null
-                            ? `${fmt(Math.round(d.primaireGPer100))} g pour 100 assiettes.`
+                            ? `${fmt(Math.round(d.primaireGPer100))} g de déchets pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
                       </div>
@@ -622,7 +624,7 @@ export function AntiWastePanels({
                                   </span>
                                 </span>
                                 <span className="shrink-0 font-bold tabular-nums">
-                                  {fmt(Math.round(c.wasteG))} g
+                                  {fmt(Math.round(c.wasteG))} g de déchets
                                 </span>
                               </li>
                             ))}
