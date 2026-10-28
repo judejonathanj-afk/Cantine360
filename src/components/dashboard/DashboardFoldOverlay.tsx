@@ -15,6 +15,7 @@ export function DashboardFoldOverlay({
   subtitle,
   titleClassName,
   headerAction,
+  dialogClassName,
   icon: Icon,
   labelledBy,
   children,
@@ -26,6 +27,7 @@ export function DashboardFoldOverlay({
   subtitle?: string;
   titleClassName?: string;
   headerAction?: ReactNode;
+  dialogClassName?: string;
   icon: LucideIcon;
   labelledBy: string;
   children: ReactNode;
@@ -88,7 +90,10 @@ export function DashboardFoldOverlay({
         open={open}
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
-        className="w-[calc(100vw-1rem)] max-w-[92rem]"
+        className={cn(
+          "w-[calc(100vw-1rem)] max-w-[92rem]",
+          dialogClassName,
+        )}
       >
         <div className="mb-2 flex items-start justify-between gap-3 px-1">
           <div className="min-w-0">
