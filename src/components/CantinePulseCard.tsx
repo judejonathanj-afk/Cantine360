@@ -492,9 +492,76 @@ export function CantinePulseCard({
     </div>
   ) : null;
 
+  const chiffresWindow = (
+    <div className="overflow-hidden rounded-2xl bg-zinc-950 px-4 py-4 shadow-md ring-1 ring-zinc-800 sm:px-5 sm:py-5">
+      <p className="mb-3 text-sm font-semibold text-white">Les chiffres</p>
+      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
+        <StatTile
+          icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
+          label="Assiettes servies"
+          value={String(curr.served)}
+          hint={periodLabel}
+          tileClass={STAT_TILE}
+          inDarkPanel
+        />
+        <StatTile
+          icon={<Activity className="h-3.5 w-3.5" />}
+          label="RAB"
+          value={String(curr.rab)}
+          hint={
+            curr.served > 0
+              ? `${(curr.rabRate * 100).toFixed(1)} % des servis`
+              : periodLabel
+          }
+          tileClass={STAT_TILE}
+          inDarkPanel
+        />
+        <StatTile
+          icon={<Trash2 className="h-3.5 w-3.5" />}
+          label="Déchets (poids)"
+          value={
+            curr.wasteWeightG > 0
+              ? `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g`
+              : "—"
+          }
+          hint={
+            curr.wasteWeightG > 0 && curr.served > 0
+              ? `${curr.wasteGramsPer100Served.toFixed(1)} g / 100 assiettes`
+              : curr.wasteWeightG > 0
+                ? periodLabel
+                : "saisir en fin de service"
+          }
+          tileClass={STAT_TILE}
+          inDarkPanel
+        />
+        <StatTile
+          icon={<Percent className="h-3.5 w-3.5" />}
+          label="Pour 100 assiettes"
+          value={curr.served > 0 && curr.wasteWeightG > 0 ? `${wrCurr} g` : "—"}
+          hint={
+            curr.served > 0 && curr.wasteWeightG > 0
+              ? "déchets pour 100 servies"
+              : "pas encore de déchets"
+          }
+          tileClass={STAT_TILE}
+          inDarkPanel
+        />
+        <StatTile
+          icon={<Activity className="h-3.5 w-3.5" />}
+          label={days === 30 ? "Vs période d’avant" : "Vs semaine d’avant"}
+          value={evolLabel}
+          hint={evolHint}
+          tileClass={STAT_TILE}
+          inDarkPanel
+        />
+      </dl>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       {brandTitle}
+      {chiffresWindow}
     <Card
       className="overflow-hidden border-zinc-200 bg-white text-zinc-900 shadow-md ring-1 ring-zinc-200 transition-shadow hover:shadow-lg"
     >
@@ -577,71 +644,9 @@ export function CantinePulseCard({
         ) : null}
 
         <div className="rounded-2xl bg-zinc-950 px-4 py-4 sm:px-5 sm:py-5">
-          <p className="mb-3 text-sm font-semibold text-white">Les chiffres</p>
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
-            <StatTile
-              icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
-              label="Assiettes servies"
-              value={String(curr.served)}
-              hint={periodLabel}
-              tileClass={STAT_TILE}
-              inDarkPanel
-            />
-            <StatTile
-              icon={<Activity className="h-3.5 w-3.5" />}
-              label="RAB"
-              value={String(curr.rab)}
-              hint={
-                curr.served > 0
-                  ? `${(curr.rabRate * 100).toFixed(1)} % des servis`
-                  : periodLabel
-              }
-              tileClass={STAT_TILE}
-              inDarkPanel
-            />
-            <StatTile
-              icon={<Trash2 className="h-3.5 w-3.5" />}
-              label="Déchets (poids)"
-              value={
-                curr.wasteWeightG > 0
-                  ? `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g`
-                  : "—"
-              }
-              hint={
-                curr.wasteWeightG > 0 && curr.served > 0
-                  ? `${curr.wasteGramsPer100Served.toFixed(1)} g / 100 assiettes`
-                  : curr.wasteWeightG > 0
-                    ? periodLabel
-                    : "saisir en fin de service"
-              }
-              tileClass={STAT_TILE}
-              inDarkPanel
-            />
-            <StatTile
-              icon={<Percent className="h-3.5 w-3.5" />}
-              label="Pour 100 assiettes"
-              value={curr.served > 0 && curr.wasteWeightG > 0 ? `${wrCurr} g` : "—"}
-              hint={
-                curr.served > 0 && curr.wasteWeightG > 0
-                  ? "déchets pour 100 servies"
-                  : "pas encore de déchets"
-              }
-              tileClass={STAT_TILE}
-              inDarkPanel
-            />
-            <StatTile
-              icon={<Activity className="h-3.5 w-3.5" />}
-              label={days === 30 ? "Vs période d’avant" : "Vs semaine d’avant"}
-              value={evolLabel}
-              hint={evolHint}
-              tileClass={STAT_TILE}
-              inDarkPanel
-            />
-          </dl>
-
           <div
             className={cn(
-              "mt-4 rounded-xl border px-4 py-3.5",
+              "rounded-xl border px-4 py-3.5",
               pulse.headline === "Plus de déchets qu’avant."
                 ? "border-[#1c3f78] bg-[#102848]"
                 : "border-zinc-700 bg-zinc-900",
