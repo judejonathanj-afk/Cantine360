@@ -23,6 +23,7 @@ import {
   buildWasteEvolutionSeries,
   type WastePerDayRowInput,
 } from "@/lib/buildWasteEvolutionSeries";
+import { buildWasteEvolutionConclusion } from "@/lib/wasteEvolutionConclusion";
 import {
   cantinePlusChartCardClass,
   cantinePlusChartPlotClass,
@@ -46,6 +47,7 @@ type Props = {
   perDayRows: WastePerDayRowInput[];
   level?: SchoolLevel;
   embedded?: boolean;
+  showConclusion?: boolean;
 };
 
 export function WasteEvolutionChart({
@@ -53,11 +55,16 @@ export function WasteEvolutionChart({
   perDayRows,
   level,
   embedded = false,
+  showConclusion = false,
 }: Props) {
   const series = useMemo(
     () => buildWasteEvolutionSeries(perDayRows),
     [perDayRows],
   );
+  const conclusion =
+    showConclusion && level
+      ? buildWasteEvolutionConclusion(series, { days, level })
+      : null;
 
   const useBars = days === 7;
   const hasWasteData = series.some((p) => p.wasteWeightG > 0);
@@ -152,7 +159,31 @@ export function WasteEvolutionChart({
       </ChartContainer>
     );
 
-  if (embedded) return plot;
+  const conclusionBlock =
+    conclusion && level ? (
+      <div
+        className={cn(
+          "mt-3 rounded-xl px-3 py-2.5 text-sm font-medium leading-relaxed text-zinc-900 sm:text-base",
+          level === "MATERNELLE"
+            ? "bg-sky-50 ring-1 ring-sky-200"
+            : "bg-emerald-50 ring-1 ring-emerald-200",
+        )}
+      >
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-500">
+          Conclusion {schoolLevelLabelFr(level)}
+        </p>
+        <p className="mt-1">{conclusion}</p>
+      </div>
+    ) : null;
+
+  if (embedded) {
+    return (
+      <div>
+        {plot}
+        {conclusionBlock}
+      </div>
+    );
+  }
 
   return (
     <Card

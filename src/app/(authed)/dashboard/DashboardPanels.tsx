@@ -607,6 +607,7 @@ export default function DashboardPanels({
                 level={level}
                 perDayRows={wasteByLevel[level]}
                 embedded
+                showConclusion
               />
             </DashboardInsightCard>
           ))}
