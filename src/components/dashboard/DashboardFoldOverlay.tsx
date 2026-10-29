@@ -35,7 +35,7 @@ export function DashboardFoldOverlay({
   panelClassName?: string;
   bodyClassName?: string;
   closeButtonClassName?: string;
-  foldTone?: "forest" | "yellow";
+  foldTone?: "forest" | "yellow" | "violet";
   icon: LucideIcon;
   labelledBy: string;
   children: ReactNode;
@@ -65,6 +65,7 @@ export function DashboardFoldOverlay({
   }
 
   const yellowFold = foldTone === "yellow";
+  const violetFold = foldTone === "violet";
 
   return (
     <div>
@@ -73,7 +74,9 @@ export function DashboardFoldOverlay({
           "overflow-hidden rounded-[28px] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100",
           yellowFold
             ? "bg-[#fbe961] shadow-[0_12px_32px_rgba(234,179,8,0.38)]"
-            : "bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)]",
+            : violetFold
+              ? "bg-[#5b21b6] shadow-[0_12px_32px_rgba(91,33,182,0.38)]"
+              : "bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)]",
         )}
       >
         <button
@@ -90,7 +93,9 @@ export function DashboardFoldOverlay({
               "flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-11 sm:w-11",
               yellowFold
                 ? "bg-amber-500 text-white"
-                : "bg-[#DFF59A] text-[#0d3b2e]",
+                : violetFold
+                  ? "bg-violet-200 text-[#5b21b6]"
+                  : "bg-[#DFF59A] text-[#0d3b2e]",
             )}
             aria-hidden
           >
