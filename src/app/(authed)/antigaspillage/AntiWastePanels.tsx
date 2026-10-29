@@ -464,6 +464,7 @@ export function AntiWastePanels({
           kicker="Plats à risque"
           openLabel="Ouvrir Plats à risque"
           overlayTitle="Plats à risque"
+          titleClassName="text-violet-300"
           subtitle="Repérez les plats qui pèsent le plus sur le gaspillage, pour ajuster portions et menu dès demain."
           hint={`Classés du plus gourmand au plus léger · ${days} jours. Lisez, comparez, téléchargez.`}
           icon={Flame}
@@ -494,13 +495,13 @@ export function AntiWastePanels({
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="px-1 text-base font-semibold leading-snug text-zinc-800 sm:text-lg">
+              <p className="px-1 text-base font-semibold leading-snug text-violet-950 sm:text-lg">
                 {riskyDishesVisible.length} plat
                 {riskyDishesVisible.length > 1 ? "s" : ""} classé
                 {riskyDishesVisible.length > 1 ? "s" : ""} : le n°1 est celui
                 à regarder en premier pour demain.
               </p>
-            <ul className="flex flex-col gap-3.5">
+            <ul className="flex flex-col gap-4">
               {riskyDishesVisible.map((d, i) => {
                 const pct = Math.max((d.avgWasteGPer100 / maxRiskG) * 100, 3);
                 const rank = i + 1;
@@ -515,68 +516,63 @@ export function AntiWastePanels({
                   <li
                     key={`${d.label}-${i}`}
                     className={cn(
-                      "rounded-2xl border p-4 shadow-sm sm:p-5",
+                      "overflow-hidden rounded-2xl border-2 p-4 shadow-sm sm:p-5",
                       rank === 1
-                        ? "border-rose-200 bg-rose-50/70"
+                        ? "border-violet-400 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50"
                         : rank === 2
-                          ? "border-amber-200 bg-amber-50/60"
-                          : "border-zinc-200 bg-white",
+                          ? "border-violet-300 bg-gradient-to-br from-violet-50/80 to-white"
+                          : "border-violet-200 bg-white",
                     )}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex min-w-0 items-start gap-3">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="flex min-w-0 flex-1 items-start gap-3">
                         <span
-                          className="flex size-11 shrink-0 flex-col items-center justify-center rounded-2xl text-white"
-                          style={{
-                            background:
-                              rank === 1
-                                ? "var(--aw-coral)"
-                                : rank === 2
-                                  ? "var(--aw-amber)"
-                                  : "var(--aw-primary)",
-                          }}
+                          className={cn(
+                            "flex size-11 shrink-0 items-center justify-center rounded-2xl text-base font-extrabold text-white shadow-sm",
+                            rank === 1
+                              ? "bg-violet-700"
+                              : rank === 2
+                                ? "bg-violet-500"
+                                : "bg-violet-400",
+                          )}
                         >
-                          <span className="text-base font-extrabold leading-none">
-                            {rank}
-                          </span>
+                          {rank}
                         </span>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-zinc-500">
+                          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-violet-700">
                             {rankLabel}
                           </p>
                           <p className="mt-0.5 text-xl font-extrabold leading-tight tracking-tight text-zinc-950 capitalize sm:text-2xl">
                             {d.label}
                           </p>
-                          <p className="mt-1 text-sm font-medium leading-snug text-zinc-700 sm:text-base">
+                          <p className="mt-1.5 text-sm font-medium leading-snug text-zinc-700 sm:text-base">
                             {d.serviceCount === 1
                               ? "Vu sur 1 service de la période."
                               : `Vu sur ${d.serviceCount} services de la période.`}
                           </p>
                         </div>
                       </div>
-                      <div className="shrink-0 text-right">
+                      <div className="shrink-0 rounded-2xl bg-white px-4 py-3 text-right shadow-sm ring-1 ring-violet-200">
                         <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-black">
                           Moyenne
                         </p>
-                        <p className="font-display text-2xl font-extrabold tracking-tight text-[color:var(--aw-coral)] sm:text-3xl">
+                        <p className="mt-0.5 font-display text-2xl font-extrabold tracking-tight text-violet-800 sm:text-3xl">
                           {grams}
                           <span className="ml-1 text-sm font-bold text-zinc-700">
                             g
                           </span>
                         </p>
-                        <p className="text-sm font-semibold leading-snug text-zinc-600">
-                          de déchets
-                          <br />
-                          pour 100 assiettes
+                        <p className="mt-0.5 text-sm font-semibold leading-snug text-zinc-700">
+                          de déchets pour 100 assiettes
                         </p>
                         <span
                           className={cn(
-                            "mt-1.5 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide",
+                            "mt-2 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide",
                             d.vsTarget === "above"
                               ? "bg-rose-100 text-rose-800"
                               : d.vsTarget === "ok"
                                 ? "bg-emerald-100 text-emerald-800"
-                                : "bg-zinc-100 text-zinc-700",
+                                : "bg-violet-100 text-violet-800",
                           )}
                         >
                           {d.vsTarget === "above"
@@ -587,38 +583,38 @@ export function AntiWastePanels({
                         </span>
                       </div>
                     </div>
-                    <div className="mt-4 grid gap-4 border-t border-black/5 pt-4 sm:grid-cols-2">
-                      <div>
+                    <div className="mt-4 grid gap-3 border-t border-violet-200/80 pt-4 sm:grid-cols-2">
+                      <div className="rounded-2xl bg-white/80 px-3.5 py-3 ring-1 ring-violet-100">
                         <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
                           Par cycle
                         </p>
-                        <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
-                          En <CyclePill level="MATERNELLE" />,{" "}
+                        <p className="mt-2.5 text-base font-medium leading-relaxed text-zinc-900">
+                          En <CyclePill level="MATERNELLE" />{" "}
                           {d.maternelleGPer100 != null
                             ? `${fmt(Math.round(d.maternelleGPer100))} g de déchets pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
-                        <p className="mt-1 text-base font-medium leading-relaxed text-zinc-900">
-                          En <CyclePill level="PRIMAIRE" />,{" "}
+                        <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
+                          En <CyclePill level="PRIMAIRE" />{" "}
                           {d.primaireGPer100 != null
                             ? `${fmt(Math.round(d.primaireGPer100))} g de déchets pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
                       </div>
-                      <div>
+                      <div className="rounded-2xl bg-white/80 px-3.5 py-3 ring-1 ring-violet-100">
                         <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
                           Classes à surveiller
                         </p>
                         {(d.topClasses ?? []).length === 0 ? (
-                          <p className="mt-2 text-base font-medium leading-relaxed text-zinc-600">
+                          <p className="mt-2.5 text-base font-medium leading-relaxed text-zinc-600">
                             Pas encore de détail par classe pour ce plat.
                           </p>
                         ) : (
-                          <ul className="mt-2 space-y-1.5">
+                          <ul className="mt-2.5 space-y-2">
                             {(d.topClasses ?? []).map((c) => (
                               <li
                                 key={`${d.label}-${c.label}`}
-                                className="flex items-baseline justify-between gap-3 text-base text-zinc-800"
+                                className="flex items-center justify-between gap-3 rounded-xl bg-violet-50/70 px-2.5 py-1.5 text-base text-zinc-800"
                               >
                                 <span className="min-w-0 font-medium">
                                   {c.label}
@@ -626,7 +622,7 @@ export function AntiWastePanels({
                                     <CyclePill level={c.level} />
                                   </span>
                                 </span>
-                                <span className="shrink-0 font-bold tabular-nums">
+                                <span className="shrink-0 font-bold tabular-nums text-zinc-950">
                                   {fmt(Math.round(c.wasteG))} g de déchets
                                 </span>
                               </li>
@@ -635,14 +631,14 @@ export function AntiWastePanels({
                         )}
                       </div>
                     </div>
-                    <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-zinc-200/80">
+                    <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-violet-100">
                       <div
                         className="aw-grow-bar h-full rounded-full"
                         style={{
                           width: `${pct}%`,
                           animationDelay: `${640 + i * 80}ms`,
                           background:
-                            "linear-gradient(90deg, var(--aw-coral), var(--aw-amber))",
+                            "linear-gradient(90deg, #7c3aed, #c084fc)",
                         }}
                       />
                     </div>
