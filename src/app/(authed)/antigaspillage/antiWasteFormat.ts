@@ -34,6 +34,17 @@ export const gaugeStatusLabel: Record<GaugeStatus, string> = {
   none: "Sans objectif",
 };
 
+export function formatPeriodEstimateFr(days: 7 | 30, now = new Date()): string {
+  const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+  const fmt = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Paris",
+  });
+  return `Estimation : du ${fmt.format(start)} au ${fmt.format(now)}`;
+}
+
 export function formatDayLabelFr(isoDate: string): string {
   const d = new Date(`${isoDate}T12:00:00`);
   if (Number.isNaN(d.getTime())) return isoDate;

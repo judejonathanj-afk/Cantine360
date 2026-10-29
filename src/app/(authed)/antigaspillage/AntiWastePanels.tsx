@@ -26,6 +26,7 @@ import { AntiWasteGauge } from "./AntiWasteGauge";
 import {
   fmt,
   formatDayLabelFr,
+  formatPeriodEstimateFr,
   gaugeStatusFromTone,
   gaugeStatusLabel,
 } from "./antiWasteFormat";
@@ -409,7 +410,7 @@ export function AntiWastePanels({
                   ? "Sans objectif"
                   : gaugeStatusLabel[gaugeStatus]}
             </div>
-            <p className="max-w-xs text-balance text-center text-base font-medium leading-relaxed text-zinc-950">
+            <p className="max-w-sm text-balance text-center text-base font-medium leading-relaxed text-zinc-950">
               {wasteGramsPer100Served != null && wasteGramsPer100Served > 0 ? (
                 <>
                   Pour 100 repas servis, environ{" "}
@@ -424,6 +425,9 @@ export function AntiWastePanels({
               ) : (
                 status.detail
               )}
+              <span className="mt-2 block text-sm font-semibold text-zinc-700">
+                {formatPeriodEstimateFr(days)}
+              </span>
             </p>
           </div>
 
