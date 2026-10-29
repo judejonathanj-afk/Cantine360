@@ -402,16 +402,11 @@ export function AdminGroupsClient({
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
-      <p className="text-sm leading-relaxed text-zinc-600">
-        Pour des cibles différentes par classe, utilisez le bouton <strong className="text-zinc-900">Objectifs</strong>{" "}
-        sur chaque carte. Laissez les champs vides pour reprendre les défauts établissement.
-      </p>
-
       <DashboardFoldOverlay
         kicker="Classes"
         openLabel="Ouvrir Écoles et classes"
         overlayTitle="Écoles et classes"
-        subtitle="Cartes par école : niveau, actif / inactif, objectifs propres à la classe."
+        subtitle="Pour des cibles différentes par classe, utilisez le bouton Objectifs sur chaque carte. Laissez les champs vides pour reprendre les défauts établissement."
         hint={`${schools.length} école${schools.length > 1 ? "s" : ""} · ${activeCount} classe${activeCount > 1 ? "s" : ""} active${activeCount > 1 ? "s" : ""}. Vert = primaire, bleu = maternelle.`}
         icon={GraduationCap}
         labelledBy="admin-groups-list-overlay"
