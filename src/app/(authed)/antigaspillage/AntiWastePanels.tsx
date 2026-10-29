@@ -525,6 +525,7 @@ export function AntiWastePanels({
           hint={`Classés du plus gourmand au plus léger · ${days} jours. Lisez, comparez, téléchargez.`}
           icon={Flame}
           labelledBy="risky-dishes-overlay-title"
+          dialogClassName="max-h-[68vh] max-w-4xl"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
           bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
           headerAction={
@@ -555,7 +556,7 @@ export function AntiWastePanels({
                 {riskyDishesVisible.length > 1 ? "s" : ""} : le n°1 est celui
                 à regarder en premier pour demain.
               </p>
-            <ul className="flex flex-col gap-4">
+            <ul className="flex flex-col gap-3">
               {riskyDishesVisible.map((d, i) => {
                 const pct = Math.max((d.avgWasteGPer100 / maxRiskG) * 100, 3);
                 const rank = i + 1;
@@ -570,7 +571,7 @@ export function AntiWastePanels({
                   <li
                     key={`${d.label}-${i}`}
                     className={cn(
-                      "overflow-hidden rounded-2xl border-2 p-4 shadow-sm sm:p-5",
+                      "overflow-hidden rounded-2xl border-2 p-3 shadow-sm sm:p-3.5",
                       rank === 1
                         ? "border-violet-400 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50"
                         : rank === 2
@@ -582,7 +583,7 @@ export function AntiWastePanels({
                       <div className="flex min-w-0 flex-1 items-start gap-3">
                         <span
                           className={cn(
-                            "flex size-11 shrink-0 items-center justify-center rounded-2xl text-base font-extrabold text-white shadow-sm",
+                            "flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-extrabold text-white shadow-sm",
                             rank === 1
                               ? "bg-violet-700"
                               : rank === 2
@@ -596,7 +597,7 @@ export function AntiWastePanels({
                           <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-violet-700">
                             {rankLabel}
                           </p>
-                          <p className="mt-0.5 text-xl font-extrabold leading-tight tracking-tight text-zinc-950 capitalize sm:text-2xl">
+                          <p className="mt-0.5 text-lg font-extrabold leading-tight tracking-tight text-zinc-950 capitalize sm:text-xl">
                             {d.label}
                           </p>
                           <p className="mt-1.5 text-sm font-medium leading-snug text-zinc-700 sm:text-base">
@@ -606,11 +607,11 @@ export function AntiWastePanels({
                           </p>
                         </div>
                       </div>
-                      <div className="shrink-0 rounded-2xl bg-white px-4 py-3 text-right shadow-sm ring-1 ring-violet-200">
+                      <div className="shrink-0 rounded-2xl bg-white px-3 py-2 text-right shadow-sm ring-1 ring-violet-200">
                         <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-black">
                           Moyenne
                         </p>
-                        <p className="mt-0.5 font-display text-2xl font-extrabold tracking-tight text-violet-800 sm:text-3xl">
+                        <p className="mt-0.5 font-display text-xl font-extrabold tracking-tight text-violet-800 sm:text-2xl">
                           {grams}
                           <span className="ml-1 text-sm font-bold text-zinc-700">
                             g
@@ -637,7 +638,7 @@ export function AntiWastePanels({
                         </span>
                       </div>
                     </div>
-                    <div className="mt-4 grid gap-3 border-t border-violet-200/80 pt-4 sm:grid-cols-2">
+                    <div className="mt-3 grid gap-2.5 border-t border-violet-200/80 pt-3 sm:grid-cols-2">
                       <div className="rounded-2xl bg-white/80 px-3.5 py-3 ring-1 ring-violet-100">
                         <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
                           Par cycle
@@ -685,7 +686,7 @@ export function AntiWastePanels({
                         )}
                       </div>
                     </div>
-                    <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-violet-100">
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-violet-100">
                       <div
                         className="aw-grow-bar h-full rounded-full"
                         style={{
