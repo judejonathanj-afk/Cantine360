@@ -136,8 +136,9 @@ export default function ExportsPage() {
           Choisissez une <strong className="font-semibold text-zinc-900">période</strong>, puis
           exportez les compteurs cantine (présents, servis, RAB, refus par classe), le{" "}
           <strong className="font-semibold text-zinc-900">poids des déchets par service</strong>{" "}
-          ou les <strong className="font-semibold text-zinc-900">menus du jour</strong> avec le
-          détail des allergènes. Idéal pour la commission, les bilans et le partage avec
+          ou les <strong className="font-semibold text-zinc-900">menus du jour</strong>
+          {" "}
+          avec le détail des allergènes. Idéal pour la commission, les bilans et le partage avec
           l&apos;administration.
         </p>
       </div>
