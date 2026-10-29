@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Download } from "lucide-react";
+import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -143,7 +145,18 @@ export default function ExportsPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <DashboardFoldOverlay
+        kicker="CSV"
+        openLabel="Ouvrir Exports"
+        overlayTitle="Exports"
+        subtitle="Téléchargements CSV pour Excel — métriques de service et menus allergènes."
+        hint="Choisissez une période, puis téléchargez les services (métriques + déchets) ou les menus allergènes."
+        icon={Download}
+        labelledBy="exports-overlay-title"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+      >
+      <div className="grid gap-4 p-1 md:grid-cols-2 sm:p-2">
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg">Période</CardTitle>
@@ -159,7 +172,7 @@ export default function ExportsPage() {
                 <SelectTrigger id="period-preset" className="h-auto min-h-9 w-full py-2">
                   <SelectValue placeholder="Choisir une période" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[100]">
                   {options.map((opt) => (
                     <SelectItem key={opt.id} value={opt.id}>
                       {opt.label} — {opt.detail}
@@ -225,6 +238,7 @@ export default function ExportsPage() {
           </CardContent>
         </Card>
       </div>
+      </DashboardFoldOverlay>
     </div>
   );
 }
