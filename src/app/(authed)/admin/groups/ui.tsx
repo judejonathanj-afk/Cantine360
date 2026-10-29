@@ -285,87 +285,96 @@ export function AdminGroupsClient({
         </DashboardFoldOverlay>
 
         <DashboardFoldOverlay
-          kicker="École"
-          openLabel="Ouvrir Ajouter une école manuellement"
-          overlayTitle="Ajouter une école manuellement"
-          subtitle="Créez une école pour y rattacher ensuite vos classes."
-          hint="Un nom suffit. Vous pourrez ajouter les classes juste après."
+          kicker="Saisie manuelle"
+          openLabel="Ouvrir Ajouter une école ou une classe"
+          overlayTitle="Ajouter une école ou une classe"
+          subtitle="Créez une école, puis rattachez-y une classe en maternelle ou en primaire."
+          hint="Les deux saisies sont sur la même page : école à gauche, classe à droite."
           icon={School}
-          labelledBy="admin-groups-school-overlay"
+          labelledBy="admin-groups-manual-overlay"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         >
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void createSchool();
-            }}
-            className="flex flex-col gap-3 p-1 sm:flex-row sm:p-2"
-          >
-            <input
-              value={newSchoolName}
-              onChange={(e) => setNewSchoolName(e.target.value)}
-              className="flex-1 rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-              placeholder="Ex: École Anne Frank"
-            />
-            <button
-              type="submit"
-              disabled={busy || newSchoolName.trim().length === 0}
-              className="rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
-            >
-              Ajouter
-            </button>
-          </form>
-        </DashboardFoldOverlay>
-
-        <DashboardFoldOverlay
-          kicker="Classe"
-          openLabel="Ouvrir Ajouter une classe manuellement"
-          overlayTitle="Ajouter une classe manuellement"
-          subtitle="Rattachez une classe à une école, en maternelle ou en primaire."
-          hint="Choisissez l’école, le niveau, puis le nom de la classe."
-          icon={GraduationCap}
-          labelledBy="admin-groups-class-overlay"
-          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
-        >
-          <form onSubmit={createGroup} className="flex flex-col gap-3 p-1 sm:p-2">
-            <select
-              value={schoolId}
-              onChange={(e) => setSchoolId(e.target.value)}
-              className="rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-            >
-              {schools.length === 0 ? (
-                <option value="">Créez d’abord une école</option>
-              ) : (
-                schools.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))
-              )}
-            </select>
-            <select
-              value={classLevel}
-              onChange={(e) => setClassLevel(e.target.value as SchoolLevel)}
-              className="rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-            >
-              <option value="PRIMAIRE">Primaire</option>
-              <option value="MATERNELLE">Maternelle</option>
-            </select>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                value={className}
-                onChange={(e) => setClassName(e.target.value)}
-                className="flex-1 rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-900"
-                placeholder="Ex: CE1 B"
-              />
-              <button
-                disabled={busy || className.trim().length === 0 || !schoolId}
-                className="rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
+          <div className="grid gap-6 p-1 lg:grid-cols-2 sm:p-2">
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                <School className="size-3.5" aria-hidden />
+                Ajouter une école manuellement
+              </p>
+              <p className="mt-2 text-sm font-medium text-zinc-700">
+                Un nom suffit. Vous pourrez ajouter les classes juste après.
+              </p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void createSchool();
+                }}
+                className="mt-4 flex flex-col gap-3 sm:flex-row"
               >
-                {busy ? "..." : "Ajouter"}
-              </button>
+                <input
+                  value={newSchoolName}
+                  onChange={(e) => setNewSchoolName(e.target.value)}
+                  className="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-zinc-900"
+                  placeholder="Ex: École Anne Frank"
+                />
+                <button
+                  type="submit"
+                  disabled={busy || newSchoolName.trim().length === 0}
+                  className="rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
+                >
+                  Ajouter
+                </button>
+              </form>
             </div>
-          </form>
+
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                <GraduationCap className="size-3.5" aria-hidden />
+                Ajouter une classe manuellement
+              </p>
+              <p className="mt-2 text-sm font-medium text-zinc-700">
+                Choisissez l’école, le niveau, puis le nom de la classe.
+              </p>
+              <form onSubmit={createGroup} className="mt-4 flex flex-col gap-3">
+                <select
+                  value={schoolId}
+                  onChange={(e) => setSchoolId(e.target.value)}
+                  className="rounded-xl border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-zinc-900"
+                >
+                  {schools.length === 0 ? (
+                    <option value="">Créez d’abord une école</option>
+                  ) : (
+                    schools.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+                <select
+                  value={classLevel}
+                  onChange={(e) => setClassLevel(e.target.value as SchoolLevel)}
+                  className="rounded-xl border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-zinc-900"
+                >
+                  <option value="PRIMAIRE">Primaire</option>
+                  <option value="MATERNELLE">Maternelle</option>
+                </select>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                    className="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-zinc-900"
+                    placeholder="Ex: CE1 B"
+                  />
+                  <button
+                    disabled={busy || className.trim().length === 0 || !schoolId}
+                    className="rounded-xl bg-emerald-900 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-50"
+                  >
+                    {busy ? "..." : "Ajouter"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </DashboardFoldOverlay>
 
         <DashboardFoldOverlay
