@@ -437,9 +437,12 @@ export function AdminGroupsClient({
               </span>
             </div>
           </div>
+          <div className="max-h-[min(40rem,70vh)] overflow-y-scroll rounded-2xl border border-zinc-200 bg-white/60 p-3 pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100">
           {groupsBySchool.map(([sid, bucket]) => (
-          <section key={sid} className="space-y-3">
-            <h2 className="text-lg font-semibold text-zinc-900">{bucket.schoolName}</h2>
+          <section key={sid} className="space-y-3 pb-6 last:pb-0">
+            <h2 className="sticky top-0 z-10 bg-white/90 py-1 text-lg font-semibold text-zinc-900 backdrop-blur-sm">
+              {bucket.schoolName}
+            </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {bucket.groups.map((g) => (
                 <div
@@ -534,6 +537,7 @@ export function AdminGroupsClient({
             </div>
           </section>
         ))}
+          </div>
         </div>
       )}
 
