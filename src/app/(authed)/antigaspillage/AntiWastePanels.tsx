@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { AntiWasteGauge } from "./AntiWasteGauge";
-import { AntiWasteLineChart } from "./AntiWasteLineChart";
 import {
   fmt,
   fmt1,
@@ -835,33 +834,26 @@ export function AntiWastePanels({
           </div>
         ) : null}
 
-        <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,6fr)_minmax(0,4fr)]">
-          <div className="min-w-0">
-            <AntiWasteLineChart days={days} points={chartPoints} />
-          </div>
-          <div className="min-w-0 lg:h-0 lg:min-h-full">
-            <WasteAdvicePanel
-              days={days}
-              tone={status.tone}
-              title={status.title}
-              hint={status.hint}
-              heaviestLabel={
-                heaviestDay && (heaviestDay.g100 > 0 || heaviestDay.waste > 0)
-                  ? formatDayLabelFr(heaviestDay.date)
-                  : null
-              }
-              heaviestValue={
-                heaviestDay == null
-                  ? null
-                  : heaviestDay.g100 > 0
-                    ? `${fmt(Math.round(heaviestDay.g100))} g / 100`
-                    : `${fmt(Math.round(heaviestDay.waste))} g`
-              }
-              curveRemark={curveRemark}
-              dishRemark={dishRemark}
-            />
-          </div>
-        </div>
+        <WasteAdvicePanel
+          days={days}
+          tone={status.tone}
+          title={status.title}
+          hint={status.hint}
+          heaviestLabel={
+            heaviestDay && (heaviestDay.g100 > 0 || heaviestDay.waste > 0)
+              ? formatDayLabelFr(heaviestDay.date)
+              : null
+          }
+          heaviestValue={
+            heaviestDay == null
+              ? null
+              : heaviestDay.g100 > 0
+                ? `${fmt(Math.round(heaviestDay.g100))} g / 100`
+                : `${fmt(Math.round(heaviestDay.waste))} g`
+          }
+          curveRemark={curveRemark}
+          dishRemark={dishRemark}
+        />
       </div>
 
       <div className="aw-reveal overflow-hidden rounded-3xl border border-border bg-card">
