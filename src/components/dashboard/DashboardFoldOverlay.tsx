@@ -101,28 +101,34 @@ export function DashboardFoldOverlay({
           dialogClassName,
         )}
       >
-        <div className="mb-2 flex shrink-0 items-start justify-between gap-3 px-1 pt-1 sm:pt-2">
-          <div className="min-w-0">
-            <h2
-              id={labelledBy}
-              className={cn(
-                "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
-                titleClassName,
-              )}
-            >
-              <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-              {overlayTitle}
-            </h2>
-            {subtitle ? (
-              <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
-                {subtitle}
+        <div className="mb-2 flex shrink-0 flex-col gap-3 px-1 pt-1 sm:pt-2">
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2
+                id={labelledBy}
+                className={cn(
+                  "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
+                  titleClassName,
+                )}
+              >
+                <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+                {overlayTitle}
+              </h2>
+              {subtitle ? (
+                <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
+                  {subtitle}
+                </p>
+              ) : null}
+              <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+                {hint}
               </p>
-            ) : null}
-            <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
-              {hint}
-            </p>
+            </div>
           </div>
-          {headerAction}
+          {headerAction ? (
+            <div className="flex w-full flex-wrap items-center justify-end gap-2">
+              {headerAction}
+            </div>
+          ) : null}
         </div>
         <div
           className={cn(
