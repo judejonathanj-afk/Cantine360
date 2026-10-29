@@ -439,7 +439,7 @@ export function AdminStudentsClient({
                 élève{bucket.students.length > 1 ? "s" : ""}
               </p>
             </div>
-            <div className="grid gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               {bucket.students.map((s) => (
                 <div
                   key={s.id}
