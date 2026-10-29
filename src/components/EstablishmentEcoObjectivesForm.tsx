@@ -142,33 +142,37 @@ function EstablishmentEcoObjectivesFormFields({
         embedded ? "space-y-3" : "space-y-3 px-5 pt-4"
       }
     >
-      <p className="text-base font-medium leading-relaxed text-zinc-800">
+      <p className="text-lg font-bold leading-snug text-zinc-950 sm:text-xl">
         Ces chiffres sont la{" "}
-        <strong className="font-bold text-zinc-950">référence de l’établissement</strong>{" "}
+        <span className="underline decoration-emerald-500 decoration-2 underline-offset-4">
+          référence de l’établissement
+        </span>{" "}
         pour Cantine+ : le tableau de bord les applique à toutes les classes, sauf
         si une classe a son propre bouton{" "}
-        <strong className="font-bold text-zinc-950">Objectifs</strong>.
+        <span className="underline decoration-emerald-500 decoration-2 underline-offset-4">
+          Objectifs
+        </span>
+        .
       </p>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+        <div className="rounded-2xl border-2 border-emerald-700 bg-emerald-50 px-4 py-4">
           <p className="inline-flex rounded-full bg-emerald-700 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
             À quoi ça sert
           </p>
-          <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-800">
-            Suivre les <strong className="text-zinc-950">restes d’assiettes</strong>{" "}
-            saisis au service (compteur), en pourcentage. Ex. 8 % = 8 restes pour
-            100 assiettes servies, sur la période choisie.
+          <p className="mt-3 text-base font-bold leading-relaxed text-zinc-950">
+            Suivre les restes d’assiettes saisis au service (compteur), en
+            pourcentage. Ex. 8 % = 8 restes pour 100 assiettes servies, sur la
+            période choisie.
           </p>
         </div>
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+        <div className="rounded-2xl border-2 border-amber-600 bg-amber-50 px-4 py-4">
           <p className="inline-flex rounded-full bg-amber-600 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
             Ce que ce n’est pas
           </p>
-          <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-800">
-            Ce n’est <strong className="text-zinc-950">pas</strong> l’objectif
-            anti-gaspillage en <strong className="text-zinc-950">grammes / 100</strong>.
-            Les pesées cuisine se règlent sur la page Antigaspillage. Les deux
-            peuvent être actifs ensemble, sans se mélanger.
+          <p className="mt-3 text-base font-bold leading-relaxed text-zinc-950">
+            Ce n’est pas l’objectif anti-gaspillage en grammes / 100. Les pesées
+            cuisine se règlent sur la page Antigaspillage. Les deux peuvent être
+            actifs ensemble, sans se mélanger.
           </p>
         </div>
       </div>
@@ -178,10 +182,10 @@ function EstablishmentEcoObjectivesFormFields({
   const form = (
       <form onSubmit={submit} className={embedded ? "mt-4 space-y-4" : "space-y-4 px-5 py-4"}>
         <div>
-          <Label htmlFor="eco-period" className="text-zinc-900">
+          <Label htmlFor="eco-period" className="text-base font-extrabold text-zinc-950">
             Période de comparaison
           </Label>
-          <p className="mt-1 text-sm font-medium text-zinc-600">
+          <p className="mt-1 text-base font-semibold leading-snug text-zinc-900">
             Fenêtre utilisée par Cantine+ pour calculer les restes et les comparer
             à la période d’avant. Indépendante des filtres 7 / 30 jours.
           </p>
@@ -189,7 +193,7 @@ function EstablishmentEcoObjectivesFormFields({
             id="eco-period"
             value={period}
             onChange={(e) => setPeriod(e.target.value as EcoObjectivePeriod)}
-            className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm font-medium text-zinc-900 outline-none focus:border-emerald-600"
+            className="mt-2 w-full rounded-xl border-2 border-zinc-900 bg-white px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none focus:border-emerald-600"
           >
             {PERIOD_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
@@ -202,7 +206,7 @@ function EstablishmentEcoObjectivesFormFields({
         {period === "SCHOOL_YEAR" ? (
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <Label htmlFor="eco-sy-m" className="text-zinc-900">
+              <Label htmlFor="eco-sy-m" className="text-base font-extrabold text-zinc-950">
                 Mois de rentrée (1 = janvier … 12 = décembre)
               </Label>
               <input
@@ -212,11 +216,11 @@ function EstablishmentEcoObjectivesFormFields({
                 max={12}
                 value={schoolMonth}
                 onChange={(e) => setSchoolMonth(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-emerald-600"
+                className="mt-2 w-full rounded-xl border-2 border-zinc-900 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none focus:border-emerald-600"
               />
             </div>
             <div>
-              <Label htmlFor="eco-sy-d" className="text-zinc-900">
+              <Label htmlFor="eco-sy-d" className="text-base font-extrabold text-zinc-950">
                 Jour de rentrée (1–31)
               </Label>
               <input
@@ -226,7 +230,7 @@ function EstablishmentEcoObjectivesFormFields({
                 max={31}
                 value={schoolDay}
                 onChange={(e) => setSchoolDay(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-emerald-600"
+                className="mt-2 w-full rounded-xl border-2 border-zinc-900 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none focus:border-emerald-600"
               />
             </div>
           </div>
@@ -234,10 +238,10 @@ function EstablishmentEcoObjectivesFormFields({
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <Label htmlFor="eco-r" className="text-zinc-900">
+            <Label htmlFor="eco-r" className="text-base font-extrabold text-zinc-950">
               Plafond de restes (%)
             </Label>
-            <p className="mt-1 text-sm font-medium text-zinc-600">
+            <p className="mt-1 text-base font-semibold leading-snug text-zinc-900">
               Maximum accepté : restes d’assiettes pour 100 repas servis. Ex. 8 =
               pas plus de 8 restes sur 100 assiettes. Laissez vide pour ne pas
               fixer de plafond.
@@ -249,14 +253,14 @@ function EstablishmentEcoObjectivesFormFields({
               placeholder="ex. 8"
               value={restes}
               onChange={(e) => setRestes(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-emerald-600"
+              className="mt-2 w-full rounded-xl border-2 border-zinc-900 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:border-emerald-600"
             />
           </div>
           <div>
-            <Label htmlFor="eco-red" className="text-zinc-900">
+            <Label htmlFor="eco-red" className="text-base font-extrabold text-zinc-950">
               Baisse visée par rapport à la période d’avant (%)
             </Label>
-            <p className="mt-1 text-sm font-medium text-zinc-600">
+            <p className="mt-1 text-base font-semibold leading-snug text-zinc-900">
               Ambition de progrès. Ex. 10 = 10 % de restes en moins qu’à la
               période précédente. Laissez vide si vous ne suivez que le plafond.
             </p>
@@ -267,7 +271,7 @@ function EstablishmentEcoObjectivesFormFields({
               placeholder="ex. 10"
               value={reduction}
               onChange={(e) => setReduction(e.target.value)}
-              className="mt-2 w-full rounded-xl border border-zinc-300 px-3 py-2.5 text-sm outline-none focus:border-emerald-600"
+              className="mt-2 w-full rounded-xl border-2 border-zinc-900 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:border-emerald-600"
             />
           </div>
         </div>
@@ -276,8 +280,8 @@ function EstablishmentEcoObjectivesFormFields({
           <p
             className={
               msg.startsWith("Objectifs") || msg.startsWith("Enregistré")
-                ? "text-sm font-medium text-emerald-800"
-                : "text-sm text-rose-700"
+                ? "text-base font-bold text-emerald-800"
+                : "text-base font-bold text-rose-700"
             }
           >
             {msg}
@@ -287,7 +291,7 @@ function EstablishmentEcoObjectivesFormFields({
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-xl border border-emerald-700 bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 sm:w-auto"
+          className="w-full rounded-xl border border-emerald-700 bg-emerald-600 px-4 py-3 text-base font-bold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 sm:w-auto"
         >
           {busy ? "Enregistrement…" : "Enregistrer les objectifs"}
         </button>
