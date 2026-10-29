@@ -135,8 +135,8 @@ export function AntiWasteModeToggle({
         <div>
           <p
             className={cn(
-              "font-display font-semibold text-zinc-950",
-              enabled ? "text-xl" : "text-base",
+              "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+              enabled ? "bg-emerald-600" : "bg-zinc-600",
             )}
           >
             {enabled ? "Mode activé" : "Activation du mode"}
@@ -197,8 +197,8 @@ export function AntiWasteModeToggle({
       {enabled ? (
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950">
           <div className="flex items-center gap-2">
-            <Target className="size-5 text-emerald-800" aria-hidden />
-            <p className="font-display text-xl font-semibold text-zinc-950">
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+              <Target className="size-3.5" aria-hidden />
               Objectif à ne pas dépasser
             </p>
           </div>
