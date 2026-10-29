@@ -655,55 +655,27 @@ export function CantinePulseCard({
         ) : null}
 
         <div className="rounded-2xl bg-zinc-950 px-4 py-4 sm:px-5 sm:py-5">
-          <div
-            className={cn(
-              "rounded-xl border px-4 py-3.5",
-              pulse.headline === "Plus de déchets qu’avant."
-                ? "border-[#1c3f78] bg-[#102848]"
-                : "border-zinc-700 bg-zinc-900",
-            )}
-          >
-            <p
-              className={cn(
-                "text-lg font-bold leading-snug sm:text-xl",
-                pulse.headline === "Plus de déchets qu’avant."
-                  ? "text-[#ffe14a]"
-                  : cn(
-                      pulse.mood === "attention" && "text-rose-300",
-                      pulse.mood === "great" && "text-emerald-300",
-                      pulse.mood === "ok" && "text-amber-200",
-                      pulse.mood === "pending" && "text-zinc-100",
-                    ),
-              )}
-            >
+          <div className="rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
+            <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
+              Conclusion
+            </p>
+            <p className="mt-2 text-lg font-bold leading-snug text-zinc-950 sm:text-xl">
               {pulse.headline}
             </p>
-            <p
-              className={cn(
-                "mt-1.5 text-base font-medium leading-relaxed",
-                pulse.headline === "Plus de déchets qu’avant."
-                  ? "text-[#ffe14a]/90"
-                  : cn(
-                      pulse.mood === "attention" && "text-rose-200/90",
-                      pulse.mood === "great" && "text-emerald-200/90",
-                      pulse.mood === "ok" && "text-amber-100/90",
-                      pulse.mood === "pending" && "text-zinc-400",
-                    ),
-              )}
-            >
+            <p className="mt-1.5 text-base font-medium leading-relaxed text-zinc-700">
               {pulse.subline}
             </p>
           </div>
 
-          <div className="mt-3 rounded-xl border border-zinc-600/80 bg-zinc-950/80 px-4 py-3.5 sm:px-5 sm:py-4">
-            <p className="text-sm font-semibold tracking-wide text-zinc-400">
+          <div className="mt-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 sm:px-5 sm:py-4">
+            <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
               Lecture de la période
             </p>
-            <p className="mt-2 text-base font-medium leading-relaxed text-zinc-100 sm:text-[17px] sm:leading-7">
+            <p className="mt-2 text-base font-medium leading-relaxed text-zinc-800 sm:text-[17px] sm:leading-7">
               {situationConclusion.situation}
             </p>
             {situationConclusion.antiWaste ? (
-              <p className="mt-2.5 border-t border-zinc-700/80 pt-2.5 text-base leading-relaxed text-emerald-200/95 sm:text-[17px] sm:leading-7">
+              <p className="mt-2.5 border-t border-zinc-200 pt-2.5 text-base leading-relaxed text-emerald-800 sm:text-[17px] sm:leading-7">
                 {situationConclusion.antiWaste}
               </p>
             ) : null}
