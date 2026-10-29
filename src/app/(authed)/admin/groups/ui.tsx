@@ -407,20 +407,31 @@ export function AdminGroupsClient({
         sur chaque carte. Laissez les champs vides pour reprendre les défauts établissement.
       </p>
 
+      <DashboardFoldOverlay
+        kicker="Classes"
+        openLabel="Ouvrir Écoles et classes"
+        overlayTitle="Écoles et classes"
+        subtitle="Cartes par école : niveau, actif / inactif, objectifs propres à la classe."
+        hint={`${schools.length} école${schools.length > 1 ? "s" : ""} · ${activeCount} classe${activeCount > 1 ? "s" : ""} active${activeCount > 1 ? "s" : ""}. Vert = primaire, bleu = maternelle.`}
+        icon={GraduationCap}
+        labelledBy="admin-groups-list-overlay"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+      >
       {groupsBySchool.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-600">
+        <p className="px-3 py-10 text-center text-base font-bold leading-relaxed text-zinc-900 sm:text-lg">
           Aucune classe. Importez un CSV ou ajoutez une école puis une classe.
-        </div>
+        </p>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-5 p-1 sm:p-2">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-base font-semibold text-zinc-900">
+            <p className="text-base font-bold text-zinc-950">
               {schools.length} école{schools.length > 1 ? "s" : ""} ·{" "}
-              <span className="font-bold">{activeCount}</span> classe{activeCount > 1 ? "s" : ""}{" "}
-              active{activeCount > 1 ? "s" : ""}
+              <span className="font-extrabold">{activeCount}</span> classe
+              {activeCount > 1 ? "s" : ""} active{activeCount > 1 ? "s" : ""}
             </p>
-            <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm text-zinc-700">
-              <span className="font-medium text-zinc-900">Légende :</span>
+            <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-sm font-semibold text-zinc-800">
+              <span className="font-extrabold text-zinc-950">Légende :</span>
               <span className="inline-flex items-center gap-2">
                 <span
                   className="h-3.5 w-3.5 rounded-sm border border-emerald-300 bg-emerald-100"
@@ -437,7 +448,7 @@ export function AdminGroupsClient({
               </span>
             </div>
           </div>
-          <div className="max-h-[min(40rem,70vh)] overflow-y-scroll rounded-2xl border border-zinc-200 bg-white/60 p-3 pr-2 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100">
+          <div>
           {groupsBySchool.map(([sid, bucket]) => (
           <section key={sid} className="space-y-3 pb-6 last:pb-0">
             <h2 className="sticky top-0 z-10 bg-white/90 py-1 text-lg font-semibold text-zinc-900 backdrop-blur-sm">
@@ -540,6 +551,7 @@ export function AdminGroupsClient({
           </div>
         </div>
       )}
+      </DashboardFoldOverlay>
 
       <GroupEcoObjectivesDialog
         group={ecoGroup}
