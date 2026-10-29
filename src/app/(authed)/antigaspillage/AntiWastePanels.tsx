@@ -4,9 +4,6 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  CalendarDays,
   ChevronDown,
   Download,
   Flag,
@@ -27,11 +24,9 @@ import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverla
 import { AntiWasteGauge } from "./AntiWasteGauge";
 import {
   fmt,
-  fmt1,
   formatDayLabelFr,
   gaugeStatusFromTone,
   gaugeStatusLabel,
-  weighingStatusFromLabel,
 } from "./antiWasteFormat";
 
 type DayRow = {
@@ -856,79 +851,6 @@ export function AntiWastePanels({
         />
       </div>
 
-      <div className="aw-reveal overflow-hidden rounded-3xl border border-border bg-card">
-        <div className="flex items-start gap-3 border-b border-sky-200 bg-sky-100 p-6">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-sky-600 text-white">
-            <CalendarDays className="size-5" aria-hidden />
-          </div>
-          <div>
-            <h2 className="font-display text-lg font-bold tracking-tight text-foreground">
-              Détail jour par jour
-            </h2>
-            <p className="mt-0.5 text-sm font-medium text-foreground/80">
-              Pesées, g / 100, RAB et variation des déchets pour chaque
-              service.
-            </p>
-          </div>
-        </div>
-
-        <div className="max-h-[28rem] overflow-auto bg-white">
-          <table className="w-full min-w-[720px] border-collapse text-sm">
-            <thead>
-              <tr className="sticky top-0 z-10 border-b border-border bg-card text-left text-xs uppercase tracking-wider text-foreground/75">
-                <th className="px-3 py-3.5 pl-6 font-semibold">Date</th>
-                <th className="px-3 py-3.5 font-semibold">Déchets</th>
-                <th className="px-3 py-3.5 font-semibold">Mat. / Prim.</th>
-                <th className="px-3 py-3.5 font-semibold">g / 100</th>
-                <th className="px-3 py-3.5 font-semibold">RAB %</th>
-                <th className="px-3 py-3.5 font-semibold">Pesée</th>
-                <th className="px-3 py-3.5 pr-6 text-right font-semibold">
-                  Δ Déchets
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...perDayRows].reverse().map((r) => {
-                const weighing = weighingStatusFromLabel(r.weighLabel);
-                return (
-                  <tr
-                    key={r.date}
-                    className="border-b border-border/60 transition-colors last:border-0 hover:bg-secondary/50"
-                  >
-                    <td className="py-3.5 pl-6 font-medium">
-                      {formatDayLabelFr(r.date)}
-                    </td>
-                    <td className="py-3.5">
-                      {r.wasteWeightG > 0
-                        ? `${fmt(Math.round(r.wasteWeightG))} g`
-                        : "—"}
-                    </td>
-                    <td className="py-3.5 text-muted-foreground">
-                      {fmt(Math.round(r.wasteWeightMaternelleG))} /{" "}
-                      {fmt(Math.round(r.wasteWeightPrimaireG))} g
-                    </td>
-                    <td className="py-3.5">
-                      {r.wasteGramsPer100 == null
-                        ? "—"
-                        : fmt1(r.wasteGramsPer100)}
-                    </td>
-                    <td className="py-3.5">
-                      {r.rabRatePct == null ? "—" : `${fmt1(r.rabRatePct)} %`}
-                    </td>
-                    <td className="py-3.5">
-                      <PeseeBadge status={weighing} />
-                    </td>
-                    <td className="py-3.5 pr-6 text-right">
-                      <Delta value={r.wasteDelta} />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       <footer className="flex items-center justify-center gap-2 pb-2 text-xs text-muted-foreground">
         <span>Stop au gaspillage alimentaire</span>
         <span aria-hidden>·</span>
@@ -1026,53 +948,5 @@ function WasteAdvicePanel({
         ) : null}
       </div>
     </aside>
-  );
-}
-
-function PeseeBadge({ status }: { status: "both" | "missing" | "partial" }) {
-  const map = {
-    both: { label: "Les deux", cls: "bg-primary/12 text-primary" },
-    partial: {
-      label: "Partielle",
-      cls: "bg-[color:var(--aw-amber)]/25 text-[color:var(--aw-amber-fg)]",
-    },
-    missing: {
-      label: "Manquante",
-      cls: "bg-[color:var(--aw-coral)]/12 text-[color:var(--aw-coral)]",
-    },
-  } as const;
-  const s = map[status];
-  return (
-    <span
-      className={cn(
-        "inline-flex rounded-full px-2.5 py-1 text-xs font-medium",
-        s.cls,
-      )}
-    >
-      {s.label}
-    </span>
-  );
-}
-
-function Delta({ value }: { value: number | null }) {
-  if (value == null || value === 0) {
-    return <span className="text-muted-foreground/50">—</span>;
-  }
-  const up = value > 0;
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1 font-semibold tabular-nums",
-        up ? "text-[color:var(--aw-coral)]" : "text-primary",
-      )}
-    >
-      {up ? (
-        <ArrowUp className="size-3.5" />
-      ) : (
-        <ArrowDown className="size-3.5" />
-      )}
-      {up ? "+" : ""}
-      {fmt(Math.round(value))}
-    </span>
   );
 }
