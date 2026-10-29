@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Upload, UserPlus } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
+import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { EU14_ALLERGENS, type AllergenLabel } from "@/lib/allergens";
 import { formatGroupLabel } from "@/lib/groupLabel";
@@ -250,28 +251,57 @@ export function AdminStudentsClient({
         </p>
       </div>
 
-      <CsvImportZone
-        title="Importer vos élèves"
-        titleClassName="text-xl font-bold tracking-tight text-zinc-950"
-        description="Ajoutez rapidement vos élèves avec un fichier CSV"
-        columns={["ecole", "classe", "prenom", "nom", "allergenes", "consignes", "sans_porc", "vegetarien"]}
-        exampleHref="/test-import-eleves.csv"
-        exampleLabel="Télécharger un exemple CSV"
-        busy={busy}
-        resultMessage={
-          importResult
-            ? `${importResult.studentsCreated} créé${importResult.studentsCreated > 1 ? "s" : ""}, ${importResult.studentsUpdated} mis à jour, ${importResult.studentsSkipped} ignoré${importResult.studentsSkipped > 1 ? "s" : ""}.`
-            : null
-        }
-        onImport={importCsvFile}
-      />
-
-      <form
-        onSubmit={createStudent}
-        className="rounded-2xl border-2 border-zinc-900 bg-white p-3"
+      <DashboardFoldOverlay
+        kicker="Élèves"
+        openLabel="Ouvrir Importer ou ajouter un élève"
+        overlayTitle="Importer ou ajouter un élève"
+        subtitle="Importez un CSV ou saisissez un élève à la main, avec allergènes et régimes."
+        hint="Les classes doivent déjà exister. Ces données alimentent le service cantine."
+        icon={UserPlus}
+        labelledBy="admin-students-import-overlay"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
       >
-        <div className="text-base font-bold text-zinc-950">Ajouter un élève</div>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-6 p-1 lg:grid-cols-2 sm:p-2">
+          <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+              <Upload className="size-3.5" aria-hidden />
+              Importer vos élèves
+            </p>
+            <CsvImportZone
+              title="Importer vos élèves"
+              description="Ajoutez rapidement vos élèves avec un fichier CSV."
+              columns={[
+                "ecole",
+                "classe",
+                "prenom",
+                "nom",
+                "allergenes",
+                "consignes",
+                "sans_porc",
+                "vegetarien",
+              ]}
+              exampleHref="/test-import-eleves.csv"
+              exampleLabel="Télécharger un exemple CSV"
+              busy={busy}
+              embedded
+              resultMessage={
+                importResult
+                  ? `${importResult.studentsCreated} créé${importResult.studentsCreated > 1 ? "s" : ""}, ${importResult.studentsUpdated} mis à jour, ${importResult.studentsSkipped} ignoré${importResult.studentsSkipped > 1 ? "s" : ""}.`
+                  : null
+              }
+              onImport={importCsvFile}
+            />
+          </div>
+
+          <form
+            onSubmit={createStudent}
+            className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4"
+          >
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+              <UserPlus className="size-3.5" aria-hidden />
+              Ajouter un élève
+            </p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
           <input
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -367,7 +397,9 @@ export function AdminStudentsClient({
         >
           Ajouter l’élève
         </button>
-      </form>
+          </form>
+        </div>
+      </DashboardFoldOverlay>
 
       {error ? (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
