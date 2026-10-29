@@ -8,6 +8,7 @@ import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { buildRiskyDishesRanking } from "@/lib/antiWasteRiskyDishes";
 import { mealTypeLabelFr } from "@/lib/mealType";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { AntiWastePanels } from "./AntiWastePanels";
 const MENU_CATEGORY_FR: Record<string, string> = {
@@ -101,6 +102,9 @@ export default async function AntiWastePage({
 
   const sp = await searchParams;
   const days = sp.days === "30" ? 30 : 7;
+  const levelRaw = Array.isArray(sp.level) ? sp.level[0] : sp.level;
+  const levelFilter: "all" | SchoolLevel =
+    levelRaw === "MATERNELLE" || levelRaw === "PRIMAIRE" ? levelRaw : "all";
   const now = new Date();
   const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
   start.setHours(0, 0, 0, 0);
@@ -251,6 +255,7 @@ export default async function AntiWastePage({
       }))}
       chartRows={chartRows}
       riskyDishes={riskyDishes}
+      levelFilter={levelFilter}
     />
   );
 }

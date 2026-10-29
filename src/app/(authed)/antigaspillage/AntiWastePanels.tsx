@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -20,6 +20,7 @@ import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
 import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
@@ -60,6 +61,49 @@ const STATUS_STYLES = {
   none: "bg-muted text-muted-foreground",
 } as const;
 
+function OverlayFilterLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "rounded-full px-3 py-1.5 text-xs font-bold transition-colors sm:px-3.5 sm:text-sm",
+        active ? "bg-[#0d7a45] text-white shadow-sm" : "text-zinc-800 hover:text-zinc-950",
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function applyRiskyDishLevel(
+  dishes: RiskyDishRow[],
+  level: "all" | SchoolLevel,
+): RiskyDishRow[] {
+  if (level === "all") return dishes;
+  return dishes
+    .map((dish) => {
+      const avg =
+        level === "MATERNELLE" ? dish.maternelleGPer100 : dish.primaireGPer100;
+      if (avg == null || avg <= 0) return null;
+      return {
+        ...dish,
+        avgWasteGPer100: avg,
+        topClasses: (dish.topClasses ?? []).filter((row) => row.level === level),
+      };
+    })
+    .filter((dish): dish is RiskyDishRow => dish != null)
+    .sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
+}
+
 function CyclePill({ level }: { level: "MATERNELLE" | "PRIMAIRE" }) {
   return (
     <span
@@ -91,6 +135,7 @@ export function AntiWastePanels({
   perDayRows,
   chartRows,
   riskyDishes = [],
+  levelFilter = "all",
 }: {
   days: 7 | 30;
   targetGPer100: number | null;
@@ -109,9 +154,17 @@ export function AntiWastePanels({
   perDayRows: DayRow[];
   chartRows: WastePerDayRowInput[];
   riskyDishes?: RiskyDishRow[];
+  levelFilter?: "all" | SchoolLevel;
 }) {
   const [missingWeighOpen, setMissingWeighOpen] = useState(false);
-  const riskyDishesVisible = riskyDishes;
+  const riskyDishesVisible = applyRiskyDishLevel(riskyDishes, levelFilter);
+
+  function antigaspillageHref(nextDays: 7 | 30, nextLevel: "all" | SchoolLevel) {
+    const params = new URLSearchParams();
+    params.set("days", String(nextDays));
+    if (nextLevel !== "all") params.set("level", nextLevel);
+    return `/antigaspillage?${params.toString()}`;
+  }
   const missingWeighVisible = missingWeighServices;
   const missingWeighShown = missingWeighOpen
     ? missingWeighVisible
@@ -472,19 +525,63 @@ export function AntiWastePanels({
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
           bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
           headerAction={
-            <button
-              type="button"
-              disabled={riskyDishesVisible.length === 0}
-              onClick={() => {
-                void import("@/lib/downloadRiskyDishesPdf").then((mod) =>
-                  mod.downloadRiskyDishesPdf(riskyDishesVisible, days),
-                );
-              }}
-              className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
-            >
-              <Download className="size-4" aria-hidden />
-              Télécharger
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <div
+                role="group"
+                aria-label="Période"
+                className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
+              >
+                <OverlayFilterLink
+                  href={antigaspillageHref(7, levelFilter)}
+                  active={days === 7}
+                >
+                  7 jours
+                </OverlayFilterLink>
+                <OverlayFilterLink
+                  href={antigaspillageHref(30, levelFilter)}
+                  active={days === 30}
+                >
+                  30 jours
+                </OverlayFilterLink>
+              </div>
+              <div
+                role="group"
+                aria-label="Niveau"
+                className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
+              >
+                <OverlayFilterLink
+                  href={antigaspillageHref(days, "all")}
+                  active={levelFilter === "all"}
+                >
+                  Tous niveaux
+                </OverlayFilterLink>
+                <OverlayFilterLink
+                  href={antigaspillageHref(days, "MATERNELLE")}
+                  active={levelFilter === "MATERNELLE"}
+                >
+                  Maternelle
+                </OverlayFilterLink>
+                <OverlayFilterLink
+                  href={antigaspillageHref(days, "PRIMAIRE")}
+                  active={levelFilter === "PRIMAIRE"}
+                >
+                  Primaire
+                </OverlayFilterLink>
+              </div>
+              <button
+                type="button"
+                disabled={riskyDishesVisible.length === 0}
+                onClick={() => {
+                  void import("@/lib/downloadRiskyDishesPdf").then((mod) =>
+                    mod.downloadRiskyDishesPdf(riskyDishesVisible, days),
+                  );
+                }}
+                className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
+              >
+                <Download className="size-4" aria-hidden />
+                Télécharger
+              </button>
+            </div>
           }
         >
           {riskyDishesVisible.length === 0 ? (
