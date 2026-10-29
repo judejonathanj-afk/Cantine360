@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Trash2, Upload, UserPlus } from "lucide-react";
+import { Trash2, Upload, UserPlus, Users } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
@@ -405,14 +405,24 @@ export function AdminStudentsClient({
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
-      <h2 className="text-2xl font-bold tracking-tight text-zinc-950">Élèves et allergènes</h2>
-
+      <DashboardFoldOverlay
+        kicker="Liste"
+        openLabel="Ouvrir Élèves et allergènes"
+        overlayTitle="Élèves et allergènes"
+        subtitle="Parcourez les élèves par classe : allergènes, régimes et consignes parents."
+        hint="Cliquez une carte pour activer, modifier les régimes ou noter une consigne cuisine."
+        icon={Users}
+        labelledBy="admin-students-list-overlay"
+        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+      >
       {byClass.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-600">
           Aucun élève. Importez un CSV ou ajoutez un élève manuellement.
         </div>
       ) : (
-        byClass.map(([gid, bucket]) => (
+        <div className="space-y-6 p-1 sm:p-2">
+        {byClass.map(([gid, bucket]) => (
           <section key={gid} className="space-y-2">
             <div className="flex items-center gap-3">
               <h2 className="shrink-0 text-xl font-bold text-zinc-950">{bucket.label}</h2>
@@ -527,8 +537,10 @@ export function AdminStudentsClient({
               ))}
             </div>
           </section>
-        ))
+        ))}
+        </div>
       )}
+      </DashboardFoldOverlay>
 
       <AlertDialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
         <AlertDialogContent>
