@@ -22,7 +22,15 @@ export function ServiceSaisieOverlay({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key !== "Escape") return;
+      if (
+        document.querySelector(
+          '[data-slot="dialog-content"], [data-slot="alert-dialog-content"]',
+        )
+      ) {
+        return;
+      }
+      onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {

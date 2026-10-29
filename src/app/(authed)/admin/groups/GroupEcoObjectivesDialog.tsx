@@ -190,7 +190,10 @@ export function GroupEcoObjectivesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent
+        className="z-[100] max-w-md"
+        overlayClassName="z-[100]"
+      >
         <GroupEcoObjectivesFields
           key={group.id}
           group={group}

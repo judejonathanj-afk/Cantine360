@@ -558,7 +558,7 @@ export function AdminStudentsClient({
       </DashboardFoldOverlay>
 
       <AlertDialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="z-[100]" overlayClassName="z-[100]">
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer cet élève ?</AlertDialogTitle>
             <AlertDialogDescription>
