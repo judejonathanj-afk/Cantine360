@@ -367,15 +367,27 @@ export function AdminGroupsClient({
             </div>
           </form>
         </DashboardFoldOverlay>
-      </div>
 
-      <EstablishmentEcoObjectivesForm
-        initialRestes={establishmentEco.ecoRestesServisTargetPct}
-        initialReduction={establishmentEco.ecoReductionTargetPct}
-        initialPeriod={establishmentEco.ecoPeriodKind}
-        initialSchoolMonth={establishmentEco.ecoSchoolYearStartMonth}
-        initialSchoolDay={establishmentEco.ecoSchoolYearStartDay}
-      />
+        <DashboardFoldOverlay
+          kicker="Objectifs"
+          openLabel="Ouvrir Défauts objectifs (établissement)"
+          overlayTitle="Défauts objectifs (établissement)"
+          subtitle="Référence par défaut pour toutes les classes : période, plafond de restes et baisse visée."
+          hint="Enregistrez ici, puis affinez par classe avec le bouton Objectifs sur chaque carte."
+          icon={Target}
+          labelledBy="admin-groups-eco-defaults-overlay"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        >
+          <EstablishmentEcoObjectivesForm
+            embedded
+            initialRestes={establishmentEco.ecoRestesServisTargetPct}
+            initialReduction={establishmentEco.ecoReductionTargetPct}
+            initialPeriod={establishmentEco.ecoPeriodKind}
+            initialSchoolMonth={establishmentEco.ecoSchoolYearStartMonth}
+            initialSchoolDay={establishmentEco.ecoSchoolYearStartDay}
+          />
+        </DashboardFoldOverlay>
+      </div>
 
       {error ? (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
