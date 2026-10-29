@@ -4,10 +4,15 @@ import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
+  CalendarDays,
   ChevronDown,
   Download,
   Flame,
   Lightbulb,
+  Recycle,
+  Scale,
+  Target,
+  Utensils,
 } from "lucide-react";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
@@ -307,6 +312,26 @@ export function AntiWastePanels({
     }
     dishRemark = `« ${watchedDish.label} » revient dans les jours lourds, environ ${fmt(Math.round(watchedDish.avgWasteGPer100))} g / 100.${levelNote}`;
   }
+
+  const lightestDay =
+    weighedPoints.length === 0
+      ? null
+      : weighedPoints.reduce((best, p) => {
+          if (p.g100 !== best.g100) return p.g100 < best.g100 ? p : best;
+          return p.waste < best.waste ? p : best;
+        });
+  const vsTargetG =
+    targetGPer100 != null &&
+    targetGPer100 > 0 &&
+    wasteGramsPer100Served != null &&
+    wasteGramsPer100Served > 0
+      ? wasteGramsPer100Served - targetGPer100
+      : null;
+  const wasteSplitNote =
+    totalWasteWeightG > 0 &&
+    (totalWasteMaternelleG > 0 || totalWastePrimaireG > 0)
+      ? `Maternelle ${fmt(Math.round(totalWasteMaternelleG))} g · Primaire ${fmt(Math.round(totalWastePrimaireG))} g`
+      : null;
 
   return (
     <div className="anti-waste-dash relative space-y-6">
@@ -752,6 +777,7 @@ export function AntiWastePanels({
           days={days}
           tone={status.tone}
           title={status.title}
+          detail={status.detail}
           hint={status.hint}
           heaviestLabel={
             heaviestDay && (heaviestDay.g100 > 0 || heaviestDay.waste > 0)
@@ -765,8 +791,32 @@ export function AntiWastePanels({
                 ? `${fmt(Math.round(heaviestDay.g100))} g / 100`
                 : `${fmt(Math.round(heaviestDay.waste))} g`
           }
+          lightestLabel={
+            lightestDay && (lightestDay.g100 > 0 || lightestDay.waste > 0)
+              ? formatDayLabelFr(lightestDay.date)
+              : null
+          }
+          lightestValue={
+            lightestDay == null
+              ? null
+              : lightestDay.g100 > 0
+                ? `${fmt(Math.round(lightestDay.g100))} g / 100`
+                : `${fmt(Math.round(lightestDay.waste))} g`
+          }
           curveRemark={curveRemark}
           dishRemark={dishRemark}
+          dishCount={riskyDishesVisible.length}
+          weighingsLabel={`${servicesWithWaste} / ${servicesCount}`}
+          missingWeighCount={missingWeighCount}
+          rabRatePct={rabRatePct}
+          wasteSplitNote={wasteSplitNote}
+          targetLabel={
+            targetGPer100 != null && targetGPer100 > 0
+              ? `${fmt(Math.round(targetGPer100))} g / 100`
+              : null
+          }
+          vsTargetG={vsTargetG}
+          streakAboveTarget={streakAboveTarget}
         />
       </div>
 
@@ -784,20 +834,42 @@ function WasteAdvicePanel({
   days,
   tone,
   title,
+  detail,
   hint,
   heaviestLabel,
   heaviestValue,
+  lightestLabel,
+  lightestValue,
   curveRemark,
   dishRemark,
+  dishCount,
+  weighingsLabel,
+  missingWeighCount,
+  rabRatePct,
+  wasteSplitNote,
+  targetLabel,
+  vsTargetG,
+  streakAboveTarget,
 }: {
   days: 7 | 30;
   tone: "ok" | "watch" | "alert" | "none";
   title: string;
+  detail: string;
   hint: string;
   heaviestLabel: string | null;
   heaviestValue: string | null;
+  lightestLabel: string | null;
+  lightestValue: string | null;
   curveRemark: string | null;
   dishRemark: string | null;
+  dishCount: number;
+  weighingsLabel: string;
+  missingWeighCount: number;
+  rabRatePct: string;
+  wasteSplitNote: string | null;
+  targetLabel: string | null;
+  vsTargetG: number | null;
+  streakAboveTarget: number;
 }) {
   const toneClass =
     tone === "ok"
@@ -807,6 +879,20 @@ function WasteAdvicePanel({
         : tone === "alert"
           ? "border-rose-200 bg-rose-50"
           : "border-zinc-200 bg-zinc-50";
+  const lecturePill =
+    tone === "ok"
+      ? "bg-emerald-600"
+      : tone === "watch"
+        ? "bg-amber-500"
+        : tone === "alert"
+          ? "bg-rose-600"
+          : "bg-zinc-600";
+  const vsTargetText =
+    vsTargetG == null
+      ? "Fixez un objectif g / 100 pour comparer la moyenne à un plafond."
+      : vsTargetG <= 0
+        ? `${fmt(Math.round(Math.abs(vsTargetG)))} g / 100 sous l’objectif.`
+        : `${fmt(Math.round(vsTargetG))} g / 100 au-dessus de l’objectif.`;
 
   return (
     <aside className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-[#eab308] bg-card">
@@ -815,57 +901,155 @@ function WasteAdvicePanel({
           <Lightbulb className="size-5" aria-hidden />
         </div>
         <div className="min-w-0">
-          <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
-            Avis du suivi
+          <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950 sm:text-2xl">
+            Avis du suivi du mode anti-gaspillage
           </h2>
           <p className="mt-1 text-base font-medium leading-snug text-zinc-800">
-            Ce que les pesées indiquent sur {days} jours.
+            Lecture des pesées de cet établissement sur {days} jours : objectif,
+            tendance, plats et services.
           </p>
         </div>
       </div>
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
-        <div className={cn("rounded-2xl border p-4", toneClass)}>
-          <p className="font-display text-lg font-bold leading-snug text-zinc-950">
+        <div className={cn("rounded-2xl border p-4 sm:p-5", toneClass)}>
+          <p
+            className={cn(
+              "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+              lecturePill,
+            )}
+          >
+            Lecture
+          </p>
+          <p className="mt-3 font-display text-lg font-bold leading-snug text-zinc-950 sm:text-xl">
             {title}
           </p>
           <p className="mt-2 text-base font-medium leading-relaxed text-zinc-800">
+            {detail}
+          </p>
+          <p className="mt-3 text-base font-semibold leading-relaxed text-zinc-950">
             {hint}
           </p>
         </div>
-        {heaviestLabel && heaviestValue ? (
-          <div>
-            <p className="inline-flex rounded-md bg-black px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-white">
-              Jour le plus lourd
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {targetLabel ? (
+            <AdviceFact
+              icon={Target}
+              pill="Objectif"
+              title={targetLabel}
+              text={vsTargetText}
+            />
+          ) : (
+            <AdviceFact
+              icon={Target}
+              pill="Objectif"
+              title="Pas encore fixé"
+              text={vsTargetText}
+            />
+          )}
+          <AdviceFact
+            icon={Scale}
+            pill="Pesées"
+            title={weighingsLabel}
+            text={
+              missingWeighCount > 0
+                ? `${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} encore sans pesée — le suivi g / 100 est incomplet.`
+                : "Toutes les pesées de la période sont saisies."
+            }
+          />
+          <AdviceFact
+            icon={Recycle}
+            pill="Taux de RAB"
+            title={rabRatePct}
+            text="Part du rab servi sur la période. Un RAB régulier aide à limiter les restes."
+          />
+          {wasteSplitNote ? (
+            <AdviceFact
+              icon={Utensils}
+              pill="Par cycle"
+              title={wasteSplitNote}
+              text="Répartition des déchets pesés entre maternelle et primaire."
+            />
+          ) : null}
+          {heaviestLabel && heaviestValue ? (
+            <AdviceFact
+              icon={CalendarDays}
+              pill="Jour le plus lourd"
+              title={`${heaviestLabel} · ${heaviestValue}`}
+              text="Journée où les g / 100 (ou le poids pesé) ont été les plus élevés."
+            />
+          ) : null}
+          {lightestLabel &&
+          lightestValue &&
+          !(lightestLabel === heaviestLabel && lightestValue === heaviestValue) ? (
+            <AdviceFact
+              icon={CalendarDays}
+              pill="Jour le plus léger"
+              title={`${lightestLabel} · ${lightestValue}`}
+              text="Repère utile : ce qui a bien fonctionné ce jour-là peut servir de modèle."
+            />
+          ) : null}
+          {curveRemark ? (
+            <AdviceFact
+              icon={Flame}
+              pill="Tendance"
+              title={curveRemark}
+              text="Comparaison du premier et du dernier jour pesé de la période."
+            />
+          ) : null}
+          {dishRemark ? (
+            <AdviceFact
+              icon={Utensils}
+              pill="Plat à surveiller"
+              title={dishRemark}
+              text={
+                dishCount > 1
+                  ? `${dishCount} plats classés dans Plats à risque sur ${days} jours.`
+                  : "Ouvrez Plats à risque pour voir le détail par cycle et par classe."
+              }
+            />
+          ) : null}
+        </div>
+
+        {streakAboveTarget >= 3 ? (
+          <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3">
+            <p className="inline-flex rounded-full bg-rose-600 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+              Alerte
             </p>
-            <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
-              {heaviestLabel}
-            </p>
-            <p className="text-lg font-bold tabular-nums text-zinc-950">
-              {heaviestValue}
-            </p>
-          </div>
-        ) : null}
-        {curveRemark ? (
-          <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-zinc-950">
-              Courbe
-            </p>
-            <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
-              {curveRemark}
-            </p>
-          </div>
-        ) : null}
-        {dishRemark ? (
-          <div>
-            <p className="inline-flex rounded-md bg-black px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-white">
-              Plat à surveiller
-            </p>
-            <p className="mt-1 text-base font-semibold leading-snug text-zinc-950">
-              {dishRemark}
+            <p className="mt-2 text-base font-semibold leading-snug text-zinc-950">
+              {streakAboveTarget} jours de suite au-dessus de l’objectif g / 100.
+              Revoir portions et menus dès le prochain service.
             </p>
           </div>
         ) : null}
       </div>
     </aside>
+  );
+}
+
+function AdviceFact({
+  icon: Icon,
+  pill,
+  title,
+  text,
+}: {
+  icon: typeof Target;
+  pill: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+      <p className="inline-flex items-center gap-1.5 rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+        <Icon className="size-3.5" aria-hidden />
+        {pill}
+      </p>
+      <p className="mt-3 text-base font-bold leading-snug text-zinc-950">
+        {title}
+      </p>
+      <p className="mt-1 text-sm font-medium leading-relaxed text-zinc-700">
+        {text}
+      </p>
+    </div>
   );
 }
