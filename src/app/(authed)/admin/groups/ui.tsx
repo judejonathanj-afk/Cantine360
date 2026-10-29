@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GraduationCap, School, Target, Trash2 } from "lucide-react";
+import { GraduationCap, School, Target, Trash2, Upload } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
+import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { GroupNameBadge } from "@/components/GroupNameBadge";
 import { EstablishmentEcoObjectivesForm } from "@/components/EstablishmentEcoObjectivesForm";
@@ -255,37 +256,51 @@ export function AdminGroupsClient({
         </p>
       </div>
 
-      <CsvImportZone
-        title="Importer vos classes"
-        titleClassName="text-2xl font-extrabold tracking-tight text-zinc-950"
-        description="Ajoutez rapidement votre structure avec un fichier CSV"
-        columns={["ecole", "classe", "niveau"]}
-        exampleHref="/test-import-classes.csv"
-        exampleLabel="Télécharger un exemple CSV"
-        busy={busy}
-        resultMessage={
-          importResult
-            ? `${importResult.groupsCreated} classe${importResult.groupsCreated > 1 ? "s" : ""} ajoutée${importResult.groupsCreated > 1 ? "s" : ""}, ${importResult.schoolsCreated} école${importResult.schoolsCreated > 1 ? "s" : ""} créée${importResult.schoolsCreated > 1 ? "s" : ""}, ${importResult.groupsSkipped} ignorée${importResult.groupsSkipped > 1 ? "s" : ""}.`
-            : null
-        }
-        onImport={importCsvFile}
-      />
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void createSchool();
-          }}
-          className="overflow-hidden rounded-2xl border-2 border-zinc-900 bg-white"
+      <div className="space-y-3">
+        <DashboardFoldOverlay
+          kicker="Import CSV"
+          openLabel="Ouvrir Importer vos classes"
+          overlayTitle="Importer vos classes"
+          subtitle="Ajoutez rapidement votre structure avec un fichier CSV."
+          hint="Colonnes attendues : ecole, classe, niveau. Téléchargez un exemple, puis importez."
+          icon={Upload}
+          labelledBy="admin-groups-import-overlay"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         >
-          <div className="flex items-center gap-2.5 border-b-2 border-zinc-900 bg-orange-50 px-4 py-3 text-lg font-bold text-zinc-950">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-orange-500">
-              <School className="size-4" aria-hidden />
-            </span>
-            Ajouter une école manuellement
-          </div>
-          <div className="flex flex-col gap-3 p-4 sm:flex-row">
+          <CsvImportZone
+            title="Importer vos classes"
+            description="Déposez votre fichier CSV ici, ou cliquez pour parcourir votre ordinateur."
+            columns={["ecole", "classe", "niveau"]}
+            exampleHref="/test-import-classes.csv"
+            exampleLabel="Télécharger un exemple CSV"
+            busy={busy}
+            embedded
+            resultMessage={
+              importResult
+                ? `${importResult.groupsCreated} classe${importResult.groupsCreated > 1 ? "s" : ""} ajoutée${importResult.groupsCreated > 1 ? "s" : ""}, ${importResult.schoolsCreated} école${importResult.schoolsCreated > 1 ? "s" : ""} créée${importResult.schoolsCreated > 1 ? "s" : ""}, ${importResult.groupsSkipped} ignorée${importResult.groupsSkipped > 1 ? "s" : ""}.`
+                : null
+            }
+            onImport={importCsvFile}
+          />
+        </DashboardFoldOverlay>
+
+        <DashboardFoldOverlay
+          kicker="École"
+          openLabel="Ouvrir Ajouter une école manuellement"
+          overlayTitle="Ajouter une école manuellement"
+          subtitle="Créez une école pour y rattacher ensuite vos classes."
+          hint="Un nom suffit. Vous pourrez ajouter les classes juste après."
+          icon={School}
+          labelledBy="admin-groups-school-overlay"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void createSchool();
+            }}
+            className="flex flex-col gap-3 p-1 sm:flex-row sm:p-2"
+          >
             <input
               value={newSchoolName}
               onChange={(e) => setNewSchoolName(e.target.value)}
@@ -299,20 +314,20 @@ export function AdminGroupsClient({
             >
               Ajouter
             </button>
-          </div>
-        </form>
+          </form>
+        </DashboardFoldOverlay>
 
-        <form
-          onSubmit={createGroup}
-          className="overflow-hidden rounded-2xl border-2 border-zinc-900 bg-white"
+        <DashboardFoldOverlay
+          kicker="Classe"
+          openLabel="Ouvrir Ajouter une classe manuellement"
+          overlayTitle="Ajouter une classe manuellement"
+          subtitle="Rattachez une classe à une école, en maternelle ou en primaire."
+          hint="Choisissez l’école, le niveau, puis le nom de la classe."
+          icon={GraduationCap}
+          labelledBy="admin-groups-class-overlay"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         >
-          <div className="flex items-center gap-2.5 border-b-2 border-zinc-900 bg-emerald-50 px-4 py-3 text-lg font-bold text-zinc-950">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-700">
-              <GraduationCap className="size-4" aria-hidden />
-            </span>
-            Ajouter une classe manuellement
-          </div>
-          <div className="flex flex-col gap-3 p-4">
+          <form onSubmit={createGroup} className="flex flex-col gap-3 p-1 sm:p-2">
             <select
               value={schoolId}
               onChange={(e) => setSchoolId(e.target.value)}
@@ -350,8 +365,8 @@ export function AdminGroupsClient({
                 {busy ? "..." : "Ajouter"}
               </button>
             </div>
-          </div>
-        </form>
+          </form>
+        </DashboardFoldOverlay>
       </div>
 
       <EstablishmentEcoObjectivesForm
