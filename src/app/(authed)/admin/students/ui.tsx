@@ -417,39 +417,41 @@ export function AdminStudentsClient({
         bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
       >
       {byClass.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 text-sm text-zinc-600">
-          Aucun élève. Importez un CSV ou ajoutez un élève manuellement.
-        </div>
+        <p className="px-3 py-10 text-center text-base font-bold leading-relaxed text-zinc-900 sm:text-lg">
+          Aucun élève pour l’instant. Ouvrez l’import CSV ou ajoutez un élève à la
+          main.
+        </p>
       ) : (
-        <div className="space-y-6 p-1 sm:p-2">
-        {byClass.map(([gid, bucket]) => (
-          <section key={gid} className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h2 className="shrink-0 text-xl font-bold text-zinc-950">{bucket.label}</h2>
-              <div className="h-1 min-w-0 flex-1 rounded-full bg-emerald-600" aria-hidden />
+        <div className="space-y-5 p-1 sm:p-2">
+        {byClass.map(([gid, bucket]) => {
+          const allergyN = bucket.students.filter((s) => s.allergens.length > 0).length;
+          const porkN = bucket.students.filter((s) => s.noPork).length;
+          const vegN = bucket.students.filter((s) => s.vegetarian).length;
+          return (
+          <section key={gid} className="space-y-3">
+            <div className="rounded-2xl bg-emerald-800 px-4 py-3">
+              <h2 className="text-lg font-extrabold tracking-tight text-white sm:text-xl">
+                {bucket.label}
+              </h2>
+              <p className="mt-1 text-sm font-bold leading-snug text-emerald-50">
+                {allergyN} allergie{allergyN > 1 ? "s" : ""} · {porkN} sans porc ·{" "}
+                {vegN} végétarien{vegN > 1 ? "s" : ""} · {bucket.students.length}{" "}
+                élève{bucket.students.length > 1 ? "s" : ""}
+              </p>
             </div>
-            <p className="text-xs text-zinc-500">
-              {bucket.students.filter((s) => s.allergens.length > 0).length} allergie
-              {bucket.students.filter((s) => s.allergens.length > 0).length > 1 ? "s" : ""}{" "}
-              · {bucket.students.filter((s) => s.noPork).length} sans porc ·{" "}
-              {bucket.students.filter((s) => s.vegetarian).length} végétarien
-              {bucket.students.filter((s) => s.vegetarian).length > 1 ? "s" : ""} sur{" "}
-              {bucket.students.length} élève
-              {bucket.students.length > 1 ? "s" : ""}
-            </p>
             <div className="grid gap-3">
               {bucket.students.map((s) => (
                 <div
                   key={s.id}
-                  className="flex flex-col gap-2 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-3.5 shadow-sm"
+                  className="flex flex-col gap-3 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-wrap items-center gap-2">
-                      <span className="inline-flex rounded-lg border-2 border-zinc-950 bg-zinc-950 px-2.5 py-0.5 font-semibold text-white">
+                      <span className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-base font-extrabold text-white">
                         {s.firstName} {s.lastName}
                       </span>
                       {!s.active ? (
-                        <span className="text-xs font-medium text-zinc-500">(inactif)</span>
+                        <span className="text-sm font-bold text-zinc-700">(inactif)</span>
                       ) : null}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
@@ -457,10 +459,10 @@ export function AdminStudentsClient({
                         type="button"
                         onClick={() => toggleActive(s)}
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-3 py-1 text-xs font-semibold",
+                          "rounded-full px-3 py-1 text-sm font-extrabold",
                           s.active
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-zinc-100 text-zinc-700",
+                            ? "bg-emerald-600 text-white"
+                            : "bg-zinc-200 text-zinc-800",
                         ].join(" ")}
                       >
                         {s.active ? "Actif" : "Inactif"}
@@ -469,7 +471,7 @@ export function AdminStudentsClient({
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                        className="h-9 w-9 text-zinc-800 hover:text-destructive"
                         aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
                         onClick={() => setToDelete(s)}
                       >
@@ -477,32 +479,41 @@ export function AdminStudentsClient({
                       </Button>
                     </div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="mr-1 text-sm font-bold text-zinc-950">Allergènes</span>
+                  <div className="min-w-0 space-y-3">
+                    <div>
+                      <p className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                        Allergènes
+                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       {s.allergens.length > 0 ? (
                         s.allergens.map((a) => (
                           <span
                             key={a}
-                            className="rounded-full border-2 border-zinc-900 bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900"
+                            className="rounded-full bg-amber-500 px-2.5 py-1 text-sm font-bold text-white"
                           >
                             {a}
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs font-medium text-zinc-500">Aucun allergène déclaré</span>
+                        <span className="text-base font-bold text-zinc-800">
+                          Aucun allergène déclaré
+                        </span>
                       )}
+                      </div>
                     </div>
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="mr-1 text-sm font-bold text-zinc-950">Viande</span>
+                    <div>
+                      <p className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                        Régimes
+                      </p>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => void toggleDiet(s, "noPork")}
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-2 py-0.5 text-xs font-semibold",
+                          "rounded-full px-3 py-1 text-sm font-extrabold",
                           s.noPork
-                            ? "bg-sky-800 text-white"
-                            : "bg-zinc-100 text-zinc-600",
+                            ? "bg-sky-700 text-white"
+                            : "bg-zinc-100 text-zinc-800",
                         ].join(" ")}
                       >
                         Sans porc
@@ -511,24 +522,27 @@ export function AdminStudentsClient({
                         type="button"
                         onClick={() => void toggleDiet(s, "vegetarian")}
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-2 py-0.5 text-xs font-semibold",
+                          "rounded-full px-3 py-1 text-sm font-extrabold",
                           s.vegetarian
-                            ? "bg-emerald-800 text-white"
-                            : "bg-zinc-100 text-zinc-600",
+                            ? "bg-emerald-700 text-white"
+                            : "bg-zinc-100 text-zinc-800",
                         ].join(" ")}
                       >
                         Végétarien
                       </button>
+                      </div>
                     </div>
-                    <div className="mt-2">
-                      <p className="mb-1 text-sm font-bold text-zinc-950">Consignes parents</p>
+                    <div>
+                      <p className="mb-2 inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                        Consignes parents
+                      </p>
                       <textarea
                         defaultValue={s.allergenNotes ?? ""}
                         key={`${s.id}-${s.allergenNotes ?? ""}`}
                         rows={2}
                         maxLength={500}
                         onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                        className="w-full min-w-full rounded-lg border-2 border-zinc-900 bg-zinc-50 px-2.5 py-2 text-xs text-zinc-800 outline-none focus:bg-white"
+                        className="mt-1 w-full min-w-full rounded-xl border-2 border-zinc-900 bg-zinc-50 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:bg-white"
                         placeholder="Sinon : à ne pas servir — allergie"
                       />
                     </div>
@@ -537,7 +551,8 @@ export function AdminStudentsClient({
               ))}
             </div>
           </section>
-        ))}
+          );
+        })}
         </div>
       )}
       </DashboardFoldOverlay>
