@@ -773,51 +773,65 @@ export function AntiWastePanels({
           </div>
         ) : null}
 
-        <WasteAdvicePanel
-          days={days}
-          tone={status.tone}
-          title={status.title}
-          detail={status.detail}
-          hint={status.hint}
-          heaviestLabel={
-            heaviestDay && (heaviestDay.g100 > 0 || heaviestDay.waste > 0)
-              ? formatDayLabelFr(heaviestDay.date)
-              : null
-          }
-          heaviestValue={
-            heaviestDay == null
-              ? null
-              : heaviestDay.g100 > 0
-                ? `${fmt(Math.round(heaviestDay.g100))} g / 100`
-                : `${fmt(Math.round(heaviestDay.waste))} g`
-          }
-          lightestLabel={
-            lightestDay && (lightestDay.g100 > 0 || lightestDay.waste > 0)
-              ? formatDayLabelFr(lightestDay.date)
-              : null
-          }
-          lightestValue={
-            lightestDay == null
-              ? null
-              : lightestDay.g100 > 0
-                ? `${fmt(Math.round(lightestDay.g100))} g / 100`
-                : `${fmt(Math.round(lightestDay.waste))} g`
-          }
-          curveRemark={curveRemark}
-          dishRemark={dishRemark}
-          dishCount={riskyDishesVisible.length}
-          weighingsLabel={`${servicesWithWaste} / ${servicesCount}`}
-          missingWeighCount={missingWeighCount}
-          rabRatePct={rabRatePct}
-          wasteSplitNote={wasteSplitNote}
-          targetLabel={
-            targetGPer100 != null && targetGPer100 > 0
-              ? `${fmt(Math.round(targetGPer100))} g / 100`
-              : null
-          }
-          vsTargetG={vsTargetG}
-          streakAboveTarget={streakAboveTarget}
-        />
+        <DashboardFoldOverlay
+          kicker="Avis du suivi"
+          openLabel="Ouvrir Avis du suivi du mode anti-gaspillage"
+          overlayTitle="Avis du suivi du mode anti-gaspillage"
+          titleClassName="text-amber-200"
+          subtitle="Lecture des pesées de cet établissement : objectif, tendance, plats et services."
+          hint={`Ce que les pesées indiquent sur ${days} jours.`}
+          icon={Lightbulb}
+          labelledBy="anti-waste-advice-overlay-title"
+          foldTone="yellow"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+          bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+        >
+          <WasteAdvicePanel
+            days={days}
+            tone={status.tone}
+            title={status.title}
+            detail={status.detail}
+            hint={status.hint}
+            heaviestLabel={
+              heaviestDay && (heaviestDay.g100 > 0 || heaviestDay.waste > 0)
+                ? formatDayLabelFr(heaviestDay.date)
+                : null
+            }
+            heaviestValue={
+              heaviestDay == null
+                ? null
+                : heaviestDay.g100 > 0
+                  ? `${fmt(Math.round(heaviestDay.g100))} g / 100`
+                  : `${fmt(Math.round(heaviestDay.waste))} g`
+            }
+            lightestLabel={
+              lightestDay && (lightestDay.g100 > 0 || lightestDay.waste > 0)
+                ? formatDayLabelFr(lightestDay.date)
+                : null
+            }
+            lightestValue={
+              lightestDay == null
+                ? null
+                : lightestDay.g100 > 0
+                  ? `${fmt(Math.round(lightestDay.g100))} g / 100`
+                  : `${fmt(Math.round(lightestDay.waste))} g`
+            }
+            curveRemark={curveRemark}
+            dishRemark={dishRemark}
+            dishCount={riskyDishesVisible.length}
+            weighingsLabel={`${servicesWithWaste} / ${servicesCount}`}
+            missingWeighCount={missingWeighCount}
+            rabRatePct={rabRatePct}
+            wasteSplitNote={wasteSplitNote}
+            targetLabel={
+              targetGPer100 != null && targetGPer100 > 0
+                ? `${fmt(Math.round(targetGPer100))} g / 100`
+                : null
+            }
+            vsTargetG={vsTargetG}
+            streakAboveTarget={streakAboveTarget}
+          />
+        </DashboardFoldOverlay>
       </div>
 
       <footer className="flex items-center justify-center gap-2 pb-2 text-xs text-muted-foreground">
@@ -895,22 +909,7 @@ function WasteAdvicePanel({
         : `${fmt(Math.round(vsTargetG))} g / 100 au-dessus de l’objectif.`;
 
   return (
-    <aside className="aw-reveal flex h-full flex-col overflow-hidden rounded-3xl border-2 border-[#eab308] bg-card">
-      <div className="flex items-start gap-3 border-b border-[#e6d24a] bg-[#fbe961] p-5">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white">
-          <Lightbulb className="size-5" aria-hidden />
-        </div>
-        <div className="min-w-0">
-          <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950 sm:text-2xl">
-            Avis du suivi du mode anti-gaspillage
-          </h2>
-          <p className="mt-1 text-base font-medium leading-snug text-zinc-800">
-            Lecture des pesées de cet établissement sur {days} jours : objectif,
-            tendance, plats et services.
-          </p>
-        </div>
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-5">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 p-1 sm:p-2">
         <div className={cn("rounded-2xl border p-4 sm:p-5", toneClass)}>
           <p
             className={cn(
@@ -1022,8 +1021,7 @@ function WasteAdvicePanel({
             </p>
           </div>
         ) : null}
-      </div>
-    </aside>
+    </div>
   );
 }
 

@@ -19,6 +19,7 @@ export function DashboardFoldOverlay({
   panelClassName,
   bodyClassName,
   closeButtonClassName,
+  foldTone = "forest",
   icon: Icon,
   labelledBy,
   children,
@@ -34,6 +35,7 @@ export function DashboardFoldOverlay({
   panelClassName?: string;
   bodyClassName?: string;
   closeButtonClassName?: string;
+  foldTone?: "forest" | "yellow";
   icon: LucideIcon;
   labelledBy: string;
   children: ReactNode;
@@ -62,33 +64,71 @@ export function DashboardFoldOverlay({
     }
   }
 
+  const yellowFold = foldTone === "yellow";
+
   return (
     <div>
-      <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
+      <section
+        className={cn(
+          "overflow-hidden rounded-[28px] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100",
+          yellowFold
+            ? "bg-[#fbe961] shadow-[0_12px_32px_rgba(234,179,8,0.38)]"
+            : "bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)]",
+        )}
+      >
         <button
           type="button"
           onClick={() => setFoldOpen(true)}
           aria-expanded={open}
-          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
+          className={cn(
+            "flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5 sm:py-4",
+            yellowFold ? "hover:bg-black/[0.04]" : "hover:bg-white/5",
+          )}
         >
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#DFF59A] text-[#0d3b2e] sm:h-11 sm:w-11"
+            className={cn(
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-11 sm:w-11",
+              yellowFold
+                ? "bg-amber-500 text-white"
+                : "bg-[#DFF59A] text-[#0d3b2e]",
+            )}
             aria-hidden
           >
             <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
+            <span
+              className={cn(
+                "block text-[10px] font-bold uppercase tracking-[0.14em]",
+                yellowFold ? "text-zinc-800/55" : "text-white/50",
+              )}
+            >
               {kicker}
             </span>
-            <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
+            <span
+              className={cn(
+                "block text-base font-extrabold tracking-tight sm:text-lg",
+                yellowFold ? "text-zinc-950" : "text-white",
+              )}
+            >
               {openLabel}
             </span>
-            <span className="mt-0.5 block text-sm leading-snug text-white/80">
+            <span
+              className={cn(
+                "mt-0.5 block text-sm leading-snug",
+                yellowFold ? "text-zinc-800" : "text-white/80",
+              )}
+            >
               {hint}
             </span>
           </span>
-          <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
+          <ChevronDown
+            className={cn(
+              "h-5 w-5 shrink-0",
+              yellowFold ? "text-zinc-700" : "text-white/70",
+            )}
+            aria-hidden
+          />
         </button>
       </section>
 
