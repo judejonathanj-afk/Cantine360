@@ -5,6 +5,7 @@ import {
   Activity,
   ChevronDown,
   Percent,
+  Recycle,
   Target,
   Trash2,
   UtensilsCrossed,
@@ -655,30 +656,35 @@ export function CantinePulseCard({
         ) : null}
 
         <div className="rounded-2xl bg-zinc-950 px-4 py-4 sm:px-5 sm:py-5">
-          <div className="rounded-xl border border-zinc-200 bg-white px-4 py-3.5">
-            <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
-              Conclusion
-            </p>
-            <p className="mt-2 text-lg font-bold leading-snug text-zinc-950 sm:text-xl">
-              {pulse.headline}
-            </p>
-            <p className="mt-1.5 text-base font-medium leading-relaxed text-zinc-700">
-              {pulse.subline}
-            </p>
-          </div>
-
-          <div className="mt-3 rounded-xl border border-zinc-200 bg-white px-4 py-3.5 sm:px-5 sm:py-4">
-            <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
+          <div className="rounded-xl border-2 border-zinc-200 bg-white px-4 py-4 sm:px-5 sm:py-5">
+            <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-black">
               Lecture de la période
             </p>
-            <p className="mt-2 text-base font-medium leading-relaxed text-zinc-800 sm:text-[17px] sm:leading-7">
+            <p className="mt-2.5 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg sm:leading-7">
               {situationConclusion.situation}
             </p>
             {situationConclusion.antiWaste ? (
-              <p className="mt-2.5 border-t border-zinc-200 pt-2.5 text-base leading-relaxed text-emerald-800 sm:text-[17px] sm:leading-7">
-                {situationConclusion.antiWaste}
+              <p className="mt-3 flex items-start gap-2.5 border-t border-zinc-200 pt-3 text-base font-semibold leading-relaxed text-emerald-800 sm:text-lg sm:leading-7">
+                <Recycle
+                  className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 sm:h-6 sm:w-6"
+                  strokeWidth={2.4}
+                  aria-hidden
+                />
+                <span>{situationConclusion.antiWaste}</span>
               </p>
             ) : null}
+          </div>
+
+          <div className="mt-3 rounded-xl border-2 border-zinc-200 bg-white px-4 py-4 sm:px-5 sm:py-5">
+            <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-black">
+              Conclusion
+            </p>
+            <p className="mt-2.5 text-xl font-extrabold leading-snug text-zinc-950 sm:text-2xl">
+              {pulse.headline}
+            </p>
+            <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-800 sm:text-lg">
+              {pulse.subline}
+            </p>
           </div>
         </div>
 
