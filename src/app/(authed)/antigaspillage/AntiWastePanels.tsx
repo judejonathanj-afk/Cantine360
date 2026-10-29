@@ -89,19 +89,18 @@ function applyRiskyDishLevel(
   level: "all" | SchoolLevel,
 ): RiskyDishRow[] {
   if (level === "all") return dishes;
-  return dishes
-    .map((dish) => {
-      const avg =
-        level === "MATERNELLE" ? dish.maternelleGPer100 : dish.primaireGPer100;
-      if (avg == null || avg <= 0) return null;
-      return {
-        ...dish,
-        avgWasteGPer100: avg,
-        topClasses: (dish.topClasses ?? []).filter((row) => row.level === level),
-      };
-    })
-    .filter((dish): dish is RiskyDishRow => dish != null)
-    .sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
+  const filtered: RiskyDishRow[] = [];
+  for (const dish of dishes) {
+    const avg =
+      level === "MATERNELLE" ? dish.maternelleGPer100 : dish.primaireGPer100;
+    if (avg == null || avg <= 0) continue;
+    filtered.push({
+      ...dish,
+      avgWasteGPer100: avg,
+      topClasses: (dish.topClasses ?? []).filter((row) => row.level === level),
+    });
+  }
+  return filtered.sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
 }
 
 function CyclePill({ level }: { level: "MATERNELLE" | "PRIMAIRE" }) {
