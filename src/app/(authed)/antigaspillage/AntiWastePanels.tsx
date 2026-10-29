@@ -80,6 +80,67 @@ function OverlayFilterLink({
   );
 }
 
+function AntigaspillageOverlayFilters({
+  days,
+  levelFilter,
+  hrefFor,
+  onDownload,
+  downloadDisabled,
+}: {
+  days: 7 | 30;
+  levelFilter: "all" | SchoolLevel;
+  hrefFor: (nextDays: 7 | 30, nextLevel: "all" | SchoolLevel) => string;
+  onDownload: () => void;
+  downloadDisabled?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      <div
+        role="group"
+        aria-label="Période"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
+      >
+        <OverlayFilterLink href={hrefFor(7, levelFilter)} active={days === 7}>
+          7 jours
+        </OverlayFilterLink>
+        <OverlayFilterLink href={hrefFor(30, levelFilter)} active={days === 30}>
+          30 jours
+        </OverlayFilterLink>
+      </div>
+      <div
+        role="group"
+        aria-label="Niveau"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
+      >
+        <OverlayFilterLink href={hrefFor(days, "all")} active={levelFilter === "all"}>
+          Tous niveaux
+        </OverlayFilterLink>
+        <OverlayFilterLink
+          href={hrefFor(days, "MATERNELLE")}
+          active={levelFilter === "MATERNELLE"}
+        >
+          Maternelle
+        </OverlayFilterLink>
+        <OverlayFilterLink
+          href={hrefFor(days, "PRIMAIRE")}
+          active={levelFilter === "PRIMAIRE"}
+        >
+          Primaire
+        </OverlayFilterLink>
+      </div>
+      <button
+        type="button"
+        disabled={downloadDisabled}
+        onClick={onDownload}
+        className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
+      >
+        <Download className="size-4" aria-hidden />
+        Télécharger
+      </button>
+    </div>
+  );
+}
+
 function applyRiskyDishLevel(
   dishes: RiskyDishRow[],
   level: "all" | SchoolLevel,
@@ -466,63 +527,17 @@ export function AntiWastePanels({
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
           bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
           headerAction={
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <div
-                role="group"
-                aria-label="Période"
-                className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
-              >
-                <OverlayFilterLink
-                  href={antigaspillageHref(7, levelFilter)}
-                  active={days === 7}
-                >
-                  7 jours
-                </OverlayFilterLink>
-                <OverlayFilterLink
-                  href={antigaspillageHref(30, levelFilter)}
-                  active={days === 30}
-                >
-                  30 jours
-                </OverlayFilterLink>
-              </div>
-              <div
-                role="group"
-                aria-label="Niveau"
-                className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
-              >
-                <OverlayFilterLink
-                  href={antigaspillageHref(days, "all")}
-                  active={levelFilter === "all"}
-                >
-                  Tous niveaux
-                </OverlayFilterLink>
-                <OverlayFilterLink
-                  href={antigaspillageHref(days, "MATERNELLE")}
-                  active={levelFilter === "MATERNELLE"}
-                >
-                  Maternelle
-                </OverlayFilterLink>
-                <OverlayFilterLink
-                  href={antigaspillageHref(days, "PRIMAIRE")}
-                  active={levelFilter === "PRIMAIRE"}
-                >
-                  Primaire
-                </OverlayFilterLink>
-              </div>
-              <button
-                type="button"
-                disabled={riskyDishesVisible.length === 0}
-                onClick={() => {
-                  void import("@/lib/downloadRiskyDishesPdf").then((mod) =>
-                    mod.downloadRiskyDishesPdf(riskyDishesVisible, days),
-                  );
-                }}
-                className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
-              >
-                <Download className="size-4" aria-hidden />
-                Télécharger
-              </button>
-            </div>
+            <AntigaspillageOverlayFilters
+              days={days}
+              levelFilter={levelFilter}
+              hrefFor={antigaspillageHref}
+              downloadDisabled={riskyDishesVisible.length === 0}
+              onDownload={() => {
+                void import("@/lib/downloadRiskyDishesPdf").then((mod) =>
+                  mod.downloadRiskyDishesPdf(riskyDishesVisible, days),
+                );
+              }}
+            />
           }
         >
           {riskyDishesVisible.length === 0 ? (
@@ -787,6 +802,14 @@ export function AntiWastePanels({
           icon={Lightbulb}
           labelledBy="anti-waste-advice-overlay-title"
           foldTone="yellow"
+          headerAction={
+            <AntigaspillageOverlayFilters
+              days={days}
+              levelFilter={levelFilter}
+              hrefFor={antigaspillageHref}
+              onDownload={downloadSynthesisCsv}
+            />
+          }
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
           bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
         >
