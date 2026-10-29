@@ -381,8 +381,8 @@ export function AdminGroupsClient({
           kicker="Objectifs"
           openLabel="Ouvrir Défauts objectifs (établissement)"
           overlayTitle="Défauts objectifs (établissement)"
-          subtitle="Référence par défaut pour toutes les classes : période, plafond de restes et baisse visée."
-          hint="Enregistrez ici, puis affinez par classe avec le bouton Objectifs sur chaque carte."
+          subtitle="Cibles Cantine+ pour toutes les classes : restes d’assiettes en %, pas les grammes du mode anti-gaspillage."
+          hint="Choisissez une période, enregistrez, puis affinez une classe avec le bouton Objectifs sur sa carte."
           icon={Target}
           labelledBy="admin-groups-eco-defaults-overlay"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
