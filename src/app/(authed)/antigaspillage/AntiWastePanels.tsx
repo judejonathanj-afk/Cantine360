@@ -6,12 +6,8 @@ import {
   AlertTriangle,
   ChevronDown,
   Download,
-  Flag,
   Flame,
   Lightbulb,
-  Recycle,
-  Scale,
-  Trash2,
 } from "lucide-react";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
@@ -172,14 +168,6 @@ export function AntiWastePanels({
     targetGPer100 != null && targetGPer100 > 0,
   );
 
-  const daysOverObjective =
-    targetGPer100 != null
-      ? perDayRows.filter(
-          (r) =>
-            r.wasteGramsPer100 != null && r.wasteGramsPer100 > targetGPer100,
-        ).length
-      : null;
-
   const chartPoints = chartRows.map((r) => ({
     date: r.date,
     waste: r.wasteWeightG ?? 0,
@@ -279,51 +267,6 @@ export function AntiWastePanels({
     URL.revokeObjectURL(url);
   }
 
-  const kpis = [
-    {
-      icon: Trash2,
-      label: "Déchets total",
-      value:
-        totalWasteWeightG > 0
-          ? `${fmt(Math.round(totalWasteWeightG))} g`
-          : "—",
-      sub:
-        totalWasteMaternelleG > 0 || totalWastePrimaireG > 0
-          ? `Mat. ${fmt(Math.round(totalWasteMaternelleG))} g · Prim. ${fmt(Math.round(totalWastePrimaireG))} g`
-          : "Aucune pesée sur la période",
-      accent: "text-primary",
-    },
-    {
-      icon: Recycle,
-      label: "Taux de RAB",
-      value: rabRatePct,
-      sub: "Rab servi sur la période",
-      accent: "text-primary",
-    },
-    {
-      icon: Scale,
-      label: "Pesées saisies",
-      value: `${servicesWithWaste} / ${servicesCount}`,
-      sub:
-        missingWeighCount > 0
-          ? `${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`
-          : "Toutes les pesées sont saisies",
-      accent: "text-[color:var(--aw-amber-fg)]",
-    },
-    {
-      icon: Flag,
-      label: "Jours au-dessus objectif",
-      value: daysOverObjective == null ? "—" : String(daysOverObjective),
-      sub:
-        streakAboveTarget >= 3
-          ? `Alerte : ${streakAboveTarget} jours de suite`
-          : daysOverObjective == null
-            ? "Définissez un objectif"
-            : "Sur la période",
-      accent: "text-[color:var(--aw-coral)]",
-    },
-  ];
-
   const maxRiskG = Math.max(
     ...riskyDishesVisible.map((d) => d.avgWasteGPer100),
     1,
@@ -379,8 +322,8 @@ export function AntiWastePanels({
             <p className="mt-3 w-full text-lg leading-relaxed text-black sm:text-xl">
               Le mode anti-gaspillage aide la cuisine et la commission à réduire
               les restes : fixez un objectif en grammes pour 100 assiettes, puis
-              activez le mode ci-dessous pour afficher la synthèse, les plats à
-              risque, l’évolution et le détail jour par jour.
+              activez le mode ci-dessous pour afficher la synthèse et les plats
+              à risque.
             </p>
           </div>
         </div>
@@ -468,30 +411,6 @@ export function AntiWastePanels({
             />
           </div>
         </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((t, i) => {
-          const Icon = t.icon;
-          return (
-            <div
-              key={t.label}
-              className="aw-reveal group rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-[0_16px_40px_-24px_rgb(20_60_40/0.4)]"
-              style={{ animationDelay: `${160 + i * 70}ms` }}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-bold uppercase tracking-wider text-zinc-950">
-                  {t.label}
-                </span>
-                <Icon className={cn("size-4", t.accent)} aria-hidden />
-              </div>
-              <p className="mt-3 font-display text-3xl font-bold tracking-tight text-zinc-950">
-                {t.value}
-              </p>
-              <p className="mt-1 text-base font-semibold text-zinc-950">{t.sub}</p>
-            </div>
-          );
-        })}
-      </div>
 
       {streakAboveTarget >= 3 ? (
         <div className="aw-reveal flex items-center gap-3 rounded-2xl border-2 border-rose-500 bg-rose-50 px-5 py-4">
