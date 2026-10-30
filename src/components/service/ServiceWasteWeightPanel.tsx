@@ -300,13 +300,15 @@ export function ServiceWasteWeightPanel({
           type="button"
           onClick={() => setPanelOpen((open) => !open)}
           aria-expanded={panelOpen}
-          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
+          className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition hover:bg-white/5 sm:gap-4 sm:px-5 sm:py-4"
         >
           <span
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#DFF59A] text-[#0d3b2e] sm:h-11 sm:w-11"
+            className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
             aria-hidden
           >
-            <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+            <span className="flex size-11 items-center justify-center rounded-[14px] bg-[#f6c9d6] text-[#7a2d45] sm:size-12 sm:rounded-2xl">
+              <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
+            </span>
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
