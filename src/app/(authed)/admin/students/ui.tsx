@@ -1,7 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Trash2, Upload, UserPlus, Users } from "lucide-react";
+import {
+  FileText,
+  Leaf,
+  Plus,
+  Shield,
+  Trash2,
+  Upload,
+  UserPlus,
+  Users,
+  Utensils,
+  X,
+} from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
@@ -77,6 +88,8 @@ export function AdminStudentsClient({
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Student | null>(null);
   const [openStudentId, setOpenStudentId] = useState<string | null>(null);
+  const [addAllergenOpen, setAddAllergenOpen] = useState(false);
+  const [addRegimeOpen, setAddRegimeOpen] = useState(false);
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
   const groupLevelById = useMemo(() => {
@@ -199,6 +212,18 @@ export function AdminStudentsClient({
     if (!res.ok) await refresh();
   }
 
+  async function setAllergens(s: Student, allergens: string[]) {
+    setStudents((all) =>
+      all.map((x) => (x.id === s.id ? { ...x, allergens } : x)),
+    );
+    const res = await fetch(`/api/students/${s.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ allergens }),
+    });
+    if (!res.ok) await refresh();
+  }
+
   async function toggleDiet(s: Student, field: "noPork" | "vegetarian") {
     const next = !s[field];
     setStudents((all) =>
@@ -235,10 +260,6 @@ export function AdminStudentsClient({
   const openLevel = openStudent
     ? (groupLevelById.get(openStudent.groupId) ?? "PRIMAIRE")
     : "PRIMAIRE";
-  const openMaternelle = openLevel === "MATERNELLE";
-  const openCycleFill = openMaternelle
-    ? "bg-sky-400 text-sky-950"
-    : "bg-emerald-400 text-emerald-950";
 
   function toggleAllergen(a: AllergenLabel) {
     setSelectedAllergens((prev) =>
@@ -635,105 +656,232 @@ export function AdminStudentsClient({
 
       <Dialog
         open={openStudent != null}
-        onOpenChange={(next) => !next && setOpenStudentId(null)}
+        onOpenChange={(next) => {
+          if (!next) {
+            setOpenStudentId(null);
+            setAddAllergenOpen(false);
+            setAddRegimeOpen(false);
+          }
+        }}
       >
         <DialogContent
-          className={[
-            "z-[100] max-w-md rounded-3xl border-2",
-            openMaternelle ? "border-sky-500" : "border-emerald-600",
-          ].join(" ")}
+          className="z-[100] max-w-2xl overflow-hidden rounded-[28px] border-2 border-emerald-200 bg-[#f4fbf6] p-6 shadow-xl sm:max-w-2xl sm:p-8"
           overlayClassName="z-[100]"
         >
           {openStudent ? (
             <>
-              <DialogHeader>
-                <DialogTitle className="text-center text-xl font-extrabold text-zinc-950">
-                  {openStudent.firstName} {openStudent.lastName}
-                </DialogTitle>
-                <DialogDescription asChild>
-                  <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${openCycleFill}`}
-                    >
-                      {schoolLevelLabelFr(openLevel)}
-                    </span>
-                    {openStudent.className ? (
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${openCycleFill}`}
-                      >
-                        {openStudent.className}
-                      </span>
-                    ) : null}
-                    {openStudent.schoolName ? (
-                      <span className="text-sm font-semibold text-zinc-700">
-                        {openStudent.schoolName}
-                      </span>
-                    ) : null}
+              <Leaf
+                className="pointer-events-none absolute -left-6 -bottom-8 size-28 text-emerald-100"
+                strokeWidth={1.25}
+                aria-hidden
+              />
+              <Leaf
+                className="pointer-events-none absolute -right-4 -top-8 size-24 rotate-45 text-emerald-100"
+                strokeWidth={1.25}
+                aria-hidden
+              />
+              <DialogHeader className="relative z-10 pr-8 text-left">
+                <div className="flex items-start gap-3">
+                  <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                    <Leaf className="size-6" aria-hidden />
+                  </span>
+                  <div className="min-w-0">
+                    <DialogTitle className="text-2xl font-extrabold tracking-tight text-emerald-950">
+                      Allergènes & Régimes
+                    </DialogTitle>
+                    <DialogDescription className="mt-1 text-sm font-medium leading-relaxed text-zinc-600">
+                      {openStudent.firstName} {openStudent.lastName}
+                      {openStudent.className ? ` · ${openStudent.className}` : ""}
+                      {` · ${schoolLevelLabelFr(openLevel)}`}
+                      . Indiquez les allergies, régimes alimentaires et consignes
+                      spécifiques de cet élève.
+                    </DialogDescription>
                   </div>
-                </DialogDescription>
+                </div>
               </DialogHeader>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
-                    Allergènes
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    {openStudent.allergens.length > 0 ? (
-                      openStudent.allergens.map((a) => (
+
+              <div className="relative z-10 space-y-5">
+                <div className="flex gap-3">
+                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                    <Shield className="size-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
+                      Allergènes
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {openStudent.allergens.map((a) => (
                         <span
                           key={a}
-                          className="rounded-full bg-amber-500 px-2.5 py-1 text-sm font-bold text-white"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1.5 text-sm font-bold text-white"
                         >
                           {a}
+                          <button
+                            type="button"
+                            aria-label={`Retirer ${a}`}
+                            onClick={() =>
+                              void setAllergens(
+                                openStudent,
+                                openStudent.allergens.filter((x) => x !== a),
+                              )
+                            }
+                            className="rounded-full p-0.5 hover:bg-white/20"
+                          >
+                            <X className="size-3.5" aria-hidden />
+                          </button>
                         </span>
-                      ))
-                    ) : (
-                      <span className="text-base font-bold text-zinc-800">
-                        Aucun allergène déclaré
-                      </span>
-                    )}
+                      ))}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAddAllergenOpen((v) => !v);
+                            setAddRegimeOpen(false);
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-600 shadow-sm hover:border-emerald-400 hover:text-emerald-800"
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                          Ajouter un allergène
+                        </button>
+                        {addAllergenOpen ? (
+                          <div className="absolute left-0 z-20 mt-1 max-h-52 w-64 overflow-y-auto rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
+                            {EU14_ALLERGENS.filter(
+                              (a) => !openStudent.allergens.includes(a),
+                            ).map((a) => (
+                              <button
+                                key={a}
+                                type="button"
+                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
+                                onClick={() => {
+                                  void setAllergens(openStudent, [
+                                    ...openStudent.allergens,
+                                    a,
+                                  ]);
+                                  setAddAllergenOpen(false);
+                                }}
+                              >
+                                {a}
+                              </button>
+                            ))}
+                            {EU14_ALLERGENS.every((a) =>
+                              openStudent.allergens.includes(a),
+                            ) ? (
+                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
+                                Tous les allergènes sont déjà listés.
+                              </p>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
-                    Régimes
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <span
-                      className={[
-                        "rounded-full px-3 py-1 text-sm font-extrabold",
-                        openStudent.noPork
-                          ? "bg-sky-700 text-white"
-                          : "bg-zinc-100 text-zinc-800",
-                      ].join(" ")}
-                    >
-                      Sans porc
-                    </span>
-                    <span
-                      className={[
-                        "rounded-full px-3 py-1 text-sm font-extrabold",
-                        openStudent.vegetarian
-                          ? "bg-emerald-700 text-white"
-                          : "bg-zinc-100 text-zinc-800",
-                      ].join(" ")}
-                    >
-                      Végétarien
-                    </span>
+
+                <div className="flex gap-3">
+                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                    <Utensils className="size-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
+                      Régimes
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {openStudent.noPork ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-200 px-3 py-1.5 text-sm font-bold text-zinc-800">
+                          Sans porc
+                          <button
+                            type="button"
+                            aria-label="Retirer sans porc"
+                            onClick={() => void toggleDiet(openStudent, "noPork")}
+                            className="rounded-full p-0.5 hover:bg-zinc-300"
+                          >
+                            <X className="size-3.5" aria-hidden />
+                          </button>
+                        </span>
+                      ) : null}
+                      {openStudent.vegetarian ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white">
+                          Végétarien
+                          <button
+                            type="button"
+                            aria-label="Retirer végétarien"
+                            onClick={() => void toggleDiet(openStudent, "vegetarian")}
+                            className="rounded-full p-0.5 hover:bg-white/20"
+                          >
+                            <X className="size-3.5" aria-hidden />
+                          </button>
+                        </span>
+                      ) : null}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAddRegimeOpen((v) => !v);
+                            setAddAllergenOpen(false);
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-600 shadow-sm hover:border-emerald-400 hover:text-emerald-800"
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                          Ajouter un régime
+                        </button>
+                        {addRegimeOpen ? (
+                          <div className="absolute left-0 z-20 mt-1 w-52 rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
+                            {!openStudent.noPork ? (
+                              <button
+                                type="button"
+                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
+                                onClick={() => {
+                                  void toggleDiet(openStudent, "noPork");
+                                  setAddRegimeOpen(false);
+                                }}
+                              >
+                                Sans porc
+                              </button>
+                            ) : null}
+                            {!openStudent.vegetarian ? (
+                              <button
+                                type="button"
+                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
+                                onClick={() => {
+                                  void toggleDiet(openStudent, "vegetarian");
+                                  setAddRegimeOpen(false);
+                                }}
+                              >
+                                Végétarien
+                              </button>
+                            ) : null}
+                            {openStudent.noPork && openStudent.vegetarian ? (
+                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
+                                Tous les régimes sont déjà listés.
+                              </p>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <p className="mb-2 inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
-                    Consignes parents
-                  </p>
-                  <textarea
-                    defaultValue={openStudent.allergenNotes ?? ""}
-                    key={`${openStudent.id}-dialog-${openStudent.allergenNotes ?? ""}`}
-                    rows={3}
-                    maxLength={500}
-                    onBlur={(e) => void saveAllergenNotes(openStudent, e.target.value)}
-                    className="mt-1 w-full rounded-xl border-2 border-zinc-900 bg-white px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:border-emerald-600"
-                    placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
-                  />
+
+                <div className="flex gap-3">
+                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                    <FileText className="size-5" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
+                      Consignes parents
+                    </p>
+                    <textarea
+                      defaultValue={openStudent.allergenNotes ?? ""}
+                      key={`${openStudent.id}-dialog-${openStudent.allergenNotes ?? ""}`}
+                      rows={3}
+                      maxLength={500}
+                      onBlur={(e) =>
+                        void saveAllergenNotes(openStudent, e.target.value)
+                      }
+                      className="mt-2 w-full rounded-2xl border border-emerald-100 bg-white px-4 py-3 text-sm font-medium leading-relaxed text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
+                      placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
+                    />
+                  </div>
                 </div>
               </div>
             </>
