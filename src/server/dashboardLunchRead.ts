@@ -57,6 +57,7 @@ type Bundle = {
 const cache = new Map<string, Bundle>();
 const MAX_ENTRIES = 24;
 const stampMemo = new Map<string, { at: number; stamp: string }>();
+const stampInflight = new Map<string, Promise<string>>();
 const STAMP_TTL_MS = 12_000;
 
 function remember(key: string, bundle: Bundle) {
@@ -74,30 +75,40 @@ async function dataStamp(db: PrismaClient, establishmentId: string): Promise<str
   const prev = stampMemo.get(establishmentId);
   if (prev && now - prev.at < STAMP_TTL_MS) return prev.stamp;
 
-  const whereService = { establishmentId, mealType: MealType.LUNCH };
-  const [service, metrics, menuItem, student] = await Promise.all([
-    db.service.aggregate({ where: whereService, _max: { updatedAt: true } }),
-    db.serviceGroupMetrics.aggregate({
-      where: { service: whereService },
-      _max: { updatedAt: true },
-    }),
-    db.menuItem.aggregate({
-      where: { menu: { service: whereService } },
-      _max: { updatedAt: true },
-    }),
-    db.student.aggregate({
-      where: { establishmentId },
-      _max: { updatedAt: true },
-    }),
-  ]);
-  const stamp = [
-    service._max.updatedAt?.getTime() ?? 0,
-    metrics._max.updatedAt?.getTime() ?? 0,
-    menuItem._max.updatedAt?.getTime() ?? 0,
-    student._max.updatedAt?.getTime() ?? 0,
-  ].join(":");
-  stampMemo.set(establishmentId, { at: now, stamp });
-  return stamp;
+  const inflight = stampInflight.get(establishmentId);
+  if (inflight) return inflight;
+
+  const pending = (async () => {
+    const whereService = { establishmentId, mealType: MealType.LUNCH };
+    const [service, metrics, menuItem, student] = await Promise.all([
+      db.service.aggregate({ where: whereService, _max: { updatedAt: true } }),
+      db.serviceGroupMetrics.aggregate({
+        where: { service: whereService },
+        _max: { updatedAt: true },
+      }),
+      db.menuItem.aggregate({
+        where: { menu: { service: whereService } },
+        _max: { updatedAt: true },
+      }),
+      db.student.aggregate({
+        where: { establishmentId },
+        _max: { updatedAt: true },
+      }),
+    ]);
+    const stamp = [
+      service._max.updatedAt?.getTime() ?? 0,
+      metrics._max.updatedAt?.getTime() ?? 0,
+      menuItem._max.updatedAt?.getTime() ?? 0,
+      student._max.updatedAt?.getTime() ?? 0,
+    ].join(":");
+    stampMemo.set(establishmentId, { at: Date.now(), stamp });
+    return stamp;
+  })().finally(() => {
+    stampInflight.delete(establishmentId);
+  });
+
+  stampInflight.set(establishmentId, pending);
+  return pending;
 }
 
 /** Une lecture des déjeuners. Rejouée seulement si un service, un compteur, un menu ou un élève a changé. */
@@ -146,7 +157,11 @@ export async function readDashboardLunches(
     args.metricsOnly
       ? Promise.resolve([])
       : db.student.findMany({
-          where: { establishmentId: args.establishmentId, active: true },
+          where: {
+            establishmentId: args.establishmentId,
+            active: true,
+            NOT: { allergens: { isEmpty: true } },
+          },
           select: studentSelect,
         }),
   ]);

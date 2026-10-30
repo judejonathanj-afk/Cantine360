@@ -42,7 +42,7 @@ function resolvePoolMax(): number {
 function resolveIdleTimeoutMillis(): number {
   // En prod, rendre la connexion tout de suite pour que le pic de midi
   // ne garde pas des slots Supabase après la réponse.
-  return process.env.NODE_ENV === "production" ? 1_000 : 20_000;
+  return process.env.NODE_ENV === "production" ? 15_000 : 20_000;
 }
 
 function pgPoolOptions(): ConstructorParameters<typeof Pool>[0] {
@@ -67,6 +67,9 @@ function pgPoolOptions(): ConstructorParameters<typeof Pool>[0] {
 function getOrCreatePool(): Pool {
   if (globalThis.__pgPool) return globalThis.__pgPool;
   const pool = new Pool(pgPoolOptions());
+  pool.on("error", (err) => {
+    console.error("[pg] pool", err);
+  });
   globalThis.__pgPool = pool;
   return pool;
 }

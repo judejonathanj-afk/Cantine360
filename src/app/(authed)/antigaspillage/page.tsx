@@ -194,10 +194,10 @@ export default async function AntiWastePage({
         (s.wasteWeightG ?? 0) > 0 ? (s.wasteWeightG ?? 0) : matG + primG;
       const items = s.menu?.items ?? [];
       const servedMaternelle = s.metrics
-        .filter((m) => m.group.level === "MATERNELLE")
+        .filter((m) => m.group?.level === "MATERNELLE")
         .reduce((sum, m) => sum + m.servedCount, 0);
       const servedPrimaire = s.metrics
-        .filter((m) => m.group.level === "PRIMAIRE")
+        .filter((m) => m.group?.level === "PRIMAIRE")
         .reduce((sum, m) => sum + m.servedCount, 0);
       return {
         wasteGramsPer100:
@@ -213,9 +213,9 @@ export default async function AntiWastePage({
           .filter((i) => i.category === "MAIN" && i.label.trim().length > 0)
           .map((i) => i.label),
         classes: s.metrics.map((m) => ({
-          label: formatGroupLabel(m.group.school.name, m.group.name),
+          label: formatGroupLabel(m.group?.school?.name ?? "", m.group?.name ?? ""),
           level:
-            m.group.level === "MATERNELLE"
+            m.group?.level === "MATERNELLE"
               ? ("MATERNELLE" as const)
               : ("PRIMAIRE" as const),
           served: m.servedCount,

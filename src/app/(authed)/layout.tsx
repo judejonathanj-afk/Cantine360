@@ -27,10 +27,15 @@ export default async function AuthedLayout({
   if (wantRole && session.role !== wantRole) {
     return redirectToEstablishmentLogin(pathname || undefined);
   }
-  const establishment = await db.establishment.findUnique({
-    where: { id: session.establishmentId },
-    select: { name: true, slug: true },
-  });
+  let establishment: { name: string | null; slug: string | null } | null = null;
+  try {
+    establishment = await db.establishment.findUnique({
+      where: { id: session.establishmentId },
+      select: { name: true, slug: true },
+    });
+  } catch (e) {
+    console.error("[layout] establishment", e);
+  }
   // L’admin ne pilote pas le service : ça mélange sa session avec celle de la cuisine.
   if (session.role === "ADMIN" && (pathname === "/service" || pathname.startsWith("/service/"))) {
     redirect("/admin/groups");

@@ -24,10 +24,14 @@ export default async function ServicePage({
   if (session.role === "ADMIN") redirect("/admin/groups");
 
   const { serviceId } = await params;
-  const service = await readServiceScreen(db, {
-    establishmentId: session.establishmentId,
-    serviceId,
-  });
+  const [service, antiWaste, allergenSummary] = await Promise.all([
+    readServiceScreen(db, {
+      establishmentId: session.establishmentId,
+      serviceId,
+    }),
+    getEstablishmentAntiWasteSettings(db, session.establishmentId),
+    getServiceAllergenSummary(db, session.establishmentId, serviceId),
+  ]);
   if (!service) notFound();
 
   const hasFilledMenu = (service.menu?.items ?? []).some(
@@ -36,11 +40,6 @@ export default async function ServicePage({
   if (!hasFilledMenu) {
     redirect(`/service/${serviceId}/menu`);
   }
-
-  const [antiWaste, allergenSummary] = await Promise.all([
-    getEstablishmentAntiWasteSettings(db, session.establishmentId),
-    getServiceAllergenSummary(db, session.establishmentId, serviceId),
-  ]);
   const summaryByGroup = new Map(
     allergenSummary?.groups.map((g) => [g.groupId, g]) ?? [],
   );
@@ -64,9 +63,9 @@ export default async function ServicePage({
 
   const classCards: ServiceClassCard[] = service.metrics.map((m) => ({
     groupId: m.groupId,
-    groupName: m.group.name,
-    schoolName: m.group.school.name,
-    level: m.group.level === "MATERNELLE" ? "MATERNELLE" : "PRIMAIRE",
+    groupName: m.group?.name ?? "Classe",
+    schoolName: m.group?.school?.name ?? "",
+    level: m.group?.level === "MATERNELLE" ? "MATERNELLE" : "PRIMAIRE",
     presentCount: m.presentCount,
     servedCount: m.servedCount,
     rabCount: m.rabCount,

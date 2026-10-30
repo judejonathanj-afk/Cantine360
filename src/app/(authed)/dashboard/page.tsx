@@ -532,16 +532,20 @@ async function renderDashboard({
   const wideForEco = wideServices.map((s) => ({
     date: s.date,
     mealType: s.mealType,
-    metrics: s.metrics
-      .filter((m) => m.group?.id)
-      .map((m) => ({
-        groupId: m.group!.id!,
-        presentCount: m.presentCount,
-        servedCount: m.servedCount,
-        rabCount: m.rabCount,
-        refusedCount: m.refusedCount,
-        leftoversCount: m.leftoversCount,
-      })),
+    metrics: s.metrics.flatMap((m) => {
+      const groupId = m.group?.id;
+      if (!groupId) return [];
+      return [
+        {
+          groupId,
+          presentCount: m.presentCount,
+          servedCount: m.servedCount,
+          rabCount: m.rabCount,
+          refusedCount: m.refusedCount,
+          leftoversCount: m.leftoversCount,
+        },
+      ];
+    }),
   }));
 
   function ecoRowsForMeal(): DashboardEcoGroupRow[] {
