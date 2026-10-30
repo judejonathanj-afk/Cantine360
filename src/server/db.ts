@@ -36,7 +36,7 @@ function resolvePoolMax(): number {
     const n = Number(raw);
     if (Number.isFinite(n) && n >= 1 && n <= 20) return Math.floor(n);
   }
-  return process.env.NODE_ENV === "production" ? 1 : 5;
+  return process.env.NODE_ENV === "production" ? 3 : 5;
 }
 
 function resolveIdleTimeoutMillis(): number {

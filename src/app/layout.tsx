@@ -6,28 +6,31 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const fredoka = Fredoka({
   subsets: ["latin"],
   variable: "--font-fredoka",
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
-  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-bricolage",
+  display: "swap",
 });
 
 export const metadata: Metadata = {

@@ -56,6 +56,8 @@ type Bundle = {
 
 const cache = new Map<string, Bundle>();
 const MAX_ENTRIES = 24;
+const stampMemo = new Map<string, { at: number; stamp: string }>();
+const STAMP_TTL_MS = 12_000;
 
 function remember(key: string, bundle: Bundle) {
   if (cache.has(key)) cache.delete(key);
@@ -68,6 +70,10 @@ function remember(key: string, bundle: Bundle) {
 }
 
 async function dataStamp(db: PrismaClient, establishmentId: string): Promise<string> {
+  const now = Date.now();
+  const prev = stampMemo.get(establishmentId);
+  if (prev && now - prev.at < STAMP_TTL_MS) return prev.stamp;
+
   const whereService = { establishmentId, mealType: MealType.LUNCH };
   const [service, metrics, menuItem, student] = await Promise.all([
     db.service.aggregate({ where: whereService, _max: { updatedAt: true } }),
@@ -84,12 +90,14 @@ async function dataStamp(db: PrismaClient, establishmentId: string): Promise<str
       _max: { updatedAt: true },
     }),
   ]);
-  return [
+  const stamp = [
     service._max.updatedAt?.getTime() ?? 0,
     metrics._max.updatedAt?.getTime() ?? 0,
     menuItem._max.updatedAt?.getTime() ?? 0,
     student._max.updatedAt?.getTime() ?? 0,
   ].join(":");
+  stampMemo.set(establishmentId, { at: now, stamp });
+  return stamp;
 }
 
 /** Une lecture des déjeuners. Rejouée seulement si un service, un compteur, un menu ou un élève a changé. */
@@ -99,6 +107,8 @@ export async function readDashboardLunches(
     establishmentId: string;
     from: Date;
     toExclusive: Date;
+    /** Sans menus ni élèves : assez pour les objectifs éco sur une longue période. */
+    metricsOnly?: boolean;
   },
 ): Promise<Bundle> {
   const stamp = await dataStamp(db, args.establishmentId);
@@ -106,28 +116,45 @@ export async function readDashboardLunches(
     args.establishmentId,
     args.from.getTime(),
     args.toExclusive.getTime(),
+    args.metricsOnly ? "m" : "f",
     stamp,
   ].join("|");
   const hit = cache.get(key);
   if (hit) return hit;
 
+  const lunchWhere = {
+    establishmentId: args.establishmentId,
+    mealType: MealType.LUNCH,
+    date: { gte: args.from, lt: args.toExclusive },
+  };
+
   const [lunches, students] = await Promise.all([
     db.service.findMany({
-      where: {
-        establishmentId: args.establishmentId,
-        mealType: MealType.LUNCH,
-        date: { gte: args.from, lt: args.toExclusive },
-      },
+      where: lunchWhere,
       orderBy: [{ date: "asc" }, { mealType: "asc" }],
-      select: lunchSelect,
+      select: args.metricsOnly
+        ? {
+            date: true,
+            mealType: true,
+            wasteWeightG: true,
+            wasteWeightMaternelleG: true,
+            wasteWeightPrimaireG: true,
+            metrics: lunchSelect.metrics,
+          }
+        : lunchSelect,
     }),
-    db.student.findMany({
-      where: { establishmentId: args.establishmentId, active: true },
-      select: studentSelect,
-    }),
+    args.metricsOnly
+      ? Promise.resolve([])
+      : db.student.findMany({
+          where: { establishmentId: args.establishmentId, active: true },
+          select: studentSelect,
+        }),
   ]);
 
-  const bundle = { lunches, students };
+  const bundle: Bundle = {
+    lunches: lunches as DashboardLunchRow[],
+    students,
+  };
   remember(key, bundle);
   return bundle;
 }

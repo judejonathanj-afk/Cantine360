@@ -163,7 +163,13 @@ export default async function DashboardPage({
   let establishmentLabel = "";
 
   try {
-    const [est, agList, schoolsList, antiWaste, establishmentRow] =
+    const toExclusive = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    toExclusive.setHours(0, 0, 0, 0);
+    const ecoFromGuess = new Date(now);
+    ecoFromGuess.setMonth(ecoFromGuess.getMonth() - 14);
+    ecoFromGuess.setHours(0, 0, 0, 0);
+
+    const [est, agList, schoolsList, antiWaste, establishmentRow, recent, ecoYear] =
       await Promise.all([
       getEstablishmentEcoSettings(db, session.establishmentId),
       getGroupsForAdmin(db, session.establishmentId, { activeOnly: true }),
@@ -172,6 +178,17 @@ export default async function DashboardPage({
       db.establishment.findUnique({
         where: { id: session.establishmentId },
         select: { name: true, slug: true },
+      }),
+      readDashboardLunches(db, {
+        establishmentId: session.establishmentId,
+        from: pulseRangeStart,
+        toExclusive,
+      }),
+      readDashboardLunches(db, {
+        establishmentId: session.establishmentId,
+        from: ecoFromGuess,
+        toExclusive,
+        metricsOnly: true,
       }),
     ]);
     establishmentLabel =
@@ -190,17 +207,10 @@ export default async function DashboardPage({
       est?.ecoSchoolYearStartMonth ?? 9,
       est?.ecoSchoolYearStartDay ?? 1,
     );
-    const wideLower = new Date(
-      Math.min(pulseRangeStart.getTime(), ecoBounds.priorStart.getTime()),
-    );
 
-    const { lunches, students: studentRows } = await readDashboardLunches(db, {
-      establishmentId: session.establishmentId,
-      from: wideLower,
-      toExclusive: ecoBounds.currentEndExclusive,
-    });
-    services = lunches.filter((s) => s.date.getTime() >= start.getTime());
-    wideServices = lunches.map((s) => ({
+    const lunches = recent.lunches;
+    const studentRows = recent.students;
+    wideServices = ecoYear.lunches.map((s) => ({
       date: s.date,
       mealType: s.mealType,
       wasteWeightG: s.wasteWeightG,
@@ -221,6 +231,7 @@ export default async function DashboardPage({
           : undefined,
       })),
     }));
+    services = lunches.filter((s) => s.date.getTime() >= start.getTime());
     dashboardStudents = studentRows;
   } catch (e) {
     if (e instanceof Prisma.PrismaClientInitializationError) {
@@ -558,7 +569,7 @@ export default async function DashboardPage({
   const levelComparisonTotals = aggregateTotalsByLevel(
     services.flatMap((s) =>
       s.metrics.map((m) => ({
-        level: m.group.level,
+        level: m.group?.level,
         presentCount: m.presentCount,
         servedCount: m.servedCount,
         rabCount: m.rabCount,
