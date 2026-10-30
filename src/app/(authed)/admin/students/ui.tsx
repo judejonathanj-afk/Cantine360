@@ -3,16 +3,16 @@
 import { useMemo, useState } from "react";
 import {
   FileText,
-  Leaf,
   Plus,
-  Shield,
   Trash2,
   Upload,
   UserPlus,
   Users,
   Utensils,
+  Wheat,
   X,
 } from "lucide-react";
+import { StudentAvatar } from "@/components/admin/StudentAvatar";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
@@ -508,40 +508,53 @@ export function AdminStudentsClient({
                     }
                   }}
                   className={[
-                    "flex cursor-pointer flex-col gap-3 rounded-2xl border-2 px-4 py-4 text-left shadow-sm transition duration-200 hover:z-10 hover:scale-[1.04] hover:shadow-lg motion-reduce:transform-none",
+                    "relative flex cursor-pointer flex-col gap-4 overflow-hidden rounded-[28px] border-2 px-4 py-4 text-left shadow-sm transition duration-200 hover:z-10 hover:scale-[1.03] hover:shadow-lg motion-reduce:transform-none",
                     maternelle
-                      ? "border-sky-500 bg-sky-50"
-                      : "border-emerald-600 bg-emerald-50",
+                      ? "border-sky-200 bg-[#f4f9ff]"
+                      : "border-emerald-200 bg-[#f3fbf6]",
                   ].join(" ")}
                 >
-                  <div className="relative min-h-10">
-                    <div className="flex flex-col items-center gap-1.5 px-20 text-center">
-                      <span className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-base font-extrabold text-white">
+                  <div className="flex items-start gap-3 pr-24">
+                    <StudentAvatar firstName={s.firstName} size={56} />
+                    <div className="min-w-0 pt-0.5">
+                      <p className="text-xl font-extrabold tracking-tight text-zinc-950">
                         {s.firstName} {s.lastName}
-                      </span>
-                      <div className="flex flex-wrap items-center justify-center gap-1.5">
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                         <span
-                          className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${cycleFill}`}
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-extrabold ${cycleFill}`}
                         >
                           {schoolLevelLabelFr(level)}
                         </span>
                         {s.className ? (
                           <span
-                            className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${cycleFill}`}
+                            className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-extrabold ${
+                              maternelle
+                                ? "bg-sky-100 text-sky-800"
+                                : "bg-emerald-100 text-emerald-800"
+                            }`}
                           >
                             {s.className}
                           </span>
                         ) : null}
+                        {s.schoolName ? (
+                          <span className="text-xs font-semibold text-zinc-500">
+                            {s.schoolName}
+                          </span>
+                        ) : null}
+                        {!s.active ? (
+                          <span className="text-xs font-bold text-zinc-600">
+                            (inactif)
+                          </span>
+                        ) : null}
                       </div>
-                      {!s.active ? (
-                        <span className="text-sm font-bold text-zinc-700">(inactif)</span>
-                      ) : null}
                     </div>
-                    <div
-                      className="absolute right-0 top-0 flex shrink-0 items-center gap-2"
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
+                  </div>
+                  <div
+                    className="absolute right-3 top-3 flex shrink-0 items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  >
                       <button
                         type="button"
                         onClick={() => toggleActive(s)}
@@ -565,13 +578,16 @@ export function AdminStudentsClient({
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  </div>
                   <div className="min-w-0 space-y-3">
-                    <div>
-                      <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
+                    <div className="flex gap-3">
+                      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                        <Wheat className="size-4" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                      <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
                         Allergènes
                       </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       {s.allergens.length > 0 ? (
                         s.allergens.map((a) => (
                           <span
@@ -582,25 +598,34 @@ export function AdminStudentsClient({
                           </span>
                         ))
                       ) : (
-                        <span className="text-base font-bold text-zinc-800">
+                        <span className="text-sm font-semibold text-zinc-600">
                           Aucun allergène déclaré
                         </span>
                       )}
                       </div>
+                      </div>
                     </div>
-                    <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
-                      <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
+                    <div
+                      className="flex gap-3"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
+                      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                        <Utensils className="size-4" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                      <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
                         Régimes
                       </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => void toggleDiet(s, "noPork")}
                         className={[
                           "rounded-full px-3 py-1 text-sm font-extrabold",
                           s.noPork
-                            ? "bg-sky-700 text-white"
-                            : "bg-zinc-100 text-zinc-800",
+                            ? "bg-zinc-200 text-zinc-800"
+                            : "bg-white text-zinc-500",
                         ].join(" ")}
                       >
                         Sans porc
@@ -611,16 +636,30 @@ export function AdminStudentsClient({
                         className={[
                           "rounded-full px-3 py-1 text-sm font-extrabold",
                           s.vegetarian
-                            ? "bg-emerald-700 text-white"
-                            : "bg-zinc-100 text-zinc-800",
+                            ? "bg-emerald-600 text-white"
+                            : "bg-white text-zinc-500",
                         ].join(" ")}
                       >
                         Végétarien
                       </button>
                       </div>
+                      </div>
                     </div>
-                    <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
-                      <p className="mb-2 inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                    <div
+                      className="flex gap-3"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
+                      <span
+                        className={[
+                          "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-white",
+                          maternelle ? "bg-sky-500" : "bg-emerald-500",
+                        ].join(" ")}
+                      >
+                        <FileText className="size-4" aria-hidden />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                      <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
                         Consignes parents
                       </p>
                       <textarea
@@ -630,9 +669,10 @@ export function AdminStudentsClient({
                         maxLength={500}
                         onClick={(e) => e.stopPropagation()}
                         onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                        className="mt-1 w-full min-w-full rounded-xl border-2 border-zinc-900 bg-zinc-50 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:bg-white"
+                        className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
                         placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
                       />
+                      </div>
                     </div>
                     <p
                       className={[
@@ -665,36 +705,51 @@ export function AdminStudentsClient({
         }}
       >
         <DialogContent
-          className="z-[100] max-w-2xl overflow-hidden rounded-[28px] border-2 border-emerald-200 bg-[#f4fbf6] p-6 shadow-xl sm:max-w-2xl sm:p-8"
+          className={[
+            "z-[100] max-w-2xl overflow-hidden rounded-[28px] border-2 p-6 shadow-xl sm:max-w-2xl sm:p-8",
+            openLevel === "MATERNELLE"
+              ? "border-sky-200 bg-[#f4f9ff]"
+              : "border-emerald-200 bg-[#f3fbf6]",
+          ].join(" ")}
           overlayClassName="z-[100]"
         >
           {openStudent ? (
             <>
-              <Leaf
-                className="pointer-events-none absolute -left-6 -bottom-8 size-28 text-emerald-100"
-                strokeWidth={1.25}
-                aria-hidden
-              />
-              <Leaf
-                className="pointer-events-none absolute -right-4 -top-8 size-24 rotate-45 text-emerald-100"
-                strokeWidth={1.25}
-                aria-hidden
-              />
               <DialogHeader className="relative z-10 pr-8 text-left">
-                <div className="flex items-start gap-3">
-                  <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                    <Leaf className="size-6" aria-hidden />
-                  </span>
+                <div className="flex items-start gap-4">
+                  <StudentAvatar firstName={openStudent.firstName} size={72} />
                   <div className="min-w-0">
-                    <DialogTitle className="text-2xl font-extrabold tracking-tight text-emerald-950">
-                      Allergènes & Régimes
-                    </DialogTitle>
-                    <DialogDescription className="mt-1 text-sm font-medium leading-relaxed text-zinc-600">
+                    <DialogTitle className="text-2xl font-extrabold tracking-tight text-zinc-950">
                       {openStudent.firstName} {openStudent.lastName}
-                      {openStudent.className ? ` · ${openStudent.className}` : ""}
-                      {` · ${schoolLevelLabelFr(openLevel)}`}
-                      . Indiquez les allergies, régimes alimentaires et consignes
-                      spécifiques de cet élève.
+                    </DialogTitle>
+                    <DialogDescription asChild>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
+                            openLevel === "MATERNELLE"
+                              ? "bg-sky-400 text-sky-950"
+                              : "bg-emerald-400 text-emerald-950"
+                          }`}
+                        >
+                          {schoolLevelLabelFr(openLevel)}
+                        </span>
+                        {openStudent.className ? (
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
+                              openLevel === "MATERNELLE"
+                                ? "bg-sky-100 text-sky-800"
+                                : "bg-emerald-100 text-emerald-800"
+                            }`}
+                          >
+                            {openStudent.className}
+                          </span>
+                        ) : null}
+                        {openStudent.schoolName ? (
+                          <span className="text-sm font-semibold text-zinc-500">
+                            {openStudent.schoolName}
+                          </span>
+                        ) : null}
+                      </div>
                     </DialogDescription>
                   </div>
                 </div>
@@ -702,8 +757,8 @@ export function AdminStudentsClient({
 
               <div className="relative z-10 space-y-5">
                 <div className="flex gap-3">
-                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-                    <Shield className="size-5" aria-hidden />
+                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                    <Wheat className="size-5" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
@@ -778,7 +833,7 @@ export function AdminStudentsClient({
                 </div>
 
                 <div className="flex gap-3">
-                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
                     <Utensils className="size-5" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -863,7 +918,12 @@ export function AdminStudentsClient({
                 </div>
 
                 <div className="flex gap-3">
-                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <span
+                    className={[
+                      "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full text-white",
+                      openLevel === "MATERNELLE" ? "bg-sky-500" : "bg-emerald-500",
+                    ].join(" ")}
+                  >
                     <FileText className="size-5" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
