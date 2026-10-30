@@ -25,6 +25,7 @@ export function CantinePlusFold({
       subtitle={subtitle}
       hint="Note, RAB et déchets — lecture globale en graphique et en chiffres. Filtrez, lisez, téléchargez."
       icon={Sparkles}
+      iconTileClassName="bg-[#ddc8f8] text-[#5b21b6]"
       labelledBy="cantine-plus-overlay-title"
       closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
       headerAction={headerAction}

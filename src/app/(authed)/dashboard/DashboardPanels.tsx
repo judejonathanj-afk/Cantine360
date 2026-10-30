@@ -420,6 +420,7 @@ export default function DashboardPanels({
         subtitle="Suivez présents, servis, RAB et refus jour par jour, comparez les cycles, puis lisez la conclusion."
         hint="Présents → servis → RAB / refus, jour par jour. Filtrez, lisez, téléchargez."
         icon={Utensils}
+        iconTileClassName="bg-[#f3d7a0] text-[#6b4a12]"
         labelledBy="meal-flow-overlay-title"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
@@ -507,6 +508,7 @@ export default function DashboardPanels({
           subtitle="Comparez le service, le RAB et les refus par cycle, pour ajuster portions et menu."
           hint={`Taux de service = servis / présents · RAB et refus = vs assiettes servies · ${days} jours. Filtrez, lisez, téléchargez.`}
           icon={GitCompareArrows}
+          iconTileClassName="bg-[#bfe4f5] text-[#0b4a66]"
           labelledBy="cycle-rates-overlay-title"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
           headerAction={
@@ -594,6 +596,7 @@ export default function DashboardPanels({
         subtitle="Suivez les pesées dans le temps, comparez maternelle et primaire, puis lisez la conclusion."
         hint="Courbe pleine = poids des déchets (g) · pointillés = g pour 100 assiettes. Filtrez, lisez, téléchargez."
         icon={Trash2}
+        iconTileClassName="bg-[#f6c9d6] text-[#7a2d45]"
         labelledBy="waste-evolution-overlay-title"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
@@ -688,6 +691,7 @@ export default function DashboardPanels({
         }
         titleClassName="text-[#c2185b]"
         icon={Layers}
+        iconTileClassName="bg-[#ddc8f8] text-[#5b21b6]"
         labelledBy="service-context-overlay-title"
         dialogClassName="w-[calc(100vw-2rem)] max-w-[88rem] sm:w-[calc(100vw-2.75rem)]"
         panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
@@ -786,6 +790,7 @@ export default function DashboardPanels({
         hint="Présents, servis, RAB, refus et déchets — une ligne par jour. Filtrez, lisez, téléchargez."
         titleClassName="text-[#38bdf8]"
         icon={TableIcon}
+        iconTileClassName="bg-[#d8f48a] text-[#0d3b2e]"
         labelledBy="day-tracking-overlay-title"
         dialogClassName="w-[calc(100vw-2rem)] max-w-[88rem] sm:w-[calc(100vw-2.75rem)]"
         panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"

@@ -18,11 +18,35 @@ type Item = {
 };
 
 const CATEGORY_LABEL: Record<Category, string> = {
-  STARTER: "🥬 Entrées",
-  MAIN: "🥘 Plats",
-  DESSERT: "🧁 Desserts",
+  STARTER: "Entrées",
+  MAIN: "Plats",
+  DESSERT: "Desserts",
   OTHER: "Autres",
 };
+
+const CATEGORY_ICON: Record<
+  Category,
+  { emoji: string; tileClass: string }
+> = {
+  STARTER: { emoji: "🥬", tileClass: "bg-[#d8f48a]" },
+  MAIN: { emoji: "🥘", tileClass: "bg-[#f3d7a0]" },
+  DESSERT: { emoji: "🧁", tileClass: "bg-[#f6c9d6]" },
+  OTHER: { emoji: "✨", tileClass: "bg-[#ddc8f8]" },
+};
+
+function CategoryRubriqueIcon({ category }: { category: Category }) {
+  const visual = CATEGORY_ICON[category];
+  return (
+    <span className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]">
+      <span
+        className={`flex size-11 items-center justify-center rounded-[14px] text-[1.65rem] leading-none sm:size-12 sm:rounded-2xl sm:text-[1.85rem] ${visual.tileClass}`}
+        aria-hidden
+      >
+        {visual.emoji}
+      </span>
+    </span>
+  );
+}
 
 const CATEGORY_PLACEHOLDER: Record<Category, string> = {
   STARTER: "Ex: Salade de tomates",
@@ -181,9 +205,9 @@ export function MenuEditor({
   return (
     <div className="space-y-4">
       <p className="mx-auto max-w-4xl px-2 text-center text-base leading-relaxed text-zinc-600 md:text-lg">
-        Renseignez <strong className="font-medium text-zinc-900">🥬 entrées</strong>,{" "}
-        <strong className="font-medium text-zinc-900">🥘 plats</strong>,{" "}
-        <strong className="font-medium text-zinc-900">🧁 desserts</strong> et{" "}
+        Renseignez <strong className="font-medium text-zinc-900">entrées</strong>,{" "}
+        <strong className="font-medium text-zinc-900">plats</strong>,{" "}
+        <strong className="font-medium text-zinc-900">desserts</strong> et{" "}
         <strong className="font-medium text-zinc-900">autres</strong> : intitulé, allergènes,{" "}
         <strong className="font-medium text-zinc-900">porc / viande</strong> et{" "}
         <strong className="font-medium text-zinc-900">grammage (g/assiette)</strong>.{" "}
@@ -212,20 +236,15 @@ export function MenuEditor({
               type="button"
               onClick={() => toggleCategory(cat)}
               aria-expanded={isOpen}
-              className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
+              className="flex min-w-0 flex-1 items-center gap-3.5 px-4 py-3.5 text-left transition hover:bg-white/5 sm:gap-4 sm:px-5 sm:py-4"
             >
-              <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DFF59A] text-lg text-[#0d3b2e] sm:h-10 sm:w-10"
-                aria-hidden
-              >
-                {CATEGORY_LABEL[cat].split(" ")[0]}
-              </span>
+              <CategoryRubriqueIcon category={cat} />
               <span className="min-w-0 flex-1">
                 <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
                   Rubrique
                 </span>
                 <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
-                  {CATEGORY_LABEL[cat].replace(/^[^\s]+\s/, "")}
+                  {CATEGORY_LABEL[cat]}
                 </span>
                 {!isOpen ? (
                   <span className="mt-0.5 block truncate text-sm text-white/80">

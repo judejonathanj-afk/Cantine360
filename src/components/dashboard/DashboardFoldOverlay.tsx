@@ -21,6 +21,7 @@ export function DashboardFoldOverlay({
   closeButtonClassName,
   foldTone = "forest",
   icon: Icon,
+  iconTileClassName,
   labelledBy,
   children,
 }: {
@@ -37,6 +38,7 @@ export function DashboardFoldOverlay({
   closeButtonClassName?: string;
   foldTone?: "forest" | "yellow" | "violet";
   icon: LucideIcon;
+  iconTileClassName?: string;
   labelledBy: string;
   children: ReactNode;
 }) {
@@ -89,17 +91,23 @@ export function DashboardFoldOverlay({
           )}
         >
           <span
-            className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full sm:h-11 sm:w-11",
-              yellowFold
-                ? "bg-amber-500 text-white"
-                : violetFold
-                  ? "bg-violet-200 text-[#5b21b6]"
-                  : "bg-[#DFF59A] text-[#0d3b2e]",
-            )}
+            className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
             aria-hidden
           >
-            <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+            <span
+              className={cn(
+                "flex size-11 items-center justify-center rounded-[14px] sm:size-12 sm:rounded-2xl",
+                iconTileClassName
+                  ? iconTileClassName
+                  : yellowFold
+                    ? "bg-amber-200 text-amber-950"
+                    : violetFold
+                      ? "bg-violet-200 text-[#5b21b6]"
+                      : "bg-[#d8f48a] text-[#0d3b2e]",
+              )}
+            >
+              <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
+            </span>
           </span>
           <span className="min-w-0 flex-1">
             <span
