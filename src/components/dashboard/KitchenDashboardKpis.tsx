@@ -131,8 +131,8 @@ export function KitchenDashboardKpis({
       label: "Élèves présents",
       value: fmt(totals.present),
       sub: `${daysPresent} jour${daysPresent > 1 ? "s" : ""} de service`,
-      accent: "border-zinc-900 bg-zinc-50",
-      iconWrap: "bg-zinc-900 text-white",
+      accent: "border-[#18181b] bg-white",
+      iconWrap: "bg-[#18181b] text-white",
     },
     {
       id: "served",
@@ -140,8 +140,8 @@ export function KitchenDashboardKpis({
       label: "Assiettes servies",
       value: fmt(totals.served),
       sub: `${servedVsPresentPct} des présents`,
-      accent: "border-emerald-700 bg-emerald-50",
-      iconWrap: "bg-emerald-700 text-white",
+      accent: "border-[#0f766e] bg-[#e7f8f1]",
+      iconWrap: "bg-[#0f766e] text-white",
     },
     {
       id: "rab",
@@ -149,8 +149,8 @@ export function KitchenDashboardKpis({
       label: "RAB",
       value: fmt(totals.rab),
       sub: `${rabRatePct} des servis`,
-      accent: "border-teal-700 bg-teal-50",
-      iconWrap: "bg-teal-700 text-white",
+      accent: "border-[#0f766e] bg-[#e6f7f4]",
+      iconWrap: "bg-[#0d9488] text-white",
     },
     {
       id: "refused",
@@ -158,8 +158,8 @@ export function KitchenDashboardKpis({
       label: "Refus",
       value: fmt(totals.refused),
       sub: `Taux ${refusalRatePct}`,
-      accent: "border-rose-600 bg-rose-50",
-      iconWrap: "bg-rose-600 text-white",
+      accent: "border-[#e11d8c] bg-[#fde8f1]",
+      iconWrap: "bg-[#e11d8c] text-white",
     },
     {
       id: "waste",
@@ -171,8 +171,8 @@ export function KitchenDashboardKpis({
         wasteGramsPer100Served != null
           ? `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100`
           : "Pesée en fin de service",
-      accent: "border-amber-600 bg-amber-50",
-      iconWrap: "bg-amber-600 text-white",
+      accent: "border-[#ea580c] bg-[#fff4e5]",
+      iconWrap: "bg-[#ea580c] text-white",
     },
   ];
 
@@ -303,28 +303,28 @@ export function KitchenDashboardKpis({
               type="button"
               onClick={() => setOpen(card.id)}
               className={cn(
-                "group rounded-3xl border-2 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+                "group rounded-[22px] border-[2.5px] p-4 text-left shadow-none transition hover:-translate-y-0.5",
                 card.accent,
               )}
             >
               <span
                 className={cn(
-                  "flex size-10 items-center justify-center rounded-2xl",
+                  "flex size-10 items-center justify-center rounded-full",
                   card.iconWrap,
                 )}
               >
                 <Icon className="size-5" aria-hidden />
               </span>
-              <p className="mt-3 text-sm font-extrabold uppercase tracking-[0.08em] text-zinc-950">
+              <p className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
                 {card.label}
               </p>
-              <p className="mt-1 font-display text-3xl font-extrabold tabular-nums tracking-tight text-zinc-950">
+              <p className="mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {card.value}
               </p>
-              <p className="mt-1 text-sm font-semibold leading-snug text-zinc-800">
+              <p className="mt-2 text-sm font-medium leading-snug text-zinc-600">
                 {card.sub}
               </p>
-              <p className="mt-3 text-xs font-bold text-zinc-700 group-hover:underline">
+              <p className="mt-4 text-xs font-semibold text-zinc-500">
                 Voir le détail
               </p>
             </button>
@@ -343,7 +343,7 @@ export function KitchenDashboardKpis({
                 <DialogTitle className="flex items-center gap-2 text-xl font-extrabold text-zinc-950">
                   <span
                     className={cn(
-                      "flex size-9 items-center justify-center rounded-xl",
+                      "flex size-9 items-center justify-center rounded-full",
                       activeCard.iconWrap,
                     )}
                   >
