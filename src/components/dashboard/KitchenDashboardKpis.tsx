@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   Ban,
   Repeat2,
@@ -49,6 +49,27 @@ function peakDay(
 ) {
   if (rows.length === 0) return null;
   return rows.reduce((best, r) => (pick(r) > pick(best) ? r : best));
+}
+
+function LevelFill({
+  level,
+  children,
+}: {
+  level: "MATERNELLE" | "PRIMAIRE";
+  children: ReactNode;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2.5 py-0.5 font-extrabold",
+        level === "MATERNELLE"
+          ? "bg-sky-400 text-sky-950"
+          : "bg-emerald-400 text-emerald-950",
+      )}
+    >
+      {children}
+    </span>
+  );
 }
 
 export function KitchenDashboardKpis({
@@ -157,11 +178,21 @@ export function KitchenDashboardKpis({
 
   const details: Record<
     KpiId,
-    { title: string; lead: string; lines: string[] }
+    { title: string; lead: ReactNode; lines: ReactNode[] }
   > = {
     present: {
       title: "Élèves présents",
-      lead: `${fmt(totals.present)} présents sur ${days} jours · ${levelNote}.`,
+      lead: (
+        <>
+          {fmt(totals.present)} présents sur {days} jours ·{" "}
+          {levelFilter === "all" ? (
+            levelNote
+          ) : (
+            <LevelFill level={levelFilter}>{levelNote}</LevelFill>
+          )}
+          .
+        </>
+      ),
       lines: [
         daysPresent > 0
           ? `Moyenne : ${fmt(avgPresent)} présents par jour de service (${daysPresent} jour${daysPresent > 1 ? "s" : ""}).`
@@ -214,13 +245,39 @@ export function KitchenDashboardKpis({
     waste: {
       title: "Déchets (poids)",
       lead:
-        totalWasteWeightG > 0
-          ? `${fmt(totalWasteWeightG)} g pesés sur ${days} jours · ${levelNote}.`
-          : "Pas encore de pesée sur la période.",
+        totalWasteWeightG > 0 ? (
+          <>
+            {fmt(totalWasteWeightG)} g pesés sur {days} jours ·{" "}
+            {levelFilter === "all" ? (
+              levelNote
+            ) : (
+              <LevelFill level={levelFilter}>{levelNote}</LevelFill>
+            )}
+            .
+          </>
+        ) : (
+          "Pas encore de pesée sur la période."
+        ),
       lines: [
-        totalWasteMaternelleG > 0 || totalWastePrimaireG > 0
-          ? `Répartition : maternelle ${fmt(totalWasteMaternelleG)} g · primaire ${fmt(totalWastePrimaireG)} g.`
-          : "Indiquez maternelle et primaire à la pesée de fin de service.",
+        totalWasteMaternelleG > 0 || totalWastePrimaireG > 0 ? (
+          <span className="flex flex-wrap items-center gap-2">
+            <span>Répartition :</span>
+            <LevelFill level="MATERNELLE">
+              maternelle {fmt(totalWasteMaternelleG)} g
+            </LevelFill>
+            <LevelFill level="PRIMAIRE">
+              primaire {fmt(totalWastePrimaireG)} g
+            </LevelFill>
+          </span>
+        ) : (
+          <span className="flex flex-wrap items-center gap-2">
+            <span>Indiquez</span>
+            <LevelFill level="MATERNELLE">maternelle</LevelFill>
+            <span>et</span>
+            <LevelFill level="PRIMAIRE">primaire</LevelFill>
+            <span>à la pesée de fin de service.</span>
+          </span>
+        ),
         wasteGramsPer100Served != null
           ? `Soit ${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g de déchets pour 100 assiettes servies.`
           : "Le g / 100 apparaît dès qu’une pesée et des assiettes servies sont saisies.",
@@ -299,9 +356,9 @@ export function KitchenDashboardKpis({
                 </DialogDescription>
               </DialogHeader>
               <ul className="space-y-2.5">
-                {active.lines.map((line) => (
+                {active.lines.map((line, i) => (
                   <li
-                    key={line}
+                    key={i}
                     className="rounded-2xl bg-zinc-50 px-3.5 py-3 text-base font-semibold leading-snug text-zinc-950"
                   >
                     {line}
