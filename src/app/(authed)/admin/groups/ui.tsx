@@ -454,7 +454,7 @@ export function AdminGroupsClient({
                 <div
                   key={g.id}
                   className={[
-                    "rounded-2xl border p-4",
+                    "relative rounded-2xl border p-4 shadow-sm transition duration-200 hover:z-20 hover:scale-[1.03] hover:shadow-lg motion-reduce:transform-none",
                     g.level === "MATERNELLE"
                       ? "border-sky-300 bg-sky-100"
                       : "border-emerald-300 bg-emerald-100",
