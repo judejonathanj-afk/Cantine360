@@ -12,7 +12,6 @@ import {
   Wheat,
   X,
 } from "lucide-react";
-import { StudentAvatar } from "@/components/admin/StudentAvatar";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
@@ -515,7 +514,6 @@ export function AdminStudentsClient({
                   ].join(" ")}
                 >
                   <div className="flex items-start gap-3 pr-24">
-                    <StudentAvatar firstName={s.firstName} size={56} />
                     <div className="min-w-0 pt-0.5">
                       <p className="text-xl font-extrabold tracking-tight text-zinc-950">
                         {s.firstName} {s.lastName}
@@ -717,7 +715,6 @@ export function AdminStudentsClient({
             <>
               <DialogHeader className="relative z-10 pr-8 text-left">
                 <div className="flex items-start gap-4">
-                  <StudentAvatar firstName={openStudent.firstName} size={72} />
                   <div className="min-w-0">
                     <DialogTitle className="text-2xl font-extrabold tracking-tight text-zinc-950">
                       {openStudent.firstName} {openStudent.lastName}
