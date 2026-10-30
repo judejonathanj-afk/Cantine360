@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Ban,
   ClipboardList,
@@ -289,7 +290,11 @@ export default function DashboardPanels({
   antiWasteModeEnabled?: boolean;
   antiWasteTargetGPer100?: number | null;
 }) {
+  const pathname = usePathname();
   const isKitchen = role === "KITCHEN";
+  /** Lecture globale / Cantine+ : admin seulement, jamais l’URL cuisine `/dashboard`. */
+  const hideCantinePlus =
+    isKitchen || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const chartLevels =
     levelFilter === "all" ? SCHOOL_LEVELS : ([levelFilter] as SchoolLevel[]);
   const gridCols =
@@ -481,8 +486,25 @@ export default function DashboardPanels({
         ))}
       </div>
 
-      {(() => {
-        const pulseCard = (
+      {!hideCantinePlus ? (
+        <CantinePlusFold
+          subtitle="Cantine+ suit le repas du quotidien : elle calcule une note sur 100, met en avant le RAB et le poids des déchets, et affiche les tendances pour aider cuisine et direction à réduire le gaspillage."
+          headerAction={
+            <OverlayTableToolbar
+              days={days}
+              levelFilter={levelFilter}
+              daysHref={daysHref}
+              levelHref={levelHref}
+              downloadDisabled={pulseRows.length === 0 && pulseWasteRows.length === 0}
+              onDownload={() =>
+                downloadCantinePlusPdf(pulseRows, pulseWasteRows, {
+                  days,
+                  levelFilter,
+                })
+              }
+            />
+          }
+        >
           <CantinePulseCard
             rows={pulseRows}
             wasteRows={pulseWasteRows}
@@ -491,7 +513,7 @@ export default function DashboardPanels({
             showBrandTitle
             levelFilter={levelFilter}
             eco={
-              !isKitchen && eco
+              eco
                 ? {
                     groups: eco.groups,
                     periodTitle: eco.periodTitle,
@@ -503,30 +525,8 @@ export default function DashboardPanels({
             antiWasteModeEnabled={antiWasteModeEnabled}
             antiWasteTargetGPer100={antiWasteTargetGPer100}
           />
-        );
-        return isKitchen ? null : (
-          <CantinePlusFold>
-            subtitle="Cantine+ suit le repas du quotidien : elle calcule une note sur 100, met en avant le RAB et le poids des déchets, et affiche les tendances pour aider cuisine et direction à réduire le gaspillage."
-            headerAction={
-              <OverlayTableToolbar
-                days={days}
-                levelFilter={levelFilter}
-                daysHref={daysHref}
-                levelHref={levelHref}
-                downloadDisabled={pulseRows.length === 0 && pulseWasteRows.length === 0}
-                onDownload={() =>
-                  downloadCantinePlusPdf(pulseRows, pulseWasteRows, {
-                    days,
-                    levelFilter,
-                  })
-                }
-              />
-            }
-          >
-            {pulseCard}
-          </CantinePlusFold>
-        );
-      })()}
+        </CantinePlusFold>
+      ) : null}
 
       {!isKitchen ? (
       <DashboardFoldOverlay
