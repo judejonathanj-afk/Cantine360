@@ -49,7 +49,6 @@ import { downloadMealFlowPdf } from "@/lib/downloadMealFlowPdf";
 import { downloadCantinePlusPdf } from "@/lib/downloadCantinePlusPdf";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
-import { sessionRoleForPath } from "@/server/auth-cookies";
 
 type Totals = {
   present: number;
@@ -240,8 +239,7 @@ export default function DashboardPanels({
   antiWasteTargetGPer100?: number | null;
 }) {
   const pathname = usePathname();
-  const viewRole = sessionRoleForPath(pathname) ?? role;
-  const isKitchen = viewRole === "KITCHEN";
+  const isKitchen = role === "KITCHEN";
   /** Lecture globale / Cantine+ : admin seulement, jamais l’URL cuisine `/dashboard`. */
   const hideCantinePlus =
     isKitchen || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
@@ -258,7 +256,7 @@ export default function DashboardPanels({
   }
 
   const dashboardBase =
-    viewRole === "ADMIN" ? "/admin/dashboard" : "/dashboard";
+    role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
 
   function daysHref(nextDays: 7 | 30) {
     const params = new URLSearchParams();

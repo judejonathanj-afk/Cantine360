@@ -21,6 +21,7 @@ import {
   consumeLoginAttempt,
 } from "@/server/loginRateLimit";
 import { z } from "zod";
+import { loginRedirectTo } from "@/lib/loginRedirect";
 
 const BodySchema = z.object({
   pin: z.string().min(1),
@@ -145,20 +146,7 @@ export async function POST(req: Request) {
       accessCredentialRevision: establishment.accessCredentialRevision,
     });
 
-    const defaultHome = role === "ADMIN" ? "/admin/dashboard" : "/service";
-    const requestedNext = parsed.data.next;
-    const nextLooksSafe =
-      typeof requestedNext === "string" &&
-      requestedNext.startsWith("/") &&
-      !requestedNext.startsWith("//");
-    // Admin : la cuisine s’ouvre avec le compte cuisine, pas via ?next=/service…
-    const nextOpensService =
-      typeof requestedNext === "string" &&
-      (requestedNext === "/service" || requestedNext.startsWith("/service/"));
-    const redirectTo =
-      nextLooksSafe && !(role === "ADMIN" && nextOpensService)
-        ? requestedNext!
-        : defaultHome;
+    const redirectTo = loginRedirectTo(role, parsed.data.next);
 
     const cookieHeader = req.headers.get("cookie") ?? "";
     const cookieMap = parseCookieHeader(cookieHeader);

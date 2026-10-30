@@ -1,23 +1,5 @@
 import { describe, expect, it } from "vitest";
-
-/** Miroir de la logique de redirection post-login (api/auth/login). */
-function loginRedirectTo(
-  role: "ADMIN" | "KITCHEN",
-  requestedNext?: string,
-): string {
-  const defaultHome = role === "ADMIN" ? "/admin/dashboard" : "/service";
-  const nextLooksSafe =
-    typeof requestedNext === "string" &&
-    requestedNext.startsWith("/") &&
-    !requestedNext.startsWith("//");
-  const nextOpensService =
-    typeof requestedNext === "string" &&
-    (requestedNext === "/service" || requestedNext.startsWith("/service/"));
-  if (nextLooksSafe && !(role === "ADMIN" && nextOpensService)) {
-    return requestedNext!;
-  }
-  return defaultHome;
-}
+import { loginRedirectTo } from "@/lib/loginRedirect";
 
 /** Miroir de l’ordre de nav admin (AppShell) : pas de Service, réservé à la cuisine. */
 function adminNavLabels(): string[] {
@@ -49,6 +31,14 @@ describe("admin login redirect", () => {
     expect(loginRedirectTo("ADMIN", "/service/abc123/menu")).toBe(
       "/admin/dashboard",
     );
+    expect(loginRedirectTo("ADMIN", "/dashboard")).toBe("/admin/dashboard");
+  });
+
+  it("n’ouvre pas l’admin pour la cuisine via next", () => {
+    expect(loginRedirectTo("KITCHEN", "/admin/groups")).toBe("/service");
+    expect(loginRedirectTo("KITCHEN", "/admin/dashboard")).toBe("/service");
+    expect(loginRedirectTo("KITCHEN", "/antigaspillage")).toBe("/service");
+    expect(loginRedirectTo("KITCHEN", "/exports")).toBe("/service");
   });
 
   it("laisse la cuisine reprendre un service via next", () => {

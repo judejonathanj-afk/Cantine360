@@ -10,6 +10,7 @@ import {
   readActiveEstablishmentToken,
   readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
+  sessionRoleForPath,
 } from "@/server/auth-cookies";
 import {
   hadEstablishmentSessionCookies,
@@ -215,6 +216,17 @@ export async function middleware(req: NextRequest) {
   }
 
   const getCookie = (name: string) => req.cookies.get(name)?.value;
+  if (sessionRoleForPath(pathname) === "ADMIN") {
+    const { map } = readEstablishmentSessionsFromCookies(getCookie);
+    const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
+    if (kitchenSlot) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/service";
+      url.search = "";
+      const res = NextResponse.redirect(url);
+      return migrateLegacySessionCookie(req, res);
+    }
+  }
   const hadSession = hadEstablishmentSessionCookies(getCookie);
   const url = req.nextUrl.clone();
   url.pathname = "/login";

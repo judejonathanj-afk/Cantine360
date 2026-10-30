@@ -6,6 +6,46 @@ import {
 } from "@/server/auth-cookies";
 import { pathnameFromHeaders } from "@/server/requestPathname";
 
+function nextLooksSafe(next?: string): next is string {
+  return (
+    typeof next === "string" &&
+    next.startsWith("/") &&
+    !next.startsWith("//")
+  );
+}
+
+function nextIsService(next: string): boolean {
+  return next === "/service" || next.startsWith("/service/");
+}
+
+function nextIsKitchenDashboard(next: string): boolean {
+  return next === "/dashboard" || next.startsWith("/dashboard/");
+}
+
+function nextIsAdminArea(next: string): boolean {
+  return (
+    next.startsWith("/admin") ||
+    next.startsWith("/antigaspillage") ||
+    next.startsWith("/exports")
+  );
+}
+
+/** Accueil après PIN : la cuisine ne suit jamais une URL admin, et l’inverse. */
+export function loginRedirectTo(
+  role: "ADMIN" | "KITCHEN",
+  requestedNext?: string,
+): string {
+  const defaultHome = role === "ADMIN" ? "/admin/dashboard" : "/service";
+  if (!nextLooksSafe(requestedNext)) return defaultHome;
+  if (role === "ADMIN" && (nextIsService(requestedNext) || nextIsKitchenDashboard(requestedNext))) {
+    return defaultHome;
+  }
+  if (role === "KITCHEN" && nextIsAdminArea(requestedNext)) {
+    return defaultHome;
+  }
+  return requestedNext;
+}
+
 export function loginQueryForRedirect(options: {
   next?: string | null;
   hadEstablishmentSession: boolean;

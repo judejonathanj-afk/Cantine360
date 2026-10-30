@@ -25,7 +25,6 @@ import {
   readRememberedServiceId,
   rememberActiveServiceId,
 } from "@/lib/activeService";
-import { sessionRoleForPath } from "@/server/auth-cookies";
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
@@ -71,7 +70,7 @@ export function AppShell({
   children,
 }: Props) {
   const pathname = usePathname();
-  const shellRole = sessionRoleForPath(pathname) ?? role;
+  const shellRole = role;
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
