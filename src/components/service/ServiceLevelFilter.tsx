@@ -2,16 +2,37 @@
 
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import { schoolLevelLabelFr } from "@/lib/schoolLevel";
+import { cn } from "@/lib/utils";
 
 type LevelFilterCard = { level: SchoolLevel };
 
-function levelButtonClass(active: boolean) {
-  return [
-    "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-    active
-      ? "bg-zinc-900 text-white"
-      : "bg-white text-zinc-700 ring-1 ring-zinc-200 hover:bg-zinc-50",
-  ].join(" ");
+function SegmentButton({
+  active,
+  disabled,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+  children: string;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "rounded-full px-3.5 py-1.5 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+        active
+          ? "bg-[#0d7a45] text-white shadow-sm"
+          : "text-zinc-900 hover:bg-zinc-100",
+      )}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function ServiceLevelFilter({
@@ -28,29 +49,29 @@ export function ServiceLevelFilter({
   const maternelleCount = cards.filter((c) => c.level === "MATERNELLE").length;
   const primaireCount = cards.filter((c) => c.level === "PRIMAIRE").length;
 
-  function toggle(level: SchoolLevel) {
-    onChange(value === level ? "all" : level);
-  }
-
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-zinc-700">Niveau :</span>
-      <button
-        type="button"
-        disabled={primaireCount === 0}
-        onClick={() => toggle("PRIMAIRE")}
-        className={levelButtonClass(value === "PRIMAIRE")}
-      >
-        {schoolLevelLabelFr("PRIMAIRE")} ({primaireCount})
-      </button>
-      <button
-        type="button"
+    <div
+      role="group"
+      aria-label="Niveau"
+      className="inline-flex shrink-0 items-center rounded-full bg-white p-1 shadow-sm"
+    >
+      <SegmentButton active={value === "all"} onClick={() => onChange("all")}>
+        Tous niveaux
+      </SegmentButton>
+      <SegmentButton
+        active={value === "MATERNELLE"}
         disabled={maternelleCount === 0}
-        onClick={() => toggle("MATERNELLE")}
-        className={levelButtonClass(value === "MATERNELLE")}
+        onClick={() => onChange("MATERNELLE")}
       >
-        {schoolLevelLabelFr("MATERNELLE")} ({maternelleCount})
-      </button>
+        {schoolLevelLabelFr("MATERNELLE")}
+      </SegmentButton>
+      <SegmentButton
+        active={value === "PRIMAIRE"}
+        disabled={primaireCount === 0}
+        onClick={() => onChange("PRIMAIRE")}
+      >
+        {schoolLevelLabelFr("PRIMAIRE")}
+      </SegmentButton>
     </div>
   );
 }

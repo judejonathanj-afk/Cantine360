@@ -99,21 +99,24 @@ export function ServiceMetricsSection({
           }}
         />
       </div>
-      <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
-        <ServiceLevelFilter
-          cards={liveCards}
-          value={levelFilter}
-          onChange={setLevelFilter}
-        />
-        {showCsvImport ? null : (
+      {showCsvImport ? null : (
+        <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
           <ServiceAttendanceImport
             serviceId={serviceId}
             presentTotal={livePresent}
             className="items-end"
           />
-        )}
-      </div>
+        </div>
+      )}
     </>
+  );
+
+  const headerFilter = (
+    <ServiceLevelFilter
+      cards={liveCards}
+      value={levelFilter}
+      onChange={setLevelFilter}
+    />
   );
 
   return (
@@ -126,6 +129,7 @@ export function ServiceMetricsSection({
       onOpenChange={setClassesOpen}
       expandGroupId={scrollGroupId}
       toolbar={classToolbar}
+      headerFilter={headerFilter}
     />
   );
 }

@@ -40,6 +40,7 @@ export function ServiceClassGrid({
   onOpenChange,
   expandGroupId = null,
   toolbar,
+  headerFilter,
 }: {
   serviceId: string;
   cards: ServiceClassCard[];
@@ -50,6 +51,7 @@ export function ServiceClassGrid({
   onOpenChange: (open: boolean) => void;
   expandGroupId?: string | null;
   toolbar?: ReactNode;
+  headerFilter?: ReactNode;
 }) {
   useEffect(() => {
     if (expandGroupId) onOpenChange(true);
@@ -116,17 +118,20 @@ export function ServiceClassGrid({
         labelledBy="classes-overlay-title"
         className="max-w-[84rem]"
       >
-        <div className="mb-2 px-1">
-          <h2
-            id="classes-overlay-title"
-            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
-          >
-            <GraduationCap className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-            Les classes
-          </h2>
-          <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
-            Saisissez les compteurs sur chaque carte, puis Enregistrer.
-          </p>
+        <div className="mb-2 flex flex-wrap items-start justify-between gap-3 px-1">
+          <div className="min-w-0">
+            <h2
+              id="classes-overlay-title"
+              className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+            >
+              <GraduationCap className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+              Les classes
+            </h2>
+            <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+              Saisissez les compteurs sur chaque carte, puis Enregistrer.
+            </p>
+          </div>
+          {headerFilter}
         </div>
         <div className="flex h-[86vh] min-h-0 w-full flex-col gap-1 rounded-2xl border border-zinc-200/80 bg-white p-1 shadow-[0_24px_60px_rgba(24,24,27,0.28)]">
           <div className="shrink-0 px-1 pt-0.5">{toolbar}</div>
@@ -139,7 +144,7 @@ export function ServiceClassGrid({
             <div
               className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
             >
-            <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2 lg:gap-4">
+            <div className="grid grid-cols-1 gap-3.5 p-1 lg:grid-cols-2 lg:gap-4">
               {cards.map((m) => {
                 const done =
                   m.presentCount > 0 ||
@@ -152,7 +157,7 @@ export function ServiceClassGrid({
                   <article
                     key={m.groupId}
                     id={`group-${m.groupId}`}
-                    className="relative flex h-full flex-col rounded-[18px] border-2 p-3.5 shadow-sm"
+                    className="relative z-0 flex h-full flex-col rounded-[18px] border-2 p-3.5 shadow-sm transition duration-200 hover:z-20 hover:scale-[1.03] hover:shadow-lg motion-reduce:transform-none"
                     style={{
                       backgroundColor: cardColor,
                       borderColor: cardColor,
