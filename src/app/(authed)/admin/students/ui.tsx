@@ -481,7 +481,7 @@ export function AdminStudentsClient({
                   </div>
                   <div className="min-w-0 space-y-3">
                     <div>
-                      <p className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                      <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
                         Allergènes
                       </p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -502,7 +502,7 @@ export function AdminStudentsClient({
                       </div>
                     </div>
                     <div>
-                      <p className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                      <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
                         Régimes
                       </p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -543,7 +543,7 @@ export function AdminStudentsClient({
                         maxLength={500}
                         onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
                         className="mt-1 w-full min-w-full rounded-xl border-2 border-zinc-900 bg-zinc-50 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:bg-white"
-                        placeholder="Sinon : à ne pas servir — allergie"
+                        placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
                       />
                     </div>
                   </div>
