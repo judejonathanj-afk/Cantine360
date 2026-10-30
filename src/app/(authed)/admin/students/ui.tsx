@@ -2,14 +2,11 @@
 
 import { useMemo, useState } from "react";
 import {
-  FileText,
   Plus,
   Trash2,
   Upload,
   UserPlus,
   Users,
-  Utensils,
-  Wheat,
   X,
 } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
@@ -577,11 +574,7 @@ export function AdminStudentsClient({
                       </Button>
                     </div>
                   <div className="min-w-0 space-y-3">
-                    <div className="flex gap-3">
-                      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                        <Wheat className="size-4" aria-hidden />
-                      </span>
-                      <div className="min-w-0 flex-1">
+                    <div>
                       <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
                         Allergènes
                       </p>
@@ -601,17 +594,11 @@ export function AdminStudentsClient({
                         </span>
                       )}
                       </div>
-                      </div>
                     </div>
                     <div
-                      className="flex gap-3"
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
                     >
-                      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
-                        <Utensils className="size-4" aria-hidden />
-                      </span>
-                      <div className="min-w-0 flex-1">
                       <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
                         Régimes
                       </p>
@@ -641,22 +628,11 @@ export function AdminStudentsClient({
                         Végétarien
                       </button>
                       </div>
-                      </div>
                     </div>
                     <div
-                      className="flex gap-3"
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
                     >
-                      <span
-                        className={[
-                          "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full text-white",
-                          maternelle ? "bg-sky-500" : "bg-emerald-500",
-                        ].join(" ")}
-                      >
-                        <FileText className="size-4" aria-hidden />
-                      </span>
-                      <div className="min-w-0 flex-1">
                       <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
                         Consignes parents
                       </p>
@@ -670,7 +646,6 @@ export function AdminStudentsClient({
                         className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
                         placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
                       />
-                      </div>
                     </div>
                     <p
                       className={[
@@ -753,11 +728,7 @@ export function AdminStudentsClient({
               </DialogHeader>
 
               <div className="relative z-10 space-y-5">
-                <div className="flex gap-3">
-                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                    <Wheat className="size-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0 flex-1">
+                <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
                       Allergènes
                     </p>
@@ -826,14 +797,9 @@ export function AdminStudentsClient({
                         ) : null}
                       </div>
                     </div>
-                  </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
-                    <Utensils className="size-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0 flex-1">
+                <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
                       Régimes
                     </p>
@@ -911,19 +877,9 @@ export function AdminStudentsClient({
                         ) : null}
                       </div>
                     </div>
-                  </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <span
-                    className={[
-                      "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full text-white",
-                      openLevel === "MATERNELLE" ? "bg-sky-500" : "bg-emerald-500",
-                    ].join(" ")}
-                  >
-                    <FileText className="size-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0 flex-1">
+                <div>
                     <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
                       Consignes parents
                     </p>
@@ -938,7 +894,6 @@ export function AdminStudentsClient({
                       className="mt-2 w-full rounded-2xl border border-emerald-100 bg-white px-4 py-3 text-sm font-medium leading-relaxed text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
                       placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
                     />
-                  </div>
                 </div>
               </div>
             </>
