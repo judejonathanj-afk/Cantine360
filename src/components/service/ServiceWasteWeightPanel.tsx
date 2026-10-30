@@ -452,7 +452,7 @@ export function ServiceWasteWeightPanel({
         type="button"
         disabled={!canSave}
         onClick={() => void save()}
-        className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(0,196,106,0.35)] transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] active:bg-[#009e55] disabled:bg-[#00c46a] disabled:text-white disabled:opacity-100 motion-reduce:hover:scale-100"
+        className="rounded-2xl bg-[#37784a] px-8 py-2.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(55,120,74,0.35)] transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#2f6840] active:scale-[0.98] active:bg-[#275636] disabled:bg-[#37784a] disabled:text-white disabled:opacity-100 motion-reduce:hover:scale-100"
       >
         {status === "saving" ? "Enregistrement…" : "Enregistrer"}
       </button>

@@ -216,7 +216,7 @@ export function ServiceClassGrid({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] active:bg-[#009e55] motion-reduce:hover:scale-100"
+              className="rounded-2xl bg-[#37784a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#2f6840] active:scale-[0.98] active:bg-[#275636] motion-reduce:hover:scale-100"
             >
               Enregistrer
             </button>
