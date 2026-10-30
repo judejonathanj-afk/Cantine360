@@ -7,6 +7,7 @@ import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverla
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { EU14_ALLERGENS, type AllergenLabel } from "@/lib/allergens";
 import { formatGroupLabel } from "@/lib/groupLabel";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -23,6 +24,7 @@ type Group = {
   name: string;
   schoolName: string;
   active: boolean;
+  level?: SchoolLevel;
 };
 
 type Student = {
@@ -69,6 +71,13 @@ export function AdminStudentsClient({
   const [toDelete, setToDelete] = useState<Student | null>(null);
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
+  const groupLevelById = useMemo(() => {
+    const map = new Map<string, SchoolLevel>();
+    for (const g of groups) {
+      map.set(g.id, g.level ?? "PRIMAIRE");
+    }
+    return map;
+  }, [groups]);
   const withAllergens = students.filter((s) => s.active && s.allergens.length > 0).length;
   const noPorkCount = students.filter((s) => s.active && s.noPork).length;
   const vegetarianCount = students.filter((s) => s.active && s.vegetarian).length;
@@ -440,21 +449,41 @@ export function AdminStudentsClient({
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              {bucket.students.map((s) => (
+              {bucket.students.map((s) => {
+                const level = groupLevelById.get(s.groupId) ?? "PRIMAIRE";
+                const maternelle = level === "MATERNELLE";
+                const cycleFill = maternelle
+                  ? "bg-sky-400 text-sky-950"
+                  : "bg-emerald-400 text-emerald-950";
+                return (
                 <div
                   key={s.id}
-                  className="flex flex-col gap-3 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-4 shadow-sm"
+                  className={[
+                    "flex flex-col gap-3 rounded-2xl border-2 px-4 py-4 shadow-sm",
+                    maternelle
+                      ? "border-sky-500 bg-sky-50"
+                      : "border-emerald-600 bg-emerald-50",
+                  ].join(" ")}
                 >
                   <div className="relative min-h-10">
                     <div className="flex flex-col items-center gap-1.5 px-20 text-center">
                       <span className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-base font-extrabold text-white">
                         {s.firstName} {s.lastName}
                       </span>
-                      {s.className ? (
-                        <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-extrabold text-emerald-900">
-                          {s.className}
+                      <div className="flex flex-wrap items-center justify-center gap-1.5">
+                        <span
+                          className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${cycleFill}`}
+                        >
+                          {schoolLevelLabelFr(level)}
                         </span>
-                      ) : null}
+                        {s.className ? (
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${cycleFill}`}
+                          >
+                            {s.className}
+                          </span>
+                        ) : null}
+                      </div>
                       {!s.active ? (
                         <span className="text-sm font-bold text-zinc-700">(inactif)</span>
                       ) : null}
@@ -553,7 +582,8 @@ export function AdminStudentsClient({
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </section>
           );
