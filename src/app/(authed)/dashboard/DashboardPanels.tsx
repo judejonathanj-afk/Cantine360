@@ -504,10 +504,8 @@ export default function DashboardPanels({
             antiWasteTargetGPer100={antiWasteTargetGPer100}
           />
         );
-        return isKitchen ? (
-          pulseCard
-        ) : (
-          <CantinePlusFold
+        return isKitchen ? null : (
+          <CantinePlusFold>
             subtitle="Cantine+ suit le repas du quotidien : elle calcule une note sur 100, met en avant le RAB et le poids des déchets, et affiche les tendances pour aider cuisine et direction à réduire le gaspillage."
             headerAction={
               <OverlayTableToolbar
