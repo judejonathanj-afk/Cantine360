@@ -25,6 +25,7 @@ import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart"
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
 import { DashboardHeroBanner } from "@/components/dashboard/DashboardHeroBanner";
+import { KitchenDashboardKpis } from "@/components/dashboard/KitchenDashboardKpis";
 import { DashboardInsightCard } from "@/components/dashboard/DashboardDesignShell";
 import {
   buildWasteEvolutionSeries,
@@ -434,6 +435,22 @@ export default function DashboardPanels({
       </div>
 
       <div className="dashboard-v2-fade space-y-8">
+      {isKitchen ? (
+        <KitchenDashboardKpis
+          days={days}
+          levelFilter={levelFilter}
+          totals={totals}
+          servedVsPresentPct={servedVsPresentPct}
+          rabRatePct={rabRatePct}
+          refusalRatePct={refusalRatePct}
+          totalWasteWeightG={totalWasteWeightG}
+          totalWasteMaternelleG={totalWasteMaternelleG}
+          totalWastePrimaireG={totalWastePrimaireG}
+          wasteGramsPer100Served={wasteGramsPer100Served}
+          servicesWithWaste={servicesWithWaste}
+          perDayRows={perDayRows}
+        />
+      ) : (
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         {[
           {
@@ -485,6 +502,7 @@ export default function DashboardPanels({
           </motion.div>
         ))}
       </div>
+      )}
 
       {!hideCantinePlus ? (
         <CantinePlusFold
