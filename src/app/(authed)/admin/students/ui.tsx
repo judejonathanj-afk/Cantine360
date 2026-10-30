@@ -10,6 +10,13 @@ import { formatGroupLabel } from "@/lib/groupLabel";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
@@ -69,6 +76,7 @@ export function AdminStudentsClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Student | null>(null);
+  const [openStudentId, setOpenStudentId] = useState<string | null>(null);
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
   const groupLevelById = useMemo(() => {
@@ -214,12 +222,23 @@ export function AdminStudentsClient({
         setError("Impossible de supprimer cet élève.");
         return;
       }
+      if (openStudentId === toDelete.id) setOpenStudentId(null);
       setToDelete(null);
       await refresh();
     } finally {
       setBusy(false);
     }
   }
+
+  const openStudent =
+    students.find((s) => s.id === openStudentId) ?? null;
+  const openLevel = openStudent
+    ? (groupLevelById.get(openStudent.groupId) ?? "PRIMAIRE")
+    : "PRIMAIRE";
+  const openMaternelle = openLevel === "MATERNELLE";
+  const openCycleFill = openMaternelle
+    ? "bg-sky-400 text-sky-950"
+    : "bg-emerald-400 text-emerald-950";
 
   function toggleAllergen(a: AllergenLabel) {
     setSelectedAllergens((prev) =>
@@ -419,7 +438,7 @@ export function AdminStudentsClient({
         openLabel="Ouvrir Élèves et allergènes"
         overlayTitle="Élèves et allergènes"
         subtitle="Parcourez les élèves par classe : allergènes, régimes et consignes parents."
-        hint="Cliquez une carte pour activer, modifier les régimes ou noter une consigne cuisine."
+        hint="Survolez une carte pour l’agrandir, cliquez pour ouvrir la fiche de l’élève."
         icon={Users}
         labelledBy="admin-students-list-overlay"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
@@ -448,7 +467,7 @@ export function AdminStudentsClient({
                 élève{bucket.students.length > 1 ? "s" : ""}
               </p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 overflow-visible sm:grid-cols-2">
               {bucket.students.map((s) => {
                 const level = groupLevelById.get(s.groupId) ?? "PRIMAIRE";
                 const maternelle = level === "MATERNELLE";
@@ -458,8 +477,17 @@ export function AdminStudentsClient({
                 return (
                 <div
                   key={s.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setOpenStudentId(s.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setOpenStudentId(s.id);
+                    }
+                  }}
                   className={[
-                    "flex flex-col gap-3 rounded-2xl border-2 px-4 py-4 shadow-sm",
+                    "flex cursor-pointer flex-col gap-3 rounded-2xl border-2 px-4 py-4 text-left shadow-sm transition duration-200 hover:z-10 hover:scale-[1.04] hover:shadow-lg motion-reduce:transform-none",
                     maternelle
                       ? "border-sky-500 bg-sky-50"
                       : "border-emerald-600 bg-emerald-50",
@@ -488,7 +516,11 @@ export function AdminStudentsClient({
                         <span className="text-sm font-bold text-zinc-700">(inactif)</span>
                       ) : null}
                     </div>
-                    <div className="absolute right-0 top-0 flex shrink-0 items-center gap-2">
+                    <div
+                      className="absolute right-0 top-0 flex shrink-0 items-center gap-2"
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    >
                       <button
                         type="button"
                         onClick={() => toggleActive(s)}
@@ -535,7 +567,7 @@ export function AdminStudentsClient({
                       )}
                       </div>
                     </div>
-                    <div>
+                    <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                       <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
                         Régimes
                       </p>
@@ -566,7 +598,7 @@ export function AdminStudentsClient({
                       </button>
                       </div>
                     </div>
-                    <div>
+                    <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                       <p className="mb-2 inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
                         Consignes parents
                       </p>
@@ -575,11 +607,20 @@ export function AdminStudentsClient({
                         key={`${s.id}-${s.allergenNotes ?? ""}`}
                         rows={2}
                         maxLength={500}
+                        onClick={(e) => e.stopPropagation()}
                         onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
                         className="mt-1 w-full min-w-full rounded-xl border-2 border-zinc-900 bg-zinc-50 px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:bg-white"
                         placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
                       />
                     </div>
+                    <p
+                      className={[
+                        "text-xs font-bold",
+                        maternelle ? "text-sky-700" : "text-emerald-700",
+                      ].join(" ")}
+                    >
+                      Voir le détail →
+                    </p>
                   </div>
                 </div>
                 );
@@ -591,6 +632,110 @@ export function AdminStudentsClient({
         </div>
       )}
       </DashboardFoldOverlay>
+
+      <Dialog
+        open={openStudent != null}
+        onOpenChange={(next) => !next && setOpenStudentId(null)}
+      >
+        <DialogContent
+          className={[
+            "z-[100] max-w-md rounded-3xl border-2",
+            openMaternelle ? "border-sky-500" : "border-emerald-600",
+          ].join(" ")}
+          overlayClassName="z-[100]"
+        >
+          {openStudent ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-center text-xl font-extrabold text-zinc-950">
+                  {openStudent.firstName} {openStudent.lastName}
+                </DialogTitle>
+                <DialogDescription asChild>
+                  <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${openCycleFill}`}
+                    >
+                      {schoolLevelLabelFr(openLevel)}
+                    </span>
+                    {openStudent.className ? (
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${openCycleFill}`}
+                      >
+                        {openStudent.className}
+                      </span>
+                    ) : null}
+                    {openStudent.schoolName ? (
+                      <span className="text-sm font-semibold text-zinc-700">
+                        {openStudent.schoolName}
+                      </span>
+                    ) : null}
+                  </div>
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
+                    Allergènes
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    {openStudent.allergens.length > 0 ? (
+                      openStudent.allergens.map((a) => (
+                        <span
+                          key={a}
+                          className="rounded-full bg-amber-500 px-2.5 py-1 text-sm font-bold text-white"
+                        >
+                          {a}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-base font-bold text-zinc-800">
+                        Aucun allergène déclaré
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-zinc-950">
+                    Régimes
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span
+                      className={[
+                        "rounded-full px-3 py-1 text-sm font-extrabold",
+                        openStudent.noPork
+                          ? "bg-sky-700 text-white"
+                          : "bg-zinc-100 text-zinc-800",
+                      ].join(" ")}
+                    >
+                      Sans porc
+                    </span>
+                    <span
+                      className={[
+                        "rounded-full px-3 py-1 text-sm font-extrabold",
+                        openStudent.vegetarian
+                          ? "bg-emerald-700 text-white"
+                          : "bg-zinc-100 text-zinc-800",
+                      ].join(" ")}
+                    >
+                      Végétarien
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-2 inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                    Consignes parents
+                  </p>
+                  <p className="rounded-xl border-2 border-zinc-200 bg-zinc-50 px-3 py-2.5 text-base font-semibold text-zinc-950">
+                    {openStudent.allergenNotes?.trim()
+                      ? openStudent.allergenNotes
+                      : "Aucune consigne notée."}
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
         <AlertDialogContent className="z-[100]" overlayClassName="z-[100]">
