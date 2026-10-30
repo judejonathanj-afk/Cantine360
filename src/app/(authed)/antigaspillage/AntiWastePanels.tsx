@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
   CalendarDays,
-  ChevronDown,
   Download,
   Flame,
   Lightbulb,
@@ -213,7 +212,6 @@ export function AntiWastePanels({
   riskyDishes?: RiskyDishRow[];
   levelFilter?: "all" | SchoolLevel;
 }) {
-  const [missingWeighOpen, setMissingWeighOpen] = useState(false);
   const riskyDishesVisible = applyRiskyDishLevel(riskyDishes, levelFilter);
 
   function antigaspillageHref(nextDays: 7 | 30, nextLevel: "all" | SchoolLevel) {
@@ -223,9 +221,6 @@ export function AntiWastePanels({
     return `/antigaspillage?${params.toString()}`;
   }
   const missingWeighVisible = missingWeighServices;
-  const missingWeighShown = missingWeighOpen
-    ? missingWeighVisible
-    : missingWeighVisible.slice(0, 2);
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
   const hasWeighing =
     wasteGramsPer100Served != null && wasteGramsPer100Served > 0;
@@ -707,68 +702,35 @@ export function AntiWastePanels({
         </DashboardFoldOverlay>
 
         {missingWeighCount > 0 && missingWeighVisible.length > 0 ? (
-          <div className="aw-reveal overflow-hidden rounded-3xl border-2 border-rose-500 bg-card">
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-rose-200 bg-rose-100 p-5">
-              <div className="flex min-w-0 items-start gap-3">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white">
-                  <AlertTriangle className="size-5" aria-hidden />
-                </span>
-                <div className="min-w-0">
-                  <h2 className="font-display text-xl font-bold tracking-tight text-zinc-950">
-                    {missingWeighCount} service
-                    {missingWeighCount > 1 ? "s" : ""} sans pesée
-                  </h2>
-                  <p className="mt-1 text-base font-medium leading-snug text-zinc-950">
-                    Sur la période. La pesée se saisit depuis l’espace{" "}
-                    <span className="font-bold">Cuisine</span> (écran Service,
-                    bloc « Poids des déchets »).
-                  </p>
-                </div>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    void import("@/lib/downloadMissingWeighPdf").then((mod) =>
-                      mod.downloadMissingWeighPdf(missingWeighVisible, days),
-                    );
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
-                >
-                  <Download className="size-3.5" aria-hidden />
-                  Télécharger
-                </button>
-                {missingWeighVisible.length > 2 ? (
-                  <button
-                    type="button"
-                    onClick={() => setMissingWeighOpen((v) => !v)}
-                    aria-expanded={missingWeighOpen}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-rose-400/60 bg-white px-3 py-1.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-50"
-                  >
-                    {missingWeighOpen ? "Voir moins" : "Voir plus"}
-                    <ChevronDown
-                      className={cn(
-                        "size-4 transition-transform",
-                        missingWeighOpen && "rotate-180",
-                      )}
-                      aria-hidden
-                    />
-                  </button>
-                ) : null}
-              </div>
-            </div>
-
-            <ul
-              className={cn(
-                "grid gap-3 p-5 sm:grid-cols-2",
-                missingWeighOpen
-                  ? "max-h-[22rem] overflow-y-scroll [scrollbar-gutter:stable]"
-                  : "overflow-visible",
-              )}
-            >
-              {missingWeighShown.map((s) => (
+          <DashboardFoldOverlay
+            kicker="Pesée"
+            openLabel={`Ouvrir ${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`}
+            overlayTitle={`${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`}
+            foldTone="rose"
+            subtitle="La pesée se saisit depuis l’espace Cuisine (écran Service, bloc « Poids des déchets »)."
+            hint="Sur la période. Ouvrez pour voir les services concernés, puis fermez."
+            icon={AlertTriangle}
+            iconTileClassName="bg-[#f6c9d6] text-[#7a2d45]"
+            labelledBy="missing-weigh-overlay-title"
+            closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+            bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+            headerAction={
+              <AntigaspillageOverlayFilters
+                days={days}
+                levelFilter={levelFilter}
+                hrefFor={antigaspillageHref}
+                onDownload={() => {
+                  void import("@/lib/downloadMissingWeighPdf").then((mod) =>
+                    mod.downloadMissingWeighPdf(missingWeighVisible, days),
+                  );
+                }}
+              />
+            }
+          >
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {missingWeighVisible.map((s) => (
                 <li key={s.id}>
-                  <div className="h-full rounded-2xl border border-rose-200 bg-white px-4 py-3">
+                  <div className="h-full rounded-2xl border-2 border-rose-200 bg-rose-50 px-4 py-3">
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-base font-bold leading-snug text-zinc-950">
                         {s.dateLabel}
@@ -792,7 +754,7 @@ export function AntiWastePanels({
                 </li>
               ))}
             </ul>
-          </div>
+          </DashboardFoldOverlay>
         ) : null}
 
         <DashboardFoldOverlay

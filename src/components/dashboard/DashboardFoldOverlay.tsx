@@ -36,7 +36,7 @@ export function DashboardFoldOverlay({
   panelClassName?: string;
   bodyClassName?: string;
   closeButtonClassName?: string;
-  foldTone?: "forest" | "yellow" | "violet";
+  foldTone?: "forest" | "yellow" | "violet" | "rose";
   icon: LucideIcon;
   iconTileClassName?: string;
   labelledBy: string;
@@ -68,6 +68,7 @@ export function DashboardFoldOverlay({
 
   const yellowFold = foldTone === "yellow";
   const violetFold = foldTone === "violet";
+  const roseFold = foldTone === "rose";
 
   return (
     <div>
@@ -78,7 +79,9 @@ export function DashboardFoldOverlay({
             ? "bg-[#fbe961] shadow-[0_12px_32px_rgba(234,179,8,0.38)]"
             : violetFold
               ? "bg-[#5b21b6] shadow-[0_12px_32px_rgba(91,33,182,0.38)]"
-              : "bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)]",
+              : roseFold
+                ? "bg-rose-700 shadow-[0_12px_32px_rgba(190,18,60,0.38)]"
+                : "bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)]",
         )}
       >
         <button
@@ -103,7 +106,9 @@ export function DashboardFoldOverlay({
                     ? "bg-amber-200 text-amber-950"
                     : violetFold
                       ? "bg-violet-200 text-[#5b21b6]"
-                      : "bg-[#d8f48a] text-[#0d3b2e]",
+                      : roseFold
+                        ? "bg-[#f6c9d6] text-[#7a2d45]"
+                        : "bg-[#d8f48a] text-[#0d3b2e]",
               )}
             >
               <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
