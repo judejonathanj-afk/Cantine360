@@ -44,7 +44,7 @@ export default async function AuthedLayout({
   return (
     <AppShell
       role={session.role}
-      establishmentLabel={establishment?.name ?? establishment?.slug}
+      establishmentLabel={establishment?.name ?? establishment?.slug ?? undefined}
       initialServiceId={initialServiceId}
     >
       {children}
