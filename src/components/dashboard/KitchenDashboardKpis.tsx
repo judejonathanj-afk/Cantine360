@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import {
+  ArrowRight,
   Ban,
   Repeat2,
   Trash2,
@@ -49,6 +50,25 @@ function peakDay(
 ) {
   if (rows.length === 0) return null;
   return rows.reduce((best, r) => (pick(r) > pick(best) ? r : best));
+}
+
+function CardWave({ className }: { className: string }) {
+  return (
+    <svg
+      className={cn(
+        "pointer-events-none absolute inset-y-0 right-0 h-full w-[72%]",
+        className,
+      )}
+      viewBox="0 0 180 200"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <path
+        fill="currentColor"
+        d="M95 0C58 32 118 58 72 92C32 122 108 142 68 172C48 188 82 196 52 200H180V0H95Z"
+      />
+    </svg>
+  );
 }
 
 function LevelFill({
@@ -124,6 +144,8 @@ export function KitchenDashboardKpis({
     sub: string;
     accent: string;
     iconWrap: string;
+    wave: string;
+    link: string;
   }[] = [
     {
       id: "present",
@@ -131,8 +153,10 @@ export function KitchenDashboardKpis({
       label: "Élèves présents",
       value: fmt(totals.present),
       sub: `${daysPresent} jour${daysPresent > 1 ? "s" : ""} de service`,
-      accent: "border-[#18181b] bg-white",
-      iconWrap: "bg-[#18181b] text-white",
+      accent: "bg-white",
+      iconWrap: "bg-emerald-500 text-white",
+      wave: "text-emerald-100",
+      link: "text-emerald-600",
     },
     {
       id: "served",
@@ -140,8 +164,10 @@ export function KitchenDashboardKpis({
       label: "Assiettes servies",
       value: fmt(totals.served),
       sub: `${servedVsPresentPct} des présents`,
-      accent: "border-[#0f766e] bg-[#e7f8f1]",
-      iconWrap: "bg-[#0f766e] text-white",
+      accent: "bg-[#eafbf1]",
+      iconWrap: "bg-emerald-600 text-white",
+      wave: "text-emerald-200/80",
+      link: "text-emerald-700",
     },
     {
       id: "rab",
@@ -149,8 +175,10 @@ export function KitchenDashboardKpis({
       label: "RAB",
       value: fmt(totals.rab),
       sub: `${rabRatePct} des servis`,
-      accent: "border-[#0f766e] bg-[#e6f7f4]",
-      iconWrap: "bg-[#0d9488] text-white",
+      accent: "bg-[#e7f6fb]",
+      iconWrap: "bg-sky-400 text-white",
+      wave: "text-sky-200/80",
+      link: "text-sky-500",
     },
     {
       id: "refused",
@@ -158,8 +186,10 @@ export function KitchenDashboardKpis({
       label: "Refus",
       value: fmt(totals.refused),
       sub: `Taux ${refusalRatePct}`,
-      accent: "border-[#e11d8c] bg-[#fde8f1]",
-      iconWrap: "bg-[#e11d8c] text-white",
+      accent: "bg-[#fdecef]",
+      iconWrap: "bg-rose-400 text-white",
+      wave: "text-rose-200/80",
+      link: "text-rose-500",
     },
     {
       id: "waste",
@@ -171,8 +201,10 @@ export function KitchenDashboardKpis({
         wasteGramsPer100Served != null
           ? `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100`
           : "Pesée en fin de service",
-      accent: "border-[#ea580c] bg-[#fff4e5]",
-      iconWrap: "bg-[#ea580c] text-white",
+      accent: "bg-[#fff6e8]",
+      iconWrap: "bg-amber-400 text-white",
+      wave: "text-amber-200/90",
+      link: "text-amber-500",
     },
   ];
 
@@ -303,29 +335,36 @@ export function KitchenDashboardKpis({
               type="button"
               onClick={() => setOpen(card.id)}
               className={cn(
-                "group rounded-[22px] border-[2.5px] p-4 text-left shadow-none transition hover:-translate-y-0.5",
+                "group relative overflow-hidden rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.28)] transition hover:-translate-y-0.5 hover:shadow-md",
                 card.accent,
               )}
             >
+              <CardWave className={card.wave} />
               <span
                 className={cn(
-                  "flex size-10 items-center justify-center rounded-full",
+                  "relative z-10 flex size-10 items-center justify-center rounded-full",
                   card.iconWrap,
                 )}
               >
                 <Icon className="size-5" aria-hidden />
               </span>
-              <p className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
+              <p className="relative z-10 mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
                 {card.label}
               </p>
-              <p className="mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+              <p className="relative z-10 mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {card.value}
               </p>
-              <p className="mt-2 text-sm font-medium leading-snug text-zinc-600">
+              <p className="relative z-10 mt-2 text-sm font-medium leading-snug text-zinc-600">
                 {card.sub}
               </p>
-              <p className="mt-4 text-xs font-semibold text-zinc-500">
+              <p
+                className={cn(
+                  "relative z-10 mt-4 inline-flex items-center gap-1 text-xs font-bold",
+                  card.link,
+                )}
+              >
                 Voir le détail
+                <ArrowRight className="size-3.5" aria-hidden />
               </p>
             </button>
           );
