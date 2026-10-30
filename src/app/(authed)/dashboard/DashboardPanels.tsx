@@ -160,10 +160,10 @@ function FilterSegmentLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-xl px-3.5 py-1.5 text-sm font-medium transition-all",
+        "rounded-full px-3.5 py-1.5 text-sm font-bold transition-all",
         active
-          ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
-          : "text-black/80 hover:text-black",
+          ? "bg-[#0d7a45] text-white shadow-sm"
+          : "text-zinc-900 hover:bg-zinc-100",
       )}
     >
       {children}
@@ -292,7 +292,7 @@ export default function DashboardPanels({
         <div
           role="group"
           aria-label="Période"
-          className="inline-flex items-center gap-1 rounded-2xl border border-border bg-card/70 p-1 shadow-sm backdrop-blur"
+          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
         >
           <FilterSegmentLink href={daysHref(7)} active={days === 7}>
             7 jours
@@ -305,7 +305,7 @@ export default function DashboardPanels({
         <div
           role="group"
           aria-label="Niveau"
-          className="inline-flex items-center gap-1 rounded-2xl border border-border bg-card/70 p-1 shadow-sm backdrop-blur"
+          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
         >
           <FilterSegmentLink href={levelHref("all")} active={levelFilter === "all"}>
             Tous niveaux
@@ -329,11 +329,11 @@ export default function DashboardPanels({
             <a
               href={`/api/exports/commission-bilan?year=${exportYear}`}
               download
-              className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card/70 px-3.5 py-2 text-sm font-medium text-black shadow-sm backdrop-blur transition-colors hover:bg-secondary"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-colors hover:bg-zinc-50"
             >
-              <FileSpreadsheet className="size-4 text-primary" />
+              <FileSpreadsheet className="size-4 text-[#0d7a45]" />
               Bilan commission
-              <span className="text-black/70">(CSV)</span>
+              <span className="font-semibold text-zinc-600">(CSV)</span>
             </a>
           ) : null}
           <button
@@ -346,7 +346,7 @@ export default function DashboardPanels({
                 isKitchen,
               })
             }
-            className="inline-flex items-center gap-2 rounded-2xl bg-[color:var(--dash-ink)] px-3.5 py-2 text-sm font-semibold text-[color:var(--dash-ink-fg)] shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Download className="size-4" />
             PDF
