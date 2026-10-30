@@ -35,11 +35,6 @@ export function DashboardHeroBanner({
           d="M250 0C175 48 290 78 200 128C125 170 275 196 190 228C165 240 210 240 180 240H480V0H250Z"
         />
       </svg>
-      <ChefHat
-        className="pointer-events-none absolute right-0 top-1/2 z-[1] hidden h-44 w-44 -translate-y-1/2 translate-x-[42%] text-[#d1f18d] sm:block lg:h-56 lg:w-56"
-        strokeWidth={1.5}
-        aria-hidden
-      />
 
       <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
         <div className="min-w-0 max-w-xl lg:max-w-3xl">

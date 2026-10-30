@@ -52,25 +52,6 @@ function peakDay(
   return rows.reduce((best, r) => (pick(r) > pick(best) ? r : best));
 }
 
-function CardWave({ className }: { className: string }) {
-  return (
-    <svg
-      className={cn(
-        "pointer-events-none absolute inset-y-0 right-0 h-full w-[72%]",
-        className,
-      )}
-      viewBox="0 0 180 200"
-      preserveAspectRatio="none"
-      aria-hidden
-    >
-      <path
-        fill="currentColor"
-        d="M95 0C58 32 118 58 72 92C32 122 108 142 68 172C48 188 82 196 52 200H180V0H95Z"
-      />
-    </svg>
-  );
-}
-
 function LevelFill({
   level,
   children,
@@ -144,7 +125,6 @@ export function KitchenDashboardKpis({
     sub: string;
     accent: string;
     iconWrap: string;
-    wave: string;
     link: string;
   }[] = [
     {
@@ -155,7 +135,6 @@ export function KitchenDashboardKpis({
       sub: `${daysPresent} jour${daysPresent > 1 ? "s" : ""} de service`,
       accent: "bg-white",
       iconWrap: "bg-emerald-500 text-white",
-      wave: "text-emerald-100",
       link: "text-emerald-600",
     },
     {
@@ -166,7 +145,6 @@ export function KitchenDashboardKpis({
       sub: `${servedVsPresentPct} des présents`,
       accent: "bg-[#eafbf1]",
       iconWrap: "bg-emerald-600 text-white",
-      wave: "text-emerald-200/80",
       link: "text-emerald-700",
     },
     {
@@ -177,7 +155,6 @@ export function KitchenDashboardKpis({
       sub: `${rabRatePct} des servis`,
       accent: "bg-[#e7f6fb]",
       iconWrap: "bg-sky-400 text-white",
-      wave: "text-sky-200/80",
       link: "text-sky-500",
     },
     {
@@ -188,7 +165,6 @@ export function KitchenDashboardKpis({
       sub: `Taux ${refusalRatePct}`,
       accent: "bg-[#fdecef]",
       iconWrap: "bg-rose-400 text-white",
-      wave: "text-rose-200/80",
       link: "text-rose-500",
     },
     {
@@ -203,7 +179,6 @@ export function KitchenDashboardKpis({
           : "Pesée en fin de service",
       accent: "bg-[#fff6e8]",
       iconWrap: "bg-amber-400 text-white",
-      wave: "text-amber-200/90",
       link: "text-amber-500",
     },
   ];
@@ -335,31 +310,30 @@ export function KitchenDashboardKpis({
               type="button"
               onClick={() => setOpen(card.id)}
               className={cn(
-                "group relative overflow-hidden rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.28)] transition hover:-translate-y-0.5 hover:shadow-md",
+                "group rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.28)] transition hover:-translate-y-0.5 hover:shadow-md",
                 card.accent,
               )}
             >
-              <CardWave className={card.wave} />
               <span
                 className={cn(
-                  "relative z-10 flex size-10 items-center justify-center rounded-full",
+                  "flex size-10 items-center justify-center rounded-full",
                   card.iconWrap,
                 )}
               >
                 <Icon className="size-5" aria-hidden />
               </span>
-              <p className="relative z-10 mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
+              <p className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
                 {card.label}
               </p>
-              <p className="relative z-10 mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+              <p className="mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {card.value}
               </p>
-              <p className="relative z-10 mt-2 text-sm font-medium leading-snug text-zinc-600">
+              <p className="mt-2 text-sm font-medium leading-snug text-zinc-600">
                 {card.sub}
               </p>
               <p
                 className={cn(
-                  "relative z-10 mt-4 inline-flex items-center gap-1 text-xs font-bold",
+                  "mt-4 inline-flex items-center gap-1 text-xs font-bold",
                   card.link,
                 )}
               >
