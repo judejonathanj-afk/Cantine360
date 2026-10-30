@@ -445,8 +445,8 @@ export function AdminStudentsClient({
                   key={s.id}
                   className="flex flex-col gap-3 rounded-2xl border-2 border-zinc-900 bg-white px-4 py-4 shadow-sm"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <div className="relative min-h-10">
+                    <div className="flex flex-col items-center gap-1.5 px-20 text-center">
                       <span className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-base font-extrabold text-white">
                         {s.firstName} {s.lastName}
                       </span>
@@ -459,7 +459,7 @@ export function AdminStudentsClient({
                         <span className="text-sm font-bold text-zinc-700">(inactif)</span>
                       ) : null}
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="absolute right-0 top-0 flex shrink-0 items-center gap-2">
                       <button
                         type="button"
                         onClick={() => toggleActive(s)}
