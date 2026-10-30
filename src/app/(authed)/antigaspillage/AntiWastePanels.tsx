@@ -520,7 +520,7 @@ export function AntiWastePanels({
           openLabel="Ouvrir Plats à risque"
           overlayTitle="Plats à risque"
           titleClassName="text-violet-300"
-          foldTone="violet"
+          foldTone="forest"
           subtitle="Repérez les plats qui pèsent le plus sur le gaspillage, pour ajuster portions et menu dès demain."
           hint={`Classés du plus gourmand au plus léger · ${days} jours. Lisez, comparez, téléchargez.`}
           icon={Flame}
