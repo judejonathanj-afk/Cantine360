@@ -450,6 +450,11 @@ export function AdminStudentsClient({
                       <span className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-base font-extrabold text-white">
                         {s.firstName} {s.lastName}
                       </span>
+                      {s.className ? (
+                        <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-extrabold text-emerald-900">
+                          {s.className}
+                        </span>
+                      ) : null}
                       {!s.active ? (
                         <span className="text-sm font-bold text-zinc-700">(inactif)</span>
                       ) : null}
@@ -562,7 +567,9 @@ export function AdminStudentsClient({
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer cet élève ?</AlertDialogTitle>
             <AlertDialogDescription>
-              {toDelete?.firstName} {toDelete?.lastName} sera retiré de la liste.
+              {toDelete?.firstName} {toDelete?.lastName}
+              {toDelete?.className ? ` (${toDelete.className})` : ""} sera retiré de
+              la liste.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
