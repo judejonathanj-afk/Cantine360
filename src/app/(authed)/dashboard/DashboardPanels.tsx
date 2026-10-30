@@ -3,21 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Ban,
   ClipboardList,
   Download,
   FileSpreadsheet,
   GitCompareArrows,
   Layers,
-  Repeat2,
   Table as TableIcon,
   Trash2,
-  Users,
   Utensils,
-  UtensilsCrossed,
-  type LucideIcon,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
@@ -64,17 +58,6 @@ type Totals = {
 };
 
 type DashboardDayRow = DashboardDayDetailRow;
-
-type Tone = "primary" | "teal" | "amber" | "coral" | "ink";
-
-const toneMap: Record<Tone, string> = {
-  primary: "text-primary bg-primary/10 ring-primary/15",
-  teal: "text-[color:var(--chart-2)] bg-[color:var(--chart-2)]/10 ring-[color:var(--chart-2)]/15",
-  amber:
-    "text-[color:var(--accent-foreground)] bg-[color:var(--accent)]/25 ring-[color:var(--accent)]/40",
-  coral: "text-destructive bg-destructive/10 ring-destructive/15",
-  ink: "text-[color:var(--dash-ink)] bg-[color:var(--dash-ink)]/10 ring-[color:var(--dash-ink)]/15",
-};
 
 function OverlayFilterLink({
   href,
@@ -158,42 +141,6 @@ function OverlayTableToolbar({
         <Download className="size-4" aria-hidden />
         Télécharger
       </button>
-    </div>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  tone,
-  label,
-  value,
-  sub,
-}: {
-  icon: LucideIcon;
-  tone: Tone;
-  label: string;
-  value: string;
-  sub: string;
-}) {
-  return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/5">
-      <div className="flex items-start justify-between">
-        <span
-          className={cn(
-            "flex size-10 items-center justify-center rounded-xl ring-1",
-            toneMap[tone],
-          )}
-        >
-          <Icon className="size-5" />
-        </span>
-      </div>
-      <div className="mt-4">
-        <div className="text-sm font-semibold text-black">{label}</div>
-        <div className="mt-0.5 font-display text-3xl font-extrabold tracking-tight text-black tabular-nums">
-          {value}
-        </div>
-        <div className="mt-1 text-xs font-semibold text-black">{sub}</div>
-      </div>
     </div>
   );
 }
@@ -325,35 +272,6 @@ export default function DashboardPanels({
     return `${dashboardBase}?${params.toString()}`;
   }
 
-  const wasteSub = (() => {
-    const parts: string[] = [];
-    if (
-      levelFilter === "all" &&
-      (totalWasteMaternelleG > 0 || totalWastePrimaireG > 0)
-    ) {
-      if (totalWasteMaternelleG > 0) {
-        parts.push(
-          `Mat. ${Math.round(totalWasteMaternelleG).toLocaleString("fr-FR")} g`,
-        );
-      }
-      if (totalWastePrimaireG > 0) {
-        parts.push(
-          `Prim. ${Math.round(totalWastePrimaireG).toLocaleString("fr-FR")} g`,
-        );
-      }
-    }
-    if (wasteGramsPer100Served != null) {
-      parts.push(
-        `${wasteGramsPer100Served.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} g / 100 assiettes`,
-      );
-    } else if (parts.length === 0 && servicesWithWaste > 0) {
-      parts.push(
-        `${servicesWithWaste} service${servicesWithWaste > 1 ? "s" : ""} saisi${servicesWithWaste > 1 ? "s" : ""}`,
-      );
-    }
-    return parts.length > 0 ? parts.join(" · ") : "saisir en fin de service";
-  })();
-
   return (
     <div
       className={cn(
@@ -435,74 +353,20 @@ export default function DashboardPanels({
       </div>
 
       <div className="dashboard-v2-fade space-y-8">
-      {isKitchen ? (
-        <KitchenDashboardKpis
-          days={days}
-          levelFilter={levelFilter}
-          totals={totals}
-          servedVsPresentPct={servedVsPresentPct}
-          rabRatePct={rabRatePct}
-          refusalRatePct={refusalRatePct}
-          totalWasteWeightG={totalWasteWeightG}
-          totalWasteMaternelleG={totalWasteMaternelleG}
-          totalWastePrimaireG={totalWastePrimaireG}
-          wasteGramsPer100Served={wasteGramsPer100Served}
-          servicesWithWaste={servicesWithWaste}
-          perDayRows={perDayRows}
-        />
-      ) : (
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        {[
-          {
-            icon: Users,
-            tone: "ink" as const,
-            label: "Élèves présents",
-            value: totals.present.toLocaleString("fr-FR"),
-            sub: "sur la période",
-          },
-          {
-            icon: UtensilsCrossed,
-            tone: "primary" as const,
-            label: "Assiettes servies",
-            value: totals.served.toLocaleString("fr-FR"),
-            sub: `vs présents : ${servedVsPresentPct}`,
-          },
-          {
-            icon: Repeat2,
-            tone: "teal" as const,
-            label: "RAB",
-            value: totals.rab.toLocaleString("fr-FR"),
-            sub: `vs servis : ${rabRatePct}`,
-          },
-          {
-            icon: Ban,
-            tone: "coral" as const,
-            label: "Refus",
-            value: totals.refused.toLocaleString("fr-FR"),
-            sub: `taux : ${refusalRatePct}`,
-          },
-          {
-            icon: Trash2,
-            tone: "amber" as const,
-            label: "Déchets (poids)",
-            value:
-              totalWasteWeightG > 0
-                ? `${Math.round(totalWasteWeightG).toLocaleString("fr-FR")} g`
-                : "—",
-            sub: wasteSub,
-          },
-        ].map((item, i) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * i }}
-          >
-            <StatCard {...item} />
-          </motion.div>
-        ))}
-      </div>
-      )}
+      <KitchenDashboardKpis
+        days={days}
+        levelFilter={levelFilter}
+        totals={totals}
+        servedVsPresentPct={servedVsPresentPct}
+        rabRatePct={rabRatePct}
+        refusalRatePct={refusalRatePct}
+        totalWasteWeightG={totalWasteWeightG}
+        totalWasteMaternelleG={totalWasteMaternelleG}
+        totalWastePrimaireG={totalWastePrimaireG}
+        wasteGramsPer100Served={wasteGramsPer100Served}
+        servicesWithWaste={servicesWithWaste}
+        perDayRows={perDayRows}
+      />
 
       {!hideCantinePlus ? (
         <CantinePlusFold
