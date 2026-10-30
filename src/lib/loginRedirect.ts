@@ -4,6 +4,7 @@ import {
   establishmentSessionCookiesPresent,
   LEGACY_SESSION_COOKIE_NAME,
 } from "@/server/auth-cookies";
+import { pathnameFromHeaders } from "@/server/requestPathname";
 
 export function loginQueryForRedirect(options: {
   next?: string | null;
@@ -35,8 +36,6 @@ export async function redirectToEstablishmentLogin(nextPath?: string): Promise<n
   const getCookie = (name: string) => jar.get(name)?.value;
   const hadSession = hadEstablishmentSessionCookies(getCookie);
   const pathname =
-    nextPath ??
-    (await headers()).get("x-pathname") ??
-    undefined;
+    nextPath || pathnameFromHeaders(await headers()) || undefined;
   redirect(`/login${loginQueryForRedirect({ next: pathname, hadEstablishmentSession: hadSession })}`);
 }

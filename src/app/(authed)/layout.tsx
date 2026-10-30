@@ -1,6 +1,11 @@
 import { AppShell } from "@/components/AppShell";
 import { activeServiceIdFromPathname } from "@/lib/activeService";
-import { getServerSession } from "@/server/auth";
+import {
+  getEstablishmentSessionForRole,
+  getServerSession,
+} from "@/server/auth";
+import { sessionRoleForPath } from "@/server/auth-cookies";
+import { pathnameFromHeaders } from "@/server/requestPathname";
 import { db } from "@/server/db";
 import { headers } from "next/headers";
 import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
@@ -11,15 +16,21 @@ export default async function AuthedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const pathname = pathnameFromHeaders(await headers());
+  const wantRole = sessionRoleForPath(pathname);
+  const session = wantRole
+    ? await getEstablishmentSessionForRole(wantRole)
+    : await getServerSession();
   if (!session) {
-    return redirectToEstablishmentLogin();
+    return redirectToEstablishmentLogin(pathname || undefined);
+  }
+  if (wantRole && session.role !== wantRole) {
+    return redirectToEstablishmentLogin(pathname || undefined);
   }
   const establishment = await db.establishment.findUnique({
     where: { id: session.establishmentId },
     select: { name: true, slug: true },
   });
-  const pathname = (await headers()).get("x-pathname") ?? "";
   // L’admin ne pilote pas le service : ça mélange sa session avec celle de la cuisine.
   if (session.role === "ADMIN" && (pathname === "/service" || pathname.startsWith("/service/"))) {
     redirect("/admin/groups");

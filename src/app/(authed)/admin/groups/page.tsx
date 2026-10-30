@@ -1,15 +1,14 @@
 import { db } from "@/server/db";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
 import { getEstablishmentEcoSettings } from "@/server/establishmentEco";
 import { getGroupsForAdmin } from "@/server/groupsForAdmin";
 import { getSchoolsForAdmin } from "@/server/schoolsForAdmin";
-import { redirect } from "next/navigation";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 import { AdminGroupsClient } from "./ui";
 
 export default async function AdminGroupsPage() {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (session.role !== "ADMIN") redirect("/service");
+  const session = await getEstablishmentSessionForRole("ADMIN");
+  if (!session) return redirectToEstablishmentLogin("/admin/groups");
 
   const [groups, schools, establishmentEco] = await Promise.all([
     getGroupsForAdmin(db, session.establishmentId),

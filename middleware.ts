@@ -192,6 +192,7 @@ export async function middleware(req: NextRequest) {
 
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-pathname", pathname);
+    requestHeaders.set("x-cantine-pathname", pathname);
     const res = NextResponse.next({ request: { headers: requestHeaders } });
     return migrateLegacySessionCookie(req, res);
   }

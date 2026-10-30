@@ -21,6 +21,7 @@ import {
   establishmentJwtShouldRefresh,
   signEstablishmentSessionJwt,
 } from "@/server/establishmentSessionJwt";
+import { pathnameFromHeaders } from "@/server/requestPathname";
 
 export type EstablishmentRole = "ADMIN" | "KITCHEN";
 
@@ -236,7 +237,7 @@ async function resolveEstablishmentSessionForPathname(
 
 /** Session établissement (cuisine / admin cantine) — une seule lecture par requête. */
 export const getEstablishmentSession = cache(async function getEstablishmentSession(): Promise<EstablishmentSession | null> {
-  const pathname = (await headers()).get("x-pathname") ?? "";
+  const pathname = pathnameFromHeaders(await headers());
   return resolveEstablishmentSessionForPathname(pathname);
 });
 

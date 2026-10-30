@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 import { db } from "@/server/db";
 import { readAntiWasteServices } from "@/server/antiWasteRead";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
 import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWaste";
 import { buildDashboardDayDetailRows } from "@/lib/buildDashboardDayDetailRows";
 import { wasteWeightForLevel } from "@/lib/serviceWasteByLevel";
@@ -78,9 +78,8 @@ export default async function AntiWastePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (session.role !== "ADMIN") redirect("/dashboard");
+  const session = await getEstablishmentSessionForRole("ADMIN");
+  if (!session) return redirectToEstablishmentLogin("/antigaspillage");
 
   const antiWaste = await getEstablishmentAntiWasteSettings(
     db,

@@ -1,7 +1,13 @@
 import { db } from "@/server/db";
 import { Prisma } from "@/generated/prisma/client";
-import { getServerSession } from "@/server/auth";
+import {
+  getEstablishmentSessionForRole,
+  getServerSession,
+  type EstablishmentRole,
+  type EstablishmentSession,
+} from "@/server/auth";
 import { redirect } from "next/navigation";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 import DashboardPanels, { type DashboardEcoGroupRow } from "./DashboardPanels";
 import {
   servicesToCantinePulseRows,
@@ -108,10 +114,46 @@ function isPrismaKnownRequest(e: unknown): e is Prisma.PrismaClientKnownRequestE
   );
 }
 
+async function resolveDashboardSession(
+  forcedRole: EstablishmentRole | null,
+): Promise<EstablishmentSession> {
+  if (forcedRole) {
+    const session = await getEstablishmentSessionForRole(forcedRole);
+    if (!session) {
+      if (forcedRole === "ADMIN") {
+        return redirectToEstablishmentLogin("/admin/dashboard");
+      }
+      redirect("/login");
+    }
+    return session;
+  }
+  const session = await getServerSession();
+  if (!session) redirect("/login");
+  return session;
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return renderDashboard({ searchParams, forcedRole: "KITCHEN" });
+}
+
+export async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return renderDashboard({ searchParams, forcedRole: "ADMIN" });
+}
+
+async function renderDashboard({
+  searchParams,
+  forcedRole,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  forcedRole: EstablishmentRole | null;
 }) {
   const sp = await searchParams;
   const days = sp.days === "30" ? 30 : 7;
@@ -123,8 +165,7 @@ export default async function DashboardPage({
   const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
   start.setHours(0, 0, 0, 0);
 
-  const session = await getServerSession();
-  if (!session) redirect("/login");
+  const session = await resolveDashboardSession(forcedRole);
 
   let services;
   let pulseRows: CantineServiceRow[] = [];

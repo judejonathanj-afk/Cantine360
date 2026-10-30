@@ -25,6 +25,7 @@ import {
   readRememberedServiceId,
   rememberActiveServiceId,
 } from "@/lib/activeService";
+import { sessionRoleForPath } from "@/server/auth-cookies";
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
@@ -70,6 +71,7 @@ export function AppShell({
   children,
 }: Props) {
   const pathname = usePathname();
+  const shellRole = sessionRoleForPath(pathname) ?? role;
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -93,7 +95,7 @@ export function AppShell({
       await fetch("/api/auth/logout", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ role }),
+        body: JSON.stringify({ role: shellRole }),
       });
       window.location.assign("/login");
     } finally {
@@ -119,7 +121,7 @@ export function AppShell({
     }
     // Admin : hors d’une URL /service/[id], le service n’est pas considéré ouvert
     // (évite Menu & allergènes après connexion / sur le dashboard).
-    if (role === "ADMIN") {
+    if (shellRole === "ADMIN") {
       rememberActiveServiceId(null);
       setRememberedServiceId(null);
       return;
@@ -128,13 +130,13 @@ export function AppShell({
     const fromStorage = readRememberedServiceId() ?? initialServiceId;
     if (fromStorage) rememberActiveServiceId(fromStorage);
     setRememberedServiceId(fromStorage);
-  }, [pathnameServiceId, isServiceHome, initialServiceId, role]);
+  }, [pathnameServiceId, isServiceHome, initialServiceId, shellRole]);
 
   // Sur /service (accueil), ne pas réutiliser un id après « Fin de service ».
   // Admin : uniquement l’URL courante ouvre Menu & allergènes.
   const serviceId =
     pathnameServiceId ??
-    (role === "ADMIN" || isServiceHome ? null : rememberedServiceId) ??
+    (shellRole === "ADMIN" || isServiceHome ? null : rememberedServiceId) ??
     null;
   const showEndServiceButton = pathnameServiceId != null;
 
@@ -156,7 +158,7 @@ export function AppShell({
     : [NAV[0]];
 
   const antiWasteNav: NavItem | null =
-    role === "ADMIN"
+    shellRole === "ADMIN"
       ? {
           href: "/antigaspillage",
           label: "Anti-gaspillage",
@@ -175,7 +177,7 @@ export function AppShell({
   };
 
   const navItems: NavItem[] =
-    role === "ADMIN"
+    shellRole === "ADMIN"
       ? [
           adminDashboard,
           ...(antiWasteNav ? [antiWasteNav] : []),
@@ -197,7 +199,7 @@ export function AppShell({
 
   const serviceShellClass = isServiceArea ? "bg-white" : null;
 
-  const homeHref = role === "ADMIN" ? "/admin/dashboard" : "/service";
+  const homeHref = shellRole === "ADMIN" ? "/admin/dashboard" : "/service";
 
   return (
     <div
@@ -222,7 +224,7 @@ export function AppShell({
                   Cantine360
                 </span>
                 <span className="mt-0.5 hidden truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-black/45 sm:block">
-                  {role === "ADMIN" ? "Admin" : "Cuisine"}
+                  {shellRole === "ADMIN" ? "Admin" : "Cuisine"}
                   {establishmentLabel ? ` · ${establishmentLabel}` : ""}
                 </span>
               </span>
