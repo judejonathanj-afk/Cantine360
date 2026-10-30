@@ -725,11 +725,15 @@ export function AdminStudentsClient({
                   <p className="mb-2 inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
                     Consignes parents
                   </p>
-                  <p className="rounded-xl border-2 border-zinc-200 bg-zinc-50 px-3 py-2.5 text-base font-semibold text-zinc-950">
-                    {openStudent.allergenNotes?.trim()
-                      ? openStudent.allergenNotes
-                      : "Aucune consigne notée."}
-                  </p>
+                  <textarea
+                    defaultValue={openStudent.allergenNotes ?? ""}
+                    key={`${openStudent.id}-dialog-${openStudent.allergenNotes ?? ""}`}
+                    rows={3}
+                    maxLength={500}
+                    onBlur={(e) => void saveAllergenNotes(openStudent, e.target.value)}
+                    className="mt-1 w-full rounded-xl border-2 border-zinc-900 bg-white px-3 py-2.5 text-base font-semibold text-zinc-950 outline-none placeholder:font-medium placeholder:text-zinc-500 focus:border-emerald-600"
+                    placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
+                  />
                 </div>
               </div>
             </>
