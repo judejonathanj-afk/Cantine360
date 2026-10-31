@@ -30,6 +30,37 @@ function nextIsAdminArea(next: string): boolean {
   );
 }
 
+/**
+ * Session expirée / absente : ne jamais envoyer une URL admin vers la cuisine
+ * juste parce qu’un cookie cuisine est encore là.
+ * `null` = page de login.
+ */
+export function unauthenticatedPathRedirect(
+  pathname: string,
+  hasAdminSession: boolean,
+  hasKitchenSession: boolean,
+): "/admin/dashboard" | null {
+  if (nextIsAdminArea(pathname)) {
+    return null;
+  }
+  if (
+    (nextIsService(pathname) || nextIsKitchenDashboard(pathname)) &&
+    hasAdminSession &&
+    !hasKitchenSession
+  ) {
+    return "/admin/dashboard";
+  }
+  if (
+    !nextIsService(pathname) &&
+    !nextIsKitchenDashboard(pathname) &&
+    hasAdminSession &&
+    !hasKitchenSession
+  ) {
+    return "/admin/dashboard";
+  }
+  return null;
+}
+
 /** Accueil après PIN : la cuisine ne suit jamais une URL admin, et l’inverse. */
 export function loginRedirectTo(
   role: "ADMIN" | "KITCHEN",

@@ -20,7 +20,8 @@ export default async function AuthedLayout({
   const wantRole = sessionRoleForPath(pathname);
   const session = wantRole
     ? await getEstablishmentSessionForRole(wantRole)
-    : await getServerSession();
+    : (await getEstablishmentSessionForRole("ADMIN")) ??
+      (await getServerSession());
   if (!session) {
     return redirectToEstablishmentLogin(pathname || undefined);
   }
@@ -37,8 +38,14 @@ export default async function AuthedLayout({
     console.error("[layout] establishment", e);
   }
   // L’admin ne pilote pas le service : ça mélange sa session avec celle de la cuisine.
-  if (session.role === "ADMIN" && (pathname === "/service" || pathname.startsWith("/service/"))) {
-    redirect("/admin/groups");
+  if (
+    session.role === "ADMIN" &&
+    (pathname === "/service" ||
+      pathname.startsWith("/service/") ||
+      pathname === "/dashboard" ||
+      pathname.startsWith("/dashboard/"))
+  ) {
+    redirect("/admin/dashboard");
   }
   const initialServiceId = activeServiceIdFromPathname(pathname);
   return (

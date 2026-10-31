@@ -10,11 +10,11 @@ import {
   readActiveEstablishmentToken,
   readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
-  sessionRoleForPath,
 } from "@/server/auth-cookies";
 import {
   hadEstablishmentSessionCookies,
   loginQueryForRedirect,
+  unauthenticatedPathRedirect,
 } from "@/lib/loginRedirect";
 
 function getSecret() {
@@ -42,25 +42,6 @@ async function verifyTokenKind(token: string): Promise<SessionKind> {
   } catch {
     return null;
   }
-}
-
-async function readActiveEstablishmentRole(
-  req: NextRequest,
-): Promise<"ADMIN" | "KITCHEN" | null> {
-  const pathname = req.nextUrl.pathname;
-  const getCookie = (name: string) => req.cookies.get(name)?.value;
-  const active = readActiveEstablishmentToken(getCookie, pathname);
-  const token = active?.token;
-  if (!token) return null;
-  try {
-    const { payload } = await jwtVerify(token, getSecret());
-    if (payload.kind === "platform") return null;
-    const role = payload.role;
-    if (role === "ADMIN" || role === "KITCHEN") return role;
-  } catch {
-    return null;
-  }
-  return null;
 }
 
 async function readEstablishmentSessionKind(
@@ -179,13 +160,19 @@ export async function middleware(req: NextRequest) {
   }
 
   if (kind === "establishment") {
-    const role = await readActiveEstablishmentRole(req);
-    if (
-      role === "ADMIN" &&
-      (pathname === "/service" || pathname.startsWith("/service/"))
-    ) {
+    const getCookie = (name: string) => req.cookies.get(name)?.value;
+    const { map } = readEstablishmentSessionsFromCookies(getCookie);
+    const adminSlot = pickEstablishmentSessionCandidate(
+      map,
+      "/admin/groups",
+      null,
+    );
+    const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
+    const onService =
+      pathname === "/service" || pathname.startsWith("/service/");
+    if (onService && adminSlot && !kitchenSlot) {
       const url = req.nextUrl.clone();
-      url.pathname = "/admin/groups";
+      url.pathname = "/admin/dashboard";
       url.search = "";
       const res = NextResponse.redirect(url);
       return migrateLegacySessionCookie(req, res);
@@ -198,34 +185,25 @@ export async function middleware(req: NextRequest) {
     return migrateLegacySessionCookie(req, res);
   }
 
-  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/")) {
-    const getCookie = (name: string) => req.cookies.get(name)?.value;
-    const { map } = readEstablishmentSessionsFromCookies(getCookie);
-    const adminSlot = pickEstablishmentSessionCandidate(
-      map,
-      "/admin/groups",
-      null,
-    );
-    const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
-    if (adminSlot && !kitchenSlot) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/admin/dashboard";
-      const res = NextResponse.redirect(url);
-      return migrateLegacySessionCookie(req, res);
-    }
-  }
-
   const getCookie = (name: string) => req.cookies.get(name)?.value;
-  if (sessionRoleForPath(pathname) === "ADMIN") {
-    const { map } = readEstablishmentSessionsFromCookies(getCookie);
-    const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
-    if (kitchenSlot) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/service";
-      url.search = "";
-      const res = NextResponse.redirect(url);
-      return migrateLegacySessionCookie(req, res);
-    }
+  const { map } = readEstablishmentSessionsFromCookies(getCookie);
+  const adminSlot = pickEstablishmentSessionCandidate(
+    map,
+    "/admin/groups",
+    null,
+  );
+  const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
+  const guestHome = unauthenticatedPathRedirect(
+    pathname,
+    Boolean(adminSlot),
+    Boolean(kitchenSlot),
+  );
+  if (guestHome) {
+    const url = req.nextUrl.clone();
+    url.pathname = guestHome;
+    url.search = "";
+    const res = NextResponse.redirect(url);
+    return migrateLegacySessionCookie(req, res);
   }
   const hadSession = hadEstablishmentSessionCookies(getCookie);
   const url = req.nextUrl.clone();

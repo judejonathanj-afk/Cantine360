@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { loginRedirectTo } from "@/lib/loginRedirect";
+import {
+  loginRedirectTo,
+  unauthenticatedPathRedirect,
+} from "@/lib/loginRedirect";
+import { shellRoleForPathname } from "@/lib/uiRole";
 
 /** Miroir de l’ordre de nav admin (AppShell) : pas de Service, réservé à la cuisine. */
 function adminNavLabels(): string[] {
@@ -49,6 +53,47 @@ describe("admin login redirect", () => {
 
   it("ignore un next open-redirect", () => {
     expect(loginRedirectTo("ADMIN", "//evil.example")).toBe("/admin/dashboard");
+  });
+});
+
+describe("unauthenticatedPathRedirect", () => {
+  it("n’envoie jamais une URL admin vers le service cuisine", () => {
+    expect(
+      unauthenticatedPathRedirect("/admin/dashboard", false, true),
+    ).toBeNull();
+    expect(
+      unauthenticatedPathRedirect("/admin/groups", false, true),
+    ).toBeNull();
+    expect(
+      unauthenticatedPathRedirect("/antigaspillage", true, true),
+    ).toBeNull();
+  });
+
+  it("renvoie l’admin seul hors d’une URL cuisine vers le dashboard admin", () => {
+    expect(
+      unauthenticatedPathRedirect("/service", true, false),
+    ).toBe("/admin/dashboard");
+    expect(
+      unauthenticatedPathRedirect("/dashboard", true, false),
+    ).toBe("/admin/dashboard");
+  });
+
+  it("laisse la cuisine ouvrir /service si les deux sessions existent", () => {
+    expect(
+      unauthenticatedPathRedirect("/service", true, true),
+    ).toBeNull();
+  });
+});
+
+describe("shellRoleForPathname", () => {
+  it("garde le chrome admin sur les URLs admin même si le jeton lu est cuisine", () => {
+    expect(shellRoleForPathname("/admin/dashboard", "KITCHEN")).toBe("ADMIN");
+    expect(shellRoleForPathname("/admin/groups", "ADMIN")).toBe("ADMIN");
+  });
+
+  it("ne montre pas Service à un compte admin", () => {
+    expect(shellRoleForPathname("/service", "ADMIN")).toBe("ADMIN");
+    expect(shellRoleForPathname("/dashboard", "ADMIN")).toBe("ADMIN");
   });
 });
 
