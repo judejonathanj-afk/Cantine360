@@ -43,7 +43,7 @@ describe("pruneEstablishmentSessionsMap", () => {
 });
 
 describe("session établissement", () => {
-  it("conserve admin et cuisine pour le même établissement", () => {
+  it("un login cuisine remplace la session admin du même navigateur", () => {
     const res = NextResponse.json({ ok: true });
     applyEstablishmentLoginCookies(res, "ecole", "ADMIN", "token-admin");
     applyEstablishmentLoginCookies(
@@ -55,7 +55,6 @@ describe("session établissement", () => {
     );
     const raw = res.cookies.get(ESTABLISHMENT_SESSIONS_COOKIE_NAME)?.value;
     expect(JSON.parse(raw ?? "{}")).toEqual({
-      [establishmentSessionSlotKey("ecole", "ADMIN")]: "token-admin",
       [establishmentSessionSlotKey("ecole", "KITCHEN")]: "token-cuisine",
     });
     expect(res.cookies.get(ACTIVE_ESTABLISHMENT_COOKIE_NAME)?.value).toBe(

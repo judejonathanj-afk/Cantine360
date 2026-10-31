@@ -25,7 +25,11 @@ import {
   readRememberedServiceId,
   rememberActiveServiceId,
 } from "@/lib/activeService";
-import { shellRoleForPathname } from "@/lib/uiRole";
+import {
+  isAdminPath,
+  isKitchenPath,
+  shellRoleForPathname,
+} from "@/lib/uiRole";
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
@@ -74,6 +78,16 @@ export function AppShell({
   const shellRole = shellRoleForPathname(pathname, role);
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (role === "KITCHEN" && isAdminPath(pathname)) {
+      window.location.replace("/service");
+      return;
+    }
+    if (role === "ADMIN" && isKitchenPath(pathname)) {
+      window.location.replace("/admin/dashboard");
+    }
+  }, [role, pathname]);
 
   useEffect(() => {
     document.documentElement.classList.remove("dark");

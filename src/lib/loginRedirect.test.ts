@@ -16,4 +16,14 @@ describe("loginQueryForRedirect", () => {
       loginQueryForRedirect({ hadEstablishmentSession: false }),
     ).toBe("");
   });
+
+  it("une session cuisine ne reprend pas une URL admin", () => {
+    const q = loginQueryForRedirect({
+      next: "/admin/groups",
+      hadEstablishmentSession: true,
+      keepKitchen: true,
+    });
+    expect(q).toContain("next=%2Fservice");
+    expect(q).not.toContain("admin");
+  });
 });

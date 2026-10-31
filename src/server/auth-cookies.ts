@@ -230,6 +230,19 @@ export function readPlatformTokenFromCookies(
   return token && token.length > 0 ? token : null;
 }
 
+/** Un seul rôle à la fois : un login cuisine efface l’admin, et l’inverse. */
+export function keepOnlyEstablishmentRole(
+  map: EstablishmentSessionsMap,
+  role: EstablishmentRole,
+): EstablishmentSessionsMap {
+  const next: EstablishmentSessionsMap = {};
+  for (const [key, token] of Object.entries(map)) {
+    const { role: keyRole } = parseEstablishmentSessionSlotKey(key);
+    if (keyRole === role && token.length > 0) next[key] = token;
+  }
+  return next;
+}
+
 export function buildEstablishmentSessionCookieWrites(
   establishmentId: string,
   role: EstablishmentRole,
@@ -241,7 +254,8 @@ export function buildEstablishmentSessionCookieWrites(
   maxAge: number;
 } {
   const slot = establishmentSessionSlotKey(establishmentId, role);
-  const merged: EstablishmentSessionsMap = { ...priorMap, [slot]: token };
+  const exclusive = keepOnlyEstablishmentRole(priorMap, role);
+  const merged: EstablishmentSessionsMap = { ...exclusive, [slot]: token };
   delete merged[establishmentId];
   const map = pruneEstablishmentSessionsMap(merged, slot);
   return {

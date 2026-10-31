@@ -32,13 +32,23 @@ function nextIsAdminArea(next: string): boolean {
 
 /**
  * Session expirée / absente : ne jamais échanger admin ↔ cuisine.
- * `null` = page de login (le rôle se choisit par le PIN).
+ * Cuisine sur une URL admin → /service ; admin sur une URL cuisine → dashboard admin.
  */
 export function unauthenticatedPathRedirect(
-  _pathname: string,
-  _hasAdminSession: boolean,
-  _hasKitchenSession: boolean,
-): null {
+  pathname: string,
+  hasAdminSession: boolean,
+  hasKitchenSession: boolean,
+): "/service" | "/admin/dashboard" | null {
+  if (nextIsAdminArea(pathname) && hasKitchenSession && !hasAdminSession) {
+    return "/service";
+  }
+  if (
+    (nextIsService(pathname) || nextIsKitchenDashboard(pathname)) &&
+    hasAdminSession &&
+    !hasKitchenSession
+  ) {
+    return "/admin/dashboard";
+  }
   return null;
 }
 
@@ -61,10 +71,21 @@ export function loginRedirectTo(
 export function loginQueryForRedirect(options: {
   next?: string | null;
   hadEstablishmentSession: boolean;
+  /** Cuisine encore connectée : ne pas proposer une URL admin au prochain PIN. */
+  keepKitchen?: boolean;
 }): string {
   const params = new URLSearchParams();
-  if (options.next && options.next.startsWith("/") && !options.next.startsWith("//")) {
-    params.set("next", options.next);
+  let next = options.next;
+  if (
+    options.keepKitchen &&
+    next &&
+    nextLooksSafe(next) &&
+    nextIsAdminArea(next)
+  ) {
+    next = "/service";
+  }
+  if (next && next.startsWith("/") && !next.startsWith("//")) {
+    params.set("next", next);
   }
   if (options.hadEstablishmentSession) {
     params.set("reason", "expired");

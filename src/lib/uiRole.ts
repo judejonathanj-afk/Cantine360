@@ -1,6 +1,6 @@
 export type UiEstablishmentRole = "ADMIN" | "KITCHEN";
 
-function isAdminPath(pathname: string): boolean {
+export function isAdminPath(pathname: string): boolean {
   return (
     pathname.startsWith("/admin") ||
     pathname.startsWith("/antigaspillage") ||
@@ -8,7 +8,7 @@ function isAdminPath(pathname: string): boolean {
   );
 }
 
-function isKitchenPath(pathname: string): boolean {
+export function isKitchenPath(pathname: string): boolean {
   return (
     pathname === "/service" ||
     pathname.startsWith("/service/") ||
@@ -17,12 +17,10 @@ function isKitchenPath(pathname: string): boolean {
   );
 }
 
-/** Chrome + nav : l’URL décide, pour ne pas habiller la cuisine en admin. */
+/** Chrome + nav : le rôle du jeton, jamais l’URL d’en face. */
 export function shellRoleForPathname(
-  pathname: string,
+  _pathname: string,
   sessionRole: UiEstablishmentRole,
 ): UiEstablishmentRole {
-  if (isAdminPath(pathname)) return "ADMIN";
-  if (isKitchenPath(pathname)) return "KITCHEN";
   return sessionRole;
 }

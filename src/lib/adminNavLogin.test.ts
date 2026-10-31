@@ -58,25 +58,28 @@ describe("admin login redirect", () => {
 });
 
 describe("unauthenticatedPathRedirect", () => {
-  it("n’envoie jamais une URL admin vers le service cuisine", () => {
+  it("renvoie la cuisine hors des URLs admin", () => {
     expect(
       unauthenticatedPathRedirect("/admin/dashboard", false, true),
-    ).toBeNull();
+    ).toBe("/service");
     expect(
       unauthenticatedPathRedirect("/admin/groups", false, true),
-    ).toBeNull();
+    ).toBe("/service");
+  });
+
+  it("ne mélange pas les deux sessions encore valides", () => {
     expect(
       unauthenticatedPathRedirect("/antigaspillage", true, true),
     ).toBeNull();
   });
 
-  it("n’envoie jamais une URL cuisine vers l’admin", () => {
+  it("renvoie l’admin hors des URLs cuisine", () => {
     expect(
       unauthenticatedPathRedirect("/service", true, false),
-    ).toBeNull();
+    ).toBe("/admin/dashboard");
     expect(
       unauthenticatedPathRedirect("/dashboard", true, false),
-    ).toBeNull();
+    ).toBe("/admin/dashboard");
   });
 });
 
@@ -94,14 +97,11 @@ describe("loginRoleFromPinMatch", () => {
 });
 
 describe("shellRoleForPathname", () => {
-  it("garde le chrome admin sur les URLs admin", () => {
-    expect(shellRoleForPathname("/admin/dashboard", "KITCHEN")).toBe("ADMIN");
+  it("suit le jeton, pas l’URL", () => {
+    expect(shellRoleForPathname("/admin/dashboard", "KITCHEN")).toBe("KITCHEN");
     expect(shellRoleForPathname("/admin/groups", "ADMIN")).toBe("ADMIN");
-  });
-
-  it("garde le chrome cuisine sur les URLs cuisine", () => {
-    expect(shellRoleForPathname("/service", "ADMIN")).toBe("KITCHEN");
-    expect(shellRoleForPathname("/dashboard", "ADMIN")).toBe("KITCHEN");
+    expect(shellRoleForPathname("/service", "ADMIN")).toBe("ADMIN");
+    expect(shellRoleForPathname("/dashboard", "KITCHEN")).toBe("KITCHEN");
   });
 });
 

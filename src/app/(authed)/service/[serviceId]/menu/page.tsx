@@ -1,6 +1,7 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { db } from "@/server/db";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { getServiceAllergenSummary } from "@/server/serviceAllergenSummary";
@@ -14,9 +15,8 @@ export default async function ServiceMenuPage({
 }: {
   params: Promise<{ serviceId: string }>;
 }) {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (session.role === "ADMIN") redirect("/admin/groups");
+  const session = await getEstablishmentSessionForRole("KITCHEN");
+  if (!session) return redirectToEstablishmentLogin("/service");
 
   const { serviceId } = await params;
   const [service, allergenSummary, antiWaste] = await Promise.all([

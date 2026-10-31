@@ -3,7 +3,8 @@ import { Suspense } from "react";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { ServiceMealTitle } from "@/components/service/ServiceMealTitle";
 import { db } from "@/server/db";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 import { type ServiceClassCard } from "@/components/service/ServiceClassGrid";
 import { ServiceMetricsSection } from "@/components/service/ServiceMetricsSection";
 import { ServiceDayInsightsPanel } from "@/components/service/ServiceDayInsightsPanel";
@@ -19,9 +20,8 @@ export default async function ServicePage({
 }: {
   params: Promise<{ serviceId: string }>;
 }) {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (session.role === "ADMIN") redirect("/admin/groups");
+  const session = await getEstablishmentSessionForRole("KITCHEN");
+  if (!session) return redirectToEstablishmentLogin("/service");
 
   const { serviceId } = await params;
   const [service, antiWaste, allergenSummary] = await Promise.all([
