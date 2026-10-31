@@ -6,15 +6,12 @@ import {
   hasEstablishmentSessionPointer,
   LEGACY_SESSION_COOKIE_NAME,
   PLATFORM_SESSION_COOKIE_NAME,
-  pickEstablishmentSessionCandidate,
   readActiveEstablishmentToken,
-  readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
 } from "@/server/auth-cookies";
 import {
   hadEstablishmentSessionCookies,
   loginQueryForRedirect,
-  unauthenticatedPathRedirect,
 } from "@/lib/loginRedirect";
 
 function getSecret() {
@@ -160,24 +157,6 @@ export async function middleware(req: NextRequest) {
   }
 
   if (kind === "establishment") {
-    const getCookie = (name: string) => req.cookies.get(name)?.value;
-    const { map } = readEstablishmentSessionsFromCookies(getCookie);
-    const adminSlot = pickEstablishmentSessionCandidate(
-      map,
-      "/admin/groups",
-      null,
-    );
-    const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
-    const onService =
-      pathname === "/service" || pathname.startsWith("/service/");
-    if (onService && adminSlot && !kitchenSlot) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/admin/dashboard";
-      url.search = "";
-      const res = NextResponse.redirect(url);
-      return migrateLegacySessionCookie(req, res);
-    }
-
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-pathname", pathname);
     requestHeaders.set("x-cantine-pathname", pathname);
@@ -186,25 +165,6 @@ export async function middleware(req: NextRequest) {
   }
 
   const getCookie = (name: string) => req.cookies.get(name)?.value;
-  const { map } = readEstablishmentSessionsFromCookies(getCookie);
-  const adminSlot = pickEstablishmentSessionCandidate(
-    map,
-    "/admin/groups",
-    null,
-  );
-  const kitchenSlot = pickEstablishmentSessionCandidate(map, "/service", null);
-  const guestHome = unauthenticatedPathRedirect(
-    pathname,
-    Boolean(adminSlot),
-    Boolean(kitchenSlot),
-  );
-  if (guestHome) {
-    const url = req.nextUrl.clone();
-    url.pathname = guestHome;
-    url.search = "";
-    const res = NextResponse.redirect(url);
-    return migrateLegacySessionCookie(req, res);
-  }
   const hadSession = hadEstablishmentSessionCookies(getCookie);
   const url = req.nextUrl.clone();
   url.pathname = "/login";

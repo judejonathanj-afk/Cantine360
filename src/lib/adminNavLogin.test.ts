@@ -3,6 +3,7 @@ import {
   loginRedirectTo,
   unauthenticatedPathRedirect,
 } from "@/lib/loginRedirect";
+import { loginRoleFromPinMatch } from "@/lib/loginRole";
 import { shellRoleForPathname } from "@/lib/uiRole";
 
 /** Miroir de l’ordre de nav admin (AppShell) : pas de Service, réservé à la cuisine. */
@@ -69,31 +70,38 @@ describe("unauthenticatedPathRedirect", () => {
     ).toBeNull();
   });
 
-  it("renvoie l’admin seul hors d’une URL cuisine vers le dashboard admin", () => {
+  it("n’envoie jamais une URL cuisine vers l’admin", () => {
     expect(
       unauthenticatedPathRedirect("/service", true, false),
-    ).toBe("/admin/dashboard");
+    ).toBeNull();
     expect(
       unauthenticatedPathRedirect("/dashboard", true, false),
-    ).toBe("/admin/dashboard");
-  });
-
-  it("laisse la cuisine ouvrir /service si les deux sessions existent", () => {
-    expect(
-      unauthenticatedPathRedirect("/service", true, true),
     ).toBeNull();
   });
 });
 
+describe("loginRoleFromPinMatch", () => {
+  it("un PIN cuisine seul ouvre la cuisine", () => {
+    expect(loginRoleFromPinMatch(false, true, "/admin/dashboard")).toBe(
+      "KITCHEN",
+    );
+  });
+
+  it("si les deux PIN matchent, next=/service ouvre la cuisine", () => {
+    expect(loginRoleFromPinMatch(true, true, "/service")).toBe("KITCHEN");
+    expect(loginRoleFromPinMatch(true, true, "/dashboard")).toBe("KITCHEN");
+  });
+});
+
 describe("shellRoleForPathname", () => {
-  it("garde le chrome admin sur les URLs admin même si le jeton lu est cuisine", () => {
+  it("garde le chrome admin sur les URLs admin", () => {
     expect(shellRoleForPathname("/admin/dashboard", "KITCHEN")).toBe("ADMIN");
     expect(shellRoleForPathname("/admin/groups", "ADMIN")).toBe("ADMIN");
   });
 
-  it("ne montre pas Service à un compte admin", () => {
-    expect(shellRoleForPathname("/service", "ADMIN")).toBe("ADMIN");
-    expect(shellRoleForPathname("/dashboard", "ADMIN")).toBe("ADMIN");
+  it("garde le chrome cuisine sur les URLs cuisine", () => {
+    expect(shellRoleForPathname("/service", "ADMIN")).toBe("KITCHEN");
+    expect(shellRoleForPathname("/dashboard", "ADMIN")).toBe("KITCHEN");
   });
 });
 

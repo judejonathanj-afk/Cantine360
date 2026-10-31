@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@/generated/prisma/client";
-import { signEstablishmentSession, type EstablishmentRole } from "@/server/auth";
+import { signEstablishmentSession } from "@/server/auth";
 import {
   applyEstablishmentLoginCookies,
   parseCookieHeader,
@@ -22,6 +22,7 @@ import {
 } from "@/server/loginRateLimit";
 import { z } from "zod";
 import { loginRedirectTo } from "@/lib/loginRedirect";
+import { loginRoleFromPinMatch } from "@/lib/loginRole";
 
 const BodySchema = z.object({
   pin: z.string().min(1),
@@ -104,15 +105,9 @@ export async function POST(req: Request) {
       verifyEstablishmentPin(pin, establishment.kitchenPin),
     ]);
 
-    let role: EstablishmentRole | null = null;
-    let matchedField: "adminPin" | "kitchenPin" | null = null;
-    if (adminOk) {
-      role = "ADMIN";
-      matchedField = "adminPin";
-    } else if (kitchenOk) {
-      role = "KITCHEN";
-      matchedField = "kitchenPin";
-    }
+    const role = loginRoleFromPinMatch(adminOk, kitchenOk, parsed.data.next);
+    const matchedField: "adminPin" | "kitchenPin" | null =
+      role === "ADMIN" ? "adminPin" : role === "KITCHEN" ? "kitchenPin" : null;
 
     if (!role || !matchedField) {
       return NextResponse.json({ error: "Code incorrect." }, { status: 401 });

@@ -17,16 +17,12 @@ function isKitchenPath(pathname: string): boolean {
   );
 }
 
-/** Chrome + nav : l’URL admin l’emporte, un compte admin ne voit jamais Service. */
+/** Chrome + nav : l’URL décide, pour ne pas habiller la cuisine en admin. */
 export function shellRoleForPathname(
   pathname: string,
   sessionRole: UiEstablishmentRole,
 ): UiEstablishmentRole {
-  if (sessionRole === "ADMIN" || isAdminPath(pathname)) return "ADMIN";
+  if (isAdminPath(pathname)) return "ADMIN";
   if (isKitchenPath(pathname)) return "KITCHEN";
   return sessionRole;
-}
-
-export function adminShouldLeaveKitchenPath(pathname: string): boolean {
-  return isKitchenPath(pathname);
 }

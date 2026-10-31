@@ -1,15 +1,12 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
+import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
 
-export default async function DashboardLayout({
+export default async function KitchenDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (session.role !== "ADMIN" && session.role !== "KITCHEN") {
-    redirect("/service");
-  }
-  return children;
+  const kitchen = await getEstablishmentSessionForRole("KITCHEN");
+  if (kitchen) return children;
+  return redirectToEstablishmentLogin("/dashboard");
 }

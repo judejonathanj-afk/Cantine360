@@ -25,10 +25,7 @@ import {
   readRememberedServiceId,
   rememberActiveServiceId,
 } from "@/lib/activeService";
-import {
-  adminShouldLeaveKitchenPath,
-  shellRoleForPathname,
-} from "@/lib/uiRole";
+import { shellRoleForPathname } from "@/lib/uiRole";
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
@@ -77,12 +74,6 @@ export function AppShell({
   const shellRole = shellRoleForPathname(pathname, role);
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (role === "ADMIN" && adminShouldLeaveKitchenPath(pathname)) {
-      window.location.replace("/admin/dashboard");
-    }
-  }, [role, pathname]);
 
   useEffect(() => {
     document.documentElement.classList.remove("dark");

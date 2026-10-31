@@ -9,7 +9,6 @@ import { pathnameFromHeaders } from "@/server/requestPathname";
 import { db } from "@/server/db";
 import { headers } from "next/headers";
 import { redirectToEstablishmentLogin } from "@/lib/loginRedirect";
-import { redirect } from "next/navigation";
 
 export default async function AuthedLayout({
   children,
@@ -20,8 +19,7 @@ export default async function AuthedLayout({
   const wantRole = sessionRoleForPath(pathname);
   const session = wantRole
     ? await getEstablishmentSessionForRole(wantRole)
-    : (await getEstablishmentSessionForRole("ADMIN")) ??
-      (await getServerSession());
+    : await getServerSession();
   if (!session) {
     return redirectToEstablishmentLogin(pathname || undefined);
   }
@@ -36,16 +34,6 @@ export default async function AuthedLayout({
     });
   } catch (e) {
     console.error("[layout] establishment", e);
-  }
-  // L’admin ne pilote pas le service : ça mélange sa session avec celle de la cuisine.
-  if (
-    session.role === "ADMIN" &&
-    (pathname === "/service" ||
-      pathname.startsWith("/service/") ||
-      pathname === "/dashboard" ||
-      pathname.startsWith("/dashboard/"))
-  ) {
-    redirect("/admin/dashboard");
   }
   const initialServiceId = activeServiceIdFromPathname(pathname);
   return (
