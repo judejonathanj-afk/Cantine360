@@ -6,11 +6,8 @@ import {
   hasEstablishmentSessionPointer,
   LEGACY_SESSION_COOKIE_NAME,
   PLATFORM_SESSION_COOKIE_NAME,
-  parseEstablishmentSessionSlotKey,
   readActiveEstablishmentToken,
-  readEstablishmentSessionsFromCookies,
   readPlatformTokenFromCookies,
-  sessionRoleForPath,
   type EstablishmentRole,
 } from "@/server/auth-cookies";
 import {
@@ -179,28 +176,8 @@ export async function middleware(req: NextRequest) {
     return migrateLegacySessionCookie(req, res);
   }
 
-  const getCookie = (name: string) => req.cookies.get(name)?.value;
-  const { activeEstablishmentId } = readEstablishmentSessionsFromCookies(getCookie);
-  const activeRole = activeEstablishmentId
-    ? parseEstablishmentSessionSlotKey(activeEstablishmentId).role
-    : null;
   const hasAdmin = (await verifiedRoleAt(req, "/admin/groups")) === "ADMIN";
   const hasKitchen = (await verifiedRoleAt(req, "/service")) === "KITCHEN";
-  const pathRole = sessionRoleForPath(pathname);
-  if (pathRole === "ADMIN" && activeRole === "KITCHEN") {
-    const url = req.nextUrl.clone();
-    url.pathname = "/service";
-    url.search = "";
-    const res = NextResponse.redirect(url);
-    return migrateLegacySessionCookie(req, res);
-  }
-  if (pathRole === "KITCHEN" && activeRole === "ADMIN") {
-    const url = req.nextUrl.clone();
-    url.pathname = "/admin/dashboard";
-    url.search = "";
-    const res = NextResponse.redirect(url);
-    return migrateLegacySessionCookie(req, res);
-  }
   const swapTo = unauthenticatedPathRedirect(pathname, hasAdmin, hasKitchen);
   if (swapTo) {
     const url = req.nextUrl.clone();
@@ -211,21 +188,6 @@ export async function middleware(req: NextRequest) {
   }
 
   if (kind === "establishment") {
-    if (pathRole === "ADMIN" && !hasAdmin && hasKitchen) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/service";
-      url.search = "";
-      const res = NextResponse.redirect(url);
-      return migrateLegacySessionCookie(req, res);
-    }
-    if (pathRole === "KITCHEN" && !hasKitchen && hasAdmin) {
-      const url = req.nextUrl.clone();
-      url.pathname = "/admin/dashboard";
-      url.search = "";
-      const res = NextResponse.redirect(url);
-      return migrateLegacySessionCookie(req, res);
-    }
-
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-pathname", pathname);
     requestHeaders.set("x-cantine-pathname", pathname);
@@ -233,13 +195,14 @@ export async function middleware(req: NextRequest) {
     return migrateLegacySessionCookie(req, res);
   }
 
+  const getCookie = (name: string) => req.cookies.get(name)?.value;
   const hadSession = hadEstablishmentSessionCookies(getCookie);
   const url = req.nextUrl.clone();
   url.pathname = "/login";
   url.search = loginQueryForRedirect({
     next: pathname,
     hadEstablishmentSession: hadSession,
-    keepKitchen: activeRole === "KITCHEN" || (hasKitchen && !hasAdmin),
+    keepKitchen: hasKitchen && !hasAdmin,
   });
   const res = NextResponse.redirect(url);
   return migrateLegacySessionCookie(req, res);

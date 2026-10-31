@@ -1,9 +1,6 @@
 import { AppShell } from "@/components/AppShell";
 import { activeServiceIdFromPathname } from "@/lib/activeService";
-import {
-  getEstablishmentSessionForRole,
-  getServerSession,
-} from "@/server/auth";
+import { getEstablishmentSessionForRole } from "@/server/auth";
 import { sessionRoleForPath } from "@/server/auth-cookies";
 import { pathnameFromHeaders } from "@/server/requestPathname";
 import { db } from "@/server/db";
@@ -17,14 +14,12 @@ export default async function AuthedLayout({
 }) {
   const pathname = pathnameFromHeaders(await headers());
   const wantRole = sessionRoleForPath(pathname);
-  const session = wantRole
-    ? await getEstablishmentSessionForRole(wantRole)
-    : await getServerSession();
-  if (!session) {
+  if (!pathname || !wantRole) {
     return redirectToEstablishmentLogin(pathname || undefined);
   }
-  if (wantRole && session.role !== wantRole) {
-    return redirectToEstablishmentLogin(pathname || undefined);
+  const session = await getEstablishmentSessionForRole(wantRole);
+  if (!session) {
+    return redirectToEstablishmentLogin(pathname);
   }
   let establishment: { name: string | null; slug: string | null } | null = null;
   try {
