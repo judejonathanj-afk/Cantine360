@@ -4,11 +4,46 @@ import { Check, ChefHat, Scale } from "lucide-react";
 import { formatKgFromGrams } from "@/lib/serviceGrammage";
 import { cn } from "@/lib/utils";
 
-function gPer100Label(wasteG: number, served: number): string {
-  if (wasteG <= 0 || served <= 0) return "—";
-  const value = Math.round((wasteG / served) * 100);
-  return `${new Intl.NumberFormat("fr-FR").format(value)} g / 100 assiettes`;
+const nf = new Intl.NumberFormat("fr-FR");
+const nfPlate = new Intl.NumberFormat("fr-FR", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
+function wasteDetail(wasteG: number, served: number) {
+  const grams = Math.max(0, Math.round(wasteG));
+  const perPlate = served > 0 && grams > 0 ? grams / served : null;
+  const per100 = served > 0 && grams > 0 ? (grams / served) * 100 : null;
+  return {
+    gramsLabel: `${nf.format(grams)} g`,
+    kgLabel: formatKgFromGrams(grams),
+    perPlateLabel:
+      perPlate == null ? "— g / assiette" : `${nfPlate.format(perPlate)} g / assiette`,
+    per100Label:
+      per100 == null
+        ? "— g / 100 assiettes"
+        : `${nf.format(Math.round(per100))} g / 100 assiettes`,
+  };
 }
+
+const LEVEL = {
+  Maternelle: {
+    card: "bg-emerald-50 ring-1 ring-emerald-100",
+    kicker: "text-emerald-700",
+    value: "text-emerald-950",
+    muted: "text-emerald-800/70",
+    row: "text-emerald-900",
+    detail: "text-emerald-800",
+  },
+  Primaire: {
+    card: "bg-sky-50 ring-1 ring-sky-100",
+    kicker: "text-sky-700",
+    value: "text-sky-950",
+    muted: "text-sky-800/70",
+    row: "text-sky-900",
+    detail: "text-sky-800",
+  },
+} as const;
 
 export function ServiceEndFicheCard({
   servedMaternelle,
@@ -27,6 +62,19 @@ export function ServiceEndFicheCard({
   confirming?: boolean;
   className?: string;
 }) {
+  const rows = [
+    {
+      label: "Maternelle" as const,
+      served: servedMaternelle,
+      wasteG: wasteMaternelleG,
+    },
+    {
+      label: "Primaire" as const,
+      served: servedPrimaire,
+      wasteG: wastePrimaireG,
+    },
+  ];
+
   return (
     <div
       className={cn(
@@ -45,22 +93,27 @@ export function ServiceEndFicheCard({
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
-        {(
-          [
-            ["Maternelle", servedMaternelle],
-            ["Primaire", servedPrimaire],
-          ] as const
-        ).map(([label, value]) => (
-          <div key={label} className="rounded-2xl bg-[#f4faf6] px-4 py-4">
-            <p className="text-sm font-medium text-zinc-500">{label}</p>
-            <p className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-[2rem] font-extrabold leading-none tracking-tight text-zinc-950">
-                {value}
-              </span>
-              <span className="text-xs font-medium text-zinc-500">repas servis</span>
-            </p>
-          </div>
-        ))}
+        {rows.map(({ label, served }) => {
+          const tone = LEVEL[label];
+          return (
+            <div key={label} className={cn("rounded-2xl px-4 py-4", tone.card)}>
+              <p className={cn("text-sm font-bold", tone.kicker)}>{label}</p>
+              <p className="mt-2 flex items-baseline gap-1.5">
+                <span
+                  className={cn(
+                    "text-[2rem] font-extrabold leading-none tracking-tight",
+                    tone.value,
+                  )}
+                >
+                  {served}
+                </span>
+                <span className={cn("text-xs font-semibold", tone.muted)}>
+                  repas servis
+                </span>
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-6 flex items-center gap-2 text-[15px] font-bold text-zinc-950">
@@ -68,25 +121,33 @@ export function ServiceEndFicheCard({
         Pesée des déchets
       </div>
 
-      <div className="mt-2 divide-y divide-zinc-200 border-t border-zinc-200">
-        {(
-          [
-            ["Maternelle", wasteMaternelleG, servedMaternelle],
-            ["Primaire", wastePrimaireG, servedPrimaire],
-          ] as const
-        ).map(([label, grams, served]) => (
-          <div key={label} className="flex items-start justify-between gap-3 py-3.5">
-            <p className="text-[15px] font-semibold text-zinc-950">{label}</p>
-            <div className="text-right">
-              <p className="text-[15px] font-extrabold text-zinc-950">
-                {formatKgFromGrams(grams)}
+      <div className="mt-2 space-y-2.5">
+        {rows.map(({ label, served, wasteG }) => {
+          const tone = LEVEL[label];
+          const detail = wasteDetail(wasteG, served);
+          return (
+            <div
+              key={label}
+              className={cn("rounded-2xl px-4 py-3.5", tone.card)}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className={cn("text-[15px] font-extrabold", tone.row)}>{label}</p>
+                <p className={cn("text-[15px] font-extrabold", tone.value)}>
+                  {detail.gramsLabel}
+                  <span className={cn("ml-1.5 text-sm font-semibold", tone.muted)}>
+                    ({detail.kgLabel})
+                  </span>
+                </p>
+              </div>
+              <p className={cn("mt-1.5 text-[13px] font-semibold", tone.detail)}>
+                {detail.perPlateLabel}
               </p>
-              <p className="mt-0.5 text-[11px] text-zinc-500">
-                {gPer100Label(grams, served)}
+              <p className={cn("mt-0.5 text-[12px] font-medium", tone.muted)}>
+                {detail.per100Label}
               </p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <button
