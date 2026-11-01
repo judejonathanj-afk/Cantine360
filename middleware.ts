@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import {
+  clearEstablishmentSessionCookies,
   clearLegacySessionCookie,
   ESTABLISHMENT_SESSIONS_COOKIE_NAME,
   hasEstablishmentSessionPointer,
@@ -205,6 +206,12 @@ export async function middleware(req: NextRequest) {
     keepKitchen: hasKitchen && !hasAdmin,
   });
   const res = NextResponse.redirect(url);
+  // Cookies présents mais JWT invalide / illisible : les retirer pour que le
+  // prochain PIN pose une session propre (sinon boucle « Session expirée »).
+  if (hadSession) {
+    clearEstablishmentSessionCookies(res);
+    clearLegacySessionCookie(res);
+  }
   return migrateLegacySessionCookie(req, res);
 }
 

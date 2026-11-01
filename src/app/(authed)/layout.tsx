@@ -1,6 +1,9 @@
 import { AppShell } from "@/components/AppShell";
 import { activeServiceIdFromPathname } from "@/lib/activeService";
-import { getEstablishmentSessionForRole } from "@/server/auth";
+import {
+  getEstablishmentSession,
+  getEstablishmentSessionForRole,
+} from "@/server/auth";
 import { sessionRoleForPath } from "@/server/auth-cookies";
 import { pathnameFromHeaders } from "@/server/requestPathname";
 import { db } from "@/server/db";
@@ -13,13 +16,13 @@ export default async function AuthedLayout({
   children: React.ReactNode;
 }) {
   const pathname = pathnameFromHeaders(await headers());
-  const wantRole = sessionRoleForPath(pathname);
-  if (!pathname || !wantRole) {
-    return redirectToEstablishmentLogin(pathname || undefined);
-  }
-  const session = await getEstablishmentSessionForRole(wantRole);
+  const wantRole = pathname ? sessionRoleForPath(pathname) : null;
+  // Sans x-pathname (middleware), ne pas renvoyer au login : le jeton actif suffit.
+  const session = wantRole
+    ? await getEstablishmentSessionForRole(wantRole)
+    : await getEstablishmentSession();
   if (!session) {
-    return redirectToEstablishmentLogin(pathname);
+    return redirectToEstablishmentLogin(pathname || undefined);
   }
   let establishment: { name: string | null; slug: string | null } | null = null;
   try {

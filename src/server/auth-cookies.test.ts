@@ -9,6 +9,7 @@ import {
   hasEstablishmentSessionPointer,
   LEGACY_SESSION_COOKIE_NAME,
   MAX_ESTABLISHMENT_SESSIONS,
+  parseEstablishmentSessionsCookie,
   pickEstablishmentSessionCandidate,
   pruneEstablishmentSessionsMap,
   sessionRoleForPath,
@@ -39,6 +40,17 @@ describe("pruneEstablishmentSessionsMap", () => {
     const pruned = pruneEstablishmentSessionsMap(map, "e", 5);
     expect(pruned.e).toBe("5");
     expect(Object.keys(pruned)).toHaveLength(5);
+  });
+});
+
+describe("parseEstablishmentSessionsCookie", () => {
+  it("lit un JSON encodé (Set-Cookie)", () => {
+    const map = {
+      [establishmentSessionSlotKey("ecole", "ADMIN")]: "token-admin",
+    };
+    const encoded = encodeURIComponent(JSON.stringify(map));
+    expect(parseEstablishmentSessionsCookie(encoded)).toEqual(map);
+    expect(parseEstablishmentSessionsCookie(JSON.stringify(map))).toEqual(map);
   });
 });
 

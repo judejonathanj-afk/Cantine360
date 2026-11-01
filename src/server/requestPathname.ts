@@ -3,6 +3,8 @@ export function pathnameFromHeaders(h: Headers): string {
   const candidates = [
     h.get("x-pathname"),
     h.get("x-cantine-pathname"),
+    h.get("x-url"),
+    h.get("x-invoke-path"),
     h.get("next-url"),
   ];
   for (const raw of candidates) {

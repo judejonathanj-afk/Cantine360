@@ -174,21 +174,31 @@ export function parseEstablishmentSessionsCookie(
   value: string | undefined,
 ): EstablishmentSessionsMap {
   if (!value) return {};
+  const attempts = [value];
   try {
-    const parsed: unknown = JSON.parse(value);
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-      return {};
-    }
-    const result: EstablishmentSessionsMap = {};
-    for (const [key, token] of Object.entries(parsed)) {
-      if (typeof key === "string" && typeof token === "string" && token.length > 0) {
-        result[key] = token;
-      }
-    }
-    return result;
+    const decoded = decodeURIComponent(value);
+    if (decoded !== value) attempts.push(decoded);
   } catch {
-    return {};
+    /* cookie déjà décodé */
   }
+  for (const raw of attempts) {
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+        continue;
+      }
+      const result: EstablishmentSessionsMap = {};
+      for (const [key, token] of Object.entries(parsed)) {
+        if (typeof key === "string" && typeof token === "string" && token.length > 0) {
+          result[key] = token;
+        }
+      }
+      if (Object.keys(result).length > 0) return result;
+    } catch {
+      continue;
+    }
+  }
+  return {};
 }
 
 export function serializeEstablishmentSessionsCookie(
@@ -254,10 +264,8 @@ export function buildEstablishmentSessionCookieWrites(
   maxAge: number;
 } {
   const slot = establishmentSessionSlotKey(establishmentId, role);
-  const exclusive = keepOnlyEstablishmentRole(priorMap, role);
-  const merged: EstablishmentSessionsMap = { ...exclusive, [slot]: token };
-  delete merged[establishmentId];
-  const map = pruneEstablishmentSessionsMap(merged, slot);
+  const map: EstablishmentSessionsMap = { [slot]: token };
+  void priorMap;
   return {
     map,
     activeSlot: slot,
