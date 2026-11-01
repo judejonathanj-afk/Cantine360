@@ -5,20 +5,13 @@ import { formatKgFromGrams } from "@/lib/serviceGrammage";
 import { cn } from "@/lib/utils";
 
 const nf = new Intl.NumberFormat("fr-FR");
-const nfPlate = new Intl.NumberFormat("fr-FR", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
 
 function wasteDetail(wasteG: number, served: number) {
   const grams = Math.max(0, Math.round(wasteG));
-  const perPlate = served > 0 && grams > 0 ? grams / served : null;
   const per100 = served > 0 && grams > 0 ? (grams / served) * 100 : null;
   return {
     gramsLabel: `${nf.format(grams)} g`,
     kgLabel: formatKgFromGrams(grams),
-    perPlateLabel:
-      perPlate == null ? "— g / assiette" : `${nfPlate.format(perPlate)} g / assiette`,
     per100Label:
       per100 == null
         ? "— g / 100 assiettes"
@@ -140,9 +133,6 @@ export function ServiceEndFicheCard({
                 </p>
               </div>
               <p className={cn("mt-1.5 text-[13px] font-semibold", tone.detail)}>
-                {detail.perPlateLabel}
-              </p>
-              <p className={cn("mt-0.5 text-[12px] font-medium", tone.muted)}>
                 {detail.per100Label}
               </p>
             </div>
