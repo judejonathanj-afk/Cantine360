@@ -181,7 +181,20 @@ export default async function ServicePage({
       />
 
       <div className="mx-auto flex max-w-6xl justify-center px-1 pt-2 sm:px-2">
-        <EndServiceButton banner />
+        <EndServiceButton
+          banner
+          serviceId={serviceId}
+          classCounts={classCards.map((card) => ({
+            groupId: card.groupId,
+            level: card.level,
+            presentCount: card.presentCount,
+            servedCount: card.servedCount,
+            rabCount: card.rabCount,
+            refusedCount: card.refusedCount,
+          }))}
+          initialWasteWeightMaternelleG={service.wasteWeightMaternelleG}
+          initialWasteWeightPrimaireG={service.wasteWeightPrimaireG}
+        />
       </div>
     </div>
   );

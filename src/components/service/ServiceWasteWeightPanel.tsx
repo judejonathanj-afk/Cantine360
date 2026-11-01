@@ -200,7 +200,13 @@ export function ServiceWasteWeightPanel({
       setSavedAck(true);
       setPanelOpen(false);
       window.dispatchEvent(
-        new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+        new CustomEvent(WASTE_SAVED_EVENT, {
+          detail: {
+            serviceId,
+            wasteWeightMaternelleG: parsedMat,
+            wasteWeightPrimaireG: parsedPrim,
+          },
+        }),
       );
       return true;
     }
@@ -219,7 +225,13 @@ export function ServiceWasteWeightPanel({
         setSavedAck(true);
         setPanelOpen(false);
         window.dispatchEvent(
-          new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+          new CustomEvent(WASTE_SAVED_EVENT, {
+            detail: {
+              serviceId,
+              wasteWeightMaternelleG: parsedMat,
+              wasteWeightPrimaireG: parsedPrim,
+            },
+          }),
         );
         return false;
       }
@@ -242,7 +254,13 @@ export function ServiceWasteWeightPanel({
       setSavedAck(true);
       setPanelOpen(false);
       window.dispatchEvent(
-        new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+        new CustomEvent(WASTE_SAVED_EVENT, {
+          detail: {
+            serviceId,
+            wasteWeightMaternelleG: next.MATERNELLE,
+            wasteWeightPrimaireG: next.PRIMAIRE,
+          },
+        }),
       );
       window.setTimeout(() => setStatus("idle"), 800);
       return true;
@@ -253,7 +271,13 @@ export function ServiceWasteWeightPanel({
       setSavedAck(true);
       setPanelOpen(false);
       window.dispatchEvent(
-        new CustomEvent(WASTE_SAVED_EVENT, { detail: { serviceId } }),
+        new CustomEvent(WASTE_SAVED_EVENT, {
+          detail: {
+            serviceId,
+            wasteWeightMaternelleG: parsedMat,
+            wasteWeightPrimaireG: parsedPrim,
+          },
+        }),
       );
       return false;
     }
