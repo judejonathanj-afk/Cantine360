@@ -160,7 +160,7 @@ export function DashboardFoldOverlay({
           dialogClassName,
         )}
       >
-        <div className="mb-2 flex shrink-0 flex-col gap-3 px-1 pt-1 sm:pt-2">
+        <div className="mb-0 flex shrink-0 flex-col gap-3 px-3 pt-2 sm:px-4 sm:pt-3">
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h2
@@ -191,30 +191,30 @@ export function DashboardFoldOverlay({
         </div>
         <div
           className={cn(
-            "flex min-h-0 flex-1 flex-col gap-3 rounded-none bg-white p-3 shadow-none sm:p-4",
-            panelClassName,
-          )}
-        >
-        <div
-          className={cn(
-            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100",
+            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-zinc-950 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-track]:bg-zinc-900",
             bodyClassName,
           )}
         >
+          <div
+            className={cn(
+              "flex min-h-full flex-col rounded-none bg-white p-3 shadow-none sm:p-4",
+              panelClassName,
+            )}
+          >
             {children}
           </div>
-          <div className="flex shrink-0 justify-end">
-            <button
-              type="button"
-              onClick={() => setFoldOpen(false)}
-              className={cn(
-                "rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
-                closeButtonClassName,
-              )}
-            >
-              Fermer
-            </button>
-          </div>
+        </div>
+        <div className="flex shrink-0 justify-end bg-white px-3 py-3 sm:px-4">
+          <button
+            type="button"
+            onClick={() => setFoldOpen(false)}
+            className={cn(
+              "rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
+              closeButtonClassName,
+            )}
+          >
+            Fermer
+          </button>
         </div>
       </ServiceSaisieOverlay>
     </div>

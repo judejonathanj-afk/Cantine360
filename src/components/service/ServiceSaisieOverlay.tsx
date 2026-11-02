@@ -66,7 +66,7 @@ export function ServiceSaisieOverlay({
         className={cn(
           "relative z-10 flex w-full flex-col overflow-hidden overscroll-contain",
           fillViewport
-            ? "h-[100dvh] min-h-0"
+            ? "absolute inset-0 h-auto min-h-0"
             : "max-h-full",
           className,
         )}
