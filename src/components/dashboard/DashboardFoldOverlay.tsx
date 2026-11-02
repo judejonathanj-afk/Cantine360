@@ -156,7 +156,7 @@ export function DashboardFoldOverlay({
         labelledBy={labelledBy}
         fillViewport
         className={cn(
-          "w-[calc(100vw-1rem)] max-w-[92rem]",
+          "w-full max-w-none bg-zinc-950",
           dialogClassName,
         )}
       >
@@ -191,7 +191,7 @@ export function DashboardFoldOverlay({
         </div>
         <div
           className={cn(
-            "flex min-h-0 flex-1 flex-col gap-3 rounded-[24px] bg-white p-3 shadow-[0_24px_60px_rgba(24,24,27,0.28)] sm:p-4",
+            "flex min-h-0 flex-1 flex-col gap-3 rounded-none bg-white p-3 shadow-none sm:p-4",
             panelClassName,
           )}
         >

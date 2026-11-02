@@ -49,7 +49,7 @@ export function ServiceSaisieOverlay({
       className={cn(
         "fixed inset-0 z-[80] flex justify-center",
         fillViewport
-          ? "items-stretch p-2 sm:p-3"
+          ? "items-stretch p-0"
           : "items-center p-3 sm:p-5",
       )}
     >
@@ -66,7 +66,7 @@ export function ServiceSaisieOverlay({
         className={cn(
           "relative z-10 flex w-full flex-col overflow-hidden overscroll-contain",
           fillViewport
-            ? "h-full min-h-0"
+            ? "h-[100dvh] min-h-0"
             : "max-h-full",
           className,
         )}

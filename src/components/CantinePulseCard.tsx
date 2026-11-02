@@ -169,7 +169,7 @@ function CantinePlusGlobalChart({
   const moodColor = MOOD_CHART_COLOR[mood];
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+    <div className="bg-zinc-50 px-1 py-2 sm:px-2">
       <p className="text-sm font-semibold text-zinc-900">Lecture globale</p>
       <div className="mt-4 space-y-4">
         <div className="min-w-0 space-y-4">
@@ -607,10 +607,9 @@ export function CantinePulseCard({
       {brandTitle}
       {chiffresWindow}
     <Card
-      className="overflow-hidden border-zinc-200 bg-white text-zinc-900 shadow-md ring-1 ring-zinc-200 transition-shadow hover:shadow-lg"
+      className="overflow-hidden border-0 bg-white text-zinc-900 shadow-none ring-0"
     >
-      <div className={cn("h-1.5 w-full shrink-0", s.topBar)} aria-hidden />
-      <CardContent className="space-y-5 p-6 pt-4">
+      <CardContent className="space-y-5 p-4 pt-2 sm:p-6 sm:pt-3">
         {showBrandTitle ? null : (
           <div className="text-center">
             <p className="text-sm text-zinc-600 sm:text-base">
