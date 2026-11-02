@@ -9,12 +9,15 @@ export function ServiceSaisieOverlay({
   onClose,
   labelledBy,
   className,
+  fillViewport = false,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   labelledBy?: string;
   className?: string;
+  /** Feuille collée aux bords, jusqu’en bas de l’écran. */
+  fillViewport?: boolean;
   children: ReactNode;
 }) {
   useEffect(() => {
@@ -42,7 +45,14 @@ export function ServiceSaisieOverlay({
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-3 sm:p-5">
+    <div
+      className={cn(
+        "fixed inset-0 z-[80] flex justify-center",
+        fillViewport
+          ? "items-stretch p-2 sm:p-3"
+          : "items-center p-3 sm:p-5",
+      )}
+    >
       <button
         type="button"
         aria-label="Fermer"
@@ -54,7 +64,10 @@ export function ServiceSaisieOverlay({
         aria-modal="true"
         aria-labelledby={labelledBy}
         className={cn(
-          "relative z-10 flex max-h-full w-full flex-col overflow-hidden overscroll-contain",
+          "relative z-10 flex w-full flex-col overflow-hidden overscroll-contain",
+          fillViewport
+            ? "h-full min-h-0"
+            : "max-h-full",
           className,
         )}
       >

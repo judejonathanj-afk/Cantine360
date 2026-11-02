@@ -154,6 +154,7 @@ export function DashboardFoldOverlay({
         open={open}
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
+        fillViewport
         className={cn(
           "w-[calc(100vw-1rem)] max-w-[92rem]",
           dialogClassName,
@@ -194,12 +195,12 @@ export function DashboardFoldOverlay({
             panelClassName,
           )}
         >
-          <div
-            className={cn(
-              "min-h-0 flex-1 overflow-y-auto overflow-x-hidden",
-              bodyClassName,
-            )}
-          >
+        <div
+          className={cn(
+            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100",
+            bodyClassName,
+          )}
+        >
             {children}
           </div>
           <div className="flex shrink-0 justify-end">
