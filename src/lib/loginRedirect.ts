@@ -52,19 +52,15 @@ export function unauthenticatedPathRedirect(
   return null;
 }
 
-/** Accueil après PIN : la cuisine ne suit jamais une URL admin, et l’inverse. */
+/** Accueil après PIN : admin → dashboard, cuisine → service (jamais l’autre espace). */
 export function loginRedirectTo(
   role: "ADMIN" | "KITCHEN",
   requestedNext?: string,
 ): string {
-  const defaultHome = role === "ADMIN" ? "/admin/dashboard" : "/service";
+  if (role === "ADMIN") return "/admin/dashboard";
+  const defaultHome = "/service";
   if (!nextLooksSafe(requestedNext)) return defaultHome;
-  if (role === "ADMIN" && (nextIsService(requestedNext) || nextIsKitchenDashboard(requestedNext))) {
-    return defaultHome;
-  }
-  if (role === "KITCHEN" && nextIsAdminArea(requestedNext)) {
-    return defaultHome;
-  }
+  if (nextIsAdminArea(requestedNext)) return defaultHome;
   return requestedNext;
 }
 

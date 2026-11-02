@@ -26,8 +26,10 @@ describe("admin login redirect", () => {
     expect(loginRedirectTo("KITCHEN")).toBe("/service");
   });
 
-  it("respecte un next explicite hors cuisine", () => {
-    expect(loginRedirectTo("ADMIN", "/admin/students")).toBe("/admin/students");
+  it("envoie toujours l’admin sur le dashboard, même avec un next", () => {
+    expect(loginRedirectTo("ADMIN", "/antigaspillage")).toBe("/admin/dashboard");
+    expect(loginRedirectTo("ADMIN", "/admin/students")).toBe("/admin/dashboard");
+    expect(loginRedirectTo("ADMIN", "/exports")).toBe("/admin/dashboard");
   });
 
   it("n’ouvre pas la cuisine pour l’admin via next", () => {

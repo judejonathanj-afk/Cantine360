@@ -79,7 +79,7 @@ export default async function AntiWastePage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const session = await getEstablishmentSessionForRole("ADMIN");
-  if (!session) return redirectToEstablishmentLogin("/antigaspillage");
+  if (!session) return redirectToEstablishmentLogin("/admin/dashboard");
 
   const antiWaste = await getEstablishmentAntiWasteSettings(
     db,
