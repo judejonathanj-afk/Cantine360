@@ -7,10 +7,13 @@ export type EstablishmentSessionPayload = {
   accessCredentialRevision: number;
 };
 
-/** Durée du jeton établissement (renouvelé tant que l’app est utilisée). */
+/** Durée du jeton cuisine (renouvelé tant que l’app est utilisée). */
 export const ESTABLISHMENT_JWT_TTL = "30d";
 
-/** Renouveler si expiration dans moins de 14 jours (session laissée ouverte). */
+/** Session admin : 24 h depuis la connexion, sans glissement. */
+export const ESTABLISHMENT_ADMIN_JWT_TTL = "24h";
+
+/** Renouveler la cuisine si expiration dans moins de 14 jours. */
 export const ESTABLISHMENT_JWT_REFRESH_WITHIN_SEC = 60 * 60 * 24 * 14;
 
 function getSecret() {
@@ -30,7 +33,9 @@ export async function signEstablishmentSessionJwt(
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(ESTABLISHMENT_JWT_TTL)
+    .setExpirationTime(
+      session.role === "ADMIN" ? ESTABLISHMENT_ADMIN_JWT_TTL : ESTABLISHMENT_JWT_TTL,
+    )
     .sign(getSecret());
 }
 
@@ -40,6 +45,7 @@ export function establishmentJwtShouldRefresh(
 ): boolean {
   try {
     const payload = decodeJwt(token);
+    if (payload.role === "ADMIN") return false;
     const exp = payload.exp;
     if (typeof exp !== "number") return true;
     return exp * 1000 - Date.now() < withinSec * 1000;
@@ -63,6 +69,12 @@ export async function verifyEstablishmentJwt(
     const rev = payload.accessCredentialRevision;
     const accessCredentialRevision =
       typeof rev === "number" && Number.isFinite(rev) ? rev : 0;
+    if (role === "ADMIN") {
+      const iat = payload.iat;
+      if (typeof iat === "number" && Date.now() / 1000 - iat > 60 * 60 * 24) {
+        return null;
+      }
+    }
     return {
       kind: "establishment",
       role,

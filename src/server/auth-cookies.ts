@@ -120,9 +120,17 @@ export function pickEstablishmentSessionCandidate(
   return { establishmentId, token, slotKey };
 }
 
-/** Aligné sur le JWT (30 j) — onglets admin/cuisine laissés ouverts en semaine. */
+/** Cookie cuisine : 30 j. */
 export const ESTABLISHMENT_SESSION_MAX_AGE = 60 * 60 * 24 * 30;
+/** Cookie admin : 24 h depuis la connexion. */
+export const ESTABLISHMENT_ADMIN_SESSION_MAX_AGE = 60 * 60 * 24;
 export const PLATFORM_SESSION_MAX_AGE = 60 * 60 * 12;
+
+export function establishmentSessionMaxAge(role: EstablishmentRole): number {
+  return role === "ADMIN"
+    ? ESTABLISHMENT_ADMIN_SESSION_MAX_AGE
+    : ESTABLISHMENT_SESSION_MAX_AGE;
+}
 
 /** Plafond de sessions établissement dans le cookie (évite dépassement ~4 Ko navigateur). */
 export const MAX_ESTABLISHMENT_SESSIONS = 5;
@@ -154,6 +162,14 @@ export function cookieBaseOptions() {
     sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
+  };
+}
+
+export function persistCookieOptions(maxAge: number) {
+  return {
+    ...cookieBaseOptions(),
+    maxAge,
+    expires: new Date(Date.now() + maxAge * 1000),
   };
 }
 
@@ -269,14 +285,14 @@ export function buildEstablishmentSessionCookieWrites(
   return {
     map,
     activeSlot: slot,
-    maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
+    maxAge: establishmentSessionMaxAge(role),
   };
 }
 
 type CookieWriter = (
   name: string,
   value: string,
-  options: ReturnType<typeof cookieBaseOptions> & { maxAge: number },
+  options: ReturnType<typeof persistCookieOptions>,
 ) => void;
 
 export function writeEstablishmentSessionCookies(
@@ -292,12 +308,9 @@ export function writeEstablishmentSessionCookies(
     token,
     priorMap,
   );
-  const base = cookieBaseOptions();
-  write(ESTABLISHMENT_SESSIONS_COOKIE_NAME, serializeEstablishmentSessionsCookie(map), {
-    ...base,
-    maxAge,
-  });
-  write(ACTIVE_ESTABLISHMENT_COOKIE_NAME, activeSlot, { ...base, maxAge });
+  const persist = persistCookieOptions(maxAge);
+  write(ESTABLISHMENT_SESSIONS_COOKIE_NAME, serializeEstablishmentSessionsCookie(map), persist);
+  write(ACTIVE_ESTABLISHMENT_COOKIE_NAME, activeSlot, persist);
 }
 
 export function applyEstablishmentLoginCookies(
@@ -352,16 +365,16 @@ export function applyEstablishmentRoleLogoutCookies(
     newActive = Object.keys(next)[0] ?? null;
   }
 
+  const leftoverRole =
+    parseEstablishmentSessionSlotKey(newActive ?? "").role ?? "KITCHEN";
+  const persist = persistCookieOptions(establishmentSessionMaxAge(leftoverRole));
   res.cookies.set(
     ESTABLISHMENT_SESSIONS_COOKIE_NAME,
     serializeEstablishmentSessionsCookie(next),
-    { ...base, maxAge: ESTABLISHMENT_SESSION_MAX_AGE },
+    persist,
   );
   if (newActive) {
-    res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, newActive, {
-      ...base,
-      maxAge: ESTABLISHMENT_SESSION_MAX_AGE,
-    });
+    res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, newActive, persist);
   } else {
     res.cookies.set(ACTIVE_ESTABLISHMENT_COOKIE_NAME, "", { ...base, maxAge: 0 });
   }

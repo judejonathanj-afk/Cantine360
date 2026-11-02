@@ -4,6 +4,7 @@ import {
   ACTIVE_ESTABLISHMENT_COOKIE_NAME,
   applyEstablishmentLoginCookies,
   applyEstablishmentLogoutCookies,
+  ESTABLISHMENT_ADMIN_SESSION_MAX_AGE,
   establishmentSessionSlotKey,
   ESTABLISHMENT_SESSIONS_COOKIE_NAME,
   hasEstablishmentSessionPointer,
@@ -55,6 +56,13 @@ describe("parseEstablishmentSessionsCookie", () => {
 });
 
 describe("session établissement", () => {
+  it("pose un cookie admin de 24 h", () => {
+    const res = NextResponse.json({ ok: true });
+    applyEstablishmentLoginCookies(res, "ecole", "ADMIN", "token-admin");
+    const setCookie = res.headers.get("set-cookie") ?? "";
+    expect(setCookie).toContain(`Max-Age=${ESTABLISHMENT_ADMIN_SESSION_MAX_AGE}`);
+  });
+
   it("un login cuisine remplace la session admin du même navigateur", () => {
     const res = NextResponse.json({ ok: true });
     applyEstablishmentLoginCookies(res, "ecole", "ADMIN", "token-admin");
