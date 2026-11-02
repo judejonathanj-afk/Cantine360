@@ -1,13 +1,12 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
-import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
-/** Barre de rangement admin, fenêtre floutée comme le poids des déchets. */
+/** Lecture globale Cantine+ directement sur le dashboard, sans fenêtre. */
 export function CantinePlusFold({
   children,
   subtitle,
@@ -18,20 +17,33 @@ export function CantinePlusFold({
   headerAction?: ReactNode;
 }) {
   return (
-    <DashboardFoldOverlay
-      kicker="Cantine+"
-      openLabel="Ouvrir Cantine+"
-      overlayTitle="Cantine+"
-      subtitle={subtitle}
-      hint="Note, RAB et déchets — lecture globale en graphique et en chiffres. Filtrez, lisez, téléchargez."
-      icon={Sparkles}
-      iconTileClassName="bg-[#ddc8f8] text-[#5b21b6]"
-      labelledBy="cantine-plus-overlay-title"
-      closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
-      headerAction={headerAction}
-    >
+    <section className="space-y-4" aria-labelledby="cantine-plus-inline-title">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+            Cantine+
+          </p>
+          <h2
+            id="cantine-plus-inline-title"
+            className="mt-1 flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl"
+          >
+            <Sparkles className="h-6 w-6 shrink-0 text-[#5b21b6]" strokeWidth={2.25} aria-hidden />
+            Lecture globale graphique / chiffres
+          </h2>
+          {subtitle ? (
+            <p className="mt-1 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+        {headerAction ? (
+          <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+            {headerAction}
+          </div>
+        ) : null}
+      </div>
       {children}
-    </DashboardFoldOverlay>
+    </section>
   );
 }
 
