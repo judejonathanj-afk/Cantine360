@@ -211,7 +211,7 @@ function CantinePlusGlobalChart({
             <>
             <ChartContainer
               config={globalChartConfig}
-              className="h-[min(19rem,48vw)] w-full min-h-[220px] aspect-auto [&_.recharts-cartesian-axis-tick_text]:!fill-black [&_.recharts-cartesian-axis-tick_text]:font-semibold [&_.y-axis-grams_.recharts-cartesian-axis-tick_text]:!fill-[#eab308]"
+              className="h-[min(15rem,38vw)] w-full min-h-[176px] aspect-auto [&_.recharts-cartesian-axis-tick_text]:!fill-black [&_.recharts-cartesian-axis-tick_text]:font-semibold [&_.y-axis-grams_.recharts-cartesian-axis-tick_text]:!fill-[#eab308]"
             >
               <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="rgba(24,24,27,0.08)" strokeDasharray="4 4" />
