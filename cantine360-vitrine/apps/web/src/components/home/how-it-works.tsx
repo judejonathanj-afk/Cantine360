@@ -291,7 +291,7 @@ export function HowItWorks() {
 
   return (
     <section
-      className="relative z-10 -mt-8 rounded-t-[2.25rem] border-y border-white/10 bg-[#121212] text-white shadow-[0_-30px_80px_rgba(18,18,18,0.18)] sm:-mt-12 sm:rounded-t-[3rem]"
+      className="relative z-10 rounded-t-[2.25rem] border-y border-white/10 bg-[#121212] text-white shadow-[0_-30px_80px_rgba(18,18,18,0.18)] sm:rounded-t-[3rem]"
       aria-labelledby="how-title"
     >
       <StepWindows intro={intro}>{steps}</StepWindows>
