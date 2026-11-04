@@ -535,7 +535,7 @@ export function CantinePulseCard({
   ) : null;
 
   const chiffresWindow = (
-    <div className="overflow-hidden rounded-2xl bg-zinc-950 px-4 py-4 shadow-md ring-1 ring-zinc-800 sm:px-5 sm:py-5">
+    <div>
       <p className="mb-3 text-sm font-semibold text-white">Les chiffres</p>
       <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
         <StatTile
@@ -603,7 +603,6 @@ export function CantinePulseCard({
   return (
     <div className="space-y-4">
       {brandTitle}
-      {chiffresWindow}
       <div className="space-y-5">
         {showBrandTitle ? null : (
           <div className="text-center">
@@ -650,7 +649,8 @@ export function CantinePulseCard({
         ) : null}
 
         <div className="rounded-2xl bg-zinc-950 px-4 py-4 sm:px-5 sm:py-5">
-          <div className="rounded-xl border-2 border-zinc-200 bg-white px-4 py-4 sm:px-5 sm:py-5">
+          {chiffresWindow}
+          <div className="mt-4 rounded-xl border-2 border-zinc-200 bg-white px-4 py-4 sm:px-5 sm:py-5">
             <p
               className={cn(
                 "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
