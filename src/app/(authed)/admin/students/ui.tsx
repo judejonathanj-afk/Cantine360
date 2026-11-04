@@ -215,15 +215,6 @@ export function AdminStudentsClient({
     await patchStudent(s, { active: next });
   }
 
-  async function saveName(s: Student, field: "firstName" | "lastName", value: string) {
-    const next = value.trim();
-    if (!next || next === s[field]) return;
-    setStudents((all) =>
-      all.map((x) => (x.id === s.id ? { ...x, [field]: next } : x)),
-    );
-    await patchStudent(s, { [field]: next });
-  }
-
   async function changeGroup(s: Student, nextGroupId: string) {
     if (nextGroupId === s.groupId) return;
     const g = groups.find((x) => x.id === nextGroupId);
@@ -458,7 +449,7 @@ export function AdminStudentsClient({
         openLabel="Ouvrir Élèves et allergènes"
         overlayTitle="Élèves et allergènes"
         subtitle="Parcourez les élèves par classe : allergènes, régimes et consignes parents."
-        hint="Modifiez prénom, nom, classe, allergènes, régimes et consignes directement sur la carte."
+        hint="Modifiez classe, allergènes, régimes et consignes directement sur la carte."
         icon={Users}
         labelledBy="admin-students-list-overlay"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
@@ -504,22 +495,9 @@ export function AdminStudentsClient({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap gap-2">
-                        <input
-                          defaultValue={s.firstName}
-                          key={`${s.id}-fn-${s.firstName}`}
-                          aria-label="Prénom"
-                          onBlur={(e) => void saveName(s, "firstName", e.target.value)}
-                          className="min-w-0 flex-1 rounded-xl bg-white/70 px-2 py-1 text-2xl font-extrabold tracking-tight text-zinc-950 outline-none ring-0 placeholder:text-zinc-400 focus:bg-white focus:ring-2 focus:ring-emerald-400"
-                        />
-                        <input
-                          defaultValue={s.lastName}
-                          key={`${s.id}-ln-${s.lastName}`}
-                          aria-label="Nom"
-                          onBlur={(e) => void saveName(s, "lastName", e.target.value)}
-                          className="min-w-0 flex-1 rounded-xl bg-white/70 px-2 py-1 text-2xl font-extrabold tracking-tight text-zinc-950 outline-none placeholder:text-zinc-400 focus:bg-white focus:ring-2 focus:ring-emerald-400"
-                        />
-                      </div>
+                      <p className="text-2xl font-extrabold tracking-tight text-zinc-950">
+                        {s.firstName} {s.lastName}
+                      </p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         <span
                           className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
