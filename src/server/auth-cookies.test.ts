@@ -14,6 +14,7 @@ import {
   pickEstablishmentSessionCandidate,
   pruneEstablishmentSessionsMap,
   sessionRoleForPath,
+  touchEstablishmentSessionCookies,
 } from "@/server/auth-cookies";
 
 describe("pruneEstablishmentSessionsMap", () => {
@@ -61,6 +62,36 @@ describe("session établissement", () => {
     applyEstablishmentLoginCookies(res, "ecole", "ADMIN", "token-admin");
     const setCookie = res.headers.get("set-cookie") ?? "";
     expect(setCookie).toContain(`Max-Age=${ESTABLISHMENT_ADMIN_SESSION_MAX_AGE}`);
+    expect(setCookie.toLowerCase()).toContain("expires=");
+  });
+
+  it("recoller le cookie sans allonger au-delà de l’exp JWT", () => {
+    const header = Buffer.from(
+      JSON.stringify({ alg: "HS256", typ: "JWT" }),
+    ).toString("base64url");
+    const payload = Buffer.from(
+      JSON.stringify({
+        exp: Math.floor(Date.now() / 1000) + 3600,
+      }),
+    ).toString("base64url");
+    const token = `${header}.${payload}.sig`;
+    const slot = establishmentSessionSlotKey("ecole", "ADMIN");
+    const mapJson = JSON.stringify({ [slot]: token });
+    const res = NextResponse.json({ ok: true });
+    touchEstablishmentSessionCookies(
+      (name) =>
+        name === ESTABLISHMENT_SESSIONS_COOKIE_NAME
+          ? mapJson
+          : name === ACTIVE_ESTABLISHMENT_COOKIE_NAME
+            ? slot
+            : undefined,
+      (name, value, options) => res.cookies.set(name, value, options),
+    );
+    const setCookie = res.headers.get("set-cookie") ?? "";
+    expect(setCookie).toContain("Max-Age=");
+    const match = setCookie.match(/Max-Age=(\d+)/);
+    expect(Number(match?.[1])).toBeGreaterThan(3500);
+    expect(Number(match?.[1])).toBeLessThanOrEqual(3600);
   });
 
   it("un login cuisine remplace la session admin du même navigateur", () => {

@@ -1,8 +1,10 @@
 import { decodeJwt } from "jose";
 import { describe, expect, it } from "vitest";
 import {
+  ESTABLISHMENT_ADMIN_JWT_TTL_SEC,
   ESTABLISHMENT_JWT_REFRESH_WITHIN_SEC,
   establishmentJwtShouldRefresh,
+  secondsUntilJwtExpiry,
   signEstablishmentSessionJwt,
 } from "@/server/establishmentSessionJwt";
 
@@ -34,5 +36,8 @@ describe("establishmentSessionJwt", () => {
     expect(payload.exp).toBeGreaterThanOrEqual(before + 60 * 60 * 23);
     expect(payload.exp).toBeLessThanOrEqual(before + 60 * 60 * 25);
     expect(establishmentJwtShouldRefresh(token)).toBe(false);
+    const remain = secondsUntilJwtExpiry(token);
+    expect(remain).toBeGreaterThan(ESTABLISHMENT_ADMIN_JWT_TTL_SEC - 5);
+    expect(remain).toBeLessThanOrEqual(ESTABLISHMENT_ADMIN_JWT_TTL_SEC);
   });
 });

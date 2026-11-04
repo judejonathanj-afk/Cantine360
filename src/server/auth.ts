@@ -65,7 +65,7 @@ export async function signPlatformSession() {
 
 export async function verifySessionToken(token: string): Promise<Session | null> {
   try {
-    const { payload } = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify(token, getSecret(), { clockTolerance: 120 });
     const kind = payload.kind;
 
     if (kind === "platform") {
@@ -81,6 +81,12 @@ export async function verifySessionToken(token: string): Promise<Session | null>
       const rev = payload.accessCredentialRevision;
       const accessCredentialRevision =
         typeof rev === "number" && Number.isFinite(rev) ? rev : 0;
+      if (role === "ADMIN") {
+        const iat = payload.iat;
+        if (typeof iat === "number" && Date.now() / 1000 - iat > 60 * 60 * 24) {
+          return null;
+        }
+      }
       return {
         kind: "establishment",
         role,
@@ -95,6 +101,12 @@ export async function verifySessionToken(token: string): Promise<Session | null>
     if (role !== "ADMIN" && role !== "KITCHEN") return null;
     if (typeof establishmentId !== "string" || establishmentId.length === 0)
       return null;
+    if (role === "ADMIN") {
+      const iat = payload.iat;
+      if (typeof iat === "number" && Date.now() / 1000 - iat > 60 * 60 * 24) {
+        return null;
+      }
+    }
     return {
       kind: "establishment",
       role,

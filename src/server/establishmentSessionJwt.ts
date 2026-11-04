@@ -9,9 +9,14 @@ export type EstablishmentSessionPayload = {
 
 /** Durée du jeton cuisine (renouvelé tant que l’app est utilisée). */
 export const ESTABLISHMENT_JWT_TTL = "30d";
+export const ESTABLISHMENT_JWT_TTL_SEC = 60 * 60 * 24 * 30;
 
 /** Session admin : 24 h depuis la connexion, sans glissement. */
 export const ESTABLISHMENT_ADMIN_JWT_TTL = "24h";
+export const ESTABLISHMENT_ADMIN_JWT_TTL_SEC = 60 * 60 * 24;
+
+/** Tolérance d’horloge (évite une déconnexion trop tôt). */
+export const JWT_CLOCK_TOLERANCE_SEC = 120;
 
 /** Renouveler la cuisine si expiration dans moins de 14 jours. */
 export const ESTABLISHMENT_JWT_REFRESH_WITHIN_SEC = 60 * 60 * 24 * 14;
@@ -34,9 +39,23 @@ export async function signEstablishmentSessionJwt(
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(
-      session.role === "ADMIN" ? ESTABLISHMENT_ADMIN_JWT_TTL : ESTABLISHMENT_JWT_TTL,
+      Math.floor(Date.now() / 1000) +
+        (session.role === "ADMIN"
+          ? ESTABLISHMENT_ADMIN_JWT_TTL_SEC
+          : ESTABLISHMENT_JWT_TTL_SEC),
     )
     .sign(getSecret());
+}
+
+/** Secondes restantes avant exp (null si illisible). */
+export function secondsUntilJwtExpiry(token: string): number | null {
+  try {
+    const payload = decodeJwt(token);
+    if (typeof payload.exp !== "number") return null;
+    return payload.exp - Math.floor(Date.now() / 1000);
+  } catch {
+    return null;
+  }
 }
 
 export function establishmentJwtShouldRefresh(
@@ -58,7 +77,9 @@ export async function verifyEstablishmentJwt(
   token: string,
 ): Promise<EstablishmentSessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify(token, getSecret(), {
+      clockTolerance: JWT_CLOCK_TOLERANCE_SEC,
+    });
     if (payload.kind !== "establishment") return null;
     const role = payload.role;
     const establishmentId = payload.establishmentId;

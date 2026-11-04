@@ -1,4 +1,5 @@
 import type { NextResponse } from "next/server";
+import { secondsUntilJwtExpiry } from "@/server/establishmentSessionJwt";
 
 /** @deprecated Ancien cookie unique — migré automatiquement vers les cookies dédiés. */
 export const LEGACY_SESSION_COOKIE_NAME = "c360_session";
@@ -311,6 +312,33 @@ export function writeEstablishmentSessionCookies(
   const persist = persistCookieOptions(maxAge);
   write(ESTABLISHMENT_SESSIONS_COOKIE_NAME, serializeEstablishmentSessionsCookie(map), persist);
   write(ACTIVE_ESTABLISHMENT_COOKIE_NAME, activeSlot, persist);
+}
+
+/** Recolle le cookie sur chaque requête, sans prolonger le JWT au-delà de son exp. */
+export function touchEstablishmentSessionCookies(
+  getCookie: (name: string) => string | undefined,
+  write: CookieWriter,
+): void {
+  const { map, activeEstablishmentId } = readEstablishmentSessionsFromCookies(getCookie);
+  if (Object.keys(map).length === 0) return;
+  let remain = ESTABLISHMENT_SESSION_MAX_AGE;
+  let readable = false;
+  for (const token of Object.values(map)) {
+    const sec = secondsUntilJwtExpiry(token);
+    if (sec == null) continue;
+    readable = true;
+    remain = Math.min(remain, sec);
+  }
+  if (!readable || remain <= 0) return;
+  const persist = persistCookieOptions(remain);
+  write(
+    ESTABLISHMENT_SESSIONS_COOKIE_NAME,
+    serializeEstablishmentSessionsCookie(map),
+    persist,
+  );
+  if (activeEstablishmentId) {
+    write(ACTIVE_ESTABLISHMENT_COOKIE_NAME, activeEstablishmentId, persist);
+  }
 }
 
 export function applyEstablishmentLoginCookies(

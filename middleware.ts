@@ -9,6 +9,7 @@ import {
   PLATFORM_SESSION_COOKIE_NAME,
   readActiveEstablishmentToken,
   readPlatformTokenFromCookies,
+  touchEstablishmentSessionCookies,
   type EstablishmentRole,
 } from "@/server/auth-cookies";
 import {
@@ -27,7 +28,7 @@ type SessionKind = "establishment" | "platform" | null;
 
 async function verifyTokenKind(token: string): Promise<SessionKind> {
   try {
-    const { payload } = await jwtVerify(token, getSecret());
+    const { payload } = await jwtVerify(token, getSecret(), { clockTolerance: 120 });
     if (payload.kind === "platform") return "platform";
     const role = payload.role;
     const establishmentId = payload.establishmentId;
@@ -52,7 +53,9 @@ async function verifiedRoleAt(
   const active = readActiveEstablishmentToken(getCookie, pathname);
   if (!active) return null;
   try {
-    const { payload } = await jwtVerify(active.token, getSecret());
+    const { payload } = await jwtVerify(active.token, getSecret(), {
+      clockTolerance: 120,
+    });
     if (payload.kind === "platform") return null;
     const role = payload.role;
     if (role === "ADMIN" || role === "KITCHEN") return role;
@@ -193,6 +196,10 @@ export async function middleware(req: NextRequest) {
     requestHeaders.set("x-pathname", pathname);
     requestHeaders.set("x-cantine-pathname", pathname);
     const res = NextResponse.next({ request: { headers: requestHeaders } });
+    touchEstablishmentSessionCookies(
+      (name) => req.cookies.get(name)?.value,
+      (name, value, options) => res.cookies.set(name, value, options),
+    );
     return migrateLegacySessionCookie(req, res);
   }
 
