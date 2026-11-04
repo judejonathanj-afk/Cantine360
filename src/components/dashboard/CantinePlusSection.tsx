@@ -1,129 +1,40 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
 
-const CANTINE_PLUS_OPEN_KEY = "cantine360-cantine-plus-open";
-
-/** Cantine+ s’ouvre dans la page (pas de fenêtre ni de barre interne). */
-export function CantinePlusFold({
-  children,
-  subtitle,
-  headerAction,
-}: {
-  children: ReactNode;
-  subtitle?: string;
-  headerAction?: ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(CANTINE_PLUS_OPEN_KEY) === "1") {
-        setOpen(true);
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  function setFoldOpen(next: boolean) {
-    setOpen(next);
-    try {
-      if (next) sessionStorage.setItem(CANTINE_PLUS_OPEN_KEY, "1");
-      else sessionStorage.removeItem(CANTINE_PLUS_OPEN_KEY);
-    } catch {
-      /* ignore */
-    }
-    if (next) {
-      window.requestAnimationFrame(() => {
-        document.getElementById("cantine-plus")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      });
-    }
-  }
-
-  if (!open) {
-    return (
-      <section
-        id="cantine-plus"
-        className="overflow-hidden rounded-[28px] bg-[#5b21b6] shadow-[0_12px_32px_rgba(91,33,182,0.38)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100"
-      >
-        <button
-          type="button"
-          onClick={() => setFoldOpen(true)}
-          aria-expanded={false}
-          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
-        >
-          <span
-            className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
-            aria-hidden
-          >
-            <span className="flex size-11 items-center justify-center rounded-[14px] bg-violet-200 text-[#5b21b6] sm:size-12 sm:rounded-2xl">
-              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
-            </span>
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
-              Cantine+
-            </span>
-            <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
-              Ouvrir Cantine+
-            </span>
-            <span className="mt-0.5 block text-sm leading-snug text-white/80">
-              Note, RAB et déchets — lecture globale en graphique et en chiffres.
-            </span>
-          </span>
-          <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
-        </button>
-      </section>
-    );
-  }
-
+/** Carte pour ouvrir la lecture globale sur la même page Cantine+. */
+export function CantinePlusFold({ onOpen }: { onOpen: () => void }) {
   return (
-    <section
+    <button
+      type="button"
       id="cantine-plus"
-      className="space-y-4"
-      aria-labelledby="cantine-plus-inline-title"
+      onClick={onOpen}
+      className="flex w-full items-center gap-3 overflow-hidden rounded-[28px] bg-[#5b21b6] px-4 py-3.5 text-left shadow-[0_12px_32px_rgba(91,33,182,0.38)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] hover:bg-[#4c1d95] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:px-5 sm:py-4"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-            Cantine+
-          </p>
-          <h2
-            id="cantine-plus-inline-title"
-            className="mt-1 flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl"
-          >
-            <Sparkles className="h-6 w-6 shrink-0 text-[#5b21b6]" strokeWidth={2.25} aria-hidden />
-            Lecture globale graphique / chiffres
-          </h2>
-          {subtitle ? (
-            <p className="mt-1 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
-              {subtitle}
-            </p>
-          ) : null}
-        </div>
-        <button
-          type="button"
-          onClick={() => setFoldOpen(false)}
-          className="self-start rounded-full bg-zinc-100 px-4 py-2 text-sm font-bold text-zinc-800 transition hover:bg-zinc-200"
-        >
-          Replier
-        </button>
-      </div>
-      {headerAction ? (
-        <div className="flex w-full flex-wrap items-center justify-end gap-2">
-          {headerAction}
-        </div>
-      ) : null}
-      {children}
-    </section>
+      <span
+        className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
+        aria-hidden
+      >
+        <span className="flex size-11 items-center justify-center rounded-[14px] bg-violet-200 text-[#5b21b6] sm:size-12 sm:rounded-2xl">
+          <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
+        </span>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
+          Cantine+
+        </span>
+        <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
+          Ouvrir Cantine+
+        </span>
+        <span className="mt-0.5 block text-sm leading-snug text-white/80">
+          Lecture globale graphique / chiffres — dans cette page.
+        </span>
+      </span>
+      <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
+    </button>
   );
 }
 
