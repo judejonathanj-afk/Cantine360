@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import {
   Plus,
+  Trash2,
   Upload,
   UserPlus,
   Users,
@@ -75,10 +76,7 @@ export function AdminStudentsClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Student | null>(null);
-  const [cardMenu, setCardMenu] = useState<{
-    id: string;
-    kind: "allergen" | "regime";
-  } | null>(null);
+  const [cardMenu, setCardMenu] = useState<{ id: string } | null>(null);
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
   const groupLevelById = useMemo(() => {
@@ -175,30 +173,30 @@ export function AdminStudentsClient({
     }
   }
 
+  async function patchStudent(s: Student, body: Record<string, unknown>) {
+    const res = await fetch(`/api/students/${s.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) await refresh();
+    return res.ok;
+  }
+
   async function saveAllergenNotes(s: Student, notes: string) {
     const next = notes.trim() || null;
     if ((s.allergenNotes ?? null) === next) return;
     setStudents((all) =>
       all.map((x) => (x.id === s.id ? { ...x, allergenNotes: next } : x)),
     );
-    const res = await fetch(`/api/students/${s.id}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ allergenNotes: next }),
-    });
-    if (!res.ok) await refresh();
+    await patchStudent(s, { allergenNotes: next });
   }
 
   async function setAllergens(s: Student, allergens: string[]) {
     setStudents((all) =>
       all.map((x) => (x.id === s.id ? { ...x, allergens } : x)),
     );
-    const res = await fetch(`/api/students/${s.id}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ allergens }),
-    });
-    if (!res.ok) await refresh();
+    await patchStudent(s, { allergens });
   }
 
   async function toggleDiet(s: Student, field: "noPork" | "vegetarian") {
@@ -206,12 +204,43 @@ export function AdminStudentsClient({
     setStudents((all) =>
       all.map((x) => (x.id === s.id ? { ...x, [field]: next } : x)),
     );
-    const res = await fetch(`/api/students/${s.id}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ [field]: next }),
-    });
-    if (!res.ok) await refresh();
+    await patchStudent(s, { [field]: next });
+  }
+
+  async function toggleActive(s: Student) {
+    const next = !s.active;
+    setStudents((all) =>
+      all.map((x) => (x.id === s.id ? { ...x, active: next } : x)),
+    );
+    await patchStudent(s, { active: next });
+  }
+
+  async function saveName(s: Student, field: "firstName" | "lastName", value: string) {
+    const next = value.trim();
+    if (!next || next === s[field]) return;
+    setStudents((all) =>
+      all.map((x) => (x.id === s.id ? { ...x, [field]: next } : x)),
+    );
+    await patchStudent(s, { [field]: next });
+  }
+
+  async function changeGroup(s: Student, nextGroupId: string) {
+    if (nextGroupId === s.groupId) return;
+    const g = groups.find((x) => x.id === nextGroupId);
+    if (!g) return;
+    setStudents((all) =>
+      all.map((x) =>
+        x.id === s.id
+          ? {
+              ...x,
+              groupId: g.id,
+              className: g.name,
+              schoolName: g.schoolName,
+            }
+          : x,
+      ),
+    );
+    await patchStudent(s, { groupId: nextGroupId });
   }
 
   async function confirmDelete() {
@@ -429,7 +458,7 @@ export function AdminStudentsClient({
         openLabel="Ouvrir Élèves et allergènes"
         overlayTitle="Élèves et allergènes"
         subtitle="Parcourez les élèves par classe : allergènes, régimes et consignes parents."
-        hint="Modifiez allergènes, régimes et consignes directement sur la carte."
+        hint="Modifiez prénom, nom, classe, allergènes, régimes et consignes directement sur la carte."
         icon={Users}
         labelledBy="admin-students-list-overlay"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
@@ -462,64 +491,89 @@ export function AdminStudentsClient({
               {bucket.students.map((s) => {
                 const level = groupLevelById.get(s.groupId) ?? "PRIMAIRE";
                 const maternelle = level === "MATERNELLE";
-                const allergenMenuOpen =
-                  cardMenu?.id === s.id && cardMenu.kind === "allergen";
-                const regimeMenuOpen =
-                  cardMenu?.id === s.id && cardMenu.kind === "regime";
+                const allergenMenuOpen = cardMenu?.id === s.id;
                 return (
                 <div
                   key={s.id}
                   className={[
-                    "relative flex flex-col gap-5 overflow-visible rounded-[28px] border-2 px-5 py-5 text-left shadow-sm sm:px-6 sm:py-6",
+                    "relative flex flex-col gap-4 overflow-visible rounded-[28px] border-2 px-5 py-5 text-left shadow-[0_10px_28px_-18px_rgba(15,23,42,0.45)] sm:px-6 sm:py-6",
                     maternelle
-                      ? "border-sky-200 bg-[#f4f9ff]"
-                      : "border-emerald-200 bg-[#f3fbf6]",
+                      ? "border-[#62b3e0] bg-[#d8eefc]"
+                      : "border-[#6dcaa0] bg-[#d8f5e6]",
                   ].join(" ")}
                 >
-                  <button
-                    type="button"
-                    className="absolute right-3 top-3 rounded-full p-1.5 text-zinc-500 hover:bg-white/80 hover:text-zinc-900"
-                    aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
-                    onClick={() => setToDelete(s)}
-                  >
-                    <X className="h-4 w-4" strokeWidth={2.4} />
-                  </button>
-
-                  <div className="min-w-0 pr-8">
-                    <p className="text-2xl font-extrabold tracking-tight text-zinc-950">
-                      {s.firstName} {s.lastName}
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
-                          maternelle
-                            ? "bg-sky-400 text-sky-950"
-                            : "bg-emerald-400 text-emerald-950"
-                        }`}
-                      >
-                        {schoolLevelLabelFr(level)}
-                      </span>
-                      {s.className ? (
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap gap-2">
+                        <input
+                          defaultValue={s.firstName}
+                          key={`${s.id}-fn-${s.firstName}`}
+                          aria-label="Prénom"
+                          onBlur={(e) => void saveName(s, "firstName", e.target.value)}
+                          className="min-w-0 flex-1 rounded-xl bg-white/70 px-2 py-1 text-2xl font-extrabold tracking-tight text-zinc-950 outline-none ring-0 placeholder:text-zinc-400 focus:bg-white focus:ring-2 focus:ring-emerald-400"
+                        />
+                        <input
+                          defaultValue={s.lastName}
+                          key={`${s.id}-ln-${s.lastName}`}
+                          aria-label="Nom"
+                          onBlur={(e) => void saveName(s, "lastName", e.target.value)}
+                          className="min-w-0 flex-1 rounded-xl bg-white/70 px-2 py-1 text-2xl font-extrabold tracking-tight text-zinc-950 outline-none placeholder:text-zinc-400 focus:bg-white focus:ring-2 focus:ring-emerald-400"
+                        />
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         <span
                           className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
                             maternelle
-                              ? "bg-sky-100 text-sky-800"
-                              : "bg-emerald-100 text-emerald-800"
+                              ? "bg-[#2e9cdc] text-white"
+                              : "bg-[#0f9d58] text-white"
                           }`}
                         >
-                          {s.className}
+                          {schoolLevelLabelFr(level)}
                         </span>
-                      ) : null}
-                      {s.schoolName ? (
-                        <span className="text-sm font-semibold text-zinc-500">
-                          {s.schoolName}
-                        </span>
-                      ) : null}
-                      {!s.active ? (
-                        <span className="text-xs font-bold text-zinc-600">
-                          (inactif)
-                        </span>
-                      ) : null}
+                        <select
+                          value={s.groupId}
+                          aria-label="Classe"
+                          onChange={(e) => void changeGroup(s, e.target.value)}
+                          className={`max-w-[11rem] rounded-full px-3 py-1 text-sm font-extrabold outline-none ${
+                            maternelle
+                              ? "bg-[#b9dff5] text-[#0b4a66]"
+                              : "bg-[#c4f0d8] text-[#14532d]"
+                          }`}
+                        >
+                          {activeGroups.map((g) => (
+                            <option key={g.id} value={g.id}>
+                              {g.name}
+                            </option>
+                          ))}
+                        </select>
+                        {s.schoolName ? (
+                          <span className="text-sm font-semibold text-zinc-600">
+                            {s.schoolName}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void toggleActive(s)}
+                        className={[
+                          "rounded-full px-3 py-1 text-sm font-extrabold",
+                          s.active
+                            ? "bg-[#0f9d58] text-white"
+                            : "bg-white/80 text-zinc-700",
+                        ].join(" ")}
+                      >
+                        {s.active ? "Actif" : "Inactif"}
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-full p-1.5 text-zinc-600 hover:bg-white/80 hover:text-zinc-950"
+                        aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
+                        onClick={() => setToDelete(s)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
 
@@ -554,9 +608,7 @@ export function AdminStudentsClient({
                           type="button"
                           onClick={() =>
                             setCardMenu(
-                              allergenMenuOpen
-                                ? null
-                                : { id: s.id, kind: "allergen" },
+                              allergenMenuOpen ? null : { id: s.id },
                             )
                           }
                           className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 shadow-sm hover:border-emerald-400"
@@ -599,81 +651,30 @@ export function AdminStudentsClient({
                       Régimes
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      {s.noPork ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-200 px-3 py-1.5 text-sm font-bold text-zinc-800">
-                          Sans porc
-                          <button
-                            type="button"
-                            aria-label="Retirer sans porc"
-                            onClick={() => void toggleDiet(s, "noPork")}
-                            className="rounded-full p-0.5 hover:bg-zinc-300"
-                          >
-                            <X className="size-3.5" aria-hidden />
-                          </button>
-                        </span>
-                      ) : null}
-                      {s.vegetarian ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white">
-                          Végétarien
-                          <button
-                            type="button"
-                            aria-label="Retirer végétarien"
-                            onClick={() => void toggleDiet(s, "vegetarian")}
-                            className="rounded-full p-0.5 hover:bg-white/20"
-                          >
-                            <X className="size-3.5" aria-hidden />
-                          </button>
-                        </span>
-                      ) : null}
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setCardMenu(
-                              regimeMenuOpen
-                                ? null
-                                : { id: s.id, kind: "regime" },
-                            )
-                          }
-                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 shadow-sm hover:border-emerald-400"
-                        >
-                          <Plus className="size-3.5" aria-hidden />
-                          Ajouter un régime
-                        </button>
-                        {regimeMenuOpen ? (
-                          <div className="absolute left-0 z-20 mt-1 w-52 rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
-                            {!s.noPork ? (
-                              <button
-                                type="button"
-                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
-                                onClick={() => {
-                                  void toggleDiet(s, "noPork");
-                                  setCardMenu(null);
-                                }}
-                              >
-                                Sans porc
-                              </button>
-                            ) : null}
-                            {!s.vegetarian ? (
-                              <button
-                                type="button"
-                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
-                                onClick={() => {
-                                  void toggleDiet(s, "vegetarian");
-                                  setCardMenu(null);
-                                }}
-                              >
-                                Végétarien
-                              </button>
-                            ) : null}
-                            {s.noPork && s.vegetarian ? (
-                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
-                                Tous les régimes sont déjà listés.
-                              </p>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void toggleDiet(s, "noPork")}
+                        className={[
+                          "rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
+                          s.noPork
+                            ? "bg-zinc-800 text-white"
+                            : "bg-white/90 text-zinc-500",
+                        ].join(" ")}
+                      >
+                        Sans porc
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void toggleDiet(s, "vegetarian")}
+                        className={[
+                          "rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
+                          s.vegetarian
+                            ? "bg-[#0f9d58] text-white"
+                            : "bg-white/90 text-zinc-500",
+                        ].join(" ")}
+                      >
+                        Végétarien
+                      </button>
                     </div>
                   </div>
 
