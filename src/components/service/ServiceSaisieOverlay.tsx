@@ -63,11 +63,20 @@ export function ServiceSaisieOverlay({
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
-        className={cn(
-          "relative z-10 flex w-full flex-col overflow-hidden overscroll-contain",
+        style={
           fillViewport
-            ? "absolute inset-0 h-auto min-h-0"
-            : "h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw]",
+            ? undefined
+            : {
+                width: "70vw",
+                height: "70vh",
+                maxWidth: "70vw",
+                maxHeight: "70vh",
+                flexShrink: 0,
+              }
+        }
+        className={cn(
+          "relative z-10 flex flex-col overflow-hidden overscroll-contain",
+          fillViewport ? "absolute inset-0 h-auto min-h-0 w-full" : "shrink-0",
           className,
         )}
       >

@@ -157,7 +157,7 @@ export function DashboardFoldOverlay({
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
         className={cn(
-          "h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw] rounded-2xl bg-white/80 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl",
+          "rounded-2xl bg-white/80 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl",
           dialogClassName,
         )}
       >
