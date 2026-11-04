@@ -50,7 +50,7 @@ export function ServiceSaisieOverlay({
         "fixed inset-0 z-[80] flex justify-center",
         fillViewport
           ? "items-stretch p-0"
-          : "items-center p-3 sm:p-5",
+          : "items-start overflow-y-auto p-4 pt-[5.75rem] sm:p-6 sm:pt-[6.5rem]",
       )}
     >
       <button
@@ -67,7 +67,7 @@ export function ServiceSaisieOverlay({
           "relative z-10 flex w-full flex-col overflow-hidden overscroll-contain",
           fillViewport
             ? "absolute inset-0 h-auto min-h-0"
-            : "max-h-full",
+            : "mb-6 max-h-[calc(100dvh-7.5rem)]",
           className,
         )}
       >
