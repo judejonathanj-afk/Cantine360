@@ -3,9 +3,13 @@
 import { useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
+  BarChart3,
+  CalendarDays,
+  Check,
+  ChefHat,
   ChevronDown,
-  Percent,
-  Recycle,
+  Leaf,
+  Lightbulb,
   Target,
   Trash2,
   UtensilsCrossed,
@@ -76,8 +80,6 @@ const MOOD_STYLES = {
     track: "bg-zinc-200",
   },
 } as const;
-
-const STAT_TILE = "border-zinc-200 bg-zinc-50";
 
 const MOOD_CHART_COLOR: Record<keyof typeof MOOD_STYLES, string> = {
   great: "#10b981",
@@ -379,56 +381,89 @@ export function CantinePlusMealHeader({
   );
 }
 
-type StatProps = {
-  icon: ReactNode;
-  label: string;
-  value: string;
-  hint?: string;
-  tileClass: string;
-};
+const SOFT_KPI_TONE = {
+  mint: {
+    card: "bg-[#e7f8ef]",
+    icon: "bg-white text-emerald-600",
+  },
+  sky: {
+    card: "bg-[#e7f3ff]",
+    icon: "bg-white text-sky-600",
+  },
+  peach: {
+    card: "bg-[#ffeedd]",
+    icon: "bg-white text-orange-500",
+  },
+  lime: {
+    card: "bg-[#e9f8e4]",
+    icon: "bg-white text-lime-700",
+  },
+} as const;
 
-function StatTile({
+function SoftKpi({
   icon,
   label,
   value,
   hint,
-  tileClass,
-  inDarkPanel = false,
-}: StatProps & { inDarkPanel?: boolean }) {
+  tone,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  hint?: string;
+  tone: keyof typeof SOFT_KPI_TONE;
+}) {
+  const t = SOFT_KPI_TONE[tone];
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-1 rounded-2xl border px-3 py-3 shadow-sm transition-colors sm:min-h-[5.25rem]",
-        inDarkPanel ? "border-zinc-700 bg-zinc-900" : tileClass,
-      )}
-    >
-      <div
+    <div className={cn("flex items-center gap-3 rounded-[1.35rem] px-4 py-3.5", t.card)}>
+      <span
         className={cn(
-          "flex items-center gap-1.5",
-          inDarkPanel ? "text-zinc-400" : "text-zinc-600",
+          "flex size-12 shrink-0 items-center justify-center rounded-full shadow-sm [&>svg]:h-6 [&>svg]:w-6",
+          t.icon,
         )}
+        aria-hidden
       >
-        <span className="text-emerald-500 [&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
-        <dt className="text-sm font-semibold">{label}</dt>
-      </div>
-      <dd
-        className={cn(
-          "text-xl font-bold tabular-nums tracking-tight",
-          inDarkPanel ? "text-white" : "text-zinc-900",
-        )}
-      >
-        {value}
-      </dd>
-      {hint ? (
-        <p
-          className={cn(
-            "text-xs leading-snug",
-            inDarkPanel ? "text-zinc-500" : "text-zinc-500",
-          )}
-        >
-          {hint}
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-zinc-500">{label}</p>
+        <p className="text-[1.65rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+          {value}
         </p>
-      ) : null}
+        {hint ? (
+          <p className="mt-1 text-xs font-medium text-zinc-500">{hint}</p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function RabRing({ pct }: { pct: number }) {
+  const r = 34;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.min(100, Math.max(0, pct));
+  const dash = (clamped / 100) * c;
+  return (
+    <div className="relative size-[7.25rem] shrink-0">
+      <svg viewBox="0 0 88 88" className="size-full -rotate-90" aria-hidden>
+        <circle cx="44" cy="44" r={r} fill="none" stroke="#e5e7eb" strokeWidth="10" />
+        <circle
+          cx="44"
+          cy="44"
+          r={r}
+          fill="none"
+          stroke="#16a34a"
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${c - dash}`}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <p className="text-xl font-black tabular-nums leading-none text-zinc-900">
+          {clamped.toFixed(1).replace(".", ",")} %
+        </p>
+        <p className="mt-0.5 text-[11px] font-medium text-zinc-500">de RAB</p>
+      </div>
     </div>
   );
 }
@@ -534,71 +569,18 @@ export function CantinePulseCard({
     </div>
   ) : null;
 
-  const chiffresWindow = (
-    <div>
-      <p className="mb-3 text-sm font-semibold text-white">Les chiffres</p>
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 sm:gap-3">
-        <StatTile
-          icon={<UtensilsCrossed className="h-3.5 w-3.5" />}
-          label="Assiettes servies"
-          value={String(curr.served)}
-          hint={periodLabel}
-          tileClass={STAT_TILE}
-          inDarkPanel
-        />
-        <StatTile
-          icon={<Activity className="h-3.5 w-3.5" />}
-          label="RAB"
-          value={String(curr.rab)}
-          hint={
-            curr.served > 0
-              ? `${(curr.rabRate * 100).toFixed(1)} % des servis`
-              : periodLabel
-          }
-          tileClass={STAT_TILE}
-          inDarkPanel
-        />
-        <StatTile
-          icon={<Trash2 className="h-3.5 w-3.5" />}
-          label="Déchets (poids)"
-          value={
-            curr.wasteWeightG > 0
-              ? `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g`
-              : "—"
-          }
-          hint={
-            curr.wasteWeightG > 0 && curr.served > 0
-              ? `${curr.wasteGramsPer100Served.toFixed(1)} g / 100 assiettes`
-              : curr.wasteWeightG > 0
-                ? periodLabel
-                : "saisir en fin de service"
-          }
-          tileClass={STAT_TILE}
-          inDarkPanel
-        />
-        <StatTile
-          icon={<Percent className="h-3.5 w-3.5" />}
-          label="Pour 100 assiettes"
-          value={curr.served > 0 && curr.wasteWeightG > 0 ? `${wrCurr} g` : "—"}
-          hint={
-            curr.served > 0 && curr.wasteWeightG > 0
-              ? "déchets pour 100 servies"
-              : "pas encore de déchets"
-          }
-          tileClass={STAT_TILE}
-          inDarkPanel
-        />
-        <StatTile
-          icon={<Activity className="h-3.5 w-3.5" />}
-          label={days === 30 ? "Vs période d’avant" : "Vs semaine d’avant"}
-          value={evolLabel}
-          hint={evolHint}
-          tileClass={STAT_TILE}
-          inDarkPanel
-        />
-      </dl>
-    </div>
-  );
+  const rabPct = curr.served > 0 ? curr.rabRate * 100 : 0;
+  const situationDot = situationConclusion.situation.indexOf(". ");
+  const situationLead =
+    situationDot > 0
+      ? situationConclusion.situation.slice(0, situationDot + 1)
+      : situationConclusion.situation;
+  const situationRest =
+    situationDot > 0
+      ? situationConclusion.situation.slice(situationDot + 2)
+      : "";
+  const periodBadge =
+    days === 30 ? "30 derniers jours" : "7 derniers jours";
 
   return (
     <div className="space-y-4">
@@ -648,53 +630,144 @@ export function CantinePulseCard({
           </p>
         ) : null}
 
-        <div className="rounded-2xl bg-zinc-950 px-4 py-4 sm:px-5 sm:py-5">
-          {chiffresWindow}
-          <div className="mt-4 rounded-xl border-2 border-zinc-200 bg-white px-4 py-4 sm:px-5 sm:py-5">
-            <p
-              className={cn(
-                "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
-                pulse.mood === "great" && "bg-emerald-600",
-                pulse.mood === "ok" && "bg-amber-500",
-                pulse.mood === "attention" && "bg-rose-600",
-                pulse.mood === "pending" && "bg-zinc-600",
-              )}
-            >
-              Lecture de la période
-            </p>
-            <p className="mt-2.5 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg sm:leading-7">
-              {situationConclusion.situation}
-            </p>
-            {situationConclusion.antiWaste ? (
-              <p className="mt-3 flex items-start gap-2.5 border-t border-zinc-200 pt-3 text-base font-semibold leading-relaxed text-emerald-800 sm:text-lg sm:leading-7">
-                <Recycle
-                  className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700 sm:h-6 sm:w-6"
-                  strokeWidth={2.4}
-                  aria-hidden
-                />
-                <span>{situationConclusion.antiWaste}</span>
-              </p>
-            ) : null}
+        <div className="overflow-hidden rounded-[1.75rem] border border-zinc-200/80 bg-white p-4 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)] sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-[#0f766e] text-white shadow-sm">
+                <BarChart3 className="h-5 w-5" strokeWidth={2.4} aria-hidden />
+              </span>
+              <div>
+                <h2 className="text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
+                  Les chiffres
+                </h2>
+                <p className="text-sm font-medium text-zinc-500">
+                  Vue d’ensemble de la période
+                </p>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-50 px-3 py-1.5 text-xs font-semibold text-zinc-600 ring-1 ring-zinc-200">
+              <CalendarDays className="h-3.5 w-3.5" aria-hidden />
+              {periodBadge}
+            </span>
           </div>
 
-          <div className="mt-3 rounded-xl border-2 border-zinc-200 bg-white px-4 py-4 sm:px-5 sm:py-5">
-            <p
-              className={cn(
-                "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
-                pulse.mood === "great" && "bg-emerald-600",
-                pulse.mood === "ok" && "bg-amber-500",
-                pulse.mood === "attention" && "bg-rose-600",
-                pulse.mood === "pending" && "bg-zinc-600",
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <SoftKpi
+              tone="mint"
+              icon={<UtensilsCrossed strokeWidth={2.2} />}
+              label="Assiettes servies"
+              value={String(curr.served)}
+              hint={periodLabel}
+            />
+            <SoftKpi
+              tone="sky"
+              icon={<ChefHat strokeWidth={2.2} />}
+              label="RAB"
+              value={String(curr.rab)}
+              hint={
+                curr.served > 0
+                  ? `${(curr.rabRate * 100).toFixed(1).replace(".", ",")} % des servis`
+                  : periodLabel
+              }
+            />
+            <SoftKpi
+              tone="peach"
+              icon={<Trash2 strokeWidth={2.2} />}
+              label="Déchets (poids)"
+              value={
+                curr.wasteWeightG > 0
+                  ? `${Math.round(curr.wasteWeightG).toLocaleString("fr-FR")} g`
+                  : "—"
+              }
+              hint={
+                curr.wasteWeightG > 0 && curr.served > 0
+                  ? `${curr.wasteGramsPer100Served.toFixed(1).replace(".", ",")} g / 100 assiettes`
+                  : curr.wasteWeightG > 0
+                    ? periodLabel
+                    : "saisir en fin de service"
+              }
+            />
+            <SoftKpi
+              tone="lime"
+              icon={<Leaf strokeWidth={2.2} />}
+              label="Pour 100 assiettes"
+              value={
+                curr.served > 0 && curr.wasteWeightG > 0
+                  ? `${wrCurr.replace(".", ",")} g`
+                  : "—"
+              }
+              hint={
+                curr.served > 0 && curr.wasteWeightG > 0
+                  ? "déchets pour 100 servis"
+                  : "pas encore de déchets"
+              }
+            />
+          </div>
+          {evolLabel !== "—" ? (
+            <p className="mt-2 text-right text-xs font-semibold text-zinc-500">
+              {days === 30 ? "Vs période d’avant" : "Vs semaine d’avant"} : {evolLabel}
+              {evolHint ? ` · ${evolHint}` : ""}
+            </p>
+          ) : null}
+
+          <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,0.9fr)]">
+            <div className="rounded-[1.35rem] bg-white px-4 py-4 ring-1 ring-zinc-100 sm:px-5">
+              <p className="inline-flex items-center gap-1.5 rounded-full bg-orange-400 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+                <BarChart3 className="h-3.5 w-3.5" aria-hidden />
+                Lecture de la période
+              </p>
+              <div className="mt-4 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+                <RabRing pct={rabPct} />
+                <div className="min-w-0 space-y-3 text-sm font-medium leading-relaxed text-zinc-700 sm:text-base sm:leading-7">
+                  <p>{situationLead}</p>
+                  {situationRest ? <p>{situationRest}</p> : null}
+                </div>
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-[1.35rem] bg-[#e8f8ee] px-4 py-4 sm:px-5">
+              <p className="inline-flex items-center gap-1.5 text-sm font-extrabold text-emerald-800">
+                <Lightbulb className="h-4 w-4 text-emerald-600" aria-hidden />
+                À retenir
+              </p>
+              {situationConclusion.antiWaste ? (
+                <p className="mt-3 flex items-start gap-2 text-sm font-semibold leading-relaxed text-emerald-800 sm:text-[15px] sm:leading-6">
+                  <Check
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded-full bg-emerald-500 p-0.5 text-white"
+                    strokeWidth={3}
+                    aria-hidden
+                  />
+                  <span>{situationConclusion.antiWaste}</span>
+                </p>
+              ) : (
+                <p className="mt-3 text-sm font-medium text-emerald-800">
+                  Les chiffres de la période s’afficheront ici dès les premières saisies.
+                </p>
               )}
-            >
+              <Trash2
+                className="pointer-events-none absolute -bottom-2 -right-1 h-16 w-16 text-emerald-300/80"
+                strokeWidth={1.5}
+                aria-hidden
+              />
+            </div>
+          </div>
+
+          <div className="relative mt-3 overflow-hidden rounded-[1.35rem] bg-[#e8f8ee] px-4 py-4 sm:px-5">
+            <span className="absolute left-0 top-0 h-full w-1.5 bg-emerald-500" aria-hidden />
+            <p className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+              <Check className="h-3.5 w-3.5" strokeWidth={2.6} aria-hidden />
               Conclusion
             </p>
-            <p className="mt-2.5 text-xl font-extrabold leading-snug text-zinc-950 sm:text-2xl">
+            <p className="mt-2.5 max-w-3xl text-xl font-extrabold leading-snug text-zinc-950 sm:text-2xl">
               {pulse.headline}
             </p>
-            <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-800 sm:text-lg">
+            <p className="mt-1.5 max-w-3xl text-sm font-semibold leading-relaxed text-zinc-600 sm:text-base">
               {pulse.subline}
             </p>
+            <BarChart3
+              className="pointer-events-none absolute bottom-3 right-4 h-14 w-14 text-emerald-300/90"
+              strokeWidth={1.6}
+              aria-hidden
+            />
           </div>
         </div>
 
