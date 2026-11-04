@@ -11,6 +11,7 @@ export function ServiceSaisieOverlay({
   className,
   fillViewport = false,
   chrome,
+  footer,
   children,
 }: {
   open: boolean;
@@ -21,6 +22,8 @@ export function ServiceSaisieOverlay({
   fillViewport?: boolean;
   /** Titre, textes et boutons au-dessus de la fenêtre. */
   chrome?: ReactNode;
+  /** Bouton fermer sous la fenêtre. */
+  footer?: ReactNode;
   children: ReactNode;
 }) {
   useEffect(() => {
@@ -88,6 +91,7 @@ export function ServiceSaisieOverlay({
           >
             {children}
           </div>
+          {footer ? <div className="mt-3 shrink-0">{footer}</div> : null}
         </div>
       )}
     </div>,

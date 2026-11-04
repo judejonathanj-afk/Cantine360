@@ -162,43 +162,45 @@ export function DashboardFoldOverlay({
         )}
         chrome={
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0">
-                <h2
-                  id={labelledBy}
-                  className={cn(
-                    "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
-                    titleClassName,
-                  )}
-                >
-                  <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-                  {overlayTitle}
-                </h2>
-                {subtitle ? (
-                  <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
-                    {subtitle}
-                  </p>
-                ) : null}
-                <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
-                  {hint}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setFoldOpen(false)}
+            <div className="min-w-0">
+              <h2
+                id={labelledBy}
                 className={cn(
-                  "shrink-0 self-start rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
-                  closeButtonClassName,
+                  "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
+                  titleClassName,
                 )}
               >
-                Fermer
-              </button>
+                <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+                {overlayTitle}
+              </h2>
+              {subtitle ? (
+                <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
+                  {subtitle}
+                </p>
+              ) : null}
+              <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+                {hint}
+              </p>
             </div>
             {headerAction ? (
               <div className="flex w-full flex-wrap items-center justify-end gap-2">
                 {headerAction}
               </div>
             ) : null}
+          </div>
+        }
+        footer={
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setFoldOpen(false)}
+              className={cn(
+                "shrink-0 rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
+                closeButtonClassName,
+              )}
+            >
+              Fermer
+            </button>
           </div>
         }
       >
