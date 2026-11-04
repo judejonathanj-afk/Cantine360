@@ -27,7 +27,6 @@ import { cn } from "@/lib/utils";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
 import type { CantineMood } from "@/lib/cantinePulse";
-import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -606,10 +605,7 @@ export function CantinePulseCard({
     <div className="space-y-4">
       {brandTitle}
       {chiffresWindow}
-    <Card
-      className="overflow-hidden border-0 bg-white text-zinc-900 shadow-none ring-0"
-    >
-      <CardContent className="space-y-5 p-4 pt-2 sm:p-6 sm:pt-3">
+      <div className="space-y-5">
         {showBrandTitle ? null : (
           <div className="text-center">
             <p className="text-sm text-zinc-600 sm:text-base">
@@ -840,8 +836,7 @@ export function CantinePulseCard({
           basée surtout sur les grammes de déchets / 100 assiettes, avec une pénalité si le RAB
           est élevé, et sur l’évolution vs {priorLabel} dès qu’il y a assez d’historique.
         </p>
-      </CardContent>
-    </Card>
+      </div>
     </div>
   );
 }
