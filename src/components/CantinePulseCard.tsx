@@ -366,7 +366,7 @@ function TendancesAntigaspillageCard({
   wasteByLevel: Record<SchoolLevel, WastePerDayRowInput[]>;
   levelFilter: "all" | SchoolLevel;
 }) {
-  const { points, periodG, trend } = useMemo(() => {
+  const { points, periodG, trend, recap } = useMemo(() => {
     const byLevel: Record<SchoolLevel, Map<string, WastePerDayRowInput>> = {
       MATERNELLE: new Map(),
       PRIMAIRE: new Map(),
@@ -435,7 +435,83 @@ function TendancesAntigaspillageCard({
       else if (last > first + 1) trend = "up";
     }
 
-    return { points, periodG, trend };
+    const recapParts: string[] = [];
+    const n = lastDates.length;
+    if (n === 0 || periodG == null) {
+      recapParts.push(
+        "Pas encore assez de pesées sur les derniers services pour un récapitulatif.",
+      );
+    } else {
+      recapParts.push(
+        `Sur ${n} service${n > 1 ? "s" : ""}, ${periodG.toLocaleString("fr-FR")} g de déchets pour 100 assiettes.`,
+      );
+      if (daily.length < 2) {
+        recapParts.push("Une seule pesée : trop tôt pour une tendance.");
+      } else if (trend === "down") {
+        recapParts.push("La tendance est à la baisse — le gaspillage recule.");
+      } else if (trend === "up") {
+        recapParts.push(
+          "La tendance est à la hausse : surveillez portions et service.",
+        );
+      } else {
+        recapParts.push("La tendance est plutôt stable.");
+      }
+
+      const peak = points.reduce<{
+        date: string;
+        level: string;
+        value: number;
+      } | null>((best, point) => {
+        const candidates = [
+          { date: point.date, level: "maternelle", value: point.maternelle },
+          { date: point.date, level: "primaire", value: point.primaire },
+        ];
+        for (const c of candidates) {
+          if (c.value == null || c.value <= 0) continue;
+          if (!best || c.value > best.value) {
+            best = { date: c.date, level: c.level, value: c.value };
+          }
+        }
+        return best;
+      }, null);
+      if (peak) {
+        const weekday = new Intl.DateTimeFormat("fr-FR", {
+          weekday: "long",
+        }).format(new Date(`${peak.date}T12:00:00`));
+        recapParts.push(
+          `Le pic est le ${weekday} en ${peak.level} (${peak.value.toLocaleString("fr-FR")} g / 100).`,
+        );
+      }
+
+      if (showMaternelle && showPrimaire) {
+        const avg = (key: "maternelle" | "primaire") => {
+          const vals = points
+            .map((p) => p[key])
+            .filter((v): v is number => v != null && v > 0);
+          if (vals.length === 0) return null;
+          return Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
+        };
+        const matAvg = avg("maternelle");
+        const primAvg = avg("primaire");
+        if (matAvg != null && primAvg != null) {
+          if (Math.abs(matAvg - primAvg) < 20) {
+            recapParts.push(
+              "Maternelle et primaire sont proches sur ces services.",
+            );
+          } else if (matAvg < primAvg) {
+            recapParts.push(
+              "La maternelle reste plus légère que le primaire.",
+            );
+          } else {
+            recapParts.push(
+              "Le primaire reste plus léger que la maternelle.",
+            );
+          }
+        }
+      }
+    }
+
+    return { points, periodG, trend, recap: recapParts.join(" ") };
   }, [wasteByLevel, levelFilter]);
 
   const hasBars = points.some(
@@ -563,6 +639,14 @@ function TendancesAntigaspillageCard({
         <p className="mt-3 text-xs font-medium text-zinc-400">
           g de déchets pour 100 assiettes servies
         </p>
+        <div className="mt-4 rounded-[1.15rem] bg-[#e7f6ee] px-4 py-3.5 sm:px-5">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#0f7a4a]">
+            Récapitulatif
+          </p>
+          <p className="mt-1.5 text-sm font-semibold leading-relaxed text-zinc-800 sm:text-[15px]">
+            {recap}
+          </p>
+        </div>
       </div>
     </div>
   );
