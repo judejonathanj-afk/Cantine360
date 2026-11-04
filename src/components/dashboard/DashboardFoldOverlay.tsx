@@ -157,72 +157,67 @@ export function DashboardFoldOverlay({
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
         className={cn(
-          "rounded-2xl bg-white/80 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl",
+          "rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]",
           dialogClassName,
         )}
+        chrome={
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <h2
+                  id={labelledBy}
+                  className={cn(
+                    "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
+                    titleClassName,
+                  )}
+                >
+                  <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+                  {overlayTitle}
+                </h2>
+                {subtitle ? (
+                  <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
+                    {subtitle}
+                  </p>
+                ) : null}
+                <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+                  {hint}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFoldOpen(false)}
+                className={cn(
+                  "shrink-0 self-start rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
+                  closeButtonClassName,
+                )}
+              >
+                Fermer
+              </button>
+            </div>
+            {headerAction ? (
+              <div className="flex w-full flex-wrap items-center justify-end gap-2">
+                {headerAction}
+              </div>
+            ) : null}
+          </div>
+        }
       >
         <div
           className={cn(
-            "mb-0 flex shrink-0 flex-col px-3 pt-2 sm:px-3",
-            tight ? "gap-1.5 pb-1" : "gap-3 pb-1",
-          )}
-        >
-          <div className="flex min-w-0 items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2
-                id={labelledBy}
-                className={cn(
-                  "flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl",
-                  titleClassName,
-                )}
-              >
-                <Icon className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-                {overlayTitle}
-              </h2>
-              {subtitle ? (
-                <p className="mt-1 text-base font-semibold leading-snug text-zinc-800 sm:text-lg">
-                  {subtitle}
-                </p>
-              ) : null}
-              <p className="mt-1 text-sm font-medium leading-snug text-zinc-600 sm:text-base">
-                {hint}
-              </p>
-            </div>
-          </div>
-          {headerAction ? (
-            <div className="flex w-full flex-wrap items-center justify-end gap-2">
-              {headerAction}
-            </div>
-          ) : null}
-        </div>
-        <div
-          className={cn(
-            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-transparent [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100/60",
+            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100/60",
             bodyClassName,
           )}
         >
           <div
             className={cn(
               tight
-                ? "flex min-h-full flex-col rounded-xl bg-white p-1.5 sm:p-2"
-                : "flex min-h-full flex-col rounded-xl bg-white p-2 sm:p-3",
+                ? "flex min-h-full flex-col p-1.5 sm:p-2"
+                : "flex min-h-full flex-col p-2 sm:p-3",
               panelClassName,
             )}
           >
             {children}
           </div>
-        </div>
-        <div className="flex shrink-0 justify-end bg-transparent px-3 py-2 sm:px-3">
-          <button
-            type="button"
-            onClick={() => setFoldOpen(false)}
-            className={cn(
-              "rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100",
-              closeButtonClassName,
-            )}
-          >
-            Fermer
-          </button>
         </div>
       </ServiceSaisieOverlay>
     </div>
