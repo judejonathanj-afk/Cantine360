@@ -211,8 +211,8 @@ export function DashboardFoldOverlay({
           <div
             className={cn(
               tight
-                ? "flex min-h-full flex-col p-1.5 sm:p-2"
-                : "flex min-h-full flex-col p-2 sm:p-3",
+                ? "flex min-h-full flex-col p-1.5 pb-4 sm:p-2 sm:pb-5"
+                : "flex min-h-full flex-col p-2 pb-4 sm:p-3 sm:pb-5",
               panelClassName,
             )}
           >

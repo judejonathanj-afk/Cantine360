@@ -50,10 +50,8 @@ export function ServiceSaisieOverlay({
   return createPortal(
     <div
       className={cn(
-        "fixed inset-0 z-[80] flex justify-center",
-        fillViewport
-          ? "items-stretch p-0"
-          : "items-start overflow-y-auto px-4 pb-6 pt-[5.5rem] sm:px-6 sm:pt-[6.25rem]",
+        "fixed inset-0 z-[80] flex justify-center overflow-hidden",
+        fillViewport ? "items-stretch p-0" : "items-stretch",
       )}
     >
       <button
@@ -79,11 +77,10 @@ export function ServiceSaisieOverlay({
           role="dialog"
           aria-modal="true"
           aria-labelledby={labelledBy}
-          className="relative z-10 flex w-[88vw] max-w-[88vw] shrink-0 flex-col"
+          className="relative z-10 flex h-full min-h-0 w-[88vw] max-w-[88vw] flex-col pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[5.5rem] sm:pb-6 sm:pt-[6.25rem]"
         >
           {chrome ? <div className="mb-3 shrink-0">{chrome}</div> : null}
           <div
-            style={{ width: "88vw", height: "72vh", maxWidth: "88vw", maxHeight: "72vh" }}
             className={cn(
               "flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain",
               className,
