@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import {
   Plus,
-  Trash2,
   Upload,
   UserPlus,
   Users,
@@ -16,13 +15,6 @@ import { EU14_ALLERGENS, type AllergenLabel } from "@/lib/allergens";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -83,9 +75,10 @@ export function AdminStudentsClient({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Student | null>(null);
-  const [openStudentId, setOpenStudentId] = useState<string | null>(null);
-  const [addAllergenOpen, setAddAllergenOpen] = useState(false);
-  const [addRegimeOpen, setAddRegimeOpen] = useState(false);
+  const [cardMenu, setCardMenu] = useState<{
+    id: string;
+    kind: "allergen" | "regime";
+  } | null>(null);
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
   const groupLevelById = useMemo(() => {
@@ -182,18 +175,6 @@ export function AdminStudentsClient({
     }
   }
 
-  async function toggleActive(s: Student) {
-    setStudents((all) =>
-      all.map((x) => (x.id === s.id ? { ...x, active: !x.active } : x)),
-    );
-    const res = await fetch(`/api/students/${s.id}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ active: !s.active }),
-    });
-    if (!res.ok) await refresh();
-  }
-
   async function saveAllergenNotes(s: Student, notes: string) {
     const next = notes.trim() || null;
     if ((s.allergenNotes ?? null) === next) return;
@@ -243,19 +224,12 @@ export function AdminStudentsClient({
         setError("Impossible de supprimer cet élève.");
         return;
       }
-      if (openStudentId === toDelete.id) setOpenStudentId(null);
       setToDelete(null);
       await refresh();
     } finally {
       setBusy(false);
     }
   }
-
-  const openStudent =
-    students.find((s) => s.id === openStudentId) ?? null;
-  const openLevel = openStudent
-    ? (groupLevelById.get(openStudent.groupId) ?? "PRIMAIRE")
-    : "PRIMAIRE";
 
   function toggleAllergen(a: AllergenLabel) {
     setSelectedAllergens((prev) =>
@@ -455,7 +429,7 @@ export function AdminStudentsClient({
         openLabel="Ouvrir Élèves et allergènes"
         overlayTitle="Élèves et allergènes"
         subtitle="Parcourez les élèves par classe : allergènes, régimes et consignes parents."
-        hint="Survolez une carte pour l’agrandir, cliquez pour ouvrir la fiche de l’élève."
+        hint="Modifiez allergènes, régimes et consignes directement sur la carte."
         icon={Users}
         labelledBy="admin-students-list-overlay"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
@@ -488,173 +462,234 @@ export function AdminStudentsClient({
               {bucket.students.map((s) => {
                 const level = groupLevelById.get(s.groupId) ?? "PRIMAIRE";
                 const maternelle = level === "MATERNELLE";
-                const cycleFill = maternelle
-                  ? "bg-sky-400 text-sky-950"
-                  : "bg-emerald-400 text-emerald-950";
+                const allergenMenuOpen =
+                  cardMenu?.id === s.id && cardMenu.kind === "allergen";
+                const regimeMenuOpen =
+                  cardMenu?.id === s.id && cardMenu.kind === "regime";
                 return (
                 <div
                   key={s.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setOpenStudentId(s.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setOpenStudentId(s.id);
-                    }
-                  }}
                   className={[
-                    "relative flex cursor-pointer flex-col gap-4 overflow-hidden rounded-[28px] border-2 px-4 py-4 text-left shadow-sm transition duration-200 hover:z-10 hover:scale-[1.03] hover:shadow-lg motion-reduce:transform-none",
+                    "relative flex flex-col gap-5 overflow-visible rounded-[28px] border-2 px-5 py-5 text-left shadow-sm sm:px-6 sm:py-6",
                     maternelle
                       ? "border-sky-200 bg-[#f4f9ff]"
                       : "border-emerald-200 bg-[#f3fbf6]",
                   ].join(" ")}
                 >
-                  <div className="flex items-start gap-3 pr-24">
-                    <div className="min-w-0 pt-0.5">
-                      <p className="text-xl font-extrabold tracking-tight text-zinc-950">
-                        {s.firstName} {s.lastName}
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3 rounded-full p-1.5 text-zinc-500 hover:bg-white/80 hover:text-zinc-900"
+                    aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
+                    onClick={() => setToDelete(s)}
+                  >
+                    <X className="h-4 w-4" strokeWidth={2.4} />
+                  </button>
+
+                  <div className="min-w-0 pr-8">
+                    <p className="text-2xl font-extrabold tracking-tight text-zinc-950">
+                      {s.firstName} {s.lastName}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
+                          maternelle
+                            ? "bg-sky-400 text-sky-950"
+                            : "bg-emerald-400 text-emerald-950"
+                        }`}
+                      >
+                        {schoolLevelLabelFr(level)}
+                      </span>
+                      {s.className ? (
                         <span
-                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-extrabold ${cycleFill}`}
+                          className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
+                            maternelle
+                              ? "bg-sky-100 text-sky-800"
+                              : "bg-emerald-100 text-emerald-800"
+                          }`}
                         >
-                          {schoolLevelLabelFr(level)}
+                          {s.className}
                         </span>
-                        {s.className ? (
-                          <span
-                            className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-extrabold ${
-                              maternelle
-                                ? "bg-sky-100 text-sky-800"
-                                : "bg-emerald-100 text-emerald-800"
-                            }`}
+                      ) : null}
+                      {s.schoolName ? (
+                        <span className="text-sm font-semibold text-zinc-500">
+                          {s.schoolName}
+                        </span>
+                      ) : null}
+                      {!s.active ? (
+                        <span className="text-xs font-bold text-zinc-600">
+                          (inactif)
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
+                      Allergènes
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {s.allergens.map((a) => (
+                        <span
+                          key={a}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1.5 text-sm font-bold text-white"
+                        >
+                          {a}
+                          <button
+                            type="button"
+                            aria-label={`Retirer ${a}`}
+                            onClick={() =>
+                              void setAllergens(
+                                s,
+                                s.allergens.filter((x) => x !== a),
+                              )
+                            }
+                            className="rounded-full p-0.5 hover:bg-white/20"
                           >
-                            {s.className}
-                          </span>
-                        ) : null}
-                        {s.schoolName ? (
-                          <span className="text-xs font-semibold text-zinc-500">
-                            {s.schoolName}
-                          </span>
-                        ) : null}
-                        {!s.active ? (
-                          <span className="text-xs font-bold text-zinc-600">
-                            (inactif)
-                          </span>
+                            <X className="size-3.5" aria-hidden />
+                          </button>
+                        </span>
+                      ))}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardMenu(
+                              allergenMenuOpen
+                                ? null
+                                : { id: s.id, kind: "allergen" },
+                            )
+                          }
+                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 shadow-sm hover:border-emerald-400"
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                          Ajouter un allergène
+                        </button>
+                        {allergenMenuOpen ? (
+                          <div className="absolute left-0 z-20 mt-1 max-h-52 w-64 overflow-y-auto rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
+                            {EU14_ALLERGENS.filter(
+                              (a) => !s.allergens.includes(a),
+                            ).map((a) => (
+                              <button
+                                key={a}
+                                type="button"
+                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
+                                onClick={() => {
+                                  void setAllergens(s, [...s.allergens, a]);
+                                  setCardMenu(null);
+                                }}
+                              >
+                                {a}
+                              </button>
+                            ))}
+                            {EU14_ALLERGENS.every((a) =>
+                              s.allergens.includes(a),
+                            ) ? (
+                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
+                                Tous les allergènes sont déjà listés.
+                              </p>
+                            ) : null}
+                          </div>
                         ) : null}
                       </div>
                     </div>
                   </div>
-                  <div
-                    className="absolute right-3 top-3 flex shrink-0 items-center gap-2"
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => e.stopPropagation()}
-                  >
-                      <button
-                        type="button"
-                        onClick={() => toggleActive(s)}
-                        className={[
-                          "rounded-full px-3 py-1 text-sm font-extrabold",
-                          s.active
-                            ? "bg-emerald-600 text-white"
-                            : "bg-zinc-200 text-zinc-800",
-                        ].join(" ")}
-                      >
-                        {s.active ? "Actif" : "Inactif"}
-                      </button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 text-zinc-800 hover:text-destructive"
-                        aria-label={`Supprimer ${s.firstName} ${s.lastName}`}
-                        onClick={() => setToDelete(s)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  <div className="min-w-0 space-y-3">
-                    <div>
-                      <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
-                        Allergènes
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      {s.allergens.length > 0 ? (
-                        s.allergens.map((a) => (
-                          <span
-                            key={a}
-                            className="rounded-full bg-amber-500 px-2.5 py-1 text-sm font-bold text-white"
-                          >
-                            {a}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-sm font-semibold text-zinc-600">
-                          Aucun allergène déclaré
-                        </span>
-                      )}
-                      </div>
-                    </div>
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
-                        Régimes
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => void toggleDiet(s, "noPork")}
-                        className={[
-                          "rounded-full px-3 py-1 text-sm font-extrabold",
-                          s.noPork
-                            ? "bg-zinc-200 text-zinc-800"
-                            : "bg-white text-zinc-500",
-                        ].join(" ")}
-                      >
-                        Sans porc
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void toggleDiet(s, "vegetarian")}
-                        className={[
-                          "rounded-full px-3 py-1 text-sm font-extrabold",
-                          s.vegetarian
-                            ? "bg-emerald-600 text-white"
-                            : "bg-white text-zinc-500",
-                        ].join(" ")}
-                      >
-                        Végétarien
-                      </button>
-                      </div>
-                    </div>
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <p className="mb-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-zinc-800">
-                        Consignes parents
-                      </p>
-                      <textarea
-                        defaultValue={s.allergenNotes ?? ""}
-                        key={`${s.id}-${s.allergenNotes ?? ""}`}
-                        rows={2}
-                        maxLength={500}
-                        onClick={(e) => e.stopPropagation()}
-                        onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
-                        className="w-full rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm font-medium text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
-                        placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
-                      />
-                    </div>
-                    <p
-                      className={[
-                        "text-xs font-bold",
-                        maternelle ? "text-sky-700" : "text-emerald-700",
-                      ].join(" ")}
-                    >
-                      Voir le détail →
+
+                  <div>
+                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
+                      Régimes
                     </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {s.noPork ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-200 px-3 py-1.5 text-sm font-bold text-zinc-800">
+                          Sans porc
+                          <button
+                            type="button"
+                            aria-label="Retirer sans porc"
+                            onClick={() => void toggleDiet(s, "noPork")}
+                            className="rounded-full p-0.5 hover:bg-zinc-300"
+                          >
+                            <X className="size-3.5" aria-hidden />
+                          </button>
+                        </span>
+                      ) : null}
+                      {s.vegetarian ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white">
+                          Végétarien
+                          <button
+                            type="button"
+                            aria-label="Retirer végétarien"
+                            onClick={() => void toggleDiet(s, "vegetarian")}
+                            className="rounded-full p-0.5 hover:bg-white/20"
+                          >
+                            <X className="size-3.5" aria-hidden />
+                          </button>
+                        </span>
+                      ) : null}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCardMenu(
+                              regimeMenuOpen
+                                ? null
+                                : { id: s.id, kind: "regime" },
+                            )
+                          }
+                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-emerald-800 shadow-sm hover:border-emerald-400"
+                        >
+                          <Plus className="size-3.5" aria-hidden />
+                          Ajouter un régime
+                        </button>
+                        {regimeMenuOpen ? (
+                          <div className="absolute left-0 z-20 mt-1 w-52 rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
+                            {!s.noPork ? (
+                              <button
+                                type="button"
+                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
+                                onClick={() => {
+                                  void toggleDiet(s, "noPork");
+                                  setCardMenu(null);
+                                }}
+                              >
+                                Sans porc
+                              </button>
+                            ) : null}
+                            {!s.vegetarian ? (
+                              <button
+                                type="button"
+                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
+                                onClick={() => {
+                                  void toggleDiet(s, "vegetarian");
+                                  setCardMenu(null);
+                                }}
+                              >
+                                Végétarien
+                              </button>
+                            ) : null}
+                            {s.noPork && s.vegetarian ? (
+                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
+                                Tous les régimes sont déjà listés.
+                              </p>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
+                      Consignes parents
+                    </p>
+                    <textarea
+                      defaultValue={s.allergenNotes ?? ""}
+                      key={`${s.id}-${s.allergenNotes ?? ""}`}
+                      rows={3}
+                      maxLength={500}
+                      onBlur={(e) => void saveAllergenNotes(s, e.target.value)}
+                      className="mt-2 w-full rounded-2xl border border-emerald-100 bg-white px-4 py-3 text-sm font-medium leading-relaxed text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
+                      placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
+                    />
                   </div>
                 </div>
                 );
@@ -667,239 +702,6 @@ export function AdminStudentsClient({
       )}
       </DashboardFoldOverlay>
 
-      <Dialog
-        open={openStudent != null}
-        onOpenChange={(next) => {
-          if (!next) {
-            setOpenStudentId(null);
-            setAddAllergenOpen(false);
-            setAddRegimeOpen(false);
-          }
-        }}
-      >
-        <DialogContent
-          className={[
-            "z-[100] max-w-2xl overflow-hidden rounded-[28px] border-2 p-6 shadow-xl sm:max-w-2xl sm:p-8",
-            openLevel === "MATERNELLE"
-              ? "border-sky-200 bg-[#f4f9ff]"
-              : "border-emerald-200 bg-[#f3fbf6]",
-          ].join(" ")}
-          overlayClassName="z-[100]"
-        >
-          {openStudent ? (
-            <>
-              <DialogHeader className="relative z-10 pr-8 text-left">
-                <div className="flex items-start gap-4">
-                  <div className="min-w-0">
-                    <DialogTitle className="text-2xl font-extrabold tracking-tight text-zinc-950">
-                      {openStudent.firstName} {openStudent.lastName}
-                    </DialogTitle>
-                    <DialogDescription asChild>
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                        <span
-                          className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
-                            openLevel === "MATERNELLE"
-                              ? "bg-sky-400 text-sky-950"
-                              : "bg-emerald-400 text-emerald-950"
-                          }`}
-                        >
-                          {schoolLevelLabelFr(openLevel)}
-                        </span>
-                        {openStudent.className ? (
-                          <span
-                            className={`inline-flex rounded-full px-3 py-1 text-sm font-extrabold ${
-                              openLevel === "MATERNELLE"
-                                ? "bg-sky-100 text-sky-800"
-                                : "bg-emerald-100 text-emerald-800"
-                            }`}
-                          >
-                            {openStudent.className}
-                          </span>
-                        ) : null}
-                        {openStudent.schoolName ? (
-                          <span className="text-sm font-semibold text-zinc-500">
-                            {openStudent.schoolName}
-                          </span>
-                        ) : null}
-                      </div>
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-
-              <div className="relative z-10 space-y-5">
-                <div>
-                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
-                      Allergènes
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      {openStudent.allergens.map((a) => (
-                        <span
-                          key={a}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1.5 text-sm font-bold text-white"
-                        >
-                          {a}
-                          <button
-                            type="button"
-                            aria-label={`Retirer ${a}`}
-                            onClick={() =>
-                              void setAllergens(
-                                openStudent,
-                                openStudent.allergens.filter((x) => x !== a),
-                              )
-                            }
-                            className="rounded-full p-0.5 hover:bg-white/20"
-                          >
-                            <X className="size-3.5" aria-hidden />
-                          </button>
-                        </span>
-                      ))}
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAddAllergenOpen((v) => !v);
-                            setAddRegimeOpen(false);
-                          }}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-600 shadow-sm hover:border-emerald-400 hover:text-emerald-800"
-                        >
-                          <Plus className="size-3.5" aria-hidden />
-                          Ajouter un allergène
-                        </button>
-                        {addAllergenOpen ? (
-                          <div className="absolute left-0 z-20 mt-1 max-h-52 w-64 overflow-y-auto rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
-                            {EU14_ALLERGENS.filter(
-                              (a) => !openStudent.allergens.includes(a),
-                            ).map((a) => (
-                              <button
-                                key={a}
-                                type="button"
-                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
-                                onClick={() => {
-                                  void setAllergens(openStudent, [
-                                    ...openStudent.allergens,
-                                    a,
-                                  ]);
-                                  setAddAllergenOpen(false);
-                                }}
-                              >
-                                {a}
-                              </button>
-                            ))}
-                            {EU14_ALLERGENS.every((a) =>
-                              openStudent.allergens.includes(a),
-                            ) ? (
-                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
-                                Tous les allergènes sont déjà listés.
-                              </p>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                </div>
-
-                <div>
-                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
-                      Régimes
-                    </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-2">
-                      {openStudent.noPork ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-200 px-3 py-1.5 text-sm font-bold text-zinc-800">
-                          Sans porc
-                          <button
-                            type="button"
-                            aria-label="Retirer sans porc"
-                            onClick={() => void toggleDiet(openStudent, "noPork")}
-                            className="rounded-full p-0.5 hover:bg-zinc-300"
-                          >
-                            <X className="size-3.5" aria-hidden />
-                          </button>
-                        </span>
-                      ) : null}
-                      {openStudent.vegetarian ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white">
-                          Végétarien
-                          <button
-                            type="button"
-                            aria-label="Retirer végétarien"
-                            onClick={() => void toggleDiet(openStudent, "vegetarian")}
-                            className="rounded-full p-0.5 hover:bg-white/20"
-                          >
-                            <X className="size-3.5" aria-hidden />
-                          </button>
-                        </span>
-                      ) : null}
-                      <div className="relative">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAddRegimeOpen((v) => !v);
-                            setAddAllergenOpen(false);
-                          }}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 text-sm font-semibold text-zinc-600 shadow-sm hover:border-emerald-400 hover:text-emerald-800"
-                        >
-                          <Plus className="size-3.5" aria-hidden />
-                          Ajouter un régime
-                        </button>
-                        {addRegimeOpen ? (
-                          <div className="absolute left-0 z-20 mt-1 w-52 rounded-2xl border border-emerald-200 bg-white p-1.5 shadow-lg">
-                            {!openStudent.noPork ? (
-                              <button
-                                type="button"
-                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
-                                onClick={() => {
-                                  void toggleDiet(openStudent, "noPork");
-                                  setAddRegimeOpen(false);
-                                }}
-                              >
-                                Sans porc
-                              </button>
-                            ) : null}
-                            {!openStudent.vegetarian ? (
-                              <button
-                                type="button"
-                                className="block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-800 hover:bg-emerald-50"
-                                onClick={() => {
-                                  void toggleDiet(openStudent, "vegetarian");
-                                  setAddRegimeOpen(false);
-                                }}
-                              >
-                                Végétarien
-                              </button>
-                            ) : null}
-                            {openStudent.noPork && openStudent.vegetarian ? (
-                              <p className="px-3 py-2 text-sm font-medium text-zinc-500">
-                                Tous les régimes sont déjà listés.
-                              </p>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                </div>
-
-                <div>
-                    <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-zinc-800">
-                      Consignes parents
-                    </p>
-                    <textarea
-                      defaultValue={openStudent.allergenNotes ?? ""}
-                      key={`${openStudent.id}-dialog-${openStudent.allergenNotes ?? ""}`}
-                      rows={3}
-                      maxLength={500}
-                      onBlur={(e) =>
-                        void saveAllergenNotes(openStudent, e.target.value)
-                      }
-                      className="mt-2 w-full rounded-2xl border border-emerald-100 bg-white px-4 py-3 text-sm font-medium leading-relaxed text-zinc-800 outline-none placeholder:text-zinc-400 focus:border-emerald-400"
-                      placeholder="Allergène : à ne pas servir — précisez lequel (ex. traces d’œufs, pain sans gluten fourni par la famille)"
-                    />
-                </div>
-              </div>
-            </>
-          ) : null}
-        </DialogContent>
-      </Dialog>
 
       <AlertDialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
         <AlertDialogContent className="z-[100]" overlayClassName="z-[100]">
