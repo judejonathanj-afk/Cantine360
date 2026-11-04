@@ -77,9 +77,9 @@ export function ServiceSaisieOverlay({
           role="dialog"
           aria-modal="true"
           aria-labelledby={labelledBy}
-          className="relative z-10 flex h-full min-h-0 w-[88vw] max-w-[88vw] flex-col pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[5.5rem] sm:pb-6 sm:pt-[6.25rem]"
+          className="relative z-10 flex h-full min-h-0 w-[88vw] max-w-[88vw] flex-col pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:pb-4 sm:pt-4"
         >
-          {chrome ? <div className="mb-3 shrink-0">{chrome}</div> : null}
+          {chrome ? <div className="mb-2 shrink-0">{chrome}</div> : null}
           <div
             className={cn(
               "flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain",

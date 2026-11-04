@@ -161,8 +161,8 @@ export function DashboardFoldOverlay({
           dialogClassName,
         )}
         chrome={
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <h2
                   id={labelledBy}
