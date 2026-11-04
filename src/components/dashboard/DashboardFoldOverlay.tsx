@@ -23,6 +23,7 @@ export function DashboardFoldOverlay({
   icon: Icon,
   iconTileClassName,
   labelledBy,
+  tight = false,
   children,
 }: {
   kicker: string;
@@ -40,6 +41,7 @@ export function DashboardFoldOverlay({
   icon: LucideIcon;
   iconTileClassName?: string;
   labelledBy: string;
+  tight?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -155,11 +157,16 @@ export function DashboardFoldOverlay({
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
         className={cn(
-          "h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw] rounded-[28px] bg-white/70 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl",
+          "h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw] rounded-2xl bg-white/80 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl",
           dialogClassName,
         )}
       >
-        <div className="mb-0 flex shrink-0 flex-col gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
+        <div
+          className={cn(
+            "mb-0 flex shrink-0 flex-col px-3 pt-2 sm:px-3",
+            tight ? "gap-1.5 pb-1" : "gap-3 pb-1",
+          )}
+        >
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h2
@@ -196,14 +203,16 @@ export function DashboardFoldOverlay({
         >
           <div
             className={cn(
-              "flex min-h-full flex-col rounded-2xl bg-white p-3 shadow-sm sm:p-4",
+              tight
+                ? "flex min-h-full flex-col rounded-xl bg-white p-1.5 sm:p-2"
+                : "flex min-h-full flex-col rounded-xl bg-white p-2 sm:p-3",
               panelClassName,
             )}
           >
             {children}
           </div>
         </div>
-        <div className="flex shrink-0 justify-end bg-transparent px-3 py-3 sm:px-4">
+        <div className="flex shrink-0 justify-end bg-transparent px-3 py-2 sm:px-3">
           <button
             type="button"
             onClick={() => setFoldOpen(false)}

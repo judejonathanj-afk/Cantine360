@@ -482,6 +482,8 @@ export default function DashboardPanels({
         icon={Utensils}
         iconTileClassName="bg-[#f3d7a0] text-[#6b4a12]"
         labelledBy="meal-flow-overlay-title"
+        tight
+        dialogClassName="h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw]"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
@@ -508,6 +510,7 @@ export default function DashboardPanels({
                 key={`meal-flow-${level}`}
                 icon={Utensils}
                 title="Flux du repas"
+                compact
                 level={schoolLevelLabelFr(level)}
                 headerClassName={
                   level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
@@ -533,10 +536,10 @@ export default function DashboardPanels({
               <div
                 key={`meal-flow-conclusion-${level}`}
                 className={cn(
-                  "rounded-2xl px-4 py-3.5 ring-1",
+                  "rounded-xl px-3 py-2.5",
                   level === "MATERNELLE"
-                    ? "bg-sky-50 ring-sky-200"
-                    : "bg-emerald-50 ring-emerald-200",
+                    ? "bg-sky-50"
+                    : "bg-emerald-50",
                 )}
               >
                 <p
@@ -570,6 +573,8 @@ export default function DashboardPanels({
           icon={GitCompareArrows}
           iconTileClassName="bg-[#bfe4f5] text-[#0b4a66]"
           labelledBy="cycle-rates-overlay-title"
+          tight
+          dialogClassName="h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw]"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
           headerAction={
             <OverlayTableToolbar
@@ -596,6 +601,7 @@ export default function DashboardPanels({
                   key={`level-rates-${level}`}
                   icon={GitCompareArrows}
                   title="Taux du cycle"
+                  compact
                   level={schoolLevelLabelFr(level)}
                   headerClassName={
                     level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
@@ -621,22 +627,22 @@ export default function DashboardPanels({
                 <div
                   key={`cycle-conclusion-${level}`}
                   className={cn(
-                    "rounded-2xl px-4 py-3.5 ring-1",
-                    level === "MATERNELLE"
-                      ? "bg-sky-50 ring-sky-200"
-                      : "bg-emerald-50 ring-emerald-200",
+                  "rounded-xl px-3 py-2.5",
+                  level === "MATERNELLE"
+                    ? "bg-sky-50"
+                    : "bg-emerald-50",
+                )}
+              >
+                <p
+                  className={cn(
+                    "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+                    level === "MATERNELLE" ? "bg-sky-600" : "bg-emerald-600",
                   )}
                 >
-                  <p
-                    className={cn(
-                      "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
-                      level === "MATERNELLE" ? "bg-sky-600" : "bg-emerald-600",
-                    )}
-                  >
-                    Conclusion {schoolLevelLabelFr(level)}
-                  </p>
-                  <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg">
-                    {buildCycleRatesConclusion(levelComparisonTotals[level], {
+                  Conclusion {schoolLevelLabelFr(level)}
+                </p>
+                <p className="mt-2 text-base font-semibold leading-relaxed text-zinc-950 sm:text-lg">
+                  {buildCycleRatesConclusion(levelComparisonTotals[level], {
                       days,
                       level,
                     })}
@@ -658,6 +664,8 @@ export default function DashboardPanels({
         icon={Trash2}
         iconTileClassName="bg-[#f6c9d6] text-[#7a2d45]"
         labelledBy="waste-evolution-overlay-title"
+        tight
+        dialogClassName="h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw]"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
           <OverlayTableToolbar
@@ -685,6 +693,7 @@ export default function DashboardPanels({
                 key={`waste-${level}`}
                 icon={Trash2}
                 title="Évolution des déchets"
+                compact
                 level={schoolLevelLabelFr(level)}
                 headerClassName={
                   level === "MATERNELLE" ? "bg-sky-200" : "bg-emerald-200"
@@ -710,10 +719,10 @@ export default function DashboardPanels({
               <div
                 key={`waste-conclusion-${level}`}
                 className={cn(
-                  "rounded-2xl px-4 py-3.5 ring-1",
+                  "rounded-xl px-3 py-2.5",
                   level === "MATERNELLE"
-                    ? "bg-sky-50 ring-sky-200"
-                    : "bg-emerald-50 ring-emerald-200",
+                    ? "bg-sky-50"
+                    : "bg-emerald-50",
                 )}
               >
                 <p

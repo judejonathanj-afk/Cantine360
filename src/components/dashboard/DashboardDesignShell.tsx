@@ -62,6 +62,7 @@ export function DashboardInsightCard({
   description,
   children,
   headerClassName,
+  compact = false,
 }: {
   icon: LucideIcon;
   title: string;
@@ -69,21 +70,49 @@ export function DashboardInsightCard({
   description: ReactNode;
   children: ReactNode;
   headerClassName?: string;
+  compact?: boolean;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+    <div
+      className={cn(
+        "overflow-hidden bg-card",
+        compact
+          ? "rounded-xl"
+          : "rounded-2xl border border-border shadow-sm",
+      )}
+    >
       <div
         className={cn(
-          "flex flex-col gap-3 border-b border-border/70 bg-secondary/40 p-5 sm:flex-row sm:items-start sm:gap-4",
+          "flex flex-col bg-secondary/40 sm:flex-row sm:items-start",
+          compact
+            ? "gap-2 px-3 py-2.5 sm:gap-3"
+            : "gap-3 border-b border-border/70 p-5 sm:gap-4",
           headerClassName,
         )}
       >
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-          <Icon className="size-5" />
+        <span
+          className={cn(
+            "flex shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15",
+            compact ? "size-8" : "size-10",
+          )}
+        >
+          <Icon className={compact ? "size-4" : "size-5"} />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="font-display text-base font-bold text-black">{title}</h3>
-          <div className="mt-1 text-sm font-semibold leading-relaxed text-black">
+          <h3
+            className={cn(
+              "font-display font-bold text-black",
+              compact ? "text-sm" : "text-base",
+            )}
+          >
+            {title}
+          </h3>
+          <div
+            className={cn(
+              "font-semibold leading-relaxed text-black",
+              compact ? "mt-0.5 text-xs" : "mt-1 text-sm",
+            )}
+          >
             {description}
           </div>
         </div>
@@ -93,7 +122,9 @@ export function DashboardInsightCard({
           </div>
         ) : null}
       </div>
-      <div className="p-4 sm:p-5">{children}</div>
+      <div className={compact ? "px-2 pb-2 pt-1 sm:px-3" : "p-4 sm:p-5"}>
+        {children}
+      </div>
     </div>
   );
 }
