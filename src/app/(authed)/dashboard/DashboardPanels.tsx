@@ -332,6 +332,7 @@ export default function DashboardPanels({
             }
           : null
       }
+      wasteByLevel={wasteByLevel}
       antiWasteModeEnabled={antiWasteModeEnabled}
       antiWasteTargetGPer100={antiWasteTargetGPer100}
     />

@@ -3,6 +3,8 @@
 import { useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
+  ArrowDown,
+  ArrowUp,
   BarChart3,
   CalendarDays,
   Check,
@@ -10,6 +12,7 @@ import {
   ChevronDown,
   Leaf,
   Lightbulb,
+  Minus,
   Target,
   Trash2,
   UtensilsCrossed,
@@ -28,13 +31,15 @@ import {
   ratioRestesServisPct,
 } from "@/lib/commissionBilan";
 import { cn } from "@/lib/utils";
-import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
+import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
+import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { ChildDrawnSun } from "@/components/service/ChildDrawnSun";
 import type { CantineMood } from "@/lib/cantinePulse";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { Badge } from "@/components/ui/badge";
 import {
   Bar,
+  BarChart,
   CartesianGrid,
   ComposedChart,
   Line,
@@ -336,6 +341,233 @@ function CantinePlusGlobalChart({
   );
 }
 
+const TREND_CHART_CONFIG = {
+  primaire: { label: "Primaire", color: "#0f7a4a" },
+  maternelle: { label: "Maternelle", color: "#9ed9c0" },
+} satisfies ChartConfig;
+
+function weekdayShortFr(isoDate: string) {
+  const raw = new Intl.DateTimeFormat("fr-FR", { weekday: "short" }).format(
+    new Date(`${isoDate}T12:00:00`),
+  );
+  const cleaned = raw.replace(".", "").trim();
+  return `${cleaned.charAt(0).toUpperCase()}${cleaned.slice(1)}.`;
+}
+
+function gramsPer100(wasteWeightG: number, served: number): number | null {
+  if (served <= 0 || wasteWeightG <= 0) return null;
+  return Math.round((wasteWeightG / served) * 100);
+}
+
+function TendancesAntigaspillageCard({
+  wasteByLevel,
+  levelFilter,
+}: {
+  wasteByLevel: Record<SchoolLevel, WastePerDayRowInput[]>;
+  levelFilter: "all" | SchoolLevel;
+}) {
+  const { points, periodG, trend } = useMemo(() => {
+    const byLevel: Record<SchoolLevel, Map<string, WastePerDayRowInput>> = {
+      MATERNELLE: new Map(),
+      PRIMAIRE: new Map(),
+    };
+    const dates = new Set<string>();
+    for (const level of SCHOOL_LEVELS) {
+      for (const row of wasteByLevel[level] ?? []) {
+        byLevel[level].set(row.date, row);
+        if (row.served > 0 || row.wasteWeightG > 0) dates.add(row.date);
+      }
+    }
+    const lastDates = Array.from(dates)
+      .sort((a, b) => b.localeCompare(a))
+      .slice(0, 7)
+      .reverse();
+
+    const showMaternelle = levelFilter !== "PRIMAIRE";
+    const showPrimaire = levelFilter !== "MATERNELLE";
+    const points = lastDates.map((date) => {
+      const mat = byLevel.MATERNELLE.get(date);
+      const prim = byLevel.PRIMAIRE.get(date);
+      return {
+        date,
+        label: weekdayShortFr(date),
+        maternelle: showMaternelle
+          ? gramsPer100(mat?.wasteWeightG ?? 0, mat?.served ?? 0)
+          : null,
+        primaire: showPrimaire
+          ? gramsPer100(prim?.wasteWeightG ?? 0, prim?.served ?? 0)
+          : null,
+      };
+    });
+
+    let waste = 0;
+    let served = 0;
+    for (const date of lastDates) {
+      for (const level of SCHOOL_LEVELS) {
+        if (levelFilter !== "all" && level !== levelFilter) continue;
+        const row = byLevel[level].get(date);
+        if (!row) continue;
+        waste += row.wasteWeightG;
+        served += row.served;
+      }
+    }
+    const periodG = gramsPer100(waste, served);
+
+    const daily = lastDates
+      .map((date) => {
+        let w = 0;
+        let s = 0;
+        for (const level of SCHOOL_LEVELS) {
+          if (levelFilter !== "all" && level !== levelFilter) continue;
+          const row = byLevel[level].get(date);
+          if (!row) continue;
+          w += row.wasteWeightG;
+          s += row.served;
+        }
+        return gramsPer100(w, s);
+      })
+      .filter((v): v is number => v != null);
+    let trend: "down" | "up" | "flat" = "flat";
+    if (daily.length >= 2) {
+      const first = daily[0]!;
+      const last = daily[daily.length - 1]!;
+      if (last < first - 1) trend = "down";
+      else if (last > first + 1) trend = "up";
+    }
+
+    return { points, periodG, trend };
+  }, [wasteByLevel, levelFilter]);
+
+  const hasBars = points.some(
+    (p) => (p.maternelle != null && p.maternelle > 0) || (p.primaire != null && p.primaire > 0),
+  );
+  const TrendIcon = trend === "down" ? ArrowDown : trend === "up" ? ArrowUp : Minus;
+  const periodLabel =
+    periodG != null ? periodG.toLocaleString("fr-FR") : "—";
+
+  return (
+    <div className="rounded-[2rem] bg-[#efeaf8] p-3 sm:p-4">
+      <div className="rounded-[1.5rem] bg-white px-5 py-5 sm:px-8 sm:py-7">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
+              Tendances Antigaspillage
+            </h2>
+            <p className="mt-1 text-sm font-medium text-zinc-400 sm:text-base">
+              Les 7 derniers services · g / 100 assiettes
+            </p>
+          </div>
+          <span className="inline-flex items-center rounded-full bg-[#ece7fa] px-3 py-1 text-xs font-semibold text-[#7c6bb0]">
+            Cantine+
+          </span>
+        </div>
+
+        <div className="mt-5 flex items-center gap-4 rounded-[1.35rem] bg-[#e7f6ee] px-4 py-4 sm:px-5">
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-white shadow-sm">
+            <Leaf className="h-7 w-7 text-[#1b8a54]" strokeWidth={2.1} aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-[#6b8f7a]">Indicateur de la période</p>
+            <p className="mt-0.5 text-3xl font-extrabold tabular-nums tracking-tight text-[#0f7a4a] sm:text-4xl">
+              {periodLabel}
+              {periodG != null ? (
+                <span className="ml-1.5 text-base font-semibold sm:text-lg">
+                  g / 100 assiettes
+                </span>
+              ) : null}
+            </p>
+          </div>
+          <TrendIcon
+            className="h-6 w-6 shrink-0 text-[#0f7a4a]"
+            strokeWidth={2.4}
+            aria-hidden
+          />
+        </div>
+
+        <div className="mt-6">
+          {!hasBars ? (
+            <p className="py-8 text-center text-sm font-medium text-zinc-500">
+              Les tendances s’afficheront ici dès les premières pesées.
+            </p>
+          ) : (
+            <ChartContainer
+              config={TREND_CHART_CONFIG}
+              className="aspect-auto h-[220px] w-full"
+            >
+              <BarChart
+                data={points}
+                margin={{ top: 8, right: 4, left: 4, bottom: 0 }}
+              >
+                <CartesianGrid vertical={false} stroke="#ececec" />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={10}
+                  tick={{ fill: "#9ca3af", fontSize: 13 }}
+                />
+                <ChartTooltip
+                  content={(tooltipProps) => (
+                    <ChartTooltipContent
+                      active={tooltipProps.active}
+                      payload={tooltipProps.payload}
+                      label={tooltipProps.label}
+                      coordinate={tooltipProps.coordinate}
+                      accessibilityLayer={tooltipProps.accessibilityLayer}
+                      activeIndex={tooltipProps.activeIndex}
+                      formatter={(value) =>
+                        typeof value === "number"
+                          ? `${value.toLocaleString("fr-FR")} g / 100`
+                          : value
+                      }
+                    />
+                  )}
+                />
+                {levelFilter !== "PRIMAIRE" ? (
+                  <Bar
+                    dataKey="maternelle"
+                    name="Maternelle"
+                    fill="var(--color-maternelle)"
+                    radius={[10, 10, 6, 6]}
+                    maxBarSize={36}
+                  />
+                ) : null}
+                {levelFilter !== "MATERNELLE" ? (
+                  <Bar
+                    dataKey="primaire"
+                    name="Primaire"
+                    fill="var(--color-primaire)"
+                    radius={[10, 10, 6, 6]}
+                    maxBarSize={36}
+                  />
+                ) : null}
+              </BarChart>
+            </ChartContainer>
+          )}
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-zinc-600">
+          {levelFilter !== "MATERNELLE" ? (
+            <span className="flex items-center gap-2">
+              <span className="size-2.5 rounded-full bg-[#0f7a4a]" aria-hidden />
+              Primaire
+            </span>
+          ) : null}
+          {levelFilter !== "PRIMAIRE" ? (
+            <span className="flex items-center gap-2">
+              <span className="size-2.5 rounded-full bg-[#9ed9c0]" aria-hidden />
+              Maternelle
+            </span>
+          ) : null}
+        </div>
+        <p className="mt-3 text-xs font-medium text-zinc-400">
+          g de déchets pour 100 assiettes servies
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function mealLabel(mealType: string) {
   return mealTypeLabelFr(mealType);
 }
@@ -491,6 +723,7 @@ export function CantinePulseCard({
   eco = null,
   showBrandTitle = true,
   levelFilter = "all",
+  wasteByLevel,
   antiWasteModeEnabled = false,
   antiWasteTargetGPer100 = null,
 }: {
@@ -502,6 +735,7 @@ export function CantinePulseCard({
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
   levelFilter?: "all" | SchoolLevel;
+  wasteByLevel?: Record<SchoolLevel, WastePerDayRowInput[]>;
   antiWasteModeEnabled?: boolean;
   antiWasteTargetGPer100?: number | null;
 }) {
@@ -609,6 +843,13 @@ export function CantinePulseCard({
             days={days}
           />
         )}
+
+        {wasteByLevel ? (
+          <TendancesAntigaspillageCard
+            wasteByLevel={wasteByLevel}
+            levelFilter={levelFilter}
+          />
+        ) : null}
 
         {sparseServings ? (
           <p
