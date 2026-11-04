@@ -154,19 +154,18 @@ export function DashboardFoldOverlay({
         open={open}
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
-        fillViewport
         className={cn(
-          "w-full max-w-none bg-zinc-950",
+          "max-h-[min(92vh,56rem)] w-full max-w-5xl rounded-[28px] bg-white/70 shadow-[0_24px_80px_rgba(0,0,0,0.18)] backdrop-blur-2xl",
           dialogClassName,
         )}
       >
-        <div className="mb-0 flex shrink-0 flex-col gap-3 px-3 pt-2 sm:px-4 sm:pt-3">
+        <div className="mb-0 flex shrink-0 flex-col gap-3 px-3 pt-3 sm:px-4 sm:pt-4">
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h2
                 id={labelledBy}
                 className={cn(
-                  "flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl",
+                  "flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl",
                   titleClassName,
                 )}
               >
@@ -174,11 +173,11 @@ export function DashboardFoldOverlay({
                 {overlayTitle}
               </h2>
               {subtitle ? (
-                <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
+                <p className="mt-1 text-base font-semibold leading-snug text-zinc-800 sm:text-lg">
                   {subtitle}
                 </p>
               ) : null}
-              <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+              <p className="mt-1 text-sm font-medium leading-snug text-zinc-600 sm:text-base">
                 {hint}
               </p>
             </div>
@@ -191,20 +190,20 @@ export function DashboardFoldOverlay({
         </div>
         <div
           className={cn(
-            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-zinc-950 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-500 [&::-webkit-scrollbar-track]:bg-zinc-900",
+            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-transparent [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100/60",
             bodyClassName,
           )}
         >
           <div
             className={cn(
-              "flex min-h-full flex-col rounded-none bg-white p-3 shadow-none sm:p-4",
+              "flex min-h-full flex-col rounded-2xl bg-white p-3 shadow-sm sm:p-4",
               panelClassName,
             )}
           >
             {children}
           </div>
         </div>
-        <div className="flex shrink-0 justify-end bg-white px-3 py-3 sm:px-4">
+        <div className="flex shrink-0 justify-end bg-transparent px-3 py-3 sm:px-4">
           <button
             type="button"
             onClick={() => setFoldOpen(false)}

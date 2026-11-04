@@ -848,7 +848,7 @@ export default function DashboardPanels({
         overlayTitle="Suivi jour par jour"
         subtitle="Relisez les compteurs de chaque service, comparez les jours, puis téléchargez le tableau."
         hint="Présents, servis, RAB, refus et déchets — une ligne par jour. Filtrez, lisez, téléchargez."
-        titleClassName="text-[#38bdf8]"
+        titleClassName="text-sky-700"
         icon={TableIcon}
         iconTileClassName="bg-[#d8f48a] text-[#0d3b2e]"
         labelledBy="day-tracking-overlay-title"

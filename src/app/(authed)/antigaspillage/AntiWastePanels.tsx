@@ -515,7 +515,7 @@ export function AntiWastePanels({
           kicker="Plats à risque"
           openLabel="Ouvrir Plats à risque"
           overlayTitle="Plats à risque"
-          titleClassName="text-violet-300"
+          titleClassName="text-violet-800"
           foldTone="forest"
           subtitle="Repérez les plats qui pèsent le plus sur le gaspillage, pour ajuster portions et menu dès demain."
           hint={`Classés du plus gourmand au plus léger · ${days} jours. Lisez, comparez, téléchargez.`}
@@ -761,7 +761,7 @@ export function AntiWastePanels({
           kicker="Avis du suivi"
           openLabel="Ouvrir Avis du suivi du mode anti-gaspillage"
           overlayTitle="Avis du suivi du mode anti-gaspillage"
-          titleClassName="text-amber-200"
+          titleClassName="text-amber-900"
           subtitle="Lecture des pesées de cet établissement : objectif, tendance, plats et services."
           hint={`Ce que les pesées indiquent sur ${days} jours.`}
           icon={Lightbulb}

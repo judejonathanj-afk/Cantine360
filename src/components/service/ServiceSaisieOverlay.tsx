@@ -56,7 +56,7 @@ export function ServiceSaisieOverlay({
       <button
         type="button"
         aria-label="Fermer"
-        className="absolute inset-0 bg-zinc-950/55 backdrop-blur-xl"
+        className="absolute inset-0 bg-zinc-900/30 backdrop-blur-2xl"
         onClick={onClose}
       />
       <div
