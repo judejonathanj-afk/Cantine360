@@ -26,6 +26,7 @@ import {
   rememberActiveServiceId,
 } from "@/lib/activeService";
 import { shellRoleForPathname } from "@/lib/uiRole";
+import { useNavSwipe } from "@/hooks/useNavSwipe";
 type Props = {
   role: "ADMIN" | "KITCHEN";
   establishmentLabel?: string;
@@ -200,6 +201,8 @@ export function AppShell({
   const serviceShellClass = isServiceArea ? "bg-white" : null;
 
   const homeHref = shellRole === "ADMIN" ? "/admin/dashboard" : "/service";
+
+  useNavSwipe(navItems, pathname);
 
   return (
     <div
