@@ -753,7 +753,7 @@ export default function DashboardPanels({
         icon={Layers}
         iconTileClassName="bg-[#ddc8f8] text-[#5b21b6]"
         labelledBy="service-context-overlay-title"
-        dialogClassName="w-[calc(100vw-2rem)] max-w-[88rem] sm:w-[calc(100vw-2.75rem)]"
+        dialogClassName="h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw]"
         panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
@@ -852,7 +852,7 @@ export default function DashboardPanels({
         icon={TableIcon}
         iconTileClassName="bg-[#d8f48a] text-[#0d3b2e]"
         labelledBy="day-tracking-overlay-title"
-        dialogClassName="w-[calc(100vw-2rem)] max-w-[88rem] sm:w-[calc(100vw-2.75rem)]"
+        dialogClassName="h-[70vh] w-[70vw] max-h-[70vh] max-w-[70vw]"
         panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         headerAction={
