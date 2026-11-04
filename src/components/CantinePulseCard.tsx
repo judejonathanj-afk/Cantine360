@@ -353,7 +353,7 @@ export function CantinePlusMealHeader({
 }) {
   const s = MOOD_STYLES[mood];
   return (
-    <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-3">
+    <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-start gap-3">
       <MealIcon />
       <div className="min-w-0">
         <p
@@ -516,13 +516,12 @@ export function CantinePulseCard({
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
   const brandTitle = showBrandTitle ? (
-    <div className="flex w-full flex-wrap items-center gap-4">
-      <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-      <div className="min-w-0 flex-1 text-center sm:text-left">
-        <h2 className="text-lg font-semibold text-zinc-900 sm:text-xl">
-          Lecture globale graphique / chiffres
-        </h2>
-        <p className="mt-1 w-full text-base text-zinc-600 sm:text-lg">
+    <div className="relative flex w-full flex-col items-center gap-3 sm:min-h-[4.5rem] sm:flex-row sm:justify-center">
+      <div className="sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2">
+        <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+      </div>
+      <div className="min-w-0 max-w-2xl px-2 text-center sm:px-36">
+        <p className="w-full text-base text-zinc-600 sm:text-lg">
           RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
           déchets (poids) — {periodLabel}
         </p>
