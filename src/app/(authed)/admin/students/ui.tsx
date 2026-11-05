@@ -444,19 +444,22 @@ export function AdminStudentsClient({
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
-      <DashboardFoldOverlay
-        kicker="Liste"
-        openLabel="Ouvrir Élèves et allergènes"
-        overlayTitle="Élèves et allergènes"
-        subtitle="Parcourez les élèves par classe : allergènes, régimes et consignes parents."
-        hint="Modifiez classe, allergènes, régimes et consignes directement sur la carte."
-        icon={Users}
-        labelledBy="admin-students-list-overlay"
-        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
-        dialogClassName="bg-white"
-        panelClassName="bg-white"
-        bodyClassName="bg-white overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
-      >
+      <section className="space-y-4" aria-labelledby="admin-students-list-title">
+        <div>
+          <h2
+            id="admin-students-list-title"
+            className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl"
+          >
+            <Users className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+            Élèves et allergènes
+          </h2>
+          <p className="mt-1 text-base font-semibold leading-snug text-zinc-700 sm:text-lg">
+            Parcourez les élèves par classe : allergènes, régimes et consignes parents.
+          </p>
+          <p className="mt-1 text-sm font-medium leading-snug text-zinc-600 sm:text-base">
+            Modifiez classe, allergènes, régimes et consignes directement sur la carte.
+          </p>
+        </div>
       {byClass.length === 0 ? (
         <p className="px-3 py-10 text-center text-base font-bold leading-relaxed text-zinc-900 sm:text-lg">
           Aucun élève pour l’instant. Ouvrez l’import CSV ou ajoutez un élève à la
@@ -681,7 +684,7 @@ export function AdminStudentsClient({
         })}
         </div>
       )}
-      </DashboardFoldOverlay>
+      </section>
 
 
       <AlertDialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
