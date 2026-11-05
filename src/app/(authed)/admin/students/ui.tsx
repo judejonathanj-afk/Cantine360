@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   ChevronDown,
   Plus,
@@ -61,10 +62,12 @@ type ImportResult = {
 export function AdminStudentsClient({
   initialStudents,
   groups,
+  view = "hub",
 }: {
   initialStudents: Student[];
   groups: Group[];
-  }) {
+  view?: "hub" | "list";
+}) {
   const [students, setStudents] = useState<Student[]>(initialStudents);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -78,7 +81,6 @@ export function AdminStudentsClient({
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<Student | null>(null);
   const [cardMenu, setCardMenu] = useState<{ id: string } | null>(null);
-  const [listOpen, setListOpen] = useState(false);
 
   const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups]);
   const groupLevelById = useMemo(() => {
@@ -261,6 +263,8 @@ export function AdminStudentsClient({
 
   return (
     <div className="space-y-6">
+      {view === "hub" ? (
+      <>
       <div className="w-full space-y-3">
         <div className="flex justify-center">
           <div className="inline-flex rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3">
@@ -441,17 +445,17 @@ export function AdminStudentsClient({
           </form>
         </div>
       </DashboardFoldOverlay>
+      </>
+      ) : null}
 
       {error ? (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
-      {!listOpen ? (
+      {view === "hub" ? (
         <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
-          <button
-            type="button"
-            onClick={() => setListOpen(true)}
-            aria-expanded={false}
+          <Link
+            href="/admin/students/liste"
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
           >
             <span
@@ -470,11 +474,11 @@ export function AdminStudentsClient({
                 Ouvrir Élèves et allergènes
               </span>
               <span className="mt-0.5 block text-sm leading-snug text-white/80">
-                Parcourez les élèves par classe — dans cette page.
+                Parcourez les élèves par classe — ouvre la page.
               </span>
             </span>
             <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
-          </button>
+          </Link>
         </section>
       ) : (
       <section className="space-y-4" aria-labelledby="admin-students-list-title">
@@ -494,13 +498,12 @@ export function AdminStudentsClient({
               Modifiez classe, allergènes, régimes et consignes directement sur la carte.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setListOpen(false)}
+          <Link
+            href="/admin/students"
             className="self-start rounded-full bg-zinc-100 px-4 py-2 text-sm font-bold text-zinc-800 transition hover:bg-zinc-200"
           >
-            Replier
-          </button>
+            Retour
+          </Link>
         </div>
       {byClass.length === 0 ? (
         <p className="px-3 py-10 text-center text-base font-bold leading-relaxed text-zinc-900 sm:text-lg">
