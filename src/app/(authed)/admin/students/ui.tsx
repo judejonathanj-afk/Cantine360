@@ -453,7 +453,9 @@ export function AdminStudentsClient({
         icon={Users}
         labelledBy="admin-students-list-overlay"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
-        bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
+        dialogClassName="bg-white"
+        panelClassName="bg-white"
+        bodyClassName="bg-white overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
       >
       {byClass.length === 0 ? (
         <p className="px-3 py-10 text-center text-base font-bold leading-relaxed text-zinc-900 sm:text-lg">
@@ -489,8 +491,8 @@ export function AdminStudentsClient({
                   className={[
                     "relative flex flex-col gap-4 overflow-visible rounded-[28px] border-2 px-5 py-5 text-left shadow-[0_10px_28px_-18px_rgba(15,23,42,0.45)] sm:px-6 sm:py-6",
                     maternelle
-                      ? "border-[#62b3e0] bg-[#d8eefc]"
-                      : "border-[#6dcaa0] bg-[#d8f5e6]",
+                      ? "border-[#62b3e0] bg-white"
+                      : "border-[#6dcaa0] bg-white",
                   ].join(" ")}
                 >
                   <div className="flex items-start justify-between gap-3">
