@@ -10,6 +10,7 @@ export function ServiceSaisieOverlay({
   labelledBy,
   className,
   fillViewport = false,
+  fullPage = false,
   chrome,
   footer,
   children,
@@ -20,6 +21,8 @@ export function ServiceSaisieOverlay({
   className?: string;
   /** Feuille collée aux bords, jusqu’en bas de l’écran. */
   fillViewport?: boolean;
+  /** Fenêtre presque pleine page (titre au-dessus, fermer en bas). */
+  fullPage?: boolean;
   /** Titre, textes et boutons au-dessus de la fenêtre. */
   chrome?: ReactNode;
   /** Bouton fermer sous la fenêtre. */
@@ -80,7 +83,12 @@ export function ServiceSaisieOverlay({
           role="dialog"
           aria-modal="true"
           aria-labelledby={labelledBy}
-          className="relative z-10 flex h-full min-h-0 w-[88vw] max-w-[88vw] flex-col pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:pb-4 sm:pt-4"
+          className={cn(
+            "relative z-10 flex h-full min-h-0 flex-col pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:pb-4 sm:pt-4",
+            fullPage
+              ? "w-[calc(100vw-1.25rem)] max-w-none sm:w-[calc(100vw-2rem)]"
+              : "w-[88vw] max-w-[88vw]",
+          )}
         >
           {chrome ? <div className="mb-2 shrink-0">{chrome}</div> : null}
           <div

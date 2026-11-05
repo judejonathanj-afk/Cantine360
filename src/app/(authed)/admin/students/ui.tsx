@@ -452,6 +452,7 @@ export function AdminStudentsClient({
         hint="Modifiez classe, allergènes, régimes et consignes directement sur la carte."
         icon={Users}
         labelledBy="admin-students-list-overlay"
+        fullPage
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         dialogClassName="bg-white"
         panelClassName="bg-white"

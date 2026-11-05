@@ -24,6 +24,7 @@ export function DashboardFoldOverlay({
   iconTileClassName,
   labelledBy,
   tight = false,
+  fullPage = false,
   children,
 }: {
   kicker: string;
@@ -42,6 +43,7 @@ export function DashboardFoldOverlay({
   iconTileClassName?: string;
   labelledBy: string;
   tight?: boolean;
+  fullPage?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -156,8 +158,9 @@ export function DashboardFoldOverlay({
         open={open}
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
+        fullPage={fullPage}
         className={cn(
-          "rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]",
+          "h-full min-h-0 rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]",
           dialogClassName,
         )}
         chrome={
