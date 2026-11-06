@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
   ArrowDown,
@@ -133,64 +133,72 @@ function NoteCantineCounter({
   score: number;
   mood: keyof typeof MOOD_STYLES;
 }) {
-  const [shown, setShown] = useState(0);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setShown(0);
-    const start = performance.now();
-    const duration = 800;
-    let frame = 0;
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - (1 - t) * (1 - t);
-      setShown(Math.round(score * eased));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    const t = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(t);
   }, [score]);
 
   const color = MOOD_CHART_COLOR[mood];
-  const radius = 52;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (shown / 100) * circumference;
+  const cx = 140;
+  const cy = 140;
+  const r = 118;
+  const len = Math.PI * r;
+  const frac = Math.min(Math.max(score / 100, 0), 1);
+  const arcPath = `M ${cx - r},${cy} A ${r},${r} 0 0 1 ${cx + r},${cy}`;
+  const gradId = `note-cantine-grad-${useId().replace(/:/g, "")}`;
 
   return (
-    <div className="flex shrink-0 flex-col items-center">
+    <div className="flex w-full max-w-[240px] shrink-0 flex-col items-center">
       <p className="text-sm font-semibold text-zinc-500">Note Cantine +</p>
-      <div className="relative mt-2 size-[148px]" aria-label={`Note Cantine + ${shown} sur 100`}>
-        <svg viewBox="0 0 128 128" className="size-full -rotate-90" aria-hidden>
-          <circle
-            cx="64"
-            cy="64"
-            r={radius}
+      <div className="relative mt-1 w-full">
+        <svg
+          viewBox="0 0 280 172"
+          className="w-full"
+          role="img"
+          aria-label={`Note Cantine + ${score} sur 100`}
+        >
+          <defs>
+            <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor={color} stopOpacity="0.55" />
+              <stop offset="100%" stopColor={color} />
+            </linearGradient>
+          </defs>
+          <path
+            d={arcPath}
             fill="none"
-            stroke="#e4e4e7"
-            strokeWidth="11"
-          />
-          <circle
-            cx="64"
-            cy="64"
-            r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth="11"
+            stroke="#e8eee9"
+            strokeWidth="18"
             strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
+          />
+          <path
+            d={arcPath}
+            fill="none"
+            stroke={`url(#${gradId})`}
+            strokeWidth="18"
+            strokeLinecap="round"
+            strokeDasharray={len}
+            strokeDashoffset={mounted ? len * (1 - frac) : len}
+            style={{
+              transition: "stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1)",
+            }}
           />
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p
-            className={cn(
-              "text-4xl font-black tabular-nums leading-none",
-              MOOD_STYLES[mood].accent,
-            )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center">
+          <span
+            className="text-4xl font-bold leading-none tracking-tight tabular-nums"
+            style={{ color }}
           >
-            {shown}
-          </p>
-          <p className="mt-0.5 text-sm font-bold text-zinc-400">/100</p>
+            {score}
+          </span>
+          <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-950">
+            / 100
+          </span>
         </div>
       </div>
+      <span className="mt-3 inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-sm font-semibold text-zinc-800">
+        {MOOD_STYLES[mood].label}
+      </span>
     </div>
   );
 }
@@ -264,7 +272,7 @@ function CantinePlusGlobalChart({
       <p className="text-sm font-semibold text-zinc-900">Lecture globale</p>
       <div className="mt-4 space-y-4">
         <div className="min-w-0 space-y-4">
-          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-start">
+          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-start">
             <NoteCantineCounter score={score} mood={mood} />
             <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row">
               <div className="relative size-[200px] shrink-0">
@@ -349,16 +357,24 @@ function CantinePlusGlobalChart({
           </div>
 
           {!hasActivity ? (
-            <p className="rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-600">
+            <p className="mt-8 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-600">
               Pas encore de données sur les {periodLabel} pour tracer le graphique.
             </p>
           ) : (
-            <>
+            <div className="mt-8 space-y-4">
+            <div>
+              <h3 className="text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
+                Évolution des assiettes servies et des déchets
+              </h3>
+              <p className="mt-1 text-sm font-medium text-zinc-500">
+                Portions servies, poids des déchets et g / 100 assiettes — {periodLabel}
+              </p>
+            </div>
             <ChartContainer
               config={globalChartConfig}
-              className="h-[min(15rem,38vw)] w-full min-h-[176px] aspect-auto [&_.recharts-cartesian-axis-tick_text]:!fill-black [&_.recharts-cartesian-axis-tick_text]:font-semibold [&_.y-axis-grams_.recharts-cartesian-axis-tick_text]:!fill-[#eab308]"
+              className="h-[min(22rem,48vw)] w-full min-h-[240px] aspect-auto [&_.recharts-cartesian-axis-tick_text]:!fill-black [&_.recharts-cartesian-axis-tick_text]:font-semibold [&_.y-axis-grams_.recharts-cartesian-axis-tick_text]:!fill-[#eab308]"
             >
-              <ComposedChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <ComposedChart data={series} margin={{ top: 16, right: 12, left: 4, bottom: 8 }}>
                 <CartesianGrid vertical={false} stroke="rgba(24,24,27,0.08)" strokeDasharray="4 4" />
                 <XAxis
                   dataKey="label"
@@ -444,7 +460,7 @@ function CantinePlusGlobalChart({
               </ComposedChart>
             </ChartContainer>
             <CantineChartLegend />
-            </>
+            </div>
           )}
         </div>
 
