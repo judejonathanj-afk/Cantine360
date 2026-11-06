@@ -158,8 +158,8 @@ function NoteCantineCounter({
   const gradId = `note-cantine-grad-${useId().replace(/:/g, "")}`;
 
   return (
-    <div className="flex w-full max-w-[240px] shrink-0 flex-col items-center">
-      <p className="text-sm font-semibold text-zinc-400">Note Cantine +</p>
+    <div className="flex w-full max-w-[180px] shrink-0 flex-col items-center">
+      <p className="text-xs font-semibold text-zinc-400">Note Cantine +</p>
       <div className="relative mt-1 w-full">
         <svg
           viewBox="0 0 280 172"
@@ -195,17 +195,17 @@ function NoteCantineCounter({
         </svg>
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center">
           <span
-            className="text-4xl font-bold leading-none tracking-tight tabular-nums"
+            className="text-3xl font-bold leading-none tracking-tight tabular-nums"
             style={{ color }}
           >
             {score}
           </span>
-          <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-300">
+          <span className="mt-0.5 text-xs font-bold uppercase tracking-wider text-zinc-300">
             / 100
           </span>
         </div>
       </div>
-      <span className="mt-3 inline-flex items-center rounded-full bg-white px-3 py-1 text-sm font-semibold text-zinc-900">
+      <span className="mt-2 inline-flex items-center rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-zinc-900">
         {MOOD_STYLES[mood].label}
       </span>
     </div>
@@ -279,20 +279,20 @@ function CantinePlusGlobalChart({
   return (
     <div className="px-1 py-2 sm:px-2">
       <div
-        className="rounded-[2rem] px-5 py-7 sm:rounded-[2.5rem] sm:px-8 sm:py-10"
+        className="rounded-3xl px-4 py-4 sm:px-5 sm:py-5"
         style={{ backgroundColor: "#000000" }}
       >
-        <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-white">
+        <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-white">
           Lecture globale
         </p>
-        <div className="mt-10 min-w-0">
-          <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-end sm:justify-start sm:gap-10">
+        <div className="mt-4 min-w-0">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-6">
             <NoteCantineCounter score={score} mood={mood} />
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row">
-              <div className="relative size-[200px] shrink-0">
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-3 sm:flex-row">
+              <div className="relative size-[148px] shrink-0">
                 <ChartContainer
                   config={pieConfig}
-                  className="aspect-square h-[200px] w-[200px]"
+                  className="aspect-square h-[148px] w-[148px]"
                 >
                   <PieChart>
                     <ChartTooltip
@@ -327,8 +327,8 @@ function CantinePlusGlobalChart({
                       data={pieData}
                       dataKey="value"
                       nameKey="name"
-                      innerRadius={58}
-                      outerRadius={88}
+                      innerRadius={42}
+                      outerRadius={64}
                       stroke="#ffffff"
                       strokeWidth={3}
                     >
@@ -345,12 +345,12 @@ function CantinePlusGlobalChart({
                   <p className="text-[11px] font-semibold text-zinc-400">
                     Déchets cumulés
                   </p>
-                  <p className="text-lg font-extrabold tabular-nums tracking-tight text-white">
+                  <p className="text-base font-extrabold tabular-nums tracking-tight text-white">
                     {wasteLabel}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <ChartLegendItem
                   color={moodColor}
                   label="Niveau actuel"
