@@ -223,6 +223,9 @@ export default function ExportsPage() {
             <CardDescription className="text-sm font-medium text-zinc-500">
               Préparez le bilan de votre restauration scolaire.
             </CardDescription>
+            <p className="pt-1 text-sm font-semibold text-emerald-800">
+              Cliquez sur le fichier ou une ligne ci-dessous pour télécharger.
+            </p>
           </CardHeader>
           <CardContent className="pt-0">
             <a
@@ -238,6 +241,7 @@ export default function ExportsPage() {
               <p className="mt-1 text-sm font-medium text-zinc-500">
                 Repas · déchets · période · niveaux
               </p>
+              <p className="mt-2 text-sm font-bold text-emerald-800">Télécharger</p>
             </a>
             <ul className="mt-1">
               {[
