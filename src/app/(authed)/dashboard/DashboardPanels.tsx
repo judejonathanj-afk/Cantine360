@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
+import { FloatingCloseButton } from "@/components/dashboard/FloatingCloseButton";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
@@ -340,35 +341,27 @@ export default function DashboardPanels({
 
   if (!hideCantinePlus && cantinePlusOpen) {
     return (
-      <div className="space-y-6 pb-10">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-              Cantine+
-            </p>
-            <h1
-              id="cantine-plus-inline-title"
-              className="mt-1 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-3xl"
-            >
-              <Sparkles className="h-7 w-7 shrink-0 text-[#5b21b6]" strokeWidth={2.25} aria-hidden />
-              Lecture globale graphique / chiffres
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
-              Cantine+ suit le repas du quotidien : elle calcule une note sur 100,
-              met en avant le RAB et le poids des déchets, et affiche les tendances
-              pour aider cuisine et direction à réduire le gaspillage.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setCantinePlusFold(false)}
-            className="self-start rounded-full bg-zinc-100 px-4 py-2 text-sm font-bold text-zinc-800 transition hover:bg-zinc-200"
+      <div className="space-y-6 pb-24 sm:pb-28">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+            Cantine+
+          </p>
+          <h1
+            id="cantine-plus-inline-title"
+            className="mt-1 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-3xl"
           >
-            Replier
-          </button>
+            <Sparkles className="h-7 w-7 shrink-0 text-[#5b21b6]" strokeWidth={2.25} aria-hidden />
+            Lecture globale graphique / chiffres
+          </h1>
+          <p className="mt-2 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
+            Cantine+ suit le repas du quotidien : elle calcule une note sur 100,
+            met en avant le RAB et le poids des déchets, et affiche les tendances
+            pour aider cuisine et direction à réduire le gaspillage.
+          </p>
         </div>
         {lectureFilters}
         {lecturePulse}
+        <FloatingCloseButton onClick={() => setCantinePlusFold(false)} />
       </div>
     );
   }

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
+import { FloatingCloseButton } from "@/components/dashboard/FloatingCloseButton";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { EU14_ALLERGENS, type AllergenLabel } from "@/lib/allergens";
 import {
@@ -498,31 +499,23 @@ export function AdminStudentsClient({
       </>
       ) : (
       <>
-        <div className="flex flex-col gap-4 pb-2 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-              Élèves
-            </p>
-            <h1
-              id="admin-students-list-title"
-              className="mt-1 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-3xl"
-            >
-              <Users className="h-7 w-7 shrink-0 text-emerald-700" strokeWidth={2.25} aria-hidden />
-              Élèves et allergènes
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
-              Parcourez les élèves par classe : allergènes, régimes et consignes
-              parents. Modifiez-les directement sur la carte.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setListOpen(false)}
-            className="self-start rounded-full bg-zinc-100 px-4 py-2 text-sm font-bold text-zinc-800 transition hover:bg-zinc-200"
+        <div className="min-w-0 pb-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+            Élèves
+          </p>
+          <h1
+            id="admin-students-list-title"
+            className="mt-1 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-3xl"
           >
-            Replier
-          </button>
+            <Users className="h-7 w-7 shrink-0 text-emerald-700" strokeWidth={2.25} aria-hidden />
+            Élèves et allergènes
+          </h1>
+          <p className="mt-2 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
+            Parcourez les élèves par classe : allergènes, régimes et consignes
+            parents. Modifiez-les directement sur la carte.
+          </p>
         </div>
+        <FloatingCloseButton onClick={() => setListOpen(false)} />
       {error ? (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
@@ -532,7 +525,7 @@ export function AdminStudentsClient({
           main.
         </p>
       ) : (
-        <div className="space-y-5 p-1 sm:p-2">
+        <div className="space-y-5 p-1 pb-24 sm:p-2 sm:pb-28">
         {byClass.map(([gid, bucket]) => {
           const allergyN = bucket.students.filter((s) => s.allergens.length > 0).length;
           return (
