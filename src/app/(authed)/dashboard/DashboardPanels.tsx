@@ -358,6 +358,12 @@ export default function DashboardPanels({
             met en avant le RAB et le poids des déchets, et affiche les tendances
             pour aider cuisine et direction à réduire le gaspillage.
           </p>
+          <p className="mt-3 whitespace-nowrap text-base text-zinc-600 sm:text-lg">
+            RAB{" "}
+            <span className="text-zinc-800">(assiettes adaptées ou resservies)</span>
+            {" "}et déchets (poids) — {days === 30 ? "30 jours" : "7 jours"}
+            {levelFilter !== "all" ? ` — ${schoolLevelLabelFr(levelFilter)}` : ""}
+          </p>
         </div>
         {lectureFilters}
         {lecturePulse}

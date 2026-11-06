@@ -869,22 +869,7 @@ export function CantinePulseCard({
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
   const brandTitle = showBrandTitle ? (
-    <div className="relative flex w-full flex-col items-center gap-3 sm:min-h-[4.5rem] sm:flex-row sm:justify-center">
-      <div className="sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2">
-        <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-      </div>
-      <div className="min-w-0 max-w-2xl px-2 text-center sm:px-36">
-        <p className="w-full text-base text-zinc-600 sm:text-lg">
-          RAB <span className="text-zinc-800">(assiettes adaptées ou resservies)</span> et
-          déchets (poids) — {periodLabel}
-        </p>
-        {levelLabel ? (
-          <p className="mt-1 text-sm font-semibold text-emerald-700 sm:text-base">
-            {levelLabel}
-          </p>
-        ) : null}
-      </div>
-    </div>
+    <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
   ) : null;
 
   const rabPct = curr.served > 0 ? curr.rabRate * 100 : 0;
