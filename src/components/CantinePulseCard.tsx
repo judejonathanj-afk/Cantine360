@@ -474,9 +474,10 @@ function CantinePlusGlobalChart({
           <div className="rounded-[1.5rem] bg-white px-5 py-5 sm:px-8 sm:py-7">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h3 className="text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
+                <h2 className="flex items-start gap-2.5 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-[1.75rem]">
+                  <BarChart3 className="mt-0.5 h-7 w-7 shrink-0 text-[#5b21b6]" strokeWidth={2.25} aria-hidden />
                   Évolution des assiettes servies et des déchets
-                </h3>
+                </h2>
                 <p className="mt-1 text-sm font-medium text-zinc-400 sm:text-base">
                   Portions servies, poids des déchets et g / 100 assiettes — {periodLabel}
                 </p>
@@ -803,7 +804,8 @@ function TendancesAntigaspillageCard({
       <div className="rounded-[1.5rem] bg-white px-5 py-5 sm:px-8 sm:py-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
+            <h2 className="flex items-center gap-2.5 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-[1.75rem]">
+              <Leaf className="h-7 w-7 shrink-0 text-[#1b8a54]" strokeWidth={2.25} aria-hidden />
               Tendances Antigaspillage
             </h2>
             <p className="mt-1 text-sm font-medium text-zinc-400 sm:text-base">
