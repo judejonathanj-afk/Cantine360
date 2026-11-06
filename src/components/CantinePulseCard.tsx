@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Activity,
   ArrowDown,
@@ -41,8 +41,11 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ComposedChart,
   Line,
+  Pie,
+  PieChart,
   XAxis,
   YAxis,
 } from "recharts";
@@ -123,6 +126,75 @@ function ChartLegendItem({
   );
 }
 
+function NoteCantineCounter({
+  score,
+  mood,
+}: {
+  score: number;
+  mood: keyof typeof MOOD_STYLES;
+}) {
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    setShown(0);
+    const start = performance.now();
+    const duration = 800;
+    let frame = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - (1 - t) * (1 - t);
+      setShown(Math.round(score * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [score]);
+
+  const color = MOOD_CHART_COLOR[mood];
+  const radius = 52;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (shown / 100) * circumference;
+
+  return (
+    <div className="flex shrink-0 flex-col items-center">
+      <p className="text-sm font-semibold text-zinc-500">Note Cantine +</p>
+      <div className="relative mt-2 size-[148px]" aria-label={`Note Cantine + ${shown} sur 100`}>
+        <svg viewBox="0 0 128 128" className="size-full -rotate-90" aria-hidden>
+          <circle
+            cx="64"
+            cy="64"
+            r={radius}
+            fill="none"
+            stroke="#e4e4e7"
+            strokeWidth="11"
+          />
+          <circle
+            cx="64"
+            cy="64"
+            r={radius}
+            fill="none"
+            stroke={color}
+            strokeWidth="11"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p
+            className={cn(
+              "text-4xl font-black tabular-nums leading-none",
+              MOOD_STYLES[mood].accent,
+            )}
+          >
+            {shown}
+          </p>
+          <p className="mt-0.5 text-sm font-bold text-zinc-400">/100</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CantineChartLegend() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pt-3 text-sm font-semibold text-black">
@@ -173,40 +245,107 @@ function CantinePlusGlobalChart({
   const totalWasteG = series.reduce((sum, p) => sum + p.wasteWeightG, 0);
   const rest = Math.max(0, 100 - score);
   const moodColor = MOOD_CHART_COLOR[mood];
+  const wasteLabel =
+    totalWasteG > 0
+      ? `${Math.round(totalWasteG).toLocaleString("fr-FR")} g`
+      : "—";
+  const pieConfig = {
+    niveau: { label: "Niveau actuel", color: moodColor },
+    marge: { label: "Marge de progrès", color: "#d4d4d8" },
+    dechets: { label: "Déchets cumulés", color: "#eab308" },
+  } satisfies ChartConfig;
+  const pieData = [
+    { key: "niveau", name: "Niveau actuel", value: Math.max(score, 0.01) },
+    { key: "marge", name: "Marge de progrès", value: Math.max(rest, 0.01) },
+  ];
 
   return (
     <div className="bg-zinc-50 px-1 py-2 sm:px-2">
       <p className="text-sm font-semibold text-zinc-900">Lecture globale</p>
       <div className="mt-4 space-y-4">
         <div className="min-w-0 space-y-4">
-          <div className="flex flex-wrap items-end gap-6">
-            <div>
-              <p className="text-sm text-zinc-500">Note Cantine +</p>
-              <p
-                className={cn(
-                  "text-4xl font-black tabular-nums leading-none sm:text-5xl",
-                  MOOD_STYLES[mood].accent,
-                )}
-              >
-                {score}
-                <span className="text-base font-bold opacity-60 sm:text-lg">/100</span>
-              </p>
+          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-start">
+            <NoteCantineCounter score={score} mood={mood} />
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row">
+              <div className="relative size-[200px] shrink-0">
+                <ChartContainer
+                  config={pieConfig}
+                  className="aspect-square h-[200px] w-[200px]"
+                >
+                  <PieChart>
+                    <ChartTooltip
+                      content={(tooltipProps) => (
+                        <ChartTooltipContent
+                          active={tooltipProps.active}
+                          payload={tooltipProps.payload}
+                          label={tooltipProps.label}
+                          coordinate={tooltipProps.coordinate}
+                          accessibilityLayer={tooltipProps.accessibilityLayer}
+                          activeIndex={tooltipProps.activeIndex}
+                          formatter={(value, name) =>
+                            typeof value === "number" ? (
+                              <div className="flex min-w-[8rem] flex-1 items-baseline justify-between gap-3">
+                                <span className="font-medium text-zinc-800">
+                                  {String(name)}
+                                </span>
+                                <span className="font-mono font-medium tabular-nums text-zinc-700">
+                                  {name === "Déchets cumulés"
+                                    ? wasteLabel
+                                    : `${Math.round(value)} %`}
+                                </span>
+                              </div>
+                            ) : (
+                              value
+                            )
+                          }
+                        />
+                      )}
+                    />
+                    <Pie
+                      data={pieData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={58}
+                      outerRadius={88}
+                      stroke="#ffffff"
+                      strokeWidth={3}
+                    >
+                      {pieData.map((slice) => (
+                        <Cell
+                          key={slice.key}
+                          fill={`var(--color-${slice.key})`}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ChartContainer>
+                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
+                  <p className="text-[11px] font-semibold text-zinc-500">
+                    Déchets cumulés
+                  </p>
+                  <p className="text-lg font-extrabold tabular-nums tracking-tight text-zinc-900">
+                    {wasteLabel}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3">
+                <ChartLegendItem
+                  color={moodColor}
+                  label="Niveau actuel"
+                  value={`${score} %`}
+                />
+                <ChartLegendItem
+                  color="#d4d4d8"
+                  label="Marge de progrès"
+                  value={`${rest} %`}
+                />
+                <ChartLegendItem
+                  color="#eab308"
+                  label="Déchets cumulés"
+                  value={wasteLabel}
+                />
+              </div>
             </div>
-            <ChartLegendItem color={moodColor} label="Niveau actuel" value={`${score} %`} />
-            <ChartLegendItem
-              color="rgba(24,24,27,0.15)"
-              label="Marge de progrès"
-              value={`${rest} %`}
-            />
-            {totalWasteG > 0 ? (
-              <ChartLegendItem
-                color="#eab308"
-                label="Déchets cumulés"
-                value={`${Math.round(totalWasteG).toLocaleString("fr-FR")} g`}
-              />
-            ) : (
-              <ChartLegendItem color="#eab308" label="Déchets cumulés" value="—" />
-            )}
           </div>
 
           {!hasActivity ? (
