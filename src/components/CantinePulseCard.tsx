@@ -286,13 +286,14 @@ function CantinePlusGlobalChart({
           Lecture globale
         </p>
         <div className="mt-4 min-w-0">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-6">
-            <NoteCantineCounter score={score} mood={mood} />
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-3 sm:flex-row">
-              <div className="relative size-[148px] shrink-0">
+          <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <div className="flex min-w-0 flex-col items-center gap-4 sm:flex-row sm:items-end sm:justify-start sm:gap-6">
+              <NoteCantineCounter score={score} mood={mood} />
+            <div className="flex min-w-0 flex-col items-center gap-3 sm:flex-row">
+              <div className="relative size-[168px] shrink-0">
                 <ChartContainer
                   config={pieConfig}
-                  className="aspect-square h-[148px] w-[148px]"
+                  className="aspect-square h-[168px] w-[168px]"
                 >
                   <PieChart>
                     <ChartTooltip
@@ -327,8 +328,8 @@ function CantinePlusGlobalChart({
                       data={pieData}
                       dataKey="value"
                       nameKey="name"
-                      innerRadius={42}
-                      outerRadius={64}
+                      innerRadius={58}
+                      outerRadius={78}
                       stroke="#ffffff"
                       strokeWidth={3}
                     >
@@ -341,11 +342,13 @@ function CantinePlusGlobalChart({
                     </Pie>
                   </PieChart>
                 </ChartContainer>
-                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                  <p className="text-[11px] font-semibold text-zinc-400">
-                    Déchets cumulés
+                <div className="pointer-events-none absolute inset-[22%] flex flex-col items-center justify-center text-center">
+                  <p className="text-[9px] font-bold uppercase leading-[1.1] tracking-wide text-zinc-300">
+                    Déchets
+                    <br />
+                    cumulés
                   </p>
-                  <p className="text-base font-extrabold tabular-nums tracking-tight text-white">
+                  <p className="mt-0.5 text-sm font-extrabold tabular-nums leading-none tracking-tight text-white">
                     {wasteLabel}
                   </p>
                 </div>
@@ -370,6 +373,10 @@ function CantinePlusGlobalChart({
                   onDark
                 />
               </div>
+            </div>
+            </div>
+            <div className="shrink-0 sm:pr-1">
+              <CantinePlusMealHeader mealType={mealType} mood={mood} onDark />
             </div>
           </div>
         </div>
@@ -1063,14 +1070,18 @@ export function CantinePulseCard({
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
   const brandTitle = showBrandTitle ? (
-    headerAction ? (
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    scorePending ? (
+      headerAction ? (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+          {headerAction}
+        </div>
+      ) : (
         <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-        {headerAction}
-      </div>
-    ) : (
-      <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-    )
+      )
+    ) : headerAction ? (
+      <div className="flex justify-end">{headerAction}</div>
+    ) : null
   ) : null;
 
   const rabPct = curr.served > 0 ? curr.rabRate * 100 : 0;
