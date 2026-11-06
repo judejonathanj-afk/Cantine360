@@ -149,63 +149,150 @@ function NoteCantineCounter({
   }, [score]);
 
   const color = MOOD_CHART_COLOR[mood];
-  const cx = 140;
-  const cy = 140;
-  const r = 118;
+  const uid = useId().replace(/:/g, "");
+  const gradId = `note-cantine-grad-${uid}`;
+  const glowId = `note-cantine-glow-${uid}`;
+  const cx = 120;
+  const cy = 118;
+  const r = 88;
+  const stroke = 22;
   const len = Math.PI * r;
   const frac = Math.min(Math.max(score / 100, 0), 1);
+  const shownFrac = mounted ? frac : 0;
   const arcPath = `M ${cx - r},${cy} A ${r},${r} 0 0 1 ${cx + r},${cy}`;
-  const gradId = `note-cantine-grad-${useId().replace(/:/g, "")}`;
+  const bowlPath = `${arcPath} L ${cx + r - stroke},${cy} A ${r - stroke},${r - stroke} 0 0 0 ${cx - r + stroke},${cy} Z`;
+  const angle = Math.PI * shownFrac;
+  const end = {
+    x: cx - r * Math.cos(angle),
+    y: cy - r * Math.sin(angle),
+  };
+  const ticks = Array.from({ length: 11 }, (_, i) => {
+    const t = i / 10;
+    const inner = r - stroke / 2 - 10;
+    const outer = inner - (i % 5 === 0 ? 8 : 4);
+    return {
+      key: i,
+      major: i % 5 === 0,
+      x1: cx - inner * Math.cos(Math.PI * t),
+      y1: cy - inner * Math.sin(Math.PI * t),
+      x2: cx - outer * Math.cos(Math.PI * t),
+      y2: cy - outer * Math.sin(Math.PI * t),
+    };
+  });
 
   return (
-    <div className="flex w-full max-w-[180px] shrink-0 flex-col items-center">
-      <p className="text-xs font-semibold text-zinc-400">Note Cantine +</p>
-      <div className="relative mt-1 w-full">
+    <div className="flex w-[11.75rem] shrink-0 flex-col items-center">
+      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+        Note Cantine +
+      </p>
+      <div className="relative mt-0.5 w-full">
         <svg
-          viewBox="0 0 280 172"
+          viewBox="0 0 240 148"
           className="w-full"
           role="img"
           aria-label={`Note Cantine + ${score} sur 100`}
         >
           <defs>
             <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor={color} stopOpacity="0.55" />
+              <stop offset="0%" stopColor={color} stopOpacity="0.45" />
+              <stop offset="55%" stopColor={color} />
               <stop offset="100%" stopColor={color} />
             </linearGradient>
+            <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
+          <path d={bowlPath} fill="#141414" />
           <path
             d={arcPath}
             fill="none"
-            stroke="#3f3f46"
-            strokeWidth="18"
+            stroke="#52525b"
+            strokeWidth={stroke + 6}
+            strokeLinecap="round"
+          />
+          <path
+            d={arcPath}
+            fill="none"
+            stroke="#27272a"
+            strokeWidth={stroke}
             strokeLinecap="round"
           />
           <path
             d={arcPath}
             fill="none"
             stroke={`url(#${gradId})`}
-            strokeWidth="18"
+            strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={len}
-            strokeDashoffset={mounted ? len * (1 - frac) : len}
+            strokeDashoffset={len * (1 - shownFrac)}
+            filter={`url(#${glowId})`}
             style={{
               transition: "stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1)",
             }}
           />
+          {ticks.map((tick) => (
+            <line
+              key={tick.key}
+              x1={tick.x1}
+              y1={tick.y1}
+              x2={tick.x2}
+              y2={tick.y2}
+              stroke={tick.major ? "#a1a1aa" : "#52525b"}
+              strokeWidth={tick.major ? 2 : 1.25}
+              strokeLinecap="round"
+            />
+          ))}
+          {shownFrac > 0.02 ? (
+            <circle
+              cx={end.x}
+              cy={end.y}
+              r="7.5"
+              fill={color}
+              stroke="#000000"
+              strokeWidth="3"
+              style={{
+                transition: "cx 1.2s cubic-bezier(0.22,1,0.36,1), cy 1.2s cubic-bezier(0.22,1,0.36,1)",
+              }}
+            />
+          ) : null}
+          <text
+            x={cx - r}
+            y={cy + 18}
+            textAnchor="middle"
+            fill="#a1a1aa"
+            fontSize="11"
+            fontWeight="700"
+          >
+            0
+          </text>
+          <text
+            x={cx + r}
+            y={cy + 18}
+            textAnchor="middle"
+            fill="#a1a1aa"
+            fontSize="11"
+            fontWeight="700"
+          >
+            100
+          </text>
         </svg>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center">
+        <div className="pointer-events-none absolute inset-x-0 top-[46%] flex flex-col items-center">
           <span
-            className="text-3xl font-bold leading-none tracking-tight tabular-nums"
+            className="text-[2.65rem] font-extrabold leading-none tracking-tight tabular-nums"
             style={{ color }}
           >
             {score}
           </span>
-          <span className="mt-0.5 text-xs font-bold uppercase tracking-wider text-zinc-300">
+          <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">
             / 100
           </span>
         </div>
       </div>
-      <span className="mt-2 inline-flex items-center rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-zinc-900">
+      <span className="mt-1 inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-zinc-900">
         {MOOD_STYLES[mood].label}
       </span>
     </div>
