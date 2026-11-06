@@ -806,6 +806,7 @@ export function CantinePulseCard({
   days = 7,
   eco = null,
   showBrandTitle = true,
+  headerAction = null,
   levelFilter = "all",
   wasteByLevel,
   antiWasteModeEnabled = false,
@@ -818,6 +819,7 @@ export function CantinePulseCard({
   eco?: CantinePulseEco | null;
   /** Masquer le titre CANTINE + si déjà affiché par la section parente. */
   showBrandTitle?: boolean;
+  headerAction?: ReactNode;
   levelFilter?: "all" | SchoolLevel;
   wasteByLevel?: Record<SchoolLevel, WastePerDayRowInput[]>;
   antiWasteModeEnabled?: boolean;
@@ -869,7 +871,14 @@ export function CantinePulseCard({
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
   const brandTitle = showBrandTitle ? (
-    <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+    headerAction ? (
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+        {headerAction}
+      </div>
+    ) : (
+      <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
+    )
   ) : null;
 
   const rabPct = curr.served > 0 ? curr.rabRate * 100 : 0;

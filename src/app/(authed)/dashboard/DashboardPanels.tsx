@@ -336,6 +336,7 @@ export default function DashboardPanels({
       wasteByLevel={wasteByLevel}
       antiWasteModeEnabled={antiWasteModeEnabled}
       antiWasteTargetGPer100={antiWasteTargetGPer100}
+      headerAction={lectureFilters}
     />
   );
 
@@ -365,7 +366,6 @@ export default function DashboardPanels({
             {levelFilter !== "all" ? ` — ${schoolLevelLabelFr(levelFilter)}` : ""}
           </p>
         </div>
-        {lectureFilters}
         {lecturePulse}
         <FloatingCloseButton onClick={() => setCantinePlusFold(false)} />
       </div>
