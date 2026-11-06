@@ -268,11 +268,16 @@ function CantinePlusGlobalChart({
   ];
 
   return (
-    <div className="bg-zinc-50 px-1 py-2 sm:px-2">
-      <p className="text-sm font-semibold text-zinc-900">Lecture globale</p>
-      <div className="mt-4 space-y-4">
-        <div className="min-w-0 space-y-4">
-          <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-start">
+    <div className="px-1 py-2 sm:px-2">
+      <div
+        className="rounded-[2rem] px-5 py-7 sm:rounded-[2.5rem] sm:px-8 sm:py-10"
+        style={{ backgroundColor: "#d2ff5a" }}
+      >
+        <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-zinc-900">
+          Lecture globale
+        </p>
+        <div className="mt-10 min-w-0">
+          <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-end sm:justify-start sm:gap-10">
             <NoteCantineCounter score={score} mood={mood} />
             <div className="flex min-w-0 flex-1 flex-col items-center gap-4 sm:flex-row">
               <div className="relative size-[200px] shrink-0">
@@ -355,13 +360,16 @@ function CantinePlusGlobalChart({
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
+      <div className="mt-10 space-y-4">
           {!hasActivity ? (
-            <p className="mt-8 rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-600">
+            <p className="rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-600">
               Pas encore de données sur les {periodLabel} pour tracer le graphique.
             </p>
           ) : (
-            <div className="mt-8 space-y-4">
+            <div className="space-y-4">
             <div>
               <h3 className="text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
                 Évolution des assiettes servies et des déchets
@@ -462,7 +470,6 @@ function CantinePlusGlobalChart({
             <CantineChartLegend />
             </div>
           )}
-        </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white px-3 py-3.5">
           <p className="text-base font-semibold leading-snug text-zinc-900">
