@@ -383,20 +383,27 @@ function CantinePlusGlobalChart({
       </div>
 
       <div className="mt-10 space-y-4">
+        <div className="rounded-[2rem] bg-[#efeaf8] p-3 sm:p-4">
+          <div className="rounded-[1.5rem] bg-white px-5 py-5 sm:px-8 sm:py-7">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 className="text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">
+                  Évolution des assiettes servies et des déchets
+                </h3>
+                <p className="mt-1 text-sm font-medium text-zinc-400 sm:text-base">
+                  Portions servies, poids des déchets et g / 100 assiettes — {periodLabel}
+                </p>
+              </div>
+              <span className="inline-flex items-center rounded-full bg-[#ece7fa] px-3 py-1 text-xs font-semibold text-[#7c6bb0]">
+                Cantine+
+              </span>
+            </div>
           {!hasActivity ? (
-            <p className="rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-600">
+            <p className="mt-5 rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-600">
               Pas encore de données sur les {periodLabel} pour tracer le graphique.
             </p>
           ) : (
-            <div className="space-y-4">
-            <div>
-              <h3 className="text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
-                Évolution des assiettes servies et des déchets
-              </h3>
-              <p className="mt-1 text-sm font-medium text-zinc-500">
-                Portions servies, poids des déchets et g / 100 assiettes — {periodLabel}
-              </p>
-            </div>
+            <div className="mt-5 space-y-4">
             <ChartContainer
               config={globalChartConfig}
               className="h-[min(22rem,48vw)] w-full min-h-[240px] aspect-auto [&_.recharts-cartesian-axis-tick_text]:!fill-black [&_.recharts-cartesian-axis-tick_text]:font-semibold [&_.y-axis-grams_.recharts-cartesian-axis-tick_text]:!fill-[#eab308]"
@@ -489,6 +496,8 @@ function CantinePlusGlobalChart({
             <CantineChartLegend />
             </div>
           )}
+          </div>
+        </div>
 
         <div className="rounded-xl border border-zinc-200 bg-white px-3 py-3.5">
           <p className="text-base font-semibold leading-snug text-zinc-900">
