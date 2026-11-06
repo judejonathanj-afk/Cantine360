@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download } from "lucide-react";
+import { Check, ChevronRight, Download, FileSpreadsheet } from "lucide-react";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -213,28 +212,64 @@ export default function ExportsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Télécharger</CardTitle>
-            <CardDescription>Fichiers prêts pour Excel.</CardDescription>
+        <Card className="overflow-hidden rounded-[28px] border border-emerald-100 bg-white shadow-sm">
+          <CardHeader className="space-y-1 pb-3">
+            <CardTitle className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-zinc-950">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800">
+                <FileSpreadsheet className="size-5" aria-hidden />
+              </span>
+              Vos données, prêtes à partager
+            </CardTitle>
+            <CardDescription className="text-sm font-medium text-zinc-500">
+              Préparez le bilan de votre restauration scolaire.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-3">
-            <Button asChild>
-              <a href={`/api/exports/services?${qs}`}>CSV Services (métriques + déchets)</a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href={`/api/exports/menus?${qs}`}>CSV Menus (allergènes)</a>
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              Fichier Excel prêt à l’emploi (colonnes séparées) : Date, Repas, École,
-              Classe, Présents, Servis, RAB, Refus, Déchets total / maternelle / primaire.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Période sélectionnée&nbsp;: {formatFrRange(from, to)}.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Astuce&nbsp;: sur tablette, le téléchargement dépend du navigateur.
-            </p>
+          <CardContent className="pt-0">
+            <a
+              href={`/api/exports/services?${qs}`}
+              className="flex flex-col items-center rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/80 px-4 py-8 text-center transition hover:border-emerald-300 hover:bg-emerald-50"
+            >
+              <span className="flex size-14 items-center justify-center rounded-2xl bg-white shadow-[0_4px_14px_rgba(15,23,42,0.08)]">
+                <FileSpreadsheet className="size-7 text-emerald-800" aria-hidden />
+              </span>
+              <p className="mt-4 text-base font-extrabold tracking-tight text-zinc-950">
+                bilan-cantine-exemple.csv
+              </p>
+              <p className="mt-1 text-sm font-medium text-zinc-500">
+                Repas · déchets · période · niveaux
+              </p>
+            </a>
+            <ul className="mt-1">
+              {[
+                {
+                  href: `/api/exports/services?${qs}`,
+                  label: "Suivi des services",
+                },
+                {
+                  href: `/api/exports/services?${qs}`,
+                  label: "Pesées maternelle / primaire",
+                },
+                {
+                  href: `/api/exports/services?${qs}`,
+                  label: "Indicateurs par période",
+                },
+                {
+                  href: `/api/exports/menus?${qs}`,
+                  label: "Menus (allergènes)",
+                },
+              ].map((row) => (
+                <li key={row.label} className="border-t border-zinc-200">
+                  <a
+                    href={row.href}
+                    className="flex items-center gap-3 py-3.5 text-sm font-semibold text-zinc-900 transition hover:text-emerald-800"
+                  >
+                    <Check className="size-4 shrink-0 text-emerald-700" strokeWidth={2.5} aria-hidden />
+                    <span className="min-w-0 flex-1">{row.label}</span>
+                    <ChevronRight className="size-4 shrink-0 text-zinc-400" aria-hidden />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
