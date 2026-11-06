@@ -106,10 +106,12 @@ function ChartLegendItem({
   color,
   label,
   value,
+  onDark = false,
 }: {
   color: string;
   label: string;
   value: string;
+  onDark?: boolean;
 }) {
   return (
     <div className="flex gap-3">
@@ -119,8 +121,15 @@ function ChartLegendItem({
         aria-hidden
       />
       <div>
-        <p className="text-sm text-zinc-500">{label}</p>
-        <p className="text-xl font-bold tabular-nums tracking-tight text-zinc-900">{value}</p>
+        <p className={cn("text-sm", onDark ? "text-zinc-400" : "text-zinc-500")}>{label}</p>
+        <p
+          className={cn(
+            "text-xl font-bold tabular-nums tracking-tight",
+            onDark ? "text-white" : "text-zinc-900",
+          )}
+        >
+          {value}
+        </p>
       </div>
     </div>
   );
@@ -150,7 +159,7 @@ function NoteCantineCounter({
 
   return (
     <div className="flex w-full max-w-[240px] shrink-0 flex-col items-center">
-      <p className="text-sm font-semibold text-zinc-500">Note Cantine +</p>
+      <p className="text-sm font-semibold text-zinc-400">Note Cantine +</p>
       <div className="relative mt-1 w-full">
         <svg
           viewBox="0 0 280 172"
@@ -167,7 +176,7 @@ function NoteCantineCounter({
           <path
             d={arcPath}
             fill="none"
-            stroke="#e8eee9"
+            stroke="#3f3f46"
             strokeWidth="18"
             strokeLinecap="round"
           />
@@ -191,12 +200,12 @@ function NoteCantineCounter({
           >
             {score}
           </span>
-          <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-950">
+          <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-300">
             / 100
           </span>
         </div>
       </div>
-      <span className="mt-3 inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-sm font-semibold text-zinc-800">
+      <span className="mt-3 inline-flex items-center rounded-full bg-white px-3 py-1 text-sm font-semibold text-zinc-900">
         {MOOD_STYLES[mood].label}
       </span>
     </div>
@@ -271,9 +280,9 @@ function CantinePlusGlobalChart({
     <div className="px-1 py-2 sm:px-2">
       <div
         className="rounded-[2rem] px-5 py-7 sm:rounded-[2.5rem] sm:px-8 sm:py-10"
-        style={{ backgroundColor: "#d2ff5a" }}
+        style={{ backgroundColor: "#000000" }}
       >
-        <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-zinc-900">
+        <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-white">
           Lecture globale
         </p>
         <div className="mt-10 min-w-0">
@@ -333,10 +342,10 @@ function CantinePlusGlobalChart({
                   </PieChart>
                 </ChartContainer>
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-                  <p className="text-[11px] font-semibold text-zinc-500">
+                  <p className="text-[11px] font-semibold text-zinc-400">
                     Déchets cumulés
                   </p>
-                  <p className="text-lg font-extrabold tabular-nums tracking-tight text-zinc-900">
+                  <p className="text-lg font-extrabold tabular-nums tracking-tight text-white">
                     {wasteLabel}
                   </p>
                 </div>
@@ -346,16 +355,19 @@ function CantinePlusGlobalChart({
                   color={moodColor}
                   label="Niveau actuel"
                   value={`${score} %`}
+                  onDark
                 />
                 <ChartLegendItem
                   color="#d4d4d8"
                   label="Marge de progrès"
                   value={`${rest} %`}
+                  onDark
                 />
                 <ChartLegendItem
                   color="#eab308"
                   label="Déchets cumulés"
                   value={wasteLabel}
+                  onDark
                 />
               </div>
             </div>
