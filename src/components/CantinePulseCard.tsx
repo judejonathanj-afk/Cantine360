@@ -342,8 +342,8 @@ function CantinePlusGlobalChart({
 }
 
 const TREND_CHART_CONFIG = {
-  primaire: { label: "Primaire", color: "#0f7a4a" },
-  maternelle: { label: "Maternelle", color: "#9ed9c0" },
+  primaire: { label: "Déchets primaire", color: "#0f7a4a" },
+  maternelle: { label: "Déchets maternelle", color: "#9ed9c0" },
 } satisfies ChartConfig;
 
 function weekdayShortFr(isoDate: string) {
@@ -530,7 +530,7 @@ function TendancesAntigaspillageCard({
               Tendances Antigaspillage
             </h2>
             <p className="mt-1 text-sm font-medium text-zinc-400 sm:text-base">
-              Les 7 derniers services · g / 100 assiettes
+              Les 7 derniers services · déchets (g / 100 assiettes)
             </p>
           </div>
           <span className="inline-flex items-center rounded-full bg-[#ece7fa] px-3 py-1 text-xs font-semibold text-[#7c6bb0]">
@@ -552,6 +552,15 @@ function TendancesAntigaspillageCard({
                 </span>
               ) : null}
             </p>
+            {periodG != null ? (
+              <p className="mt-1 text-sm font-semibold leading-snug text-[#3d7a5c]">
+                de déchets — moyenne des pesées, ramenée à 100 assiettes servies
+              </p>
+            ) : (
+              <p className="mt-1 text-sm font-medium text-[#6b8f7a]">
+                En attente de pesée des déchets
+              </p>
+            )}
           </div>
           <TrendIcon
             className="h-6 w-6 shrink-0 text-[#0f7a4a]"
@@ -591,10 +600,19 @@ function TendancesAntigaspillageCard({
                       coordinate={tooltipProps.coordinate}
                       accessibilityLayer={tooltipProps.accessibilityLayer}
                       activeIndex={tooltipProps.activeIndex}
-                      formatter={(value) =>
-                        typeof value === "number"
-                          ? `${value.toLocaleString("fr-FR")} g / 100`
-                          : value
+                      formatter={(value, name) =>
+                        typeof value === "number" ? (
+                          <div className="flex min-w-[9.5rem] flex-1 items-baseline justify-between gap-3">
+                            <span className="font-medium text-zinc-800">
+                              Déchets {String(name).toLowerCase()}
+                            </span>
+                            <span className="font-mono font-medium tabular-nums text-zinc-700">
+                              {value.toLocaleString("fr-FR")} g / 100 assiettes
+                            </span>
+                          </div>
+                        ) : (
+                          value
+                        )
                       }
                     />
                   )}
