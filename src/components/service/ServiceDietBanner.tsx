@@ -2,6 +2,7 @@ import type { ServiceAllergenSummary } from "@/server/serviceAllergenSummary";
 import { Salad } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { cn } from "@/lib/utils";
+import { DIET_KEYS, DIET_META, type DietKey } from "@/lib/dietaryRegime";
 
 export function ServiceDietBanner({
   summary,
@@ -12,9 +13,24 @@ export function ServiceDietBanner({
   className?: string;
   embedded?: boolean;
 }) {
-  if (summary.totalNoPork === 0 && summary.totalVegetarian === 0) return null;
+  const dietTotals = Object.fromEntries(
+    DIET_KEYS.map((key) => [
+      key,
+      summary.groups.reduce(
+        (n, g) => n + g.students.filter((s) => s[key]).length,
+        0,
+      ),
+    ]),
+  ) as Record<DietKey, number>;
+  if (DIET_KEYS.every((key) => dietTotals[key] === 0)) return null;
 
   const classesTouched = summary.groups.filter((g) => g.dietAffectedByMenu > 0);
+  const metricLabel = DIET_KEYS.filter((key) => dietTotals[key] > 0)
+    .map(
+      (key) =>
+        `${dietTotals[key]} ${dietTotals[key] > 1 ? DIET_META[key].labelPlural : DIET_META[key].label.toLowerCase()}`,
+    )
+    .join(" · ");
 
   return (
     <ServiceInsightCard
@@ -32,13 +48,13 @@ export function ServiceDietBanner({
       }
       metric={
         <span className="text-xl font-extrabold">
-          {summary.totalNoPork} sans porc · {summary.totalVegetarian} végét.
+          {metricLabel}
         </span>
       }
       className={cn(className)}
     >
       {!summary.hasMenu ? (
-        <p>Complétez le menu (cochez porc / viande sur les plats) pour voir les adaptations.</p>
+        <p>Complétez le menu (porc, viande, bœuf, poisson) pour voir les adaptations.</p>
       ) : classesTouched.length > 0 ? (
         <p>
           {classesTouched.map((g, index) => (
@@ -51,7 +67,7 @@ export function ServiceDietBanner({
           ))}
         </p>
       ) : (
-        <p>Les régimes sont enregistrés ; aucun plat du jour n’est signalé porc ou viande.</p>
+        <p>Les régimes sont enregistrés ; aucun plat du jour n’est en conflit.</p>
       )}
     </ServiceInsightCard>
   );

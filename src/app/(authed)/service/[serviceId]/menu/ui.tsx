@@ -15,6 +15,8 @@ type Item = {
   grammageG: number | null;
   containsPork: boolean;
   containsMeat: boolean;
+  containsBeef: boolean;
+  containsFish: boolean;
 };
 
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -63,6 +65,8 @@ function emptyItem(category: Category): Item {
     grammageG: null,
     containsPork: false,
     containsMeat: false,
+    containsBeef: false,
+    containsFish: false,
   };
 }
 
@@ -73,7 +77,9 @@ function initializeMenuItems(initialItems: Item[]): Item[] {
   const withFlags = initialItems.map((item) => ({
     ...item,
     containsPork: Boolean(item.containsPork),
-    containsMeat: Boolean(item.containsMeat) || Boolean(item.containsPork),
+    containsMeat: Boolean(item.containsMeat) || Boolean(item.containsPork) || Boolean(item.containsBeef),
+    containsBeef: Boolean(item.containsBeef),
+    containsFish: Boolean(item.containsFish),
   }));
   if (withFlags.length === 0) {
     return DEFAULT_CATEGORIES.map((category) => emptyItem(category));
@@ -436,6 +442,37 @@ export function MenuEditor({
                         ].join(" ")}
                       >
                         Contient de la viande
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          update(idx, {
+                            containsBeef: !it.containsBeef,
+                            containsMeat: !it.containsBeef ? true : it.containsMeat,
+                          })
+                        }
+                        className={[
+                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          it.containsBeef
+                            ? "bg-orange-800 text-white"
+                            : "bg-white text-zinc-900 hover:bg-zinc-100",
+                        ].join(" ")}
+                      >
+                        Contient du bœuf
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          update(idx, { containsFish: !it.containsFish })
+                        }
+                        className={[
+                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          it.containsFish
+                            ? "bg-cyan-800 text-white"
+                            : "bg-white text-zinc-900 hover:bg-zinc-100",
+                        ].join(" ")}
+                      >
+                        Contient du poisson
                       </button>
                     </div>
                   </div>

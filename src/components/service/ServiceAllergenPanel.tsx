@@ -9,6 +9,7 @@ import { AlertTriangle } from "lucide-react";
 import { ServiceInsightCard } from "@/components/service/ServiceInsightCard";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
 import { cn } from "@/lib/utils";
+import { DIET_KEYS, DIET_META, studentHasAnyDiet } from "@/lib/dietaryRegime";
 
 export function ServiceAllergenOverview({
   summary,
@@ -121,8 +122,7 @@ export function GroupAllergenBadge({
   const detailRows = students.filter(
     (student) =>
       student.allergens.length > 0 ||
-      student.noPork ||
-      student.vegetarian ||
+      studentHasAnyDiet(student) ||
       student.affectedByMenu ||
       student.dietAffectedByMenu,
   );
@@ -139,8 +139,12 @@ export function GroupAllergenBadge({
       student.affectedDishes.length > 0 ||
       student.dietDishes.length > 0,
   ).length;
-  const noPorkCount = detailRows.filter((student) => student.noPork).length;
-  const vegetarianCount = detailRows.filter((student) => student.vegetarian).length;
+  const dietCounts = Object.fromEntries(
+    DIET_KEYS.map((key) => [
+      key,
+      detailRows.filter((student) => student[key]).length,
+    ]),
+  ) as Record<(typeof DIET_KEYS)[number], number>;
 
   const summaryParts: ReactNode[] = [
     `${detailRows.length} élève${detailRows.length > 1 ? "s" : ""} concerné${detailRows.length > 1 ? "s" : ""}`,
@@ -153,23 +157,12 @@ export function GroupAllergenBadge({
       `${menuCount} concerné${menuCount > 1 ? "s" : ""} par le menu`,
     );
   }
-  if (noPorkCount > 0) {
-    summaryParts.push(
-      <>
-        {noPorkCount}{" "}
-        <span className="text-yellow-500">sans porc</span>
-      </>,
-    );
-  }
-  if (vegetarianCount > 0) {
-    summaryParts.push(
-      <>
-        {vegetarianCount}{" "}
-        <span className="text-green-600">
-          végétarien{vegetarianCount > 1 ? "s" : ""}
-        </span>
-      </>,
-    );
+  for (const key of DIET_KEYS) {
+    if (dietCounts[key] > 0) {
+      summaryParts.push(
+        `${dietCounts[key]} ${dietCounts[key] > 1 ? DIET_META[key].labelPlural : DIET_META[key].label.toLowerCase()}`,
+      );
+    }
   }
 
   return (
@@ -200,26 +193,11 @@ export function GroupAllergenBadge({
                   : `à ne pas servir : ${student.allergens.join(", ")}.`,
               });
             }
-            if (student.noPork) {
+            for (const key of DIET_KEYS) {
+              if (!student[key]) continue;
               lines.push({
-                key: "no-pork",
-                content: (
-                  <>
-                    <span className="text-yellow-500">sans porc</span>
-                    {" — ne pas servir de porc."}
-                  </>
-                ),
-              });
-            }
-            if (student.vegetarian) {
-              lines.push({
-                key: "vegetarian",
-                content: (
-                  <>
-                    <span className="text-green-600">végétarien</span>
-                    {" — adapter l’assiette."}
-                  </>
-                ),
+                key,
+                content: `${DIET_META[key].label} — ${DIET_META[key].kitchenHint}`,
               });
             }
             const dishes = [

@@ -48,6 +48,12 @@ export default async function ServiceMenuPage({
         containsMeat: Boolean(
           "containsMeat" in i && (i as { containsMeat?: boolean }).containsMeat,
         ),
+        containsBeef: Boolean(
+          "containsBeef" in i && (i as { containsBeef?: boolean }).containsBeef,
+        ),
+        containsFish: Boolean(
+          "containsFish" in i && (i as { containsFish?: boolean }).containsFish,
+        ),
       }));
 
   const dishWasteHistoryByLabel = antiWaste.antiWasteModeEnabled

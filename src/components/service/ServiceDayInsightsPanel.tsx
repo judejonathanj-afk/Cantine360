@@ -8,6 +8,7 @@ import type {
   ServiceMetricsGrammage,
 } from "@/lib/serviceGrammage";
 import type { ServiceAllergenSummary } from "@/server/serviceAllergenSummary";
+import { studentHasAnyDiet } from "@/lib/dietaryRegime";
 import type { LiveKitchenAdviceClassCount } from "@/hooks/useLiveKitchenAdvice";
 import { ServiceDietBanner } from "@/components/service/ServiceDietBanner";
 import {
@@ -49,7 +50,9 @@ export function ServiceDayInsightsPanel({
 
   const showDiet =
     allergenSummary != null &&
-    (allergenSummary.totalNoPork > 0 || allergenSummary.totalVegetarian > 0);
+    allergenSummary.groups.some((g) =>
+      g.students.some((s) => studentHasAnyDiet(s) || s.dietAffectedByMenu),
+    );
   const showAntiWaste = antiWasteModeEnabled && kitchenAdvice != null;
 
   const dietList = useDietStudentsList({

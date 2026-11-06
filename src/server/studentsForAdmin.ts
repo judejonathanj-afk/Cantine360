@@ -1,6 +1,12 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import { Prisma } from "@/generated/prisma/client";
-import { withDietSelect } from "@/lib/dietaryRegime";
+import {
+  DIET_COLUMN_PATTERN,
+  emptyStudentDiets,
+  pickStudentDiets,
+  withDietSelect,
+  type StudentDiets,
+} from "@/lib/dietaryRegime";
 
 export type StudentAdminListRow = {
   id: string;
@@ -8,14 +14,12 @@ export type StudentAdminListRow = {
   lastName: string;
   allergens: string[];
   allergenNotes: string | null;
-  noPork: boolean;
-  vegetarian: boolean;
   active: boolean;
   groupId: string;
   className: string;
   schoolId: string;
   schoolName: string;
-};
+} & StudentDiets;
 
 export async function getStudentsForAdmin(
   db: PrismaClient,
@@ -37,18 +41,18 @@ export async function getStudentsForAdmin(
     },
   } as const;
 
-  let rows: Array<{
-    id: string;
-    firstName: string;
-    lastName: string;
-    allergens: string[];
-    allergenNotes: string | null;
-    noPork: boolean;
-    vegetarian: boolean;
-    active: boolean;
-    groupId: string;
-    group: { name: string; schoolId: string; school: { name: string } };
-  }>;
+  let rows: Array<
+    {
+      id: string;
+      firstName: string;
+      lastName: string;
+      allergens: string[];
+      allergenNotes: string | null;
+      active: boolean;
+      groupId: string;
+      group: { name: string; schoolId: string; school: { name: string } };
+    } & StudentDiets
+  >;
 
   try {
     rows = await db.student.findMany({
@@ -74,8 +78,8 @@ export async function getStudentsForAdmin(
     const missingDiet =
       (e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === "P2022" &&
-        (msg.includes("noPork") || msg.includes("vegetarian"))) ||
-      /(noPork|vegetarian)/.test(msg);
+        DIET_COLUMN_PATTERN.test(msg)) ||
+      DIET_COLUMN_PATTERN.test(msg);
     if (!missingNotes && !missingDiet) throw e;
     const fallback = await db.student.findMany({
       where: { establishmentId },
@@ -90,8 +94,7 @@ export async function getStudentsForAdmin(
     rows = fallback.map((r) => ({
       ...r,
       allergenNotes: null,
-      noPork: false,
-      vegetarian: false,
+      ...emptyStudentDiets(),
     }));
   }
 
@@ -101,8 +104,7 @@ export async function getStudentsForAdmin(
     lastName: r.lastName,
     allergens: r.allergens,
     allergenNotes: r.allergenNotes,
-    noPork: r.noPork,
-    vegetarian: r.vegetarian,
+    ...pickStudentDiets(r),
     active: r.active,
     groupId: r.groupId,
     className: r.group.name,

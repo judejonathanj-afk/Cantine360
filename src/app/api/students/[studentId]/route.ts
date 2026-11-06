@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { EU14_ALLERGENS } from "@/lib/allergens";
-import { withDietFlags } from "@/lib/dietaryRegime";
+import {
+  DIET_COLUMN_PATTERN,
+  DIET_KEYS,
+  pickStudentDiets,
+  withDietFlags,
+} from "@/lib/dietaryRegime";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 
@@ -13,6 +18,11 @@ const PatchSchema = z.object({
   allergenNotes: z.string().trim().max(500).nullable().optional(),
   noPork: z.boolean().optional(),
   vegetarian: z.boolean().optional(),
+  vegan: z.boolean().optional(),
+  pescetarian: z.boolean().optional(),
+  noBeef: z.boolean().optional(),
+  halal: z.boolean().optional(),
+  kosher: z.boolean().optional(),
   active: z.boolean().optional(),
 });
 
@@ -48,6 +58,11 @@ export async function PATCH(
     allergenNotes?: string | null;
     noPork?: boolean;
     vegetarian?: boolean;
+    vegan?: boolean;
+    pescetarian?: boolean;
+    noBeef?: boolean;
+    halal?: boolean;
+    kosher?: boolean;
     active?: boolean;
   } = {};
 
@@ -58,8 +73,9 @@ export async function PATCH(
     const notes = parsed.data.allergenNotes?.trim() ?? "";
     data.allergenNotes = notes.length > 0 ? notes : null;
   }
-  if (parsed.data.noPork !== undefined) data.noPork = parsed.data.noPork;
-  if (parsed.data.vegetarian !== undefined) data.vegetarian = parsed.data.vegetarian;
+  for (const key of DIET_KEYS) {
+    if (parsed.data[key] !== undefined) data[key] = parsed.data[key];
+  }
   if (parsed.data.active !== undefined) data.active = parsed.data.active;
 
   if (parsed.data.groupId !== undefined) {
@@ -85,27 +101,21 @@ export async function PATCH(
     return NextResponse.json({
       student: {
         ...student,
-        noPork:
-          "noPork" in student
-            ? Boolean((student as { noPork?: boolean }).noPork)
-            : Boolean(data.noPork),
-        vegetarian:
-          "vegetarian" in student
-            ? Boolean((student as { vegetarian?: boolean }).vegetarian)
-            : Boolean(data.vegetarian),
+        ...pickStudentDiets({ ...data, ...(student as Record<string, unknown>) }),
       },
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (/(noPork|vegetarian)/.test(msg)) {
-      const { noPork: _n, vegetarian: _v, ...rest } = data;
+    if (DIET_COLUMN_PATTERN.test(msg)) {
+      const rest = { ...data };
+      for (const key of DIET_KEYS) delete rest[key];
       try {
         const student = await db.student.update({
           where: { id: studentId },
           data: rest,
         });
         return NextResponse.json({
-          student: { ...student, noPork: false, vegetarian: false },
+          student: { ...student, ...pickStudentDiets({}) },
         });
       } catch {
         /* fall through */

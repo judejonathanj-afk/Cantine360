@@ -1,7 +1,15 @@
 import Papa from "papaparse";
 import type { PrismaClient } from "@/generated/prisma/client";
 import { parseAllergenTokens } from "@/lib/allergenMatch";
-import { parseOuiNon, withDietFlags } from "@/lib/dietaryRegime";
+import {
+  DIET_KEYS,
+  DIET_META,
+  emptyStudentDiets,
+  parseOuiNon,
+  pickStudentDiets,
+  withDietFlags,
+  type StudentDiets,
+} from "@/lib/dietaryRegime";
 
 export type ImportStudentRow = {
   school: string;
@@ -10,9 +18,7 @@ export type ImportStudentRow = {
   lastName: string;
   allergensRaw: string;
   allergenNotes: string;
-  noPork: boolean;
-  vegetarian: boolean;
-};
+} & StudentDiets;
 
 const SCHOOL_HEADERS = new Set(["ecole", "école", "school", "etablissement", "établissement"]);
 const CLASS_HEADERS = new Set(["classe", "class", "groupe", "group"]);
@@ -30,20 +36,12 @@ const NOTES_HEADERS = new Set([
   "detail",
   "details",
 ]);
-const NO_PORK_HEADERS = new Set([
-  "sans_porc",
-  "sansporc",
-  "sans porc",
-  "sans-porc",
-  "no_pork",
-  "nopork",
-]);
-const VEGETARIAN_HEADERS = new Set([
-  "vegetarien",
-  "vegetarian",
-  "vege",
-  "veggie",
-]);
+const DIET_HEADER_INDEX = Object.fromEntries(
+  DIET_KEYS.map((key) => [
+    key,
+    new Set(DIET_META[key].csvHeaders.map((h) => h.normalize("NFD").replace(/\p{M}/gu, ""))),
+  ]),
+) as Record<keyof StudentDiets, Set<string>>;
 
 function normalizeHeader(h: string): string {
   return h.trim().toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
@@ -80,8 +78,9 @@ export function parseStudentsImportCsv(text: string): {
   const lastIdx = pickColumn(first, LAST_HEADERS);
   const allergenIdx = pickColumn(first, ALLERGEN_HEADERS);
   const notesIdx = pickColumn(first, NOTES_HEADERS);
-  const noPorkIdx = pickColumn(first, NO_PORK_HEADERS);
-  const vegetarianIdx = pickColumn(first, VEGETARIAN_HEADERS);
+  const dietIdx = Object.fromEntries(
+    DIET_KEYS.map((key) => [key, pickColumn(first, DIET_HEADER_INDEX[key])]),
+  ) as Record<keyof StudentDiets, number | null>;
   const hasHeader =
     schoolIdx !== null &&
     classIdx !== null &&
@@ -109,14 +108,13 @@ export function parseStudentsImportCsv(text: string): {
     const allergensRaw = String(row[aIdx] ?? "").trim();
     const allergenNotes =
       nIdx != null ? String(row[nIdx] ?? "").trim() : "";
-    const noPork =
-      hasHeader && noPorkIdx != null
-        ? parseOuiNon(String(row[noPorkIdx] ?? ""))
-        : false;
-    const vegetarian =
-      hasHeader && vegetarianIdx != null
-        ? parseOuiNon(String(row[vegetarianIdx] ?? ""))
-        : false;
+    const diets = emptyStudentDiets();
+    if (hasHeader) {
+      for (const key of DIET_KEYS) {
+        const idx = dietIdx[key];
+        diets[key] = idx != null ? parseOuiNon(String(row[idx] ?? "")) : false;
+      }
+    }
 
     if (!school && !className && !firstName && !lastName) continue;
     if (!school || !className || !firstName || !lastName) {
@@ -130,8 +128,7 @@ export function parseStudentsImportCsv(text: string): {
       lastName,
       allergensRaw,
       allergenNotes,
-      noPork,
-      vegetarian,
+      ...diets,
     });
   }
 
@@ -200,7 +197,7 @@ export async function importStudentsForEstablishment(
           where: { id: existing.id },
           data: withDietFlags(
             { allergens, allergenNotes, active: true },
-            { noPork: row.noPork, vegetarian: row.vegetarian },
+            pickStudentDiets(row),
           ),
         });
         studentsUpdated++;
@@ -215,7 +212,7 @@ export async function importStudentsForEstablishment(
               groupId: group.id,
               establishmentId,
             },
-            { noPork: row.noPork, vegetarian: row.vegetarian },
+            pickStudentDiets(row),
           ),
         });
         studentsCreated++;

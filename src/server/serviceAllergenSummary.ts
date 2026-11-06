@@ -6,8 +6,15 @@ import {
   dishesAffectingStudent,
   studentAffectedByMenu,
 } from "@/lib/allergenMatch";
-import { countDietForDish, dietConflictsWithMenu } from "@/lib/dietaryRegime";
-import { withDietSelect } from "@/lib/dietaryRegime";
+import {
+  DIET_COLUMN_PATTERN,
+  countDietForDish,
+  dietConflictsWithMenu,
+  emptyStudentDiets,
+  pickStudentDiets,
+  withDietSelect,
+  type StudentDiets,
+} from "@/lib/dietaryRegime";
 
 function isMissingOptionalStudentColumn(e: unknown, column: string): boolean {
   return (
@@ -26,13 +33,11 @@ export type StudentAllergenRow = {
   schoolName: string;
   className: string;
   groupLabel: string;
-  noPork: boolean;
-  vegetarian: boolean;
   affectedByMenu: boolean;
   affectedDishes: string[];
   dietAffectedByMenu: boolean;
   dietDishes: string[];
-};
+} & StudentDiets;
 
 export type GroupAllergenSummary = {
   groupId: string;
@@ -54,6 +59,8 @@ export type DishAllergenSummary = {
   allergens: string[];
   containsPork: boolean;
   containsMeat: boolean;
+  containsBeef?: boolean;
+  containsFish?: boolean;
   affectedStudents: number;
   noPorkStudents: number;
   vegetarianStudents: number;
@@ -183,17 +190,17 @@ async function loadServiceAllergenSummary(
     },
   } as const;
 
-  let students: Array<{
-    id: string;
-    firstName: string;
-    lastName: string;
-    allergens: string[];
-    allergenNotes: string | null;
-    noPork: boolean;
-    vegetarian: boolean;
-    groupId: string;
-    group: { name: string; school: { name: string } };
-  }>;
+  let students: Array<
+    {
+      id: string;
+      firstName: string;
+      lastName: string;
+      allergens: string[];
+      allergenNotes: string | null;
+      groupId: string;
+      group: { name: string; school: { name: string } };
+    } & StudentDiets
+  >;
 
   const whereStudents = {
     establishmentId,
@@ -213,9 +220,7 @@ async function loadServiceAllergenSummary(
     const msg = e instanceof Error ? e.message : String(e);
     const missingOptional =
       isMissingOptionalStudentColumn(e, "allergenNotes") ||
-      isMissingOptionalStudentColumn(e, "noPork") ||
-      isMissingOptionalStudentColumn(e, "vegetarian") ||
-      /(allergenNotes|noPork|vegetarian)/.test(msg);
+      DIET_COLUMN_PATTERN.test(msg);
     if (!missingOptional) throw e;
     const rows = await db.student.findMany({
       where: whereStudents,
@@ -224,8 +229,7 @@ async function loadServiceAllergenSummary(
     students = rows.map((s) => ({
       ...s,
       allergenNotes: null,
-      noPork: false,
-      vegetarian: false,
+      ...emptyStudentDiets(),
     }));
   }
 
@@ -238,6 +242,12 @@ async function loadServiceAllergenSummary(
     ),
     containsMeat: Boolean(
       "containsMeat" in i && (i as { containsMeat?: boolean }).containsMeat,
+    ),
+    containsBeef: Boolean(
+      "containsBeef" in i && (i as { containsBeef?: boolean }).containsBeef,
+    ),
+    containsFish: Boolean(
+      "containsFish" in i && (i as { containsFish?: boolean }).containsFish,
     ),
   }));
 
@@ -260,9 +270,7 @@ async function loadServiceAllergenSummary(
     const studentRows: StudentAllergenRow[] = classStudents.map((s) => {
       const affected = studentAffectedByMenu(s.allergens, menuAllergenSets);
       const diet = dietConflictsWithMenu(s, menuItems);
-      const dietDishes = [
-        ...new Set([...diet.noPorkDishes, ...diet.vegetarianDishes]),
-      ];
+      const dietDishes = diet.dishes;
       return {
         id: s.id,
         firstName: s.firstName,
@@ -272,8 +280,7 @@ async function loadServiceAllergenSummary(
         schoolName,
         className,
         groupLabel,
-        noPork: s.noPork,
-        vegetarian: s.vegetarian,
+        ...pickStudentDiets(s),
         affectedByMenu: affected,
         affectedDishes: dishesAffectingStudent(s.allergens, menuItems),
         dietAffectedByMenu: dietDishes.length > 0,
@@ -307,6 +314,8 @@ async function loadServiceAllergenSummary(
       allergens: item.allergens,
       containsPork: item.containsPork,
       containsMeat: item.containsMeat,
+      containsBeef: item.containsBeef,
+      containsFish: item.containsFish,
       affectedStudents: countStudentsAffectedByDish(students, item.allergens),
       noPorkStudents: diet.noPork,
       vegetarianStudents: diet.vegetarian,

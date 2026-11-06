@@ -14,6 +14,8 @@ const ItemSchema = z.object({
   grammageG: z.number().int().min(1).max(5000).nullable().optional(),
   containsPork: z.boolean().optional().default(false),
   containsMeat: z.boolean().optional().default(false),
+  containsBeef: z.boolean().optional().default(false),
+  containsFish: z.boolean().optional().default(false),
 });
 
 const PutSchema = z.object({
@@ -57,7 +59,9 @@ export async function PUT(
     allergens: i.allergens,
     grammageG: i.grammageG ?? null,
     containsPork: Boolean(i.containsPork),
-    containsMeat: Boolean(i.containsMeat) || Boolean(i.containsPork),
+    containsMeat: Boolean(i.containsMeat) || Boolean(i.containsPork) || Boolean(i.containsBeef),
+    containsBeef: Boolean(i.containsBeef),
+    containsFish: Boolean(i.containsFish),
   }));
 
   async function replaceMenu(withDiet: boolean) {
@@ -88,6 +92,8 @@ export async function PUT(
               ? withDietFlags(row, {
                   containsPork: item.containsPork,
                   containsMeat: item.containsMeat,
+                  containsBeef: item.containsBeef,
+                  containsFish: item.containsFish,
                 })
               : row;
           }),
@@ -103,6 +109,8 @@ export async function PUT(
           grammageG: item.grammageG,
           containsPork: item.containsPork,
           containsMeat: item.containsMeat,
+          containsBeef: item.containsBeef,
+          containsFish: item.containsFish,
         })),
       };
     });
@@ -113,7 +121,14 @@ export async function PUT(
     menu = await runDbWrite(() => replaceMenu(true));
   } catch (e) {
     const msg = e instanceof Error ? e.message : "";
-    if (!msg.includes("containsPork") && !msg.includes("containsMeat")) throw e;
+    if (
+      !msg.includes("containsPork") &&
+      !msg.includes("containsMeat") &&
+      !msg.includes("containsBeef") &&
+      !msg.includes("containsFish")
+    ) {
+      throw e;
+    }
     menu = await runDbWrite(() => replaceMenu(false));
   }
   if (!menu) return NextResponse.json({ error: "Not found" }, { status: 404 });

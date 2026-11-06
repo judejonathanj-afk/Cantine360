@@ -2,6 +2,7 @@ import type { StudentAllergenRow } from "@/server/serviceAllergenSummary";
 import { ShieldAlert } from "lucide-react";
 import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import { formatStudentKitchenName } from "@/lib/studentDisplayName";
+import { DIET_KEYS, DIET_META } from "@/lib/dietaryRegime";
 
 function RgpdNotice() {
   return (
@@ -56,16 +57,14 @@ function StudentAllergenRowItem({ student }: { student: StudentAllergenRow }) {
         <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
           {formatStudentKitchenName(student.firstName, student.lastName)}
         </span>
-        {student.noPork ? (
-          <span className="rounded-full border-2 border-zinc-900 bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
-            Sans porc
+        {DIET_KEYS.filter((key) => student[key]).map((key) => (
+          <span
+            key={key}
+            className={`rounded-full border-2 border-zinc-900 px-2 py-0.5 text-sm font-bold ${DIET_META[key].chipClass}`}
+          >
+            {DIET_META[key].label}
           </span>
-        ) : null}
-        {student.vegetarian ? (
-          <span className="rounded-full border-2 border-zinc-900 bg-emerald-800 px-2 py-0.5 text-sm font-bold text-white">
-            Végétarien
-          </span>
-        ) : null}
+        ))}
       </div>
       <ul className="mt-2 space-y-1.5">
         {student.allergens.map((allergen) => (
@@ -98,16 +97,14 @@ function StudentDietRowItem({ student }: { student: StudentAllergenRow }) {
         <span className="rounded-full bg-zinc-900 px-2.5 py-0.5 text-sm font-bold text-white sm:text-base">
           {formatStudentKitchenName(student.firstName, student.lastName)}
         </span>
-        {student.noPork ? (
-          <span className="rounded-full bg-sky-800 px-2 py-0.5 text-sm font-bold text-white">
-            Sans porc
+        {DIET_KEYS.filter((key) => student[key]).map((key) => (
+          <span
+            key={key}
+            className={`rounded-full px-2 py-0.5 text-sm font-bold ${DIET_META[key].chipClass}`}
+          >
+            {DIET_META[key].label}
           </span>
-        ) : null}
-        {student.vegetarian ? (
-          <span className="rounded-full bg-emerald-800 px-2 py-0.5 text-sm font-bold text-white">
-            Végétarien
-          </span>
-        ) : null}
+        ))}
       </div>
       {student.dietDishes.length > 0 ? (
         <div className="mt-2 text-sm text-[#0a1628]">
@@ -171,7 +168,7 @@ export function ClassAllergenList({
             </div>
             {dietConcerned.length === 0 ? (
               <p className="text-base text-[#0a1628]">
-                Aucun régime sans porc / végétarien en conflit avec le menu.
+                Aucun régime alimentaire en conflit avec le menu.
               </p>
             ) : (
               <ul className="space-y-2.5">

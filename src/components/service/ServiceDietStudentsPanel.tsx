@@ -12,6 +12,7 @@ import { LEVEL_CARD_COLORS } from "@/lib/schoolLevel";
 import type { SchoolLevel } from "@/lib/schoolLevel";
 import type { GroupAllergenSummary } from "@/server/serviceAllergenSummary";
 import { cn } from "@/lib/utils";
+import { DIET_KEYS, DIET_META } from "@/lib/dietaryRegime";
 
 /** Jaune repère régimes (capture produit) */
 const DIET_PANEL_BG = "#FDEE5A";
@@ -67,16 +68,14 @@ export function useDietStudentsList({
                   <span className="rounded-full bg-zinc-900 px-3 py-1 text-base font-extrabold text-white sm:text-lg">
                     {formatStudentKitchenName(s.firstName, s.lastName)}
                   </span>
-                  {s.noPork ? (
-                    <span className="rounded-full bg-sky-800 px-2.5 py-1 text-sm font-extrabold text-white sm:text-base">
-                      Sans porc
+                  {DIET_KEYS.filter((key) => s[key]).map((key) => (
+                    <span
+                      key={key}
+                      className={`rounded-full px-2.5 py-1 text-sm font-extrabold sm:text-base ${DIET_META[key].chipClass}`}
+                    >
+                      {DIET_META[key].label}
                     </span>
-                  ) : null}
-                  {s.vegetarian ? (
-                    <span className="rounded-full bg-emerald-800 px-2.5 py-1 text-sm font-extrabold text-white sm:text-base">
-                      Végétarien
-                    </span>
-                  ) : null}
+                  ))}
                 </div>
                 {s.dietDishes.length > 0 ? (
                   <div className="mt-2 space-y-1 text-base font-bold leading-snug text-zinc-950">
@@ -84,12 +83,9 @@ export function useDietStudentsList({
                       <span className="font-extrabold">Plats :</span>{" "}
                       {s.dietDishes.join(", ")}
                     </p>
-                    {s.noPork ? (
-                      <p>Ne pas servir (porc). Prévoir une alternative sans porc.</p>
-                    ) : null}
-                    {s.vegetarian ? (
-                      <p>Ne pas servir (viande). Prévoir une alternative végétarienne.</p>
-                    ) : null}
+                    {DIET_KEYS.filter((key) => s[key]).map((key) => (
+                      <p key={key}>{DIET_META[key].kitchenHint}</p>
+                    ))}
                   </div>
                 ) : null}
               </li>
@@ -186,7 +182,7 @@ export function ServiceDietStudentsExpandedContent({
         Élèves concernés
       </p>
       <p className="mt-1 shrink-0 text-base font-bold leading-snug text-zinc-950">
-        Régimes sans porc et végétarien — ce n’est pas la liste des allergies.
+        Régimes alimentaires (hors allergies) — sans porc, végétarien, végétalien, pescétarien, sans bœuf, halal, casher.
       </p>
       <ul className="mt-3 min-h-0 flex-1 space-y-3 overflow-y-auto sm:max-h-[20rem] lg:max-h-[22rem]">
         {list}

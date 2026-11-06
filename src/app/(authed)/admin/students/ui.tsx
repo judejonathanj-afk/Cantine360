@@ -14,6 +14,14 @@ import { CsvImportZone } from "@/components/admin/CsvImportZone";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { EU14_ALLERGENS, type AllergenLabel } from "@/lib/allergens";
+import {
+  DIET_KEYS,
+  DIET_META,
+  emptyStudentDiets,
+  pickStudentDiets,
+  type DietKey,
+  type StudentDiets,
+} from "@/lib/dietaryRegime";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import { Button } from "@/components/ui/button";
@@ -41,13 +49,11 @@ type Student = {
   lastName: string;
   allergens: string[];
   allergenNotes: string | null;
-  noPork: boolean;
-  vegetarian: boolean;
   active: boolean;
   groupId: string;
   className: string;
   schoolName: string;
-};
+} & StudentDiets;
 
 type ImportResult = {
   studentsCreated: number;
@@ -65,14 +71,15 @@ export function AdminStudentsClient({
   initialStudents: Student[];
   groups: Group[];
 }) {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = useState<Student[]>(() =>
+    initialStudents.map((s) => ({ ...s, ...pickStudentDiets(s) })),
+  );
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [groupId, setGroupId] = useState(groups.find((g) => g.active)?.id ?? "");
   const [selectedAllergens, setSelectedAllergens] = useState<AllergenLabel[]>([]);
   const [allergenNotes, setAllergenNotes] = useState("");
-  const [noPork, setNoPork] = useState(false);
-  const [vegetarian, setVegetarian] = useState(false);
+  const [draftDiets, setDraftDiets] = useState<StudentDiets>(emptyStudentDiets());
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,8 +96,12 @@ export function AdminStudentsClient({
     return map;
   }, [groups]);
   const withAllergens = students.filter((s) => s.active && s.allergens.length > 0).length;
-  const noPorkCount = students.filter((s) => s.active && s.noPork).length;
-  const vegetarianCount = students.filter((s) => s.active && s.vegetarian).length;
+  const dietCounts = Object.fromEntries(
+    DIET_KEYS.map((key) => [
+      key,
+      students.filter((s) => s.active && s[key]).length,
+    ]),
+  ) as Record<DietKey, number>;
 
   const byClass = useMemo(() => {
     const map = new Map<string, { label: string; students: Student[] }>();
@@ -109,7 +120,12 @@ export function AdminStudentsClient({
     const res = await fetch("/api/students");
     if (!res.ok) return;
     const data = (await res.json()) as { students: Student[] };
-    setStudents(data.students);
+    setStudents(
+      data.students.map((s) => ({
+        ...s,
+        ...pickStudentDiets(s),
+      })),
+    );
   }
 
   async function importCsvFile(file: File): Promise<boolean> {
@@ -155,8 +171,7 @@ export function AdminStudentsClient({
           groupId,
           allergens: selectedAllergens,
           allergenNotes: allergenNotes.trim() || null,
-          noPork,
-          vegetarian,
+          ...draftDiets,
         }),
       });
       if (!res.ok) {
@@ -167,8 +182,7 @@ export function AdminStudentsClient({
       setLastName("");
       setSelectedAllergens([]);
       setAllergenNotes("");
-      setNoPork(false);
-      setVegetarian(false);
+      setDraftDiets(emptyStudentDiets());
       await refresh();
     } finally {
       setBusy(false);
@@ -201,7 +215,7 @@ export function AdminStudentsClient({
     await patchStudent(s, { allergens });
   }
 
-  async function toggleDiet(s: Student, field: "noPork" | "vegetarian") {
+  async function toggleDiet(s: Student, field: DietKey) {
     const next = !s[field];
     setStudents((all) =>
       all.map((x) => (x.id === s.id ? { ...x, [field]: next } : x)),
@@ -279,15 +293,19 @@ export function AdminStudentsClient({
         <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
           {students.length} élève{students.length > 1 ? "s" : ""} ·{" "}
           <span className="font-bold">{withAllergens}</span> avec allergène
-          {withAllergens > 1 ? "s" : ""} déclaré{withAllergens > 1 ? "s" : ""} ·{" "}
-          <span className="font-bold">{noPorkCount}</span> sans porc ·{" "}
-          <span className="font-bold">{vegetarianCount}</span> végétarien
-          {vegetarianCount > 1 ? "s" : ""}
+          {withAllergens > 1 ? "s" : ""} déclaré{withAllergens > 1 ? "s" : ""}
+          {DIET_KEYS.filter((key) => dietCounts[key] > 0).map((key) => (
+            <span key={key}>
+              {" "}
+              · <span className="font-bold">{dietCounts[key]}</span>{" "}
+              {dietCounts[key] > 1 ? DIET_META[key].labelPlural : DIET_META[key].label.toLowerCase()}
+            </span>
+          ))}
         </p>
         <p className="w-full text-base leading-relaxed text-zinc-700 sm:text-lg">
           Cette page enregistre la liste des <strong className="font-semibold text-zinc-900">élèves</strong>
           , leurs <strong className="font-semibold text-zinc-900">allergènes</strong> et les
-          régimes <strong className="font-semibold text-zinc-900">sans porc / végétarien</strong>{" "}
+          régimes <strong className="font-semibold text-zinc-900">sans porc, végétarien, végétalien, pescétarien, sans bœuf, halal, casher</strong>{" "}
           (hors allergie). Importez un CSV (après avoir créé les classes) ou ajoutez un élève à
           la main. Ces données alimentent ensuite le service cantine : alertes sur le menu du
           jour et liste nominative des élèves concernés.
@@ -322,6 +340,11 @@ export function AdminStudentsClient({
                 "consignes",
                 "sans_porc",
                 "vegetarien",
+                "vegetalien",
+                "pescetarien",
+                "sans_boeuf",
+                "halal",
+                "casher",
               ]}
               exampleHref="/test-import-eleves.csv"
               exampleLabel="Télécharger un exemple CSV"
@@ -397,26 +420,21 @@ export function AdminStudentsClient({
         <div className="mt-2">
           <div className="text-sm font-bold text-zinc-950">Régimes (hors allergènes)</div>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            <button
-              type="button"
-              onClick={() => setNoPork((v) => !v)}
-              className={[
-                "rounded-full px-2.5 py-1 text-sm font-bold",
-                noPork ? "bg-sky-800 text-white" : "bg-zinc-100 text-zinc-800",
-              ].join(" ")}
-            >
-              Sans porc
-            </button>
-            <button
-              type="button"
-              onClick={() => setVegetarian((v) => !v)}
-              className={[
-                "rounded-full px-2.5 py-1 text-sm font-bold",
-                vegetarian ? "bg-emerald-800 text-white" : "bg-zinc-100 text-zinc-800",
-              ].join(" ")}
-            >
-              Végétarien
-            </button>
+            {DIET_KEYS.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() =>
+                  setDraftDiets((prev) => ({ ...prev, [key]: !prev[key] }))
+                }
+                className={[
+                  "rounded-full px-2.5 py-1 text-sm font-bold",
+                  draftDiets[key] ? DIET_META[key].chipClass : "bg-zinc-100 text-zinc-800",
+                ].join(" ")}
+              >
+                {DIET_META[key].label}
+              </button>
+            ))}
           </div>
         </div>
         <div className="mt-2">
@@ -517,8 +535,6 @@ export function AdminStudentsClient({
         <div className="space-y-5 p-1 sm:p-2">
         {byClass.map(([gid, bucket]) => {
           const allergyN = bucket.students.filter((s) => s.allergens.length > 0).length;
-          const porkN = bucket.students.filter((s) => s.noPork).length;
-          const vegN = bucket.students.filter((s) => s.vegetarian).length;
           return (
           <section key={gid} className="space-y-3">
             <div className="rounded-2xl bg-emerald-800 px-4 py-3">
@@ -526,8 +542,13 @@ export function AdminStudentsClient({
                 {bucket.label}
               </h2>
               <p className="mt-1 text-sm font-bold leading-snug text-emerald-50">
-                {allergyN} allergie{allergyN > 1 ? "s" : ""} · {porkN} sans porc ·{" "}
-                {vegN} végétarien{vegN > 1 ? "s" : ""} · {bucket.students.length}{" "}
+                {allergyN} allergie{allergyN > 1 ? "s" : ""}
+                {DIET_KEYS.map((key) => {
+                  const n = bucket.students.filter((s) => s[key]).length;
+                  if (n === 0) return null;
+                  return ` · ${n} ${n > 1 ? DIET_META[key].labelPlural : DIET_META[key].label.toLowerCase()}`;
+                }).join("")}{" "}
+                · {bucket.students.length}{" "}
                 élève{bucket.students.length > 1 ? "s" : ""}
               </p>
             </div>
@@ -682,30 +703,19 @@ export function AdminStudentsClient({
                       Régimes
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => void toggleDiet(s, "noPork")}
-                        className={[
-                          "rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
-                          s.noPork
-                            ? "bg-zinc-800 text-white"
-                            : "bg-white/90 text-zinc-500",
-                        ].join(" ")}
-                      >
-                        Sans porc
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void toggleDiet(s, "vegetarian")}
-                        className={[
-                          "rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
-                          s.vegetarian
-                            ? "bg-[#0f9d58] text-white"
-                            : "bg-white/90 text-zinc-500",
-                        ].join(" ")}
-                      >
-                        Végétarien
-                      </button>
+                      {DIET_KEYS.map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => void toggleDiet(s, key)}
+                          className={[
+                            "rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
+                            s[key] ? DIET_META[key].chipClass : "bg-white/90 text-zinc-500",
+                          ].join(" ")}
+                        >
+                          {DIET_META[key].label}
+                        </button>
+                      ))}
                     </div>
                   </div>
 

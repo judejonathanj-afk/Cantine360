@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { EU14_ALLERGENS } from "@/lib/allergens";
-import { withDietFlags } from "@/lib/dietaryRegime";
+import {
+  DIET_COLUMN_PATTERN,
+  pickStudentDiets,
+  withDietFlags,
+} from "@/lib/dietaryRegime";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
 import { getStudentsForAdmin } from "@/server/studentsForAdmin";
@@ -14,6 +18,11 @@ const CreateSchema = z.object({
   allergenNotes: z.string().trim().max(500).optional().nullable(),
   noPork: z.boolean().optional().default(false),
   vegetarian: z.boolean().optional().default(false),
+  vegan: z.boolean().optional().default(false),
+  pescetarian: z.boolean().optional().default(false),
+  noBeef: z.boolean().optional().default(false),
+  halal: z.boolean().optional().default(false),
+  kosher: z.boolean().optional().default(false),
 });
 
 export async function GET() {
@@ -64,7 +73,7 @@ export async function POST(req: Request) {
           groupId: group.id,
           establishmentId: session.establishmentId,
         },
-        { noPork: parsed.data.noPork, vegetarian: parsed.data.vegetarian },
+        pickStudentDiets(parsed.data),
       ),
     });
     return NextResponse.json(
@@ -75,14 +84,10 @@ export async function POST(req: Request) {
           lastName: student.lastName,
           allergens: student.allergens,
           allergenNotes: student.allergenNotes,
-          noPork:
-            "noPork" in student
-              ? Boolean((student as { noPork?: boolean }).noPork)
-              : parsed.data.noPork,
-          vegetarian:
-            "vegetarian" in student
-              ? Boolean((student as { vegetarian?: boolean }).vegetarian)
-              : parsed.data.vegetarian,
+          ...pickStudentDiets({
+            ...parsed.data,
+            ...(student as Record<string, unknown>),
+          }),
           active: student.active,
           groupId: group.id,
           className: group.name,
@@ -94,7 +99,7 @@ export async function POST(req: Request) {
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (/(noPork|vegetarian)/.test(msg)) {
+    if (DIET_COLUMN_PATTERN.test(msg)) {
       try {
         const student = await db.student.create({
           data: {
@@ -116,8 +121,7 @@ export async function POST(req: Request) {
               lastName: student.lastName,
               allergens: student.allergens,
               allergenNotes: student.allergenNotes,
-              noPork: false,
-              vegetarian: false,
+              ...pickStudentDiets({}),
               active: student.active,
               groupId: group.id,
               className: group.name,

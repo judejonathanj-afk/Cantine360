@@ -44,7 +44,40 @@ describe("dietaryRegime", () => {
     ];
     expect(
       countDietForDish(students, { containsPork: true, containsMeat: true }),
-    ).toEqual({ noPork: 2, vegetarian: 2 });
+    ).toEqual({
+      noPork: 2,
+      vegetarian: 2,
+      vegan: 0,
+      pescetarian: 0,
+      noBeef: 0,
+      halal: 0,
+      kosher: 0,
+    });
+  });
+
+  it("végétalien vs poisson, sans bœuf vs bœuf, pescétarien vs viande", () => {
+    expect(
+      dietConflictsWithMenu({ vegan: true }, [
+        { label: "Cabillaud", containsPork: false, containsMeat: false, containsFish: true },
+      ]).dishes,
+    ).toEqual(["Cabillaud"]);
+    expect(
+      dietConflictsWithMenu({ noBeef: true }, [
+        { label: "Bœuf bourguignon", containsPork: false, containsMeat: true, containsBeef: true },
+      ]).dishes,
+    ).toEqual(["Bœuf bourguignon"]);
+    expect(
+      dietConflictsWithMenu({ pescetarian: true }, [
+        { label: "Cabillaud", containsPork: false, containsMeat: false, containsFish: true },
+        { label: "Poulet", containsPork: false, containsMeat: true },
+      ]).dishes,
+    ).toEqual(["Poulet"]);
+    expect(
+      dietConflictsWithMenu({ halal: true }, [
+        { label: "Saucisse", containsPork: true, containsMeat: true },
+        { label: "Poulet", containsPork: false, containsMeat: true },
+      ]).dishes,
+    ).toEqual(["Saucisse"]);
   });
 
   it("CSV sans_porc / vegetarien", () => {
