@@ -322,7 +322,7 @@ function CantinePlusGlobalChart({
         className="rounded-3xl px-4 py-4 sm:px-5 sm:py-5"
         style={{ backgroundColor: "#000000" }}
       >
-        <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-white">
+        <p className="text-center text-xs font-extrabold uppercase tracking-[0.14em] text-white">
           Lecture globale
         </p>
         <div className="mt-4 min-w-0">
