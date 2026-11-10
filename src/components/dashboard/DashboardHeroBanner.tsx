@@ -1,5 +1,6 @@
-import { Building2, ChefHat, Leaf } from "lucide-react";
+import { Building2, Leaf } from "lucide-react";
 import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
+import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 
 export function DashboardHeroBanner({
   schoolNames,
@@ -38,9 +39,11 @@ export function DashboardHeroBanner({
 
       <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
         <div className="min-w-0 max-w-xl lg:max-w-3xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3.5 py-1.5 text-sm font-semibold text-[#e8b923] ring-1 ring-zinc-200">
-            <ChefHat className="size-4 text-[#22c55e]" aria-hidden />
-            {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord Cantine360"}
+          <div className="mb-4 inline-flex rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3">
+            <MenusCantineColorTitle
+              text="CANTINE +"
+              className="text-xl md:text-2xl lg:text-3xl"
+            />
           </div>
 
           <div className="flex items-center gap-4">
