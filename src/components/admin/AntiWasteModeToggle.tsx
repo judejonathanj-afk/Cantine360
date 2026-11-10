@@ -131,7 +131,7 @@ export function AntiWasteModeToggle({
         </p>
       ) : null}
 
-      <div className="flex items-start justify-between gap-4 rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950">
+      <div className="flex flex-col items-start gap-4 rounded-2xl border border-zinc-200 bg-white p-5 text-zinc-950">
         <div>
           <p
             className={cn(

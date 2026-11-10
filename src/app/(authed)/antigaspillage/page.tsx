@@ -90,11 +90,15 @@ export default async function AntiWastePage({
     return (
       <div className="space-y-6">
         <AntiWasteOffHeader />
-        <AntiWasteModeToggle
-          initialEnabled={antiWaste.antiWasteModeEnabled}
-          initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
-          schemaReady={antiWaste.schemaReady}
-        />
+        <div className="flex justify-start">
+          <div className="w-full max-w-sm">
+            <AntiWasteModeToggle
+              initialEnabled={antiWaste.antiWasteModeEnabled}
+              initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
+              schemaReady={antiWaste.schemaReady}
+            />
+          </div>
+        </div>
       </div>
     );
   }
