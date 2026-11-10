@@ -705,11 +705,11 @@ export function AntiWastePanels({
             kicker="Pesée"
             openLabel={`Ouvrir ${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`}
             overlayTitle={`${missingWeighCount} service${missingWeighCount > 1 ? "s" : ""} sans pesée`}
-            foldTone="rose"
+            foldTone="forest"
             subtitle="La pesée se saisit depuis l’espace Cuisine (écran Service, bloc « Poids des déchets »)."
             hint="Sur la période. Ouvrez pour voir les services concernés, puis fermez."
-            icon={AlertTriangle}
-            iconTileClassName="bg-[#f6c9d6] text-[#7a2d45]"
+            icon={Scale}
+            iconTileClassName="bg-[#d8f48a] text-[#0d3b2e]"
             labelledBy="missing-weigh-overlay-title"
             closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
             bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
