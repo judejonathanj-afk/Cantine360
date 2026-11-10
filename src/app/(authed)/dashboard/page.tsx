@@ -160,6 +160,8 @@ async function renderDashboard({
   const levelRaw = Array.isArray(sp.level) ? sp.level[0] : sp.level;
   const levelFilter =
     levelRaw === "MATERNELLE" || levelRaw === "PRIMAIRE" ? levelRaw : "all";
+  const viewRaw = Array.isArray(sp.view) ? sp.view[0] : sp.view;
+  const cantinePlusRequested = viewRaw === "cantine-plus";
 
   const now = new Date();
   const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
@@ -632,6 +634,7 @@ async function renderDashboard({
       establishmentLabel={establishmentLabel}
       exportYear={now.getFullYear()}
       levelFilter={levelFilter}
+      cantinePlusRequested={cantinePlusRequested}
       pulseRows={pulseRows}
       pulseWasteRows={pulseWasteRows}
       eco={eco}

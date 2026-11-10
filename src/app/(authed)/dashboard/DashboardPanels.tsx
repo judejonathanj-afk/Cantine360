@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {
   ClipboardList,
   Download,
@@ -198,6 +198,7 @@ export default function DashboardPanels({
   establishmentLabel = "",
   exportYear,
   levelFilter,
+  cantinePlusRequested = false,
   pulseRows,
   pulseWasteRows,
   eco,
@@ -224,6 +225,8 @@ export default function DashboardPanels({
   establishmentLabel?: string;
   exportYear: number;
   levelFilter: "all" | SchoolLevel;
+  /** Ouverture Cantine+ via l’URL, jamais au simple login. */
+  cantinePlusRequested?: boolean;
   pulseRows: CantineServiceRow[];
   pulseWasteRows: CantineWasteDayRow[];
   eco: DashboardEcoPayload | null;
@@ -244,31 +247,41 @@ export default function DashboardPanels({
   antiWasteTargetGPer100?: number | null;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isKitchen = role === "KITCHEN";
   /** Lecture globale / Cantine+ : admin seulement, jamais l’URL cuisine `/dashboard`. */
   const hideCantinePlus =
     isKitchen || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
-  const [cantinePlusOpen, setCantinePlusOpen] = useState(false);
+  const cantinePlusOpen = !hideCantinePlus && cantinePlusRequested;
 
   useEffect(() => {
-    if (hideCantinePlus) return;
     try {
-      if (sessionStorage.getItem(CANTINE_PLUS_OPEN_KEY) === "1") {
-        setCantinePlusOpen(true);
-      }
+      sessionStorage.removeItem(CANTINE_PLUS_OPEN_KEY);
     } catch {
       /* ignore */
     }
-  }, [hideCantinePlus]);
+  }, []);
+
+  const dashboardBase =
+    role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
+
+  function dashboardHref(opts?: {
+    days?: 7 | 30;
+    level?: "all" | SchoolLevel;
+    cantinePlus?: boolean;
+  }) {
+    const params = new URLSearchParams();
+    const nextDays = opts?.days ?? days;
+    const nextLevel = opts?.level ?? levelFilter;
+    const nextOpen = opts?.cantinePlus ?? cantinePlusOpen;
+    params.set("days", String(nextDays));
+    if (nextLevel !== "all") params.set("level", nextLevel);
+    if (nextOpen) params.set("view", "cantine-plus");
+    return `${dashboardBase}?${params.toString()}`;
+  }
 
   function setCantinePlusFold(next: boolean) {
-    setCantinePlusOpen(next);
-    try {
-      if (next) sessionStorage.setItem(CANTINE_PLUS_OPEN_KEY, "1");
-      else sessionStorage.removeItem(CANTINE_PLUS_OPEN_KEY);
-    } catch {
-      /* ignore */
-    }
+    router.replace(dashboardHref({ cantinePlus: next }), { scroll: false });
   }
   const chartLevels =
     levelFilter === "all" ? SCHOOL_LEVELS : ([levelFilter] as SchoolLevel[]);
@@ -282,21 +295,12 @@ export default function DashboardPanels({
     return `${sign}${value.toLocaleString("fr-FR")}`;
   }
 
-  const dashboardBase =
-    role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
-
   function daysHref(nextDays: 7 | 30) {
-    const params = new URLSearchParams();
-    params.set("days", String(nextDays));
-    if (levelFilter !== "all") params.set("level", levelFilter);
-    return `${dashboardBase}?${params.toString()}`;
+    return dashboardHref({ days: nextDays });
   }
 
   function levelHref(level: "all" | SchoolLevel) {
-    const params = new URLSearchParams();
-    params.set("days", String(days));
-    if (level !== "all") params.set("level", level);
-    return `${dashboardBase}?${params.toString()}`;
+    return dashboardHref({ level });
   }
 
   const lectureFilters = (
