@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Check, ChevronRight, Download, FileSpreadsheet } from "lucide-react";
+import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -129,10 +130,20 @@ export default function ExportsPage() {
   return (
     <div className="space-y-8">
       <div className="w-full space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">Exports</h1>
-        <p className="w-full text-base font-semibold text-zinc-900 sm:text-lg">
-          Téléchargements CSV pour Excel — métriques de service et menus allergènes
-        </p>
+        <div className="flex justify-center">
+          <div className="inline-flex rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3">
+            <MenusCantineColorTitle
+              text="EXPORTS"
+              className="text-xl md:text-2xl lg:text-3xl"
+            />
+          </div>
+        </div>
+        <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-zinc-950 sm:text-4xl">
+          Téléchargements CSV pour Excel
+          <span className="mt-1 block text-emerald-600">
+            métriques de service et menus allergènes.
+          </span>
+        </h2>
         <p className="w-full text-base leading-relaxed text-zinc-700 sm:text-lg">
           Choisissez une <strong className="font-semibold text-zinc-900">période</strong>, puis
           exportez les compteurs cantine (présents, servis, RAB, refus par classe), le{" "}
