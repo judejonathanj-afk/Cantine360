@@ -9,12 +9,12 @@ import {
   FileSpreadsheet,
   GitCompareArrows,
   Layers,
-  Sparkles,
   Table as TableIcon,
   Trash2,
   Utensils,
 } from "lucide-react";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
+import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
 import { FloatingCloseButton } from "@/components/dashboard/FloatingCloseButton";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
@@ -347,18 +347,22 @@ export default function DashboardPanels({
   if (!hideCantinePlus && cantinePlusOpen) {
     return (
       <div className="space-y-6 pb-24 sm:pb-28">
-        <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-            Cantine+
-          </p>
-          <h1
+        <div className="min-w-0 space-y-3">
+          <div className="flex justify-center sm:justify-start">
+            <div className="inline-flex rounded-xl bg-zinc-900 px-5 py-2.5 shadow-lg md:rounded-2xl md:px-7 md:py-3">
+              <MenusCantineColorTitle
+                text="CANTINE +"
+                className="text-xl md:text-2xl lg:text-3xl"
+              />
+            </div>
+          </div>
+          <h2
             id="cantine-plus-inline-title"
-            className="mt-1 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-3xl"
+            className="font-display text-3xl font-bold leading-tight tracking-tight text-zinc-950 sm:text-4xl"
           >
-            <Sparkles className="h-7 w-7 shrink-0 text-[#5b21b6]" strokeWidth={2.25} aria-hidden />
             Lecture globale graphique / chiffres
-          </h1>
-          <p className="mt-2 max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
+          </h2>
+          <p className="max-w-3xl text-sm font-medium leading-snug text-zinc-600 sm:text-base">
             Cantine+ suit le repas du quotidien : elle calcule une note sur 100,
             met en avant le RAB et le poids des déchets, et affiche les tendances
             pour aider cuisine et direction à réduire le gaspillage.
