@@ -1148,7 +1148,6 @@ export function CantinePulseCard({
 
   const sparseServings = curr.served === 0 && curr.rows > 0;
   const noActivity = curr.rows === 0;
-  const scorePending = pulse.score === null;
 
   const evolLabel = Number.isFinite(dW)
     ? `${dW > 0 ? "+" : ""}${Math.round(dW)}%`
@@ -1167,20 +1166,10 @@ export function CantinePulseCard({
   const restesParen = eco?.restesParen ?? "(période en cours)";
   const priorPhrase = eco?.priorPhrase ?? "vs la période précédente";
 
-  const brandTitle = showBrandTitle ? (
-    scorePending ? (
-      headerAction ? (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-          {headerAction}
-        </div>
-      ) : (
-        <CantinePlusMealHeader mealType={mealType} mood={pulse.mood} />
-      )
-    ) : headerAction ? (
+  const brandTitle =
+    showBrandTitle && headerAction ? (
       <div className="flex justify-end">{headerAction}</div>
-    ) : null
-  ) : null;
+    ) : null;
 
   const rabPct = curr.served > 0 ? curr.rabRate * 100 : 0;
   const situationDot = situationConclusion.situation.indexOf(". ");
@@ -1212,16 +1201,14 @@ export function CantinePulseCard({
           </div>
         )}
 
-        {scorePending ? null : (
-          <CantinePlusGlobalChart
-            rows={rows}
-            wasteRows={wasteRows}
-            mealType={mealType}
-            score={pulse.score!}
-            mood={pulse.mood}
-            days={days}
-          />
-        )}
+        <CantinePlusGlobalChart
+          rows={rows}
+          wasteRows={wasteRows}
+          mealType={mealType}
+          score={pulse.score ?? 0}
+          mood={pulse.mood}
+          days={days}
+        />
 
         {wasteByLevel ? (
           <TendancesAntigaspillageCard
