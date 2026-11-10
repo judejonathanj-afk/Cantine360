@@ -61,52 +61,53 @@ function shiftIsoDate(iso: string, days: number) {
   return formatServiceDateKey(d);
 }
 
-function mondayIsoOfWeek(iso: string) {
-  const d = new Date(`${iso}T12:00:00`);
-  const day = d.getDay();
-  const offset = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + offset);
-  return formatServiceDateKey(d);
+function wasteGramsOfRow(row: DashboardDayDetailRow) {
+  if (row.wasteWeightG > 0) return row.wasteWeightG;
+  return row.wasteWeightMaternelleG + row.wasteWeightPrimaireG;
 }
 
-function formatWeekRangeFr(mondayIso: string) {
-  const from = new Date(`${mondayIso}T12:00:00`);
-  const to = new Date(from);
-  to.setDate(to.getDate() + 6);
-  const month = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(to);
-  return `${from.getDate()}–${to.getDate()} ${month}`;
+function mondayIndexFromIso(iso: string) {
+  const day = new Date(`${iso}T12:00:00`).getDay();
+  return day === 0 ? 6 : day - 1;
 }
 
-function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
+function WeekWasteChart({
+  rows,
+  days,
+}: {
+  rows: DashboardDayDetailRow[];
+  days: 7 | 30;
+}) {
   const byDate = new Map<string, number>();
   for (const row of rows) {
-    byDate.set(row.date, (byDate.get(row.date) ?? 0) + row.wasteWeightG);
+    byDate.set(row.date, (byDate.get(row.date) ?? 0) + wasteGramsOfRow(row));
   }
-  const datesWithWaste = [...byDate.entries()]
-    .filter(([, g]) => g > 0)
-    .map(([date]) => date)
-    .sort();
-  const sortedDates = [...byDate.keys()].sort();
-  const anchor =
-    datesWithWaste.at(-1) ??
-    sortedDates.at(-1) ??
-    formatServiceDateKey(new Date());
-  const monday = mondayIsoOfWeek(anchor);
-  const points = WEEKDAY_SHORT.map((label, i) => {
-    const date = shiftIsoDate(monday, i);
-    return { label, date, value: byDate.get(date) ?? 0 };
-  });
+  const weekdayTotals = [0, 0, 0, 0, 0, 0, 0];
+  for (const [date, grams] of byDate) {
+    weekdayTotals[mondayIndexFromIso(date)] += grams;
+  }
+  const points = WEEKDAY_SHORT.map((label, i) => ({
+    label,
+    value: weekdayTotals[i] ?? 0,
+  }));
   const total = points.reduce((sum, p) => sum + p.value, 0);
-  const prevMonday = shiftIsoDate(monday, -7);
-  const prevTotal = WEEKDAY_SHORT.reduce(
-    (sum, _, i) => sum + (byDate.get(shiftIsoDate(prevMonday, i)) ?? 0),
-    0,
-  );
+  const sortedDates = [...byDate.keys()].sort();
+  const endIso =
+    sortedDates.at(-1) ?? formatServiceDateKey(new Date());
+  const last7start = shiftIsoDate(endIso, -6);
+  const prev7start = shiftIsoDate(endIso, -13);
+  let last7 = 0;
+  let prev7 = 0;
+  for (const [date, grams] of byDate) {
+    if (date >= last7start && date <= endIso) last7 += grams;
+    else if (date >= prev7start && date < last7start) prev7 += grams;
+  }
   const deltaPct =
-    prevTotal > 0 ? ((total - prevTotal) / prevTotal) * 100 : null;
+    days === 7 && prev7 > 0 ? ((last7 - prev7) / prev7) * 100 : null;
   const peak = Math.max(0, ...points.map((p) => p.value));
   const yMax = Math.max(1000, Math.ceil((peak || 1) / 250) * 250);
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(yMax * f));
+  const periodLabel = days === 30 ? "sur 30 jours" : "sur 7 jours";
 
   return (
     <div className="rounded-[1.5rem] bg-[#f8fafc] px-4 py-4 sm:px-5 sm:py-5">
@@ -119,7 +120,7 @@ function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
             Vos déchets cette semaine
           </p>
           <p className="mt-0.5 text-xs font-medium text-zinc-400">
-            {formatWeekRangeFr(monday)}
+            Pesées de l’établissement {periodLabel}
           </p>
         </div>
         <div className="text-right">
@@ -168,7 +169,7 @@ function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
               const isPeak = peak > 0 && point.value === peak;
               return (
                 <div
-                  key={point.date}
+                  key={point.label}
                   className="flex h-full min-w-0 flex-1 flex-col items-center justify-end"
                 >
                   <div
@@ -188,7 +189,7 @@ function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
           <div className="mt-2 flex justify-between gap-2 border-t border-zinc-200 pt-2">
             {points.map((point) => (
               <span
-                key={`${point.date}-lbl`}
+                key={`${point.label}-lbl`}
                 className={cn(
                   "min-w-0 flex-1 text-center text-[11px] font-semibold",
                   peak > 0 && point.value === peak
@@ -526,7 +527,7 @@ export function KitchenDashboardKpis({
                 </DialogDescription>
               </DialogHeader>
               {open === "waste" ? (
-                <WeekWasteChart rows={perDayRows} />
+                <WeekWasteChart rows={perDayRows} days={days} />
               ) : null}
               <ul className="space-y-2.5">
                 {active.lines.map((line, i) => (
