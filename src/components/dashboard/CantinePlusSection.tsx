@@ -12,13 +12,13 @@ export function CantinePlusFold({ onOpen }: { onOpen: () => void }) {
       type="button"
       id="cantine-plus"
       onClick={onOpen}
-      className="flex w-full items-center gap-3 overflow-hidden rounded-[28px] bg-[#5b21b6] px-4 py-3.5 text-left shadow-[0_12px_32px_rgba(91,33,182,0.38)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] hover:bg-[#4c1d95] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:px-5 sm:py-4"
+      className="flex w-full items-center gap-3 overflow-hidden rounded-[28px] bg-[#0d3b2e] px-4 py-3.5 text-left shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] hover:bg-[#0a2f24] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:px-5 sm:py-4"
     >
       <span
         className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
         aria-hidden
       >
-        <span className="flex size-11 items-center justify-center rounded-[14px] bg-violet-200 text-[#5b21b6] sm:size-12 sm:rounded-2xl">
+        <span className="flex size-11 items-center justify-center rounded-[14px] bg-[#d8f48a] text-[#0d3b2e] sm:size-12 sm:rounded-2xl">
           <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
         </span>
       </span>
