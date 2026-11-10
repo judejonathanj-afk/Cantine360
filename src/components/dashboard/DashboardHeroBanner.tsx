@@ -38,8 +38,8 @@ export function DashboardHeroBanner({
 
       <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
         <div className="min-w-0 max-w-xl lg:max-w-3xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-yellow-500 ring-1 ring-zinc-200 backdrop-blur">
-            <ChefHat className="size-3.5 text-green-600" aria-hidden />
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3.5 py-1.5 text-sm font-semibold text-[#e8b923] ring-1 ring-zinc-200">
+            <ChefHat className="size-4 text-[#22c55e]" aria-hidden />
             {isKitchen ? "Tableau de bord cuisine" : "Tableau de bord Cantine360"}
           </div>
 
