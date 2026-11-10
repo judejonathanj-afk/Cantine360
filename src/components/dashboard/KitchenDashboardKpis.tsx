@@ -69,15 +69,32 @@ function mondayIsoOfWeek(iso: string) {
   return formatServiceDateKey(d);
 }
 
+function formatWeekRangeFr(mondayIso: string) {
+  const from = new Date(`${mondayIso}T12:00:00`);
+  const to = new Date(from);
+  to.setDate(to.getDate() + 6);
+  const month = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(to);
+  return `${from.getDate()}–${to.getDate()} ${month}`;
+}
+
 function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
-  const monday = mondayIsoOfWeek(formatServiceDateKey(new Date()));
   const byDate = new Map<string, number>();
   for (const row of rows) {
     byDate.set(row.date, (byDate.get(row.date) ?? 0) + row.wasteWeightG);
   }
+  const datesWithWaste = [...byDate.entries()]
+    .filter(([, g]) => g > 0)
+    .map(([date]) => date)
+    .sort();
+  const sortedDates = [...byDate.keys()].sort();
+  const anchor =
+    datesWithWaste.at(-1) ??
+    sortedDates.at(-1) ??
+    formatServiceDateKey(new Date());
+  const monday = mondayIsoOfWeek(anchor);
   const points = WEEKDAY_SHORT.map((label, i) => {
     const date = shiftIsoDate(monday, i);
-    return { label, value: byDate.get(date) ?? 0 };
+    return { label, date, value: byDate.get(date) ?? 0 };
   });
   const total = points.reduce((sum, p) => sum + p.value, 0);
   const prevMonday = shiftIsoDate(monday, -7);
@@ -88,22 +105,25 @@ function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
   const deltaPct =
     prevTotal > 0 ? ((total - prevTotal) / prevTotal) * 100 : null;
   const peak = Math.max(0, ...points.map((p) => p.value));
-  const yMax = Math.max(1000, Math.ceil(peak / 250) * 250);
+  const yMax = Math.max(1000, Math.ceil((peak || 1) / 250) * 250);
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(yMax * f));
 
   return (
-    <div className="rounded-[1.35rem] bg-white px-3.5 py-4 ring-1 ring-zinc-100">
+    <div className="rounded-[1.5rem] bg-[#f8fafc] px-4 py-4 sm:px-5 sm:py-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-500">
             Évolution
           </p>
-          <p className="mt-0.5 text-base font-extrabold tracking-tight text-zinc-950">
+          <p className="mt-0.5 text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
             Vos déchets cette semaine
+          </p>
+          <p className="mt-0.5 text-xs font-medium text-zinc-400">
+            {formatWeekRangeFr(monday)}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xl font-extrabold tabular-nums tracking-tight text-zinc-950">
+          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-zinc-950">
             {fmt(total)} g
           </p>
           {deltaPct != null ? (
@@ -120,41 +140,43 @@ function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
               %
             </p>
           ) : (
-            <p className="mt-0.5 text-xs font-medium text-zinc-400">cette semaine</p>
+            <p className="mt-0.5 text-xs font-medium text-zinc-400">
+              vs semaine d’avant
+            </p>
           )}
         </div>
       </div>
-      <div className="mt-4 flex gap-2">
-        <div className="flex h-36 flex-col justify-between pb-5 text-right text-[10px] font-semibold tabular-nums text-zinc-400">
+      <div className="mt-5 flex gap-2.5">
+        <div className="flex h-44 flex-col justify-between pb-6 text-right text-[10px] font-semibold tabular-nums text-zinc-400">
           {[...yTicks].reverse().map((tick) => (
             <span key={tick}>{tick.toLocaleString("fr-FR")}g</span>
           ))}
         </div>
         <div className="relative min-w-0 flex-1">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-36">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-44">
             {yTicks.slice(1).map((tick) => (
               <div
                 key={tick}
-                className="absolute inset-x-0 border-t border-zinc-100"
+                className="absolute inset-x-0 border-t border-zinc-200/80"
                 style={{ bottom: `${(tick / yMax) * 100}%` }}
               />
             ))}
           </div>
-          <div className="flex h-36 items-end justify-between gap-1.5">
+          <div className="flex h-44 items-end justify-between gap-2">
             {points.map((point) => {
               const h = yMax > 0 ? (point.value / yMax) * 100 : 0;
               const isPeak = peak > 0 && point.value === peak;
               return (
                 <div
-                  key={point.label}
+                  key={point.date}
                   className="flex h-full min-w-0 flex-1 flex-col items-center justify-end"
                 >
                   <div
-                    className="w-full max-w-[1.65rem] rounded-t-md"
+                    className="w-[72%] max-w-[2.15rem] rounded-t-[10px]"
                     style={{
-                      height: `${Math.max(h, point.value > 0 ? 4 : 0)}%`,
+                      height: `${point.value > 0 ? Math.max(h, 8) : 0}%`,
                       background: isPeak
-                        ? "linear-gradient(180deg, #fb923c 0%, #f97316 100%)"
+                        ? "linear-gradient(180deg, #fdba74 0%, #f97316 100%)"
                         : "linear-gradient(180deg, #86efac 0%, #22c55e 100%)",
                     }}
                     title={`${point.label} : ${fmt(point.value)} g`}
@@ -163,11 +185,16 @@ function WeekWasteChart({ rows }: { rows: DashboardDayDetailRow[] }) {
               );
             })}
           </div>
-          <div className="mt-1.5 flex justify-between gap-1.5 border-t border-zinc-200 pt-1.5">
+          <div className="mt-2 flex justify-between gap-2 border-t border-zinc-200 pt-2">
             {points.map((point) => (
               <span
-                key={point.label}
-                className="min-w-0 flex-1 text-center text-[10px] font-semibold text-zinc-500"
+                key={`${point.date}-lbl`}
+                className={cn(
+                  "min-w-0 flex-1 text-center text-[11px] font-semibold",
+                  peak > 0 && point.value === peak
+                    ? "text-orange-600"
+                    : "text-zinc-500",
+                )}
               >
                 {point.label}
               </span>
@@ -476,7 +503,7 @@ export function KitchenDashboardKpis({
         <DialogContent
           className={cn(
             "z-[100] rounded-3xl border-2 border-zinc-900",
-            open === "waste" ? "max-w-lg" : "max-w-md",
+            open === "waste" ? "max-w-xl sm:p-6" : "max-w-md",
           )}
           overlayClassName="z-[100]"
         >
