@@ -151,10 +151,10 @@ function NoteCantineCounter({
   const color = MOOD_CHART_COLOR[mood];
   const uid = useId().replace(/:/g, "");
   const gradId = `note-cantine-grad-${uid}`;
-  const cx = 100;
-  const cy = 132;
-  const r = 86;
-  const stroke = 20;
+  const cx = 110;
+  const cy = 118;
+  const r = 96;
+  const stroke = 18;
   const len = Math.PI * r;
   const frac = Math.min(Math.max(score / 100, 0), 1);
   const shownFrac = mounted ? frac : 0;
@@ -166,13 +166,13 @@ function NoteCantineCounter({
   };
 
   return (
-    <div className="flex w-[168px] shrink-0 flex-col items-center">
-      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+    <div className="relative flex h-[168px] w-[188px] shrink-0 flex-col items-center">
+      <p className="pointer-events-none absolute top-0 z-10 text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
         Note Cantine +
       </p>
-      <div className="relative mt-0.5 size-[168px]">
+      <div className="relative size-full">
         <svg
-          viewBox="0 0 200 168"
+          viewBox="0 0 220 168"
           className="size-full"
           role="img"
           aria-label={`Note Cantine + ${score} sur 100`}
@@ -214,7 +214,7 @@ function NoteCantineCounter({
           ) : null}
           <text
             x={cx - r}
-            y={cy + 18}
+            y={cy + 16}
             textAnchor="middle"
             fill="#a1a1aa"
             fontSize="11"
@@ -224,7 +224,7 @@ function NoteCantineCounter({
           </text>
           <text
             x={cx + r}
-            y={cy + 18}
+            y={cy + 16}
             textAnchor="middle"
             fill="#a1a1aa"
             fontSize="11"
@@ -233,19 +233,19 @@ function NoteCantineCounter({
             100
           </text>
         </svg>
-        <div className="pointer-events-none absolute inset-x-0 top-[48%] flex flex-col items-center">
+        <div className="pointer-events-none absolute inset-x-0 top-[46%] flex flex-col items-center">
           <span
             className="text-5xl font-extrabold leading-none tracking-tight tabular-nums"
             style={{ color }}
           >
             {score}
           </span>
-          <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">
+          <span className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-zinc-400">
             / 100
           </span>
         </div>
       </div>
-      <span className="-mt-2 inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-zinc-900">
+      <span className="pointer-events-none absolute bottom-0 inline-flex items-center rounded-full bg-white px-3 py-0.5 text-xs font-semibold text-zinc-900">
         {MOOD_STYLES[mood].label}
       </span>
     </div>
