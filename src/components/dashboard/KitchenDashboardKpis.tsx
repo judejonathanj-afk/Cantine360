@@ -207,6 +207,83 @@ function WeekWasteChart({
   );
 }
 
+function RefusalRateDonut({
+  refused,
+  served,
+}: {
+  refused: number;
+  served: number;
+}) {
+  const ratePct = served > 0 ? (refused / served) * 100 : 0;
+  const restPct = Math.max(0, 100 - ratePct);
+  const cx = 70;
+  const cy = 70;
+  const r = 52;
+  const stroke = 16;
+  const circ = 2 * Math.PI * r;
+  const frac = Math.min(Math.max(ratePct / 100, 0), 1);
+  const rateLabel = ratePct.toLocaleString("fr-FR", {
+    maximumFractionDigits: 1,
+  });
+
+  return (
+    <div className="flex flex-col items-center gap-4 rounded-[1.5rem] bg-[#f8fafc] px-4 py-4 sm:flex-row sm:items-center sm:px-5">
+      <div className="relative size-[140px] shrink-0">
+        <svg viewBox="0 0 140 140" className="size-full -rotate-90" aria-hidden>
+          <circle
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke="#e4e4e7"
+            strokeWidth={stroke}
+          />
+          {frac > 0 ? (
+            <circle
+              cx={cx}
+              cy={cy}
+              r={r}
+              fill="none"
+              stroke="#fb7185"
+              strokeWidth={stroke}
+              strokeLinecap="round"
+              strokeDasharray={`${circ * frac} ${circ}`}
+            />
+          ) : null}
+        </svg>
+        <div className="pointer-events-none absolute inset-[18%] flex flex-col items-center justify-center text-center">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-zinc-400">
+            Taux
+          </p>
+          <p className="text-2xl font-extrabold tabular-nums leading-none text-zinc-950">
+            {rateLabel} %
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="h-8 w-1 shrink-0 rounded-full bg-[#fb7185]" aria-hidden />
+          <div>
+            <p className="text-sm text-zinc-500">Refus</p>
+            <p className="text-lg font-extrabold tabular-nums text-zinc-950">
+              {rateLabel} %
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2.5">
+          <span className="h-8 w-1 shrink-0 rounded-full bg-zinc-300" aria-hidden />
+          <div>
+            <p className="text-sm text-zinc-500">Autres assiettes</p>
+            <p className="text-lg font-extrabold tabular-nums text-zinc-950">
+              {restPct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LevelFill({
   level,
   children,
@@ -504,7 +581,11 @@ export function KitchenDashboardKpis({
         <DialogContent
           className={cn(
             "z-[100] rounded-3xl border-2 border-zinc-900",
-            open === "waste" ? "max-w-xl sm:p-6" : "max-w-md",
+            open === "waste"
+              ? "max-w-xl sm:p-6"
+              : open === "refused"
+                ? "max-w-lg"
+                : "max-w-md",
           )}
           overlayClassName="z-[100]"
         >
@@ -528,6 +609,12 @@ export function KitchenDashboardKpis({
               </DialogHeader>
               {open === "waste" ? (
                 <WeekWasteChart rows={perDayRows} days={days} />
+              ) : null}
+              {open === "refused" ? (
+                <RefusalRateDonut
+                  refused={totals.refused}
+                  served={totals.served}
+                />
               ) : null}
               <ul className="space-y-2.5">
                 {active.lines.map((line, i) => (
