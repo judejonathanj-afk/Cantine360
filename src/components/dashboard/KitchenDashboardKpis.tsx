@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -282,10 +281,6 @@ function WasteDetailPanel({
     <div className="relative overflow-hidden">
       <div className="relative px-5 pb-2 pt-5 sm:px-6">
         <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
-        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
-          <X className="size-4" />
-          <span className="sr-only">Fermer</span>
-        </DialogClose>
         <div className="relative flex items-start gap-3 pr-10">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-orange-400 text-white shadow-sm">
             <Trash2 className="size-6" strokeWidth={2.4} aria-hidden />
@@ -453,6 +448,19 @@ function RefusalRateDonut({
   );
 }
 
+function KpiDialogClose({ onClose }: { onClose: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClose}
+      className="absolute right-4 top-4 z-30 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800"
+      aria-label="Fermer"
+    >
+      <X className="size-4" />
+    </button>
+  );
+}
+
 function RabLeafDecor({ className }: { className?: string }) {
   return (
     <svg
@@ -487,10 +495,6 @@ function RabDetailPanel({
     <div className="relative overflow-hidden">
       <div className="relative px-5 pb-2 pt-5 sm:px-6">
         <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
-        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
-          <X className="size-4" />
-          <span className="sr-only">Fermer</span>
-        </DialogClose>
         <div className="relative flex items-start gap-3 pr-10">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#0f9f4f] text-white shadow-sm">
             <Repeat2 className="size-6" strokeWidth={2.4} aria-hidden />
@@ -612,10 +616,6 @@ function ServedDetailPanel({
     <div className="relative overflow-hidden">
       <div className="relative px-5 pb-2 pt-5 sm:px-6">
         <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
-        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
-          <X className="size-4" />
-          <span className="sr-only">Fermer</span>
-        </DialogClose>
         <div className="relative flex items-start gap-3 pr-10">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#0f9f4f] text-white shadow-sm">
             <UtensilsCrossed className="size-6" strokeWidth={2.4} aria-hidden />
@@ -754,10 +754,6 @@ function PresentDetailPanel({
     <div className="relative overflow-hidden">
       <div className="relative px-5 pb-2 pt-5 sm:px-6">
         <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
-        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
-          <X className="size-4" />
-          <span className="sr-only">Fermer</span>
-        </DialogClose>
         <div className="relative flex items-start gap-3 pr-10">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#0f9f4f] text-white shadow-sm">
             <Users className="size-6" strokeWidth={2.4} aria-hidden />
@@ -891,10 +887,6 @@ function RefusedDetailPanel({
     <div className="relative overflow-hidden">
       <div className="relative px-5 pb-2 pt-5 sm:px-6">
         <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
-        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
-          <X className="size-4" />
-          <span className="sr-only">Fermer</span>
-        </DialogClose>
         <div className="relative flex items-start gap-3 pr-10">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#fb7185] text-white shadow-sm">
             <Ban className="size-6" strokeWidth={2.4} aria-hidden />
@@ -1291,13 +1283,7 @@ export function KitchenDashboardKpis({
 
       <Dialog open={open != null} onOpenChange={(next) => !next && setOpen(null)}>
         <DialogContent
-          showCloseButton={
-            open !== "rab" &&
-            open !== "served" &&
-            open !== "present" &&
-            open !== "refused" &&
-            open !== "waste"
-          }
+          showCloseButton={false}
           className={cn(
             "z-[100] rounded-3xl",
             open === "rab" ||
@@ -1319,6 +1305,7 @@ export function KitchenDashboardKpis({
           )}
           overlayClassName="z-[100]"
         >
+          <KpiDialogClose onClose={() => setOpen(null)} />
           {open === "rab" ? (
             <RabDetailPanel
               rabCount={totals.rab}
