@@ -6,6 +6,7 @@ import {
   Ban,
   BarChart3,
   CalendarDays,
+  ChefHat,
   Info,
   Leaf,
   Lightbulb,
@@ -579,6 +580,150 @@ function ServedDetailPanel({
   );
 }
 
+function PresentDetailPanel({
+  present,
+  days,
+  levelNote,
+  avgPresent,
+  daysPresent,
+  peakPresent,
+}: {
+  present: number;
+  days: 7 | 30;
+  levelNote: string;
+  avgPresent: number;
+  daysPresent: number;
+  peakPresent: DashboardDayDetailRow | null;
+}) {
+  const peakCount =
+    peakPresent && peakPresent.present > 0 ? peakPresent.present : 0;
+  const peakMeal =
+    peakPresent && peakPresent.present > 0 ? peakPresent.mealLabel : null;
+  const peakShort =
+    peakPresent && peakPresent.present > 0
+      ? `${capFirst(formatDayFr(peakPresent.date))} — ${fmt(peakPresent.present)} présents (${peakPresent.mealLabel})`
+      : null;
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="relative px-5 pb-2 pt-5 sm:px-6">
+        <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
+        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
+          <X className="size-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        <div className="relative flex items-start gap-3 pr-10">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#0f9f4f] text-white shadow-sm">
+            <Users className="size-6" strokeWidth={2.4} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
+              Élèves présents
+            </DialogTitle>
+            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+              {fmt(present)} présents sur {days} jours · {levelNote}.
+            </DialogDescription>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
+        <div className="grid gap-2 sm:grid-cols-3">
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-3.5 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+              <Users className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="h-10 w-px bg-[#b7e4c7]" aria-hidden />
+            <div>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#0b3d24]">
+                {fmt(present)}
+              </p>
+              <p className="mt-1 text-xs font-medium leading-snug text-[#3d7a5c]">
+                élèves présents
+                <span className="block">sur {days} jours</span>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f3ff] px-3.5 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-500 shadow-sm">
+              <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="h-10 w-px bg-sky-200" aria-hidden />
+            <div>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+                {daysPresent > 0 ? fmt(avgPresent) : "—"}
+              </p>
+              <p className="mt-1 text-xs font-medium leading-snug text-sky-700">
+                par jour
+                <span className="block">en moyenne</span>
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#fff6ea] px-3.5 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#c2410c] shadow-sm">
+              <ChefHat className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="h-10 w-px bg-[#f3d5b3]" aria-hidden />
+            <div>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#9a3412]">
+                {peakCount > 0 ? fmt(peakCount) : "—"}
+              </p>
+              <p className="mt-1 text-xs font-medium leading-snug text-[#b45309]">
+                le jour le plus chargé
+                {peakMeal ? (
+                  <span className="block">({peakMeal})</span>
+                ) : null}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-[1.25rem] bg-zinc-50 px-4 py-3.5">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#e7f8ef] text-[#0f9f4f]">
+            <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
+          </span>
+          <div>
+            <p className="text-sm font-medium text-zinc-500">Moyenne</p>
+            <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+              {daysPresent > 0
+                ? `${fmt(avgPresent)} présents par jour de service (${daysPresent} jour${daysPresent > 1 ? "s" : ""}).`
+                : "Aucun présent saisi sur la période."}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-[1.25rem] bg-zinc-50 px-4 py-3.5">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#e7f8ef] text-[#0f9f4f]">
+            <UtensilsCrossed className="size-5" strokeWidth={2.2} aria-hidden />
+          </span>
+          <div>
+            <p className="text-sm font-medium text-zinc-500">Jour le plus chargé</p>
+            <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+              {peakShort ?? "Pas encore de jour de pointe."}
+            </p>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+          <RabLeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
+          <div className="relative flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+              <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
+            </span>
+            <div>
+              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
+              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+                Ce chiffre vient des compteurs cuisine par classe, le jour du
+                service.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LevelFill({
   level,
   children,
@@ -874,15 +1019,17 @@ export function KitchenDashboardKpis({
 
       <Dialog open={open != null} onOpenChange={(next) => !next && setOpen(null)}>
         <DialogContent
-          showCloseButton={open !== "rab" && open !== "served"}
+          showCloseButton={
+            open !== "rab" && open !== "served" && open !== "present"
+          }
           className={cn(
             "z-[100] rounded-3xl",
-            open === "rab" || open === "served"
+            open === "rab" || open === "served" || open === "present"
               ? "gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
               : "border-2 border-zinc-900",
             open === "waste"
               ? "max-w-xl sm:p-6"
-              : open === "served"
+              : open === "served" || open === "present"
                 ? "max-w-2xl"
                 : open === "refused" || open === "rab"
                   ? "max-w-lg"
@@ -912,6 +1059,15 @@ export function KitchenDashboardKpis({
               avgServed={avgServed}
               daysServed={daysServed}
               peakServed={peakServed}
+            />
+          ) : open === "present" ? (
+            <PresentDetailPanel
+              present={totals.present}
+              days={days}
+              levelNote={levelNote}
+              avgPresent={avgPresent}
+              daysPresent={daysPresent}
+              peakPresent={peakPresent}
             />
           ) : active && activeCard && ActiveIcon ? (
             <>
