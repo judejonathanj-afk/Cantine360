@@ -10,7 +10,9 @@ import {
   Info,
   Leaf,
   Lightbulb,
+  Recycle,
   Repeat2,
+  Scale,
   Sun,
   Trash2,
   TrendingUp,
@@ -98,9 +100,11 @@ function mondayIndexFromIso(iso: string) {
 function WeekWasteChart({
   rows,
   days,
+  periodTotal,
 }: {
   rows: DashboardDayDetailRow[];
   days: 7 | 30;
+  periodTotal: number;
 }) {
   const byDate = new Map<string, number>();
   for (const row of rows) {
@@ -114,7 +118,6 @@ function WeekWasteChart({
     label,
     value: weekdayTotals[i] ?? 0,
   }));
-  const total = points.reduce((sum, p) => sum + p.value, 0);
   const sortedDates = [...byDate.keys()].sort();
   const endIso =
     sortedDates.at(-1) ?? formatServiceDateKey(new Date());
@@ -126,59 +129,62 @@ function WeekWasteChart({
     if (date >= last7start && date <= endIso) last7 += grams;
     else if (date >= prev7start && date < last7start) prev7 += grams;
   }
-  const deltaPct =
-    days === 7 && prev7 > 0 ? ((last7 - prev7) / prev7) * 100 : null;
+  const deltaPct = prev7 > 0 ? ((last7 - prev7) / prev7) * 100 : null;
   const peak = Math.max(0, ...points.map((p) => p.value));
-  const yMax = Math.max(1000, Math.ceil((peak || 1) / 250) * 250);
+  const yMax = Math.max(1000, Math.ceil((peak || 1) / 1000) * 1000);
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(yMax * f));
   const periodLabel = days === 30 ? "sur 30 jours" : "sur 7 jours";
 
   return (
-    <div className="rounded-[1.5rem] bg-[#f8fafc] px-4 py-4 sm:px-5 sm:py-5">
-      <div className="flex items-start justify-between gap-3">
+    <div className="rounded-[1.5rem] bg-white px-3 py-3 sm:px-4 sm:py-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-orange-500">
+          <p className="inline-flex rounded-full bg-orange-100 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-orange-500">
             Évolution
           </p>
-          <p className="mt-0.5 text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
+          <p className="mt-1.5 text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
             Vos déchets cette semaine
           </p>
           <p className="mt-0.5 text-xs font-medium text-zinc-400">
             Pesées de l’établissement {periodLabel}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-zinc-950">
-            {fmt(total)} g
-          </p>
-          {deltaPct != null ? (
-            <p
-              className={cn(
-                "mt-0.5 text-xs font-bold tabular-nums",
-                deltaPct > 0 ? "text-orange-500" : "text-emerald-600",
-              )}
-            >
-              {deltaPct > 0 ? "↗" : deltaPct < 0 ? "↘" : "→"}{" "}
-              {Math.abs(deltaPct).toLocaleString("fr-FR", {
-                maximumFractionDigits: 1,
-              })}
-              %
+        <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+            <Scale className="size-5" strokeWidth={2.2} aria-hidden />
+          </span>
+          <div>
+            <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950 sm:text-[1.7rem]">
+              {fmt(periodTotal)} g
             </p>
-          ) : (
-            <p className="mt-0.5 text-xs font-medium text-zinc-400">
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-medium text-zinc-500">
               vs semaine d’avant
+              {deltaPct != null ? (
+                <span
+                  className={cn(
+                    "font-extrabold tabular-nums",
+                    deltaPct > 0 ? "text-emerald-600" : "text-emerald-700",
+                  )}
+                >
+                  {deltaPct > 0 ? "↑ +" : deltaPct < 0 ? "↓ " : "→ "}
+                  {Math.abs(deltaPct).toLocaleString("fr-FR", {
+                    maximumFractionDigits: 0,
+                  })}{" "}
+                  %
+                </span>
+              ) : null}
             </p>
-          )}
+          </div>
         </div>
       </div>
-      <div className="mt-5 flex gap-2.5">
-        <div className="flex h-44 flex-col justify-between pb-6 text-right text-[10px] font-semibold tabular-nums text-zinc-400">
+      <div className="mt-4 flex gap-2.5">
+        <div className="flex h-48 flex-col justify-between pb-7 text-right text-[10px] font-semibold tabular-nums text-zinc-400">
           {[...yTicks].reverse().map((tick) => (
-            <span key={tick}>{tick.toLocaleString("fr-FR")}g</span>
+            <span key={tick}>{tick.toLocaleString("fr-FR")} g</span>
           ))}
         </div>
         <div className="relative min-w-0 flex-1">
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-44">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-48">
             {yTicks.slice(1).map((tick) => (
               <div
                 key={tick}
@@ -187,7 +193,7 @@ function WeekWasteChart({
               />
             ))}
           </div>
-          <div className="flex h-44 items-end justify-between gap-2">
+          <div className="flex h-48 items-end justify-between gap-2">
             {points.map((point) => {
               const h = yMax > 0 ? (point.value / yMax) * 100 : 0;
               const isPeak = peak > 0 && point.value === peak;
@@ -196,10 +202,22 @@ function WeekWasteChart({
                   key={point.label}
                   className="flex h-full min-w-0 flex-1 flex-col items-center justify-end"
                 >
+                  {point.value > 0 ? (
+                    <p
+                      className={cn(
+                        "mb-1 text-[10px] font-extrabold tabular-nums",
+                        isPeak ? "text-orange-500" : "text-zinc-700",
+                      )}
+                    >
+                      {fmt(point.value)} g
+                    </p>
+                  ) : (
+                    <span className="mb-1 h-4" />
+                  )}
                   <div
                     className="w-[72%] max-w-[2.15rem] rounded-t-[10px]"
                     style={{
-                      height: `${point.value > 0 ? Math.max(h, 8) : 0}%`,
+                      height: `${point.value > 0 ? Math.max(h, 10) : 0}%`,
                       background: isPeak
                         ? "linear-gradient(180deg, #fdba74 0%, #f97316 100%)"
                         : "linear-gradient(180deg, #86efac 0%, #22c55e 100%)",
@@ -224,6 +242,155 @@ function WeekWasteChart({
                 {point.label}
               </span>
             ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WasteDetailPanel({
+  days,
+  levelNote,
+  totalWasteWeightG,
+  totalWasteMaternelleG,
+  totalWastePrimaireG,
+  wasteGramsPer100Served,
+  peakWaste,
+  perDayRows,
+}: {
+  days: 7 | 30;
+  levelNote: string;
+  totalWasteWeightG: number;
+  totalWasteMaternelleG: number;
+  totalWastePrimaireG: number;
+  wasteGramsPer100Served: number | null;
+  peakWaste: DashboardDayDetailRow | null;
+  perDayRows: DashboardDayDetailRow[];
+}) {
+  const hasSplit = totalWasteMaternelleG > 0 || totalWastePrimaireG > 0;
+  const peakLabel =
+    peakWaste && peakWaste.wasteWeightG > 0
+      ? `${capFirst(formatDayFr(peakWaste.date))}`
+      : null;
+  const recap =
+    peakWaste && peakWaste.wasteWeightG > 0
+      ? "Ce jour-là, le gaspillage a été particulièrement élevé. Pensez à ajuster les portions ou à adapter le menu."
+      : "Les pesées apparaîtront ici dès le premier service.";
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="relative px-5 pb-2 pt-5 sm:px-6">
+        <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
+        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
+          <X className="size-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        <div className="relative flex items-start gap-3 pr-10">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-orange-400 text-white shadow-sm">
+            <Trash2 className="size-6" strokeWidth={2.4} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
+              Déchets (poids)
+            </DialogTitle>
+            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+              {totalWasteWeightG > 0
+                ? `${fmt(totalWasteWeightG)} g pesés sur ${days} jours · ${levelNote}.`
+                : `Pas encore de pesée sur ${days} jours · ${levelNote}.`}
+            </DialogDescription>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
+        <WeekWasteChart
+          rows={perDayRows}
+          days={days}
+          periodTotal={totalWasteWeightG}
+        />
+
+        <div className="grid gap-2 sm:grid-cols-3">
+          <div className="rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+            <div className="flex items-center gap-2">
+              <Leaf className="size-4 text-[#0f9f4f]" strokeWidth={2.4} aria-hidden />
+              <p className="text-sm font-extrabold text-[#0b3d24]">Répartition</p>
+            </div>
+            {hasSplit ? (
+              <div className="mt-2 space-y-1.5">
+                <p className="flex items-center gap-2 text-sm font-semibold text-zinc-700">
+                  <span className="size-2.5 rounded-full bg-sky-400" aria-hidden />
+                  maternelle
+                  <span className="ml-auto tabular-nums font-extrabold text-zinc-950">
+                    {fmt(totalWasteMaternelleG)} g
+                  </span>
+                </p>
+                <p className="flex items-center gap-2 text-sm font-semibold text-zinc-700">
+                  <span className="size-2.5 rounded-full bg-emerald-500" aria-hidden />
+                  primaire
+                  <span className="ml-auto tabular-nums font-extrabold text-zinc-950">
+                    {fmt(totalWastePrimaireG)} g
+                  </span>
+                </p>
+              </div>
+            ) : (
+              <p className="mt-2 text-xs font-medium leading-snug text-zinc-500">
+                Indiquez maternelle et primaire à la pesée de fin de service.
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+              <Recycle className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <div>
+              <p className="text-xs font-medium text-zinc-500">Soit</p>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+                {wasteGramsPer100Served != null
+                  ? `${fmt(wasteGramsPer100Served)} g`
+                  : "—"}
+              </p>
+              <p className="mt-1 text-xs font-medium leading-snug text-zinc-500">
+                de déchets pour
+                <span className="block">100 assiettes servies</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+              <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <div>
+              <p className="text-xs font-medium text-zinc-500">Jour le plus lourd</p>
+              <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+                {peakLabel ?? "Pas encore de jour de pointe"}
+              </p>
+              {peakWaste && peakWaste.wasteWeightG > 0 ? (
+                <p className="mt-0.5 text-xs font-semibold text-zinc-500">
+                  — {fmt(peakWaste.wasteWeightG)} g
+                  {peakWaste.wasteGramsPer100 != null
+                    ? ` (${peakWaste.wasteGramsPer100.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} g / 100)`
+                    : ""}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+          <RabLeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
+          <div className="relative flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+              <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
+            </span>
+            <div>
+              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
+              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+                {recap}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -1128,18 +1295,20 @@ export function KitchenDashboardKpis({
             open !== "rab" &&
             open !== "served" &&
             open !== "present" &&
-            open !== "refused"
+            open !== "refused" &&
+            open !== "waste"
           }
           className={cn(
             "z-[100] rounded-3xl",
             open === "rab" ||
               open === "served" ||
               open === "present" ||
-              open === "refused"
+              open === "refused" ||
+              open === "waste"
               ? "gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
               : "border-2 border-zinc-900",
             open === "waste"
-              ? "max-w-xl sm:p-6"
+              ? "max-w-3xl"
               : open === "served" || open === "present" || open === "refused"
                 ? "max-w-2xl"
                 : open === "rab"
@@ -1195,6 +1364,17 @@ export function KitchenDashboardKpis({
                   : null
               }
             />
+          ) : open === "waste" ? (
+            <WasteDetailPanel
+              days={days}
+              levelNote={levelNote}
+              totalWasteWeightG={totalWasteWeightG}
+              totalWasteMaternelleG={totalWasteMaternelleG}
+              totalWastePrimaireG={totalWastePrimaireG}
+              wasteGramsPer100Served={wasteGramsPer100Served}
+              peakWaste={peakWaste}
+              perDayRows={perDayRows}
+            />
           ) : active && activeCard && ActiveIcon ? (
             <>
               <DialogHeader>
@@ -1213,9 +1393,6 @@ export function KitchenDashboardKpis({
                   {active.lead}
                 </DialogDescription>
               </DialogHeader>
-              {open === "waste" ? (
-                <WeekWasteChart rows={perDayRows} days={days} />
-              ) : null}
               <ul className="space-y-2.5">
                 {active.lines.map((line, i) => (
                   <li
