@@ -13,6 +13,7 @@ import {
   Repeat2,
   Sun,
   Trash2,
+  TrendingUp,
   Users,
   UtensilsCrossed,
   X,
@@ -238,7 +239,6 @@ function RefusalRateDonut({
   served: number;
 }) {
   const ratePct = served > 0 ? (refused / served) * 100 : 0;
-  const restPct = Math.max(0, 100 - ratePct);
   const cx = 70;
   const cy = 70;
   const r = 52;
@@ -250,58 +250,37 @@ function RefusalRateDonut({
   });
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-[1.5rem] bg-[#f8fafc] px-4 py-4 sm:flex-row sm:items-center sm:px-5">
-      <div className="relative size-[140px] shrink-0">
-        <svg viewBox="0 0 140 140" className="size-full -rotate-90" aria-hidden>
+    <div className="relative size-[148px] shrink-0">
+      <svg viewBox="0 0 140 140" className="size-full -rotate-90" aria-hidden>
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke="#e4e4e7"
+          strokeWidth={stroke}
+        />
+        {frac > 0 ? (
           <circle
             cx={cx}
             cy={cy}
             r={r}
             fill="none"
-            stroke="#e4e4e7"
+            stroke="#fb7185"
             strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={`${circ * frac} ${circ}`}
           />
-          {frac > 0 ? (
-            <circle
-              cx={cx}
-              cy={cy}
-              r={r}
-              fill="none"
-              stroke="#fb7185"
-              strokeWidth={stroke}
-              strokeLinecap="round"
-              strokeDasharray={`${circ * frac} ${circ}`}
-            />
-          ) : null}
-        </svg>
-        <div className="pointer-events-none absolute inset-[18%] flex flex-col items-center justify-center text-center">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-zinc-400">
-            Taux
-          </p>
-          <p className="text-2xl font-extrabold tabular-nums leading-none text-zinc-950">
-            {rateLabel} %
-          </p>
-        </div>
-      </div>
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2.5">
-          <span className="h-8 w-1 shrink-0 rounded-full bg-[#fb7185]" aria-hidden />
-          <div>
-            <p className="text-sm text-zinc-500">Refus</p>
-            <p className="text-lg font-extrabold tabular-nums text-zinc-950">
-              {rateLabel} %
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <span className="h-8 w-1 shrink-0 rounded-full bg-zinc-300" aria-hidden />
-          <div>
-            <p className="text-sm text-zinc-500">Autres assiettes</p>
-            <p className="text-lg font-extrabold tabular-nums text-zinc-950">
-              {restPct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %
-            </p>
-          </div>
-        </div>
+        ) : null}
+      </svg>
+      <div className="pointer-events-none absolute inset-[16%] flex flex-col items-center justify-center text-center">
+        <p className="text-[11px] font-semibold text-zinc-500">Taux</p>
+        <p className="text-[1.65rem] font-extrabold tabular-nums leading-none text-zinc-950">
+          {rateLabel} %
+        </p>
+        <span className="mt-1 flex size-7 items-center justify-center rounded-full bg-[#ffe4ec] text-[#fb7185]">
+          <TrendingUp className="size-3.5" strokeWidth={2.6} aria-hidden />
+        </span>
       </div>
     </div>
   );
@@ -724,6 +703,132 @@ function PresentDetailPanel({
   );
 }
 
+function RefusedDetailPanel({
+  refused,
+  served,
+  refusalRatePct,
+  peakLabel,
+}: {
+  refused: number;
+  served: number;
+  refusalRatePct: string;
+  peakLabel: string | null;
+}) {
+  const restPct =
+    served > 0 ? Math.max(0, 100 - (refused / served) * 100) : 100;
+  const restLabel = restPct.toLocaleString("fr-FR", {
+    maximumFractionDigits: 1,
+  });
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="relative px-5 pb-2 pt-5 sm:px-6">
+        <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
+        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
+          <X className="size-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        <div className="relative flex items-start gap-3 pr-10">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#fb7185] text-white shadow-sm">
+            <Ban className="size-6" strokeWidth={2.4} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
+              Refus
+            </DialogTitle>
+            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+              {fmt(refused)} refus · taux {refusalRatePct}.
+            </DialogDescription>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
+        <div className="grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.05fr)] lg:items-stretch">
+          <div className="flex items-center justify-center rounded-[1.35rem] bg-white px-2 py-2 lg:pr-1">
+            <RefusalRateDonut refused={refused} served={served} />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#ffe8ee] px-3.5 py-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[#fb7185] shadow-sm">
+                <X className="size-4" strokeWidth={2.6} aria-hidden />
+              </span>
+              <div>
+                <p className="text-xs font-medium text-[#e11d48]">Refus</p>
+                <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+                  {fmt(refused)}
+                </p>
+                <p className="mt-0.5 text-xs font-medium text-zinc-500">
+                  soit {refusalRatePct} du total
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-3.5 py-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+                <UtensilsCrossed className="size-4" strokeWidth={2.4} aria-hidden />
+              </span>
+              <div>
+                <p className="text-xs font-medium text-[#3d7a5c]">
+                  Autres assiettes
+                </p>
+                <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+                  {restLabel} %
+                </p>
+                <p className="mt-0.5 text-xs font-medium text-zinc-500">
+                  du total
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+            <div className="flex items-start gap-2.5">
+              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+                <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
+                <p className="mt-1 text-sm font-semibold leading-snug text-[#0b3d24]">
+                  Un refus, c’est un élève qui n’a pas pris (ou a rendu) le plat
+                  ce jour-là.
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 flex items-start gap-2.5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+                <CalendarDays className="size-4" strokeWidth={2.3} aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-extrabold text-[#0f9f4f]">
+                  Jour le plus de refus
+                </p>
+                <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+                  {peakLabel ?? "Aucun refus saisi sur la période."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+          <RabLeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
+          <div className="relative flex items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+              <TrendingUp className="size-4" strokeWidth={2.4} aria-hidden />
+            </span>
+            <p className="text-sm font-semibold leading-snug text-[#0b3d24]">
+              Utile pour{" "}
+              <span className="font-extrabold">ajuster le menu</span> du
+              lendemain, surtout si le même plat revient.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LevelFill({
   level,
   children,
@@ -1020,18 +1125,24 @@ export function KitchenDashboardKpis({
       <Dialog open={open != null} onOpenChange={(next) => !next && setOpen(null)}>
         <DialogContent
           showCloseButton={
-            open !== "rab" && open !== "served" && open !== "present"
+            open !== "rab" &&
+            open !== "served" &&
+            open !== "present" &&
+            open !== "refused"
           }
           className={cn(
             "z-[100] rounded-3xl",
-            open === "rab" || open === "served" || open === "present"
+            open === "rab" ||
+              open === "served" ||
+              open === "present" ||
+              open === "refused"
               ? "gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
               : "border-2 border-zinc-900",
             open === "waste"
               ? "max-w-xl sm:p-6"
-              : open === "served" || open === "present"
+              : open === "served" || open === "present" || open === "refused"
                 ? "max-w-2xl"
-                : open === "refused" || open === "rab"
+                : open === "rab"
                   ? "max-w-lg"
                   : "max-w-md",
           )}
@@ -1069,6 +1180,21 @@ export function KitchenDashboardKpis({
               daysPresent={daysPresent}
               peakPresent={peakPresent}
             />
+          ) : open === "refused" ? (
+            <RefusedDetailPanel
+              refused={totals.refused}
+              served={totals.served}
+              refusalRatePct={refusalRatePct}
+              peakLabel={
+                peakRefused && peakRefused.refused > 0
+                  ? `${capFirst(formatDayFr(peakRefused.date))} — ${fmt(peakRefused.refused)}${
+                      peakRefused.refusalRatePct != null
+                        ? ` (${peakRefused.refusalRatePct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %)`
+                        : ""
+                    }`
+                  : null
+              }
+            />
           ) : active && activeCard && ActiveIcon ? (
             <>
               <DialogHeader>
@@ -1089,12 +1215,6 @@ export function KitchenDashboardKpis({
               </DialogHeader>
               {open === "waste" ? (
                 <WeekWasteChart rows={perDayRows} days={days} />
-              ) : null}
-              {open === "refused" ? (
-                <RefusalRateDonut
-                  refused={totals.refused}
-                  served={totals.served}
-                />
               ) : null}
               <ul className="space-y-2.5">
                 {active.lines.map((line, i) => (
