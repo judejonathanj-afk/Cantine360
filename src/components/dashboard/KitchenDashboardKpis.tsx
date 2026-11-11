@@ -910,14 +910,14 @@ function RefusedDetailPanel({
         </div>
       </div>
 
-      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-7">
-        <div className="grid gap-3 md:grid-cols-[minmax(10.5rem,auto)_minmax(13.5rem,1fr)_minmax(18rem,1.35fr)] md:items-stretch">
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.15fr)] sm:items-stretch">
           <div className="flex items-center justify-center rounded-[1.35rem] bg-white px-2 py-2">
             <RefusalRateDonut refused={refused} served={served} />
           </div>
 
           <div className="flex min-w-0 flex-col gap-2">
-            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#ffe8ee] px-4 py-3">
+            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#ffe8ee] px-3.5 py-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[#fb7185] shadow-sm">
                 <X className="size-4" strokeWidth={2.6} aria-hidden />
               </span>
@@ -931,7 +931,7 @@ function RefusedDetailPanel({
                 </p>
               </div>
             </div>
-            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3">
+            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-3.5 py-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
                 <UtensilsCrossed className="size-4" strokeWidth={2.4} aria-hidden />
               </span>
@@ -1307,13 +1307,15 @@ export function KitchenDashboardKpis({
               open === "waste"
               ? "gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
               : "border-2 border-zinc-900",
-            open === "waste" || open === "refused"
-              ? "max-w-4xl"
-              : open === "served" || open === "present"
-                ? "max-w-2xl"
-                : open === "rab"
-                  ? "max-w-lg"
-                  : "max-w-md",
+            open === "refused"
+              ? "max-w-3xl sm:max-w-3xl"
+              : open === "waste"
+                ? "max-w-3xl sm:max-w-3xl"
+                : open === "served" || open === "present"
+                  ? "max-w-2xl sm:max-w-2xl"
+                  : open === "rab"
+                    ? "max-w-lg sm:max-w-lg"
+                    : "max-w-md sm:max-w-md",
           )}
           overlayClassName="z-[100]"
         >
