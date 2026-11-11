@@ -910,18 +910,18 @@ function RefusedDetailPanel({
         </div>
       </div>
 
-      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
-        <div className="grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.05fr)] lg:items-stretch">
-          <div className="flex items-center justify-center rounded-[1.35rem] bg-white px-2 py-2 lg:pr-1">
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-7">
+        <div className="grid gap-3 md:grid-cols-[minmax(10.5rem,auto)_minmax(13.5rem,1fr)_minmax(18rem,1.35fr)] md:items-stretch">
+          <div className="flex items-center justify-center rounded-[1.35rem] bg-white px-2 py-2">
             <RefusalRateDonut refused={refused} served={served} />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#ffe8ee] px-3.5 py-3">
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#ffe8ee] px-4 py-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[#fb7185] shadow-sm">
                 <X className="size-4" strokeWidth={2.6} aria-hidden />
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-medium text-[#e11d48]">Refus</p>
                 <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                   {fmt(refused)}
@@ -931,11 +931,11 @@ function RefusedDetailPanel({
                 </p>
               </div>
             </div>
-            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-3.5 py-3">
+            <div className="flex flex-1 items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
                 <UtensilsCrossed className="size-4" strokeWidth={2.4} aria-hidden />
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-medium text-[#3d7a5c]">
                   Autres assiettes
                 </p>
@@ -949,14 +949,14 @@ function RefusedDetailPanel({
             </div>
           </div>
 
-          <div className="rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+          <div className="min-w-0 rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
             <div className="flex items-start gap-2.5">
               <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
                 <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
-                <p className="mt-1 text-sm font-semibold leading-snug text-[#0b3d24]">
+                <p className="mt-1 text-sm font-semibold leading-relaxed text-[#0b3d24]">
                   Un refus, c’est un élève qui n’a pas pris (ou a rendu) le plat
                   ce jour-là.
                 </p>
@@ -966,11 +966,11 @@ function RefusedDetailPanel({
               <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
                 <CalendarDays className="size-4" strokeWidth={2.3} aria-hidden />
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-extrabold text-[#0f9f4f]">
                   Jour le plus de refus
                 </p>
-                <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+                <p className="mt-0.5 text-sm font-semibold leading-relaxed text-[#0b3d24]">
                   {peakLabel ?? "Aucun refus saisi sur la période."}
                 </p>
               </div>
@@ -984,7 +984,7 @@ function RefusedDetailPanel({
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
               <TrendingUp className="size-4" strokeWidth={2.4} aria-hidden />
             </span>
-            <p className="text-sm font-semibold leading-snug text-[#0b3d24]">
+            <p className="text-sm font-semibold leading-relaxed text-[#0b3d24]">
               Utile pour{" "}
               <span className="font-extrabold">ajuster le menu</span> du
               lendemain, surtout si le même plat revient.
@@ -1307,9 +1307,9 @@ export function KitchenDashboardKpis({
               open === "waste"
               ? "gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
               : "border-2 border-zinc-900",
-            open === "waste"
-              ? "max-w-3xl"
-              : open === "served" || open === "present" || open === "refused"
+            open === "waste" || open === "refused"
+              ? "max-w-4xl"
+              : open === "served" || open === "present"
                 ? "max-w-2xl"
                 : open === "rab"
                   ? "max-w-lg"
