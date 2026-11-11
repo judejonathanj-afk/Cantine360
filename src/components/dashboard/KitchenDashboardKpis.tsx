@@ -4,11 +4,13 @@ import { useState, type ReactNode } from "react";
 import {
   ArrowRight,
   Ban,
+  BarChart3,
   CalendarDays,
   Info,
   Leaf,
   Lightbulb,
   Repeat2,
+  Sun,
   Trash2,
   Users,
   UtensilsCrossed,
@@ -49,6 +51,20 @@ function formatDayFr(iso: string) {
     day: "numeric",
     month: "short",
   }).format(d);
+}
+
+function formatDayLongFr(iso: string) {
+  const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(d);
+}
+
+function capFirst(s: string) {
+  return s ? `${s.charAt(0).toUpperCase()}${s.slice(1)}` : s;
 }
 
 function peakDay(
@@ -419,6 +435,150 @@ function RabDetailPanel({
   );
 }
 
+function ServedDetailPanel({
+  served,
+  servedVsPresentPct,
+  leftover,
+  avgServed,
+  daysServed,
+  peakServed,
+}: {
+  served: number;
+  servedVsPresentPct: string;
+  leftover: number;
+  avgServed: number;
+  daysServed: number;
+  peakServed: DashboardDayDetailRow | null;
+}) {
+  const peakShort =
+    peakServed && peakServed.served > 0
+      ? `${capFirst(formatDayFr(peakServed.date))} – ${fmt(peakServed.served)} assiettes`
+      : null;
+  const recap =
+    daysServed > 0 && peakServed && peakServed.served > 0
+      ? `En moyenne, ${fmt(avgServed)} assiettes sont servies par jour, avec un pic à ${fmt(peakServed.served)} assiettes le ${formatDayLongFr(peakServed.date)}.`
+      : daysServed > 0
+        ? `En moyenne, ${fmt(avgServed)} assiettes sont servies par jour de service.`
+        : "Les assiettes servies apparaîtront ici dès les premières saisies.";
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="relative px-5 pb-2 pt-5 sm:px-6">
+        <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
+        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
+          <X className="size-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        <div className="relative flex items-start gap-3 pr-10">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#0f9f4f] text-white shadow-sm">
+            <UtensilsCrossed className="size-6" strokeWidth={2.4} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
+              Assiettes servies
+            </DialogTitle>
+            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+              {fmt(served)} assiettes servies · {servedVsPresentPct} des présents.
+            </DialogDescription>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
+        <div className="grid gap-2 sm:grid-cols-3">
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f8ef] px-3.5 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+              <Users className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="h-10 w-px bg-[#b7e4c7]" aria-hidden />
+            <div>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#0b3d24]">
+                {servedVsPresentPct}
+              </p>
+              <p className="mt-1 text-xs font-medium text-[#3d7a5c]">des présents</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f3ff] px-3.5 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-500 shadow-sm">
+              <UtensilsCrossed className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="h-10 w-px bg-sky-200" aria-hidden />
+            <div>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+                {fmt(served)}
+              </p>
+              <p className="mt-1 text-xs font-medium text-sky-700">assiettes servies</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#fff6ea] px-3.5 py-3.5">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#c2410c] shadow-sm">
+              <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="h-10 w-px bg-[#f3d5b3]" aria-hidden />
+            <div>
+              <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#9a3412]">
+                {fmt(leftover)}
+              </p>
+              <p className="mt-1 text-xs font-medium leading-snug text-[#b45309]">
+                présents non comptés
+                <span className="block">(écart présents / servis)</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#e7f8ef] px-3 py-1 text-xs font-extrabold text-[#0f9f4f]">
+            <BarChart3 className="size-3.5" aria-hidden />
+            Détails par service
+          </p>
+          <div className="flex flex-col gap-3 rounded-[1.35rem] bg-zinc-50 px-4 py-4 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#e7f8ef] text-[#0f9f4f]">
+                <Sun className="size-5" strokeWidth={2.2} aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-medium text-zinc-500">Moyenne</p>
+                <p className="text-lg font-extrabold leading-tight text-zinc-950">
+                  {daysServed > 0 ? `${fmt(avgServed)} assiettes` : "—"}
+                </p>
+                <p className="text-xs font-medium text-zinc-500">par jour de service</p>
+              </div>
+            </div>
+            <span className="hidden h-12 w-px bg-zinc-200 sm:block" aria-hidden />
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#e7f8ef] text-[#0f9f4f]">
+                <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-medium text-zinc-500">Jour le plus servi</p>
+                <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+                  {peakShort ?? "Pas encore de jour de pointe"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+          <RabLeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
+          <div className="relative flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+              <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
+            </span>
+            <div>
+              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
+              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+                {recap}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LevelFill({
   level,
   children,
@@ -714,18 +874,18 @@ export function KitchenDashboardKpis({
 
       <Dialog open={open != null} onOpenChange={(next) => !next && setOpen(null)}>
         <DialogContent
-          showCloseButton={open !== "rab"}
+          showCloseButton={open !== "rab" && open !== "served"}
           className={cn(
             "z-[100] rounded-3xl",
-            open === "rab"
-              ? "max-w-lg gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
+            open === "rab" || open === "served"
+              ? "gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
               : "border-2 border-zinc-900",
             open === "waste"
               ? "max-w-xl sm:p-6"
-              : open === "refused"
-                ? "max-w-lg"
-                : open === "rab"
-                  ? ""
+              : open === "served"
+                ? "max-w-2xl"
+                : open === "refused" || open === "rab"
+                  ? "max-w-lg"
                   : "max-w-md",
           )}
           overlayClassName="z-[100]"
@@ -736,13 +896,22 @@ export function KitchenDashboardKpis({
               rabRatePct={rabRatePct}
               peakLabel={
                 peakRab && peakRab.rab > 0
-                  ? `${formatDayFr(peakRab.date).replace(/^./, (c) => c.toUpperCase())} — ${fmt(peakRab.rab)}${
+                  ? `${capFirst(formatDayFr(peakRab.date))} — ${fmt(peakRab.rab)}${
                       peakRab.rabRatePct != null
                         ? ` (${peakRab.rabRatePct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %)`
                         : ""
                     }`
                   : null
               }
+            />
+          ) : open === "served" ? (
+            <ServedDetailPanel
+              served={totals.served}
+              servedVsPresentPct={servedVsPresentPct}
+              leftover={leftover}
+              avgServed={avgServed}
+              daysServed={daysServed}
+              peakServed={peakServed}
             />
           ) : active && activeCard && ActiveIcon ? (
             <>
