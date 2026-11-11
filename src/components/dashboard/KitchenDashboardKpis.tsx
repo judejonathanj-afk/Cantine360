@@ -4,14 +4,20 @@ import { useState, type ReactNode } from "react";
 import {
   ArrowRight,
   Ban,
+  CalendarDays,
+  Info,
+  Leaf,
+  Lightbulb,
   Repeat2,
   Trash2,
   Users,
   UtensilsCrossed,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -277,6 +283,135 @@ function RefusalRateDonut({
             <p className="text-lg font-extrabold tabular-nums text-zinc-950">
               {restPct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %
             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RabLeafDecor({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 160 120"
+      className={className}
+      aria-hidden
+    >
+      <ellipse cx="118" cy="38" rx="42" ry="28" fill="#bbf7d0" />
+      <ellipse cx="148" cy="18" rx="28" ry="20" fill="#86efac" />
+      <path
+        d="M22 108c18-28 48-38 72-22-8 22-32 34-56 28-8-2-14-4-16-6Z"
+        fill="#bbf7d0"
+      />
+      <path
+        d="M88 92c16-10 34-8 46 4-12 12-30 14-44 8-2-2-2-8-2-12Z"
+        fill="#86efac"
+      />
+    </svg>
+  );
+}
+
+function RabDetailPanel({
+  rabCount,
+  rabRatePct,
+  peakLabel,
+}: {
+  rabCount: number;
+  rabRatePct: string;
+  peakLabel: string | null;
+}) {
+  return (
+    <div className="relative overflow-hidden">
+      <div className="relative px-5 pb-2 pt-5 sm:px-6">
+        <RabLeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
+        <DialogClose className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800">
+          <X className="size-4" />
+          <span className="sr-only">Fermer</span>
+        </DialogClose>
+        <div className="relative flex items-start gap-3 pr-10">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#0f9f4f] text-white shadow-sm">
+            <Repeat2 className="size-6" strokeWidth={2.4} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
+              RAB
+            </DialogTitle>
+            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+              {fmt(rabCount)} RAB · {rabRatePct} des assiettes servies.
+            </DialogDescription>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 px-5 pb-5 pt-3 sm:px-6">
+        <div className="flex flex-col gap-3 rounded-[1.35rem] bg-[#e7f8ef] px-4 py-4 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+              <UtensilsCrossed className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <div>
+              <p className="font-display text-3xl font-extrabold leading-none tabular-nums tracking-tight text-[#0b3d24]">
+                {rabRatePct}
+              </p>
+              <p className="mt-1 text-sm font-medium text-[#3d7a5c]">
+                des assiettes sont des RAB
+              </p>
+            </div>
+          </div>
+          <span className="hidden h-12 w-px bg-[#b7e4c7] sm:block" aria-hidden />
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#0f9f4f] shadow-sm">
+              <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
+            </span>
+            <div>
+              <p className="text-sm font-medium text-[#3d7a5c]">
+                Jour le plus de RAB
+              </p>
+              <p className="mt-0.5 text-sm font-extrabold leading-snug text-[#0b3d24]">
+                {peakLabel ?? "Pas encore de jour de pointe"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-[1.25rem] bg-zinc-50 px-4 py-3.5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-600">
+            <Info className="size-4" strokeWidth={2.4} aria-hidden />
+          </span>
+          <p className="text-sm font-semibold leading-snug text-zinc-800">
+            RAB = assiettes adaptées ou resservies
+            <span className="mt-0.5 block font-medium text-zinc-500">
+              (petite faim, deuxième service, etc.).
+            </span>
+          </p>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-[1.25rem] bg-zinc-50 px-4 py-3.5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
+            <Lightbulb className="size-4" strokeWidth={2.4} aria-hidden />
+          </span>
+          <p className="text-sm font-semibold leading-snug text-zinc-800">
+            Un RAB régulier aide à limiter les restes,
+            <span className="mt-0.5 block font-medium text-zinc-600">
+              sans remplacer la pesée des déchets.
+            </span>
+          </p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+          <RabLeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
+          <div className="relative flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+              <Leaf className="size-4" strokeWidth={2.3} aria-hidden />
+            </span>
+            <div>
+              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
+              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+                {peakLabel
+                  ? `Jour le plus de RAB : ${peakLabel.charAt(0).toLowerCase()}${peakLabel.slice(1)}.`
+                  : "Saisissez les RAB pour voir le jour le plus marqué."}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -579,17 +714,37 @@ export function KitchenDashboardKpis({
 
       <Dialog open={open != null} onOpenChange={(next) => !next && setOpen(null)}>
         <DialogContent
+          showCloseButton={open !== "rab"}
           className={cn(
-            "z-[100] rounded-3xl border-2 border-zinc-900",
+            "z-[100] rounded-3xl",
+            open === "rab"
+              ? "max-w-lg gap-0 overflow-hidden border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)]"
+              : "border-2 border-zinc-900",
             open === "waste"
               ? "max-w-xl sm:p-6"
               : open === "refused"
                 ? "max-w-lg"
-                : "max-w-md",
+                : open === "rab"
+                  ? ""
+                  : "max-w-md",
           )}
           overlayClassName="z-[100]"
         >
-          {active && activeCard && ActiveIcon ? (
+          {open === "rab" ? (
+            <RabDetailPanel
+              rabCount={totals.rab}
+              rabRatePct={rabRatePct}
+              peakLabel={
+                peakRab && peakRab.rab > 0
+                  ? `${formatDayFr(peakRab.date).replace(/^./, (c) => c.toUpperCase())} — ${fmt(peakRab.rab)}${
+                      peakRab.rabRatePct != null
+                        ? ` (${peakRab.rabRatePct.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %)`
+                        : ""
+                    }`
+                  : null
+              }
+            />
+          ) : active && activeCard && ActiveIcon ? (
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-xl font-extrabold text-zinc-950">
