@@ -356,10 +356,21 @@ async function renderDashboard({
       ? (totalWasteWeightG / totals.served) * 100
       : null;
 
-  const perDayRows = buildDashboardDayDetailRows(services, {
-    levelFilter,
-    students: dashboardStudents,
-  });
+  const perDayRowsByLevel = {
+    all: buildDashboardDayDetailRows(services, {
+      levelFilter: "all",
+      students: dashboardStudents,
+    }),
+    MATERNELLE: buildDashboardDayDetailRows(services, {
+      levelFilter: "MATERNELLE",
+      students: dashboardStudents,
+    }),
+    PRIMAIRE: buildDashboardDayDetailRows(services, {
+      levelFilter: "PRIMAIRE",
+      students: dashboardStudents,
+    }),
+  };
+  const perDayRows = perDayRowsByLevel[levelFilter];
 
   const wastePerDay = new Map<string, { wasteWeightG: number; served: number }>();
   for (const s of services) {
@@ -648,6 +659,7 @@ async function renderDashboard({
       servicesWithWaste={servicesWithWaste}
       wasteGramsPer100Served={wasteGramsPer100Served}
       perDayRows={perDayRows}
+      perDayRowsByLevel={perDayRowsByLevel}
       mealFlowByLevel={mealFlowByLevel}
       wasteByLevel={wasteByLevel}
       levelComparisonTotals={levelComparisonTotals}

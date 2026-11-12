@@ -43,7 +43,7 @@ import {
   type LevelMealTotals,
 } from "@/lib/buildLevelComparisonSeries";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
-import { SCHOOL_LEVELS, schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import { downloadSuiviJourPdf } from "@/lib/downloadSuiviJourPdf";
 import { downloadWasteEvolutionPdf } from "@/lib/downloadWasteEvolutionPdf";
@@ -51,6 +51,11 @@ import { downloadCycleRatesPdf } from "@/lib/downloadCycleRatesPdf";
 import { downloadMealFlowPdf } from "@/lib/downloadMealFlowPdf";
 import { downloadCantinePlusPdf } from "@/lib/downloadCantinePlusPdf";
 import { cn } from "@/lib/utils";
+import {
+  levelsForFilter,
+  useScopedLevelFilter,
+  type LevelFilterValue,
+} from "@/lib/scopedLevelFilter";
 import type { ReactNode } from "react";
 
 type Totals = {
@@ -62,28 +67,10 @@ type Totals = {
 
 type DashboardDayRow = DashboardDayDetailRow;
 
-function OverlayFilterLink({
-  href,
-  active,
-  children,
-}: {
-  href: string;
-  active: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "rounded-full px-3 py-1.5 text-xs font-bold shadow-sm transition-colors sm:px-3.5 sm:text-sm",
-        active
-          ? "bg-[#0d7a45] text-white"
-          : "bg-white text-zinc-900 hover:bg-zinc-50",
-      )}
-    >
-      {children}
-    </Link>
+function overlayChipClass(active: boolean) {
+  return cn(
+    "rounded-full px-3 py-1.5 text-xs font-bold transition-colors sm:px-3.5 sm:text-sm",
+    active ? "bg-[#0d7a45] text-white shadow-sm" : "text-zinc-800 hover:text-zinc-950",
   );
 }
 
@@ -91,45 +78,51 @@ function OverlayTableToolbar({
   days,
   levelFilter,
   daysHref,
-  levelHref,
+  onLevelChange,
   downloadDisabled,
   onDownload,
 }: {
   days: 7 | 30;
-  levelFilter: "all" | SchoolLevel;
+  levelFilter: LevelFilterValue;
   daysHref: (nextDays: 7 | 30) => string;
-  levelHref: (level: "all" | SchoolLevel) => string;
+  onLevelChange: (level: LevelFilterValue) => void;
   downloadDisabled?: boolean;
   onDownload: () => void;
 }) {
   return (
     <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-      <OverlayFilterLink href={daysHref(7)} active={days === 7}>
-        7 jours
-      </OverlayFilterLink>
-      <OverlayFilterLink href={daysHref(30)} active={days === 30}>
-        30 jours
-      </OverlayFilterLink>
-      <OverlayFilterLink href={levelHref("all")} active={levelFilter === "all"}>
-        Tous niveaux
-      </OverlayFilterLink>
-      <OverlayFilterLink
-        href={levelHref("MATERNELLE")}
-        active={levelFilter === "MATERNELLE"}
+      <div
+        role="group"
+        aria-label="Période"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
       >
-        Maternelle
-      </OverlayFilterLink>
-      <OverlayFilterLink
-        href={levelHref("PRIMAIRE")}
-        active={levelFilter === "PRIMAIRE"}
+        <Link href={daysHref(7)} aria-current={days === 7 ? "page" : undefined} className={overlayChipClass(days === 7)}>
+          7 jours
+        </Link>
+        <Link href={daysHref(30)} aria-current={days === 30 ? "page" : undefined} className={overlayChipClass(days === 30)}>
+          30 jours
+        </Link>
+      </div>
+      <div
+        role="group"
+        aria-label="Niveau"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
       >
-        Primaire
-      </OverlayFilterLink>
+        <button type="button" aria-pressed={levelFilter === "all"} onClick={() => onLevelChange("all")} className={overlayChipClass(levelFilter === "all")}>
+          Tous niveaux
+        </button>
+        <button type="button" aria-pressed={levelFilter === "MATERNELLE"} onClick={() => onLevelChange("MATERNELLE")} className={overlayChipClass(levelFilter === "MATERNELLE")}>
+          Maternelle
+        </button>
+        <button type="button" aria-pressed={levelFilter === "PRIMAIRE"} onClick={() => onLevelChange("PRIMAIRE")} className={overlayChipClass(levelFilter === "PRIMAIRE")}>
+          Primaire
+        </button>
+      </div>
       <button
         type="button"
         disabled={downloadDisabled}
         onClick={onDownload}
-        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
       >
         <Download className="size-4" aria-hidden />
         Télécharger
@@ -152,10 +145,10 @@ function FilterSegmentLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-full px-3.5 py-1.5 text-sm font-bold shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all",
+        "rounded-full px-3.5 py-1.5 text-sm font-bold transition-all",
         active
-          ? "bg-[#0d7a45] text-white"
-          : "bg-white text-zinc-900 hover:bg-zinc-50",
+          ? "bg-[#0d7a45] text-white shadow-sm"
+          : "text-zinc-900 hover:bg-zinc-100",
       )}
     >
       {children}
@@ -202,6 +195,7 @@ export default function DashboardPanels({
   servicesWithWaste,
   wasteGramsPer100Served,
   perDayRows,
+  perDayRowsByLevel,
   mealFlowByLevel,
   wasteByLevel,
   levelComparisonTotals,
@@ -230,6 +224,7 @@ export default function DashboardPanels({
   servicesWithWaste: number;
   wasteGramsPer100Served: number | null;
   perDayRows: DashboardDayRow[];
+  perDayRowsByLevel: Record<LevelFilterValue, DashboardDayRow[]>;
   mealFlowByLevel: Record<SchoolLevel, MealFlowDayInput[]>;
   wasteByLevel: Record<SchoolLevel, WastePerDayRowInput[]>;
   levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
@@ -252,6 +247,19 @@ export default function DashboardPanels({
     }
   }, []);
 
+  const [cantinePlusLevel, setCantinePlusLevel] = useScopedLevelFilter(
+    "dashboard-cantine-plus",
+  );
+  const [mealFlowLevel, setMealFlowLevel] = useScopedLevelFilter(
+    "dashboard-meal-flow",
+  );
+  const [cycleLevel, setCycleLevel] = useScopedLevelFilter("dashboard-cycle");
+  const [wasteLevel, setWasteLevel] = useScopedLevelFilter("dashboard-waste");
+  const [contextLevel, setContextLevel] = useScopedLevelFilter(
+    "dashboard-context",
+  );
+  const [suiviLevel, setSuiviLevel] = useScopedLevelFilter("dashboard-suivi");
+
   const dashboardBase =
     role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
 
@@ -273,11 +281,6 @@ export default function DashboardPanels({
   function setCantinePlusFold(next: boolean) {
     router.replace(dashboardHref({ cantinePlus: next }), { scroll: false });
   }
-  const chartLevels =
-    levelFilter === "all" ? SCHOOL_LEVELS : ([levelFilter] as SchoolLevel[]);
-  const gridCols =
-    chartLevels.length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1";
-
   function formatDelta(value: number | null) {
     if (value == null) return "—";
     if (value === 0) return "0";
@@ -296,14 +299,14 @@ export default function DashboardPanels({
   const lectureFilters = (
     <OverlayTableToolbar
       days={days}
-      levelFilter={levelFilter}
+      levelFilter={cantinePlusLevel}
       daysHref={daysHref}
-      levelHref={levelHref}
+      onLevelChange={setCantinePlusLevel}
       downloadDisabled={pulseRows.length === 0 && pulseWasteRows.length === 0}
       onDownload={() =>
         downloadCantinePlusPdf(pulseRows, pulseWasteRows, {
           days,
-          levelFilter,
+          levelFilter: cantinePlusLevel,
         })
       }
     />
@@ -316,7 +319,7 @@ export default function DashboardPanels({
       mealType="LUNCH"
       days={days}
       showBrandTitle
-      levelFilter={levelFilter}
+      levelFilter={cantinePlusLevel}
       eco={
         eco
           ? {
@@ -361,7 +364,7 @@ export default function DashboardPanels({
             RAB{" "}
             <span className="text-zinc-800">(assiettes adaptées ou resservies)</span>
             {" "}et déchets (poids) — {days === 30 ? "30 jours" : "7 jours"}
-            {levelFilter !== "all" ? ` — ${schoolLevelLabelFr(levelFilter)}` : ""}
+            {cantinePlusLevel !== "all" ? ` — ${schoolLevelLabelFr(cantinePlusLevel)}` : ""}
           </p>
         </div>
         {lecturePulse}
@@ -384,13 +387,25 @@ export default function DashboardPanels({
         establishmentLabel={establishmentLabel}
       />
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3">
+        <div
+          role="group"
+          aria-label="Période"
+          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+        >
           <FilterSegmentLink href={daysHref(7)} active={days === 7}>
             7 jours
           </FilterSegmentLink>
           <FilterSegmentLink href={daysHref(30)} active={days === 30}>
             30 jours
           </FilterSegmentLink>
+        </div>
+
+        <div
+          role="group"
+          aria-label="Niveau"
+          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+        >
           <FilterSegmentLink href={levelHref("all")} active={levelFilter === "all"}>
             Tous niveaux
           </FilterSegmentLink>
@@ -406,6 +421,7 @@ export default function DashboardPanels({
           >
             Primaire
           </FilterSegmentLink>
+        </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isKitchen ? (
@@ -472,16 +488,16 @@ export default function DashboardPanels({
         headerAction={
           <OverlayTableToolbar
             days={days}
-            levelFilter={levelFilter}
+            levelFilter={mealFlowLevel}
             daysHref={daysHref}
-            levelHref={levelHref}
-            downloadDisabled={chartLevels.every(
+            onLevelChange={setMealFlowLevel}
+            downloadDisabled={levelsForFilter(mealFlowLevel).every(
               (level) => !mealFlowHasData(mealFlowByLevel[level] ?? []),
             )}
             onDownload={() =>
-              downloadMealFlowPdf(mealFlowByLevel, chartLevels, {
+              downloadMealFlowPdf(mealFlowByLevel, levelsForFilter(mealFlowLevel), {
                 days,
-                levelFilter,
+                levelFilter: mealFlowLevel,
               })
             }
           />
@@ -489,7 +505,7 @@ export default function DashboardPanels({
       >
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-5">
-            {chartLevels.map((level) => (
+            {levelsForFilter(mealFlowLevel).map((level) => (
               <DashboardInsightCard
                 key={`meal-flow-${level}`}
                 icon={Utensils}
@@ -511,12 +527,12 @@ export default function DashboardPanels({
             ))}
           </div>
           <div
-            className={cn(
+            className=            {cn(
               "grid grid-cols-1 gap-3",
-              chartLevels.length === 2 && "lg:grid-cols-2",
+              levelsForFilter(mealFlowLevel).length === 2 && "lg:grid-cols-2",
             )}
           >
-            {chartLevels.map((level) => (
+            {levelsForFilter(mealFlowLevel).map((level) => (
               <div
                 key={`meal-flow-conclusion-${level}`}
                 className={cn(
@@ -562,24 +578,33 @@ export default function DashboardPanels({
           headerAction={
             <OverlayTableToolbar
               days={days}
-              levelFilter={levelFilter}
+              levelFilter={cycleLevel}
               daysHref={daysHref}
-              levelHref={levelHref}
-              downloadDisabled={chartLevels.every(
+              onLevelChange={setCycleLevel}
+              downloadDisabled={levelsForFilter(cycleLevel).every(
                 (level) => !levelTotalsHasData(levelComparisonTotals[level]),
               )}
               onDownload={() =>
-                downloadCycleRatesPdf(levelComparisonTotals, chartLevels, {
-                  days,
-                  levelFilter,
-                })
+                downloadCycleRatesPdf(
+                  levelComparisonTotals,
+                  levelsForFilter(cycleLevel),
+                  {
+                    days,
+                    levelFilter: cycleLevel,
+                  },
+                )
               }
             />
           }
         >
           <div className="space-y-3">
-            <div className={cn("grid grid-cols-1 gap-5", gridCols)}>
-              {chartLevels.map((level) => (
+            <div
+              className={cn(
+                "grid grid-cols-1 gap-5",
+                levelsForFilter(cycleLevel).length === 2 ? "lg:grid-cols-2" : "lg:grid-cols-1",
+              )}
+            >
+              {levelsForFilter(cycleLevel).map((level) => (
                 <DashboardInsightCard
                   key={`level-rates-${level}`}
                   icon={GitCompareArrows}
@@ -603,10 +628,10 @@ export default function DashboardPanels({
             <div
               className={cn(
                 "grid grid-cols-1 gap-3",
-                chartLevels.length === 2 && "lg:grid-cols-2",
+                levelsForFilter(cycleLevel).length === 2 && "lg:grid-cols-2",
               )}
             >
-              {chartLevels.map((level) => (
+              {levelsForFilter(cycleLevel).map((level) => (
                 <div
                   key={`cycle-conclusion-${level}`}
                   className={cn(
@@ -652,25 +677,29 @@ export default function DashboardPanels({
         headerAction={
           <OverlayTableToolbar
             days={days}
-            levelFilter={levelFilter}
+            levelFilter={wasteLevel}
             daysHref={daysHref}
-            levelHref={levelHref}
-            downloadDisabled={chartLevels.every(
+            onLevelChange={setWasteLevel}
+            downloadDisabled={levelsForFilter(wasteLevel).every(
               (level) =>
                 !(wasteByLevel[level] ?? []).some((row) => row.wasteWeightG > 0),
             )}
             onDownload={() =>
-              downloadWasteEvolutionPdf(wasteByLevel, chartLevels, {
-                days,
-                levelFilter,
-              })
+              downloadWasteEvolutionPdf(
+                wasteByLevel,
+                levelsForFilter(wasteLevel),
+                {
+                  days,
+                  levelFilter: wasteLevel,
+                },
+              )
             }
           />
         }
       >
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-3">
-            {chartLevels.map((level) => (
+            {levelsForFilter(wasteLevel).map((level) => (
               <DashboardInsightCard
                 key={`waste-${level}`}
                 icon={Trash2}
@@ -694,10 +723,10 @@ export default function DashboardPanels({
           <div
             className={cn(
               "grid grid-cols-1 gap-3",
-              chartLevels.length === 2 && "lg:grid-cols-2",
+              levelsForFilter(wasteLevel).length === 2 && "lg:grid-cols-2",
             )}
           >
-            {chartLevels.map((level) => (
+            {levelsForFilter(wasteLevel).map((level) => (
               <div
                 key={`waste-conclusion-${level}`}
                 className={cn(
@@ -736,8 +765,8 @@ export default function DashboardPanels({
         overlayTitle="Contexte du service"
         subtitle="Comprenez un jour de service : menu, écoles, pesée et écarts par rapport à la veille."
         hint={
-          levelFilter !== "all"
-            ? `g / 100, pesée, menu et Δ — ${schoolLevelLabelFr(levelFilter)}. Filtrez, lisez, téléchargez.`
+          contextLevel !== "all"
+            ? `g / 100, pesée, menu et Δ — ${schoolLevelLabelFr(contextLevel)}. Filtrez, lisez, téléchargez.`
             : "g / 100, pesée, menu et Δ, une ligne par jour. Filtrez, lisez, téléchargez."
         }
         titleClassName="text-[#c2185b]"
@@ -749,14 +778,14 @@ export default function DashboardPanels({
         headerAction={
           <OverlayTableToolbar
             days={days}
-            levelFilter={levelFilter}
+            levelFilter={contextLevel}
             daysHref={daysHref}
-            levelHref={levelHref}
-            downloadDisabled={perDayRows.length === 0}
+            onLevelChange={setContextLevel}
+            downloadDisabled={perDayRowsByLevel[contextLevel].length === 0}
             onDownload={() =>
-              downloadSuiviJourPdf(perDayRows, {
+              downloadSuiviJourPdf(perDayRowsByLevel[contextLevel], {
                 days,
-                levelFilter,
+                levelFilter: contextLevel,
                 isKitchen,
                 section: "contexte",
               })
@@ -765,7 +794,7 @@ export default function DashboardPanels({
         }
       >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#c2185b] bg-card">
-          {perDayRows.length === 0 ? (
+          {perDayRowsByLevel[contextLevel].length === 0 ? (
             <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
@@ -784,7 +813,7 @@ export default function DashboardPanels({
                   </tr>
                 </thead>
                 <tbody className="font-medium text-black">
-                  {perDayRows.map((row) => (
+                  {perDayRowsByLevel[contextLevel].map((row) => (
                     <tr
                       key={`ctx-${row.date}`}
                       className="border-t border-border/60 align-top"
@@ -847,14 +876,14 @@ export default function DashboardPanels({
         headerAction={
           <OverlayTableToolbar
             days={days}
-            levelFilter={levelFilter}
+            levelFilter={suiviLevel}
             daysHref={daysHref}
-            levelHref={levelHref}
-            downloadDisabled={perDayRows.length === 0}
+            onLevelChange={setSuiviLevel}
+            downloadDisabled={perDayRowsByLevel[suiviLevel].length === 0}
             onDownload={() =>
-              downloadSuiviJourPdf(perDayRows, {
+              downloadSuiviJourPdf(perDayRowsByLevel[suiviLevel], {
                 days,
-                levelFilter,
+                levelFilter: suiviLevel,
                 isKitchen,
                 section: "suivi",
               })
@@ -863,7 +892,7 @@ export default function DashboardPanels({
         }
       >
         <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card">
-          {perDayRows.length === 0 ? (
+          {perDayRowsByLevel[suiviLevel].length === 0 ? (
             <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
             <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
@@ -877,19 +906,19 @@ export default function DashboardPanels({
                     <th className="px-3 py-2.5">RAB %</th>
                     <th className="px-3 py-2.5">Refus</th>
                     <th className="px-3 py-2.5">Refus %</th>
-                    {levelFilter === "all" ? (
+                    {suiviLevel === "all" ? (
                       <>
                         <th className="px-3 py-2.5">Déchets mat. (g)</th>
                         <th className="px-3 py-2.5">Déchets prim. (g)</th>
                       </>
                     ) : null}
                     <th className="px-3 py-2.5">
-                      Déchets{levelFilter === "all" ? " total" : ""} (g)
+                      Déchets{suiviLevel === "all" ? " total" : ""} (g)
                     </th>
                   </tr>
                 </thead>
                 <tbody className="font-medium text-black">
-                  {perDayRows.map((row) => (
+                  {perDayRowsByLevel[suiviLevel].map((row) => (
                     <tr key={row.date} className="border-t border-border/60">
                       <td className="px-3 py-2.5 font-medium whitespace-nowrap">
                         {row.date}
@@ -916,10 +945,10 @@ export default function DashboardPanels({
                           ? `${row.refusalRatePct.toLocaleString("fr-FR")} %`
                           : "—"}
                       </td>
-                      {levelFilter === "all" ? (
+                      {suiviLevel === "all" ? (
                         <>
                           <td className="px-3 py-2.5">
-                            {row.wasteWeightMaternelleG > 0
+                            {row.wasteWeightMaternelleG > 0}
                               ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
                               : "—"}
                           </td>

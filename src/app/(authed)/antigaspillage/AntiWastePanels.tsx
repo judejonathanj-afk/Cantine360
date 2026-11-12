@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -21,6 +20,10 @@ import { antiWasteStatus } from "@/lib/antiWasteStatus";
 import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
 import type { SchoolLevel } from "@/lib/schoolLevel";
+import {
+  useScopedLevelFilter,
+  type LevelFilterValue,
+} from "@/lib/scopedLevelFilter";
 import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
@@ -59,72 +62,62 @@ const STATUS_STYLES = {
   none: "bg-muted text-muted-foreground",
 } as const;
 
-function OverlayFilterLink({
-  href,
-  active,
-  children,
-}: {
-  href: string;
-  active: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={cn(
-        "rounded-full px-3 py-1.5 text-xs font-bold shadow-sm transition-colors sm:px-3.5 sm:text-sm",
-        active
-          ? "bg-[#0d7a45] text-white"
-          : "bg-white text-zinc-900 hover:bg-zinc-50",
-      )}
-    >
-      {children}
-    </Link>
+function overlayChipClass(active: boolean) {
+  return cn(
+    "rounded-full px-3 py-1.5 text-xs font-bold transition-colors sm:px-3.5 sm:text-sm",
+    active ? "bg-[#0d7a45] text-white shadow-sm" : "text-zinc-800 hover:text-zinc-950",
   );
 }
 
 function AntigaspillageOverlayFilters({
   days,
   levelFilter,
-  hrefFor,
+  daysHref,
+  onLevelChange,
   onDownload,
   downloadDisabled,
 }: {
   days: 7 | 30;
-  levelFilter: "all" | SchoolLevel;
-  hrefFor: (nextDays: 7 | 30, nextLevel: "all" | SchoolLevel) => string;
+  levelFilter: LevelFilterValue;
+  daysHref: (nextDays: 7 | 30) => string;
+  onLevelChange: (level: LevelFilterValue) => void;
   onDownload: () => void;
   downloadDisabled?: boolean;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
-      <OverlayFilterLink href={hrefFor(7, levelFilter)} active={days === 7}>
-        7 jours
-      </OverlayFilterLink>
-      <OverlayFilterLink href={hrefFor(30, levelFilter)} active={days === 30}>
-        30 jours
-      </OverlayFilterLink>
-      <OverlayFilterLink href={hrefFor(days, "all")} active={levelFilter === "all"}>
-        Tous niveaux
-      </OverlayFilterLink>
-      <OverlayFilterLink
-        href={hrefFor(days, "MATERNELLE")}
-        active={levelFilter === "MATERNELLE"}
+      <div
+        role="group"
+        aria-label="Période"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
       >
-        Maternelle
-      </OverlayFilterLink>
-      <OverlayFilterLink
-        href={hrefFor(days, "PRIMAIRE")}
-        active={levelFilter === "PRIMAIRE"}
+        <Link href={daysHref(7)} aria-current={days === 7 ? "page" : undefined} className={overlayChipClass(days === 7)}>
+          7 jours
+        </Link>
+        <Link href={daysHref(30)} aria-current={days === 30 ? "page" : undefined} className={overlayChipClass(days === 30)}>
+          30 jours
+        </Link>
+      </div>
+      <div
+        role="group"
+        aria-label="Niveau"
+        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
       >
-        Primaire
-      </OverlayFilterLink>
+        <button type="button" aria-pressed={levelFilter === "all"} onClick={() => onLevelChange("all")} className={overlayChipClass(levelFilter === "all")}>
+          Tous niveaux
+        </button>
+        <button type="button" aria-pressed={levelFilter === "MATERNELLE"} onClick={() => onLevelChange("MATERNELLE")} className={overlayChipClass(levelFilter === "MATERNELLE")}>
+          Maternelle
+        </button>
+        <button type="button" aria-pressed={levelFilter === "PRIMAIRE"} onClick={() => onLevelChange("PRIMAIRE")} className={overlayChipClass(levelFilter === "PRIMAIRE")}>
+          Primaire
+        </button>
+      </div>
       <button
         type="button"
         disabled={downloadDisabled}
         onClick={onDownload}
-        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
       >
         <Download className="size-4" aria-hidden />
         Télécharger
@@ -197,7 +190,6 @@ export function AntiWastePanels({
   perDayRows,
   chartRows,
   riskyDishes = [],
-  levelFilter = "all",
 }: {
   days: 7 | 30;
   targetGPer100: number | null;
@@ -216,15 +208,19 @@ export function AntiWastePanels({
   perDayRows: DayRow[];
   chartRows: WastePerDayRowInput[];
   riskyDishes?: RiskyDishRow[];
-  levelFilter?: "all" | SchoolLevel;
 }) {
-  const riskyDishesVisible = applyRiskyDishLevel(riskyDishes, levelFilter);
+  const [riskyLevel, setRiskyLevel] = useScopedLevelFilter("antigaspillage-risky");
+  const [missingLevel, setMissingLevel] = useScopedLevelFilter(
+    "antigaspillage-missing",
+  );
+  const [adviceLevel, setAdviceLevel] = useScopedLevelFilter(
+    "antigaspillage-advice",
+  );
+  const riskyDishesVisible = applyRiskyDishLevel(riskyDishes, riskyLevel);
+  const adviceDishesVisible = applyRiskyDishLevel(riskyDishes, adviceLevel);
 
-  function antigaspillageHref(nextDays: 7 | 30, nextLevel: "all" | SchoolLevel) {
-    const params = new URLSearchParams();
-    params.set("days", String(nextDays));
-    if (nextLevel !== "all") params.set("level", nextLevel);
-    return `/antigaspillage?${params.toString()}`;
+  function daysHref(nextDays: 7 | 30) {
+    return `/antigaspillage?days=${nextDays}`;
   }
   const missingWeighVisible = missingWeighServices;
   const status = antiWasteStatus(wasteGramsPer100Served, targetGPer100);
@@ -418,7 +414,11 @@ export function AntiWastePanels({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+          <div
+            role="group"
+            aria-label="Période"
+            className="inline-flex rounded-full border border-border bg-card p-1"
+          >
             {(
               [
                 { key: 7 as const, label: "7 jours" },
@@ -427,13 +427,13 @@ export function AntiWastePanels({
             ).map((o) => (
               <Link
                 key={o.key}
-                href={`/antigaspillage?days=${o.key}`}
+                href={daysHref(o.key)}
                 aria-pressed={days === o.key}
                 className={cn(
-                  "rounded-full px-4 py-1.5 text-sm font-bold shadow-sm transition-colors",
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
                   days === o.key
                     ? "bg-primary text-primary-foreground"
-                    : "bg-white text-zinc-900 hover:bg-zinc-50",
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {o.label}
@@ -532,8 +532,9 @@ export function AntiWastePanels({
           headerAction={
             <AntigaspillageOverlayFilters
               days={days}
-              levelFilter={levelFilter}
-              hrefFor={antigaspillageHref}
+              levelFilter={riskyLevel}
+              daysHref={daysHref}
+              onLevelChange={setRiskyLevel}
               downloadDisabled={riskyDishesVisible.length === 0}
               onDownload={() => {
                 void import("@/lib/downloadRiskyDishesPdf").then((mod) =>
@@ -742,8 +743,9 @@ export function AntiWastePanels({
             headerAction={
               <AntigaspillageOverlayFilters
                 days={days}
-                levelFilter={levelFilter}
-                hrefFor={antigaspillageHref}
+                levelFilter={missingLevel}
+                daysHref={daysHref}
+                onLevelChange={setMissingLevel}
                 onDownload={() => {
                   void import("@/lib/downloadMissingWeighPdf").then((mod) =>
                     mod.downloadMissingWeighPdf(missingWeighVisible, days),
@@ -795,8 +797,9 @@ export function AntiWastePanels({
           headerAction={
             <AntigaspillageOverlayFilters
               days={days}
-              levelFilter={levelFilter}
-              hrefFor={antigaspillageHref}
+              levelFilter={adviceLevel}
+              daysHref={daysHref}
+              onLevelChange={setAdviceLevel}
               onDownload={downloadSynthesisCsv}
             />
           }
@@ -835,7 +838,7 @@ export function AntiWastePanels({
             }
             curveRemark={curveRemark}
             dishRemark={dishRemark}
-            dishCount={riskyDishesVisible.length}
+            dishCount={adviceDishesVisible.length}
             weighingsLabel={`${servicesWithWaste} / ${servicesCount}`}
             missingWeighCount={missingWeighCount}
             rabRatePct={rabRatePct}

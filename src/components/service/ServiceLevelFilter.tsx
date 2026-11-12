@@ -24,10 +24,10 @@ function SegmentButton({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        "rounded-full px-3.5 py-1.5 text-sm font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+        "rounded-full px-3.5 py-1.5 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
         active
-          ? "bg-[#0d7a45] text-white"
-          : "bg-white text-zinc-900 hover:bg-zinc-50",
+          ? "bg-[#0d7a45] text-white shadow-sm"
+          : "text-zinc-900 hover:bg-zinc-100",
       )}
     >
       {children}
@@ -53,7 +53,7 @@ export function ServiceLevelFilter({
     <div
       role="group"
       aria-label="Niveau"
-      className="inline-flex shrink-0 flex-wrap items-center gap-2"
+      className="inline-flex shrink-0 items-center rounded-full bg-white p-1 shadow-sm"
     >
       <SegmentButton active={value === "all"} onClick={() => onChange("all")}>
         Tous niveaux
