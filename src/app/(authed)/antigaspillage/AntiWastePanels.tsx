@@ -163,44 +163,6 @@ function applyRiskyDishLevel(
     .sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
 }
 
-const DISH_PHOTO_FALLBACK = "/login-buffet-salade.jpg";
-
-const DISH_PHOTOS: { keys: string[]; src: string }[] = [
-  {
-    keys: ["lasagne", "lasagna"],
-    src: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=480&h=360&q=80",
-  },
-  {
-    keys: ["pâte", "pate", "spaghetti", "tagliatelle", "penne"],
-    src: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=480&h=360&q=80",
-  },
-  {
-    keys: ["poulet", "volaille"],
-    src: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=480&h=360&q=80",
-  },
-  {
-    keys: ["poisson", "cabillaud", "saumon", "colin"],
-    src: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=480&h=360&q=80",
-  },
-  {
-    keys: ["salade"],
-    src: "/login-buffet-salade.jpg",
-  },
-  {
-    keys: ["gratin", "hachis", "parmentier"],
-    src: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=480&h=360&q=80",
-  },
-];
-
-function dishPhotoSrc(label: string) {
-  const n = label
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-  const hit = DISH_PHOTOS.find((p) => p.keys.some((k) => n.includes(k)));
-  return hit?.src ?? DISH_PHOTO_FALLBACK;
-}
-
 function RiskyLeafDecor({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 160 120" className={className} aria-hidden>
@@ -632,18 +594,7 @@ export function AntiWastePanels({
                     className="overflow-hidden rounded-[1.6rem] border border-violet-100 bg-white p-3 shadow-[0_10px_28px_-18px_rgba(91,33,182,0.35)] sm:p-3.5"
                   >
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
-                      <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-                        <div className="relative h-[5.75rem] w-[7.5rem] shrink-0 overflow-hidden rounded-2xl bg-violet-100 sm:h-28 sm:w-40">
-                          <img
-                            src={dishPhotoSrc(d.label)}
-                            alt=""
-                            className="size-full object-cover"
-                            onError={(event) => {
-                              event.currentTarget.src = DISH_PHOTO_FALLBACK;
-                            }}
-                          />
-                        </div>
-                        <div className="flex min-w-0 items-start gap-3">
+                      <div className="flex min-w-0 flex-1 items-start gap-3">
                           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#6d28d9] text-sm font-extrabold text-white shadow-sm">
                             {rank}
                           </span>
@@ -660,7 +611,6 @@ export function AntiWastePanels({
                                 : `Vu sur ${d.serviceCount} services de la période.`}
                             </p>
                           </div>
-                        </div>
                       </div>
                       <div className="relative min-w-[13.5rem] overflow-hidden rounded-[1.35rem] bg-[#f5f3ff] px-4 py-3 sm:min-w-[15rem]">
                         <RiskyLeafDecor className="pointer-events-none absolute -right-3 -top-4 h-20 w-28 opacity-80" />
