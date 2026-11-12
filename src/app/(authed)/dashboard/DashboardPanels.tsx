@@ -76,8 +76,10 @@ function OverlayFilterLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-full px-3 py-1.5 text-xs font-bold transition-colors sm:px-3.5 sm:text-sm",
-        active ? "bg-[#0d7a45] text-white shadow-sm" : "text-zinc-800 hover:text-zinc-950",
+        "rounded-full px-3 py-1.5 text-xs font-bold shadow-sm transition-colors sm:px-3.5 sm:text-sm",
+        active
+          ? "bg-[#0d7a45] text-white"
+          : "bg-white text-zinc-900 hover:bg-zinc-50",
       )}
     >
       {children}
@@ -102,44 +104,32 @@ function OverlayTableToolbar({
 }) {
   return (
     <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-      <div
-        role="group"
-        aria-label="Période"
-        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
+      <OverlayFilterLink href={daysHref(7)} active={days === 7}>
+        7 jours
+      </OverlayFilterLink>
+      <OverlayFilterLink href={daysHref(30)} active={days === 30}>
+        30 jours
+      </OverlayFilterLink>
+      <OverlayFilterLink href={levelHref("all")} active={levelFilter === "all"}>
+        Tous niveaux
+      </OverlayFilterLink>
+      <OverlayFilterLink
+        href={levelHref("MATERNELLE")}
+        active={levelFilter === "MATERNELLE"}
       >
-        <OverlayFilterLink href={daysHref(7)} active={days === 7}>
-          7 jours
-        </OverlayFilterLink>
-        <OverlayFilterLink href={daysHref(30)} active={days === 30}>
-          30 jours
-        </OverlayFilterLink>
-      </div>
-      <div
-        role="group"
-        aria-label="Niveau"
-        className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
+        Maternelle
+      </OverlayFilterLink>
+      <OverlayFilterLink
+        href={levelHref("PRIMAIRE")}
+        active={levelFilter === "PRIMAIRE"}
       >
-        <OverlayFilterLink href={levelHref("all")} active={levelFilter === "all"}>
-          Tous niveaux
-        </OverlayFilterLink>
-        <OverlayFilterLink
-          href={levelHref("MATERNELLE")}
-          active={levelFilter === "MATERNELLE"}
-        >
-          Maternelle
-        </OverlayFilterLink>
-        <OverlayFilterLink
-          href={levelHref("PRIMAIRE")}
-          active={levelFilter === "PRIMAIRE"}
-        >
-          Primaire
-        </OverlayFilterLink>
-      </div>
+        Primaire
+      </OverlayFilterLink>
       <button
         type="button"
         disabled={downloadDisabled}
         onClick={onDownload}
-        className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:hover:scale-100"
+        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-bold text-zinc-900 shadow-sm transition duration-200 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Download className="size-4" aria-hidden />
         Télécharger
@@ -162,10 +152,10 @@ function FilterSegmentLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-full px-3.5 py-1.5 text-sm font-bold transition-all",
+        "rounded-full px-3.5 py-1.5 text-sm font-bold shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all",
         active
-          ? "bg-[#0d7a45] text-white shadow-sm"
-          : "text-zinc-900 hover:bg-zinc-100",
+          ? "bg-[#0d7a45] text-white"
+          : "bg-white text-zinc-900 hover:bg-zinc-50",
       )}
     >
       {children}
@@ -394,25 +384,13 @@ export default function DashboardPanels({
         establishmentLabel={establishmentLabel}
       />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <div
-          role="group"
-          aria-label="Période"
-          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-        >
+      <div className="flex flex-wrap items-center gap-2">
           <FilterSegmentLink href={daysHref(7)} active={days === 7}>
             7 jours
           </FilterSegmentLink>
           <FilterSegmentLink href={daysHref(30)} active={days === 30}>
             30 jours
           </FilterSegmentLink>
-        </div>
-
-        <div
-          role="group"
-          aria-label="Niveau"
-          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
-        >
           <FilterSegmentLink href={levelHref("all")} active={levelFilter === "all"}>
             Tous niveaux
           </FilterSegmentLink>
@@ -428,7 +406,6 @@ export default function DashboardPanels({
           >
             Primaire
           </FilterSegmentLink>
-        </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {!isKitchen ? (
