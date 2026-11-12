@@ -59,6 +59,14 @@ export default async function ServiceMenuPage({
         containsFish: Boolean(
           "containsFish" in i && (i as { containsFish?: boolean }).containsFish,
         ),
+        notHalal: Boolean(
+          ("notHalal" in i && (i as { notHalal?: boolean }).notHalal) ||
+            ("containsPork" in i && (i as { containsPork?: boolean }).containsPork),
+        ),
+        notKosher: Boolean(
+          ("notKosher" in i && (i as { notKosher?: boolean }).notKosher) ||
+            ("containsPork" in i && (i as { containsPork?: boolean }).containsPork),
+        ),
       }));
 
   const dishWasteHistoryByLabel = antiWaste.antiWasteModeEnabled

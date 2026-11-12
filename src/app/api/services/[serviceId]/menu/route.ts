@@ -16,6 +16,8 @@ const ItemSchema = z.object({
   containsMeat: z.boolean().optional().default(false),
   containsBeef: z.boolean().optional().default(false),
   containsFish: z.boolean().optional().default(false),
+  notHalal: z.boolean().optional().default(false),
+  notKosher: z.boolean().optional().default(false),
 });
 
 const PutSchema = z.object({
@@ -62,6 +64,8 @@ export async function PUT(
     containsMeat: Boolean(i.containsMeat) || Boolean(i.containsPork) || Boolean(i.containsBeef),
     containsBeef: Boolean(i.containsBeef),
     containsFish: Boolean(i.containsFish),
+    notHalal: Boolean(i.notHalal) || Boolean(i.containsPork),
+    notKosher: Boolean(i.notKosher) || Boolean(i.containsPork),
   }));
 
   async function replaceMenu(withDiet: boolean) {
@@ -94,6 +98,8 @@ export async function PUT(
                   containsMeat: item.containsMeat,
                   containsBeef: item.containsBeef,
                   containsFish: item.containsFish,
+                  notHalal: item.notHalal,
+                  notKosher: item.notKosher,
                 })
               : row;
           }),
@@ -111,6 +117,8 @@ export async function PUT(
           containsMeat: item.containsMeat,
           containsBeef: item.containsBeef,
           containsFish: item.containsFish,
+          notHalal: item.notHalal,
+          notKosher: item.notKosher,
         })),
       };
     });
@@ -125,7 +133,9 @@ export async function PUT(
       !msg.includes("containsPork") &&
       !msg.includes("containsMeat") &&
       !msg.includes("containsBeef") &&
-      !msg.includes("containsFish")
+      !msg.includes("containsFish") &&
+      !msg.includes("notHalal") &&
+      !msg.includes("notKosher")
     ) {
       throw e;
     }

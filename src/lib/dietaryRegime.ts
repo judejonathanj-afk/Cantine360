@@ -19,6 +19,8 @@ export type MenuDietFlags = {
   containsMeat: boolean;
   containsBeef?: boolean;
   containsFish?: boolean;
+  notHalal?: boolean;
+  notKosher?: boolean;
 };
 
 export const DIET_META: Record<
@@ -73,14 +75,15 @@ export const DIET_META: Record<
     csvHeaders: ["halal"],
     chipClass: "bg-teal-800 text-white",
     kitchenHint:
-      "Ne pas servir (porc). La viande du jour n’est pas certifiée halal — adapter si besoin.",
+      "Ne pas servir (porc ou plat marqué Non halal). Adapter avec une alternative compatible.",
   },
   kosher: {
     label: "Casher",
     labelPlural: "casher",
     csvHeaders: ["casher", "cacher", "kosher", "kasher"],
     chipClass: "bg-indigo-800 text-white",
-    kitchenHint: "Ne pas servir (porc). Adapter selon les consignes casher.",
+    kitchenHint:
+      "Ne pas servir (porc ou plat marqué Non casher). Adapter selon les consignes casher.",
   },
 };
 
@@ -130,9 +133,11 @@ export function dishConflictsDiet(diet: DietKey, dish: MenuDietFlags): boolean {
   const meat = meatLike(dish);
   switch (diet) {
     case "noPork":
-    case "halal":
-    case "kosher":
       return pork;
+    case "halal":
+      return pork || Boolean(dish.notHalal);
+    case "kosher":
+      return pork || Boolean(dish.notKosher);
     case "vegetarian":
       return meat || pork;
     case "vegan":

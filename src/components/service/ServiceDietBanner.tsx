@@ -54,7 +54,10 @@ export function ServiceDietBanner({
       className={cn(className)}
     >
       {!summary.hasMenu ? (
-        <p>Complétez le menu (porc, viande, bœuf, poisson) pour voir les adaptations.</p>
+        <p>
+          Complétez le menu (porc, viande, bœuf, poisson, non halal, non casher) pour voir
+          les adaptations.
+        </p>
       ) : classesTouched.length > 0 ? (
         <p>
           {classesTouched.map((g, index) => (

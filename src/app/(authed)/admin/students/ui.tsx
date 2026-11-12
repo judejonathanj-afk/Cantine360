@@ -429,7 +429,7 @@ export function AdminStudentsClient({
                   setDraftDiets((prev) => ({ ...prev, [key]: !prev[key] }))
                 }
                 className={[
-                  "rounded-full px-2.5 py-1 text-sm font-bold",
+                  "whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-bold",
                   draftDiets[key] ? DIET_META[key].chipClass : "bg-zinc-100 text-zinc-800",
                 ].join(" ")}
               >
@@ -702,7 +702,7 @@ export function AdminStudentsClient({
                           type="button"
                           onClick={() => void toggleDiet(s, key)}
                           className={[
-                            "rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
+                            "whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-extrabold shadow-sm",
                             s[key] ? DIET_META[key].chipClass : "bg-white/90 text-zinc-500",
                           ].join(" ")}
                         >

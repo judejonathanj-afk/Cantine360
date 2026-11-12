@@ -78,6 +78,16 @@ describe("dietaryRegime", () => {
         { label: "Poulet", containsPork: false, containsMeat: true },
       ]).dishes,
     ).toEqual(["Saucisse"]);
+    expect(
+      dietConflictsWithMenu({ halal: true }, [
+        { label: "Poulet", containsPork: false, containsMeat: true, notHalal: true },
+      ]).dishes,
+    ).toEqual(["Poulet"]);
+    expect(
+      dietConflictsWithMenu({ kosher: true }, [
+        { label: "Hachis", containsPork: false, containsMeat: true, notKosher: true },
+      ]).dishes,
+    ).toEqual(["Hachis"]);
   });
 
   it("CSV sans_porc / vegetarien", () => {

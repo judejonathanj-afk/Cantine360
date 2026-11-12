@@ -17,6 +17,8 @@ type Item = {
   containsMeat: boolean;
   containsBeef: boolean;
   containsFish: boolean;
+  notHalal: boolean;
+  notKosher: boolean;
 };
 
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -67,6 +69,8 @@ function emptyItem(category: Category): Item {
     containsMeat: false,
     containsBeef: false,
     containsFish: false,
+    notHalal: false,
+    notKosher: false,
   };
 }
 
@@ -80,6 +84,8 @@ function initializeMenuItems(initialItems: Item[]): Item[] {
     containsMeat: Boolean(item.containsMeat) || Boolean(item.containsPork) || Boolean(item.containsBeef),
     containsBeef: Boolean(item.containsBeef),
     containsFish: Boolean(item.containsFish),
+    notHalal: Boolean(item.notHalal) || Boolean(item.containsPork),
+    notKosher: Boolean(item.notKosher) || Boolean(item.containsPork),
   }));
   if (withFlags.length === 0) {
     return DEFAULT_CATEGORIES.map((category) => emptyItem(category));
@@ -388,7 +394,7 @@ export function MenuEditor({
                               });
                             }}
                             className={[
-                              "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                              "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                               selected
                                 ? "bg-zinc-900 text-white"
                                 : "bg-white text-zinc-900 hover:bg-zinc-100",
@@ -413,10 +419,12 @@ export function MenuEditor({
                           update(idx, {
                             containsPork: next,
                             containsMeat: next ? true : it.containsMeat,
+                            notHalal: next ? true : it.notHalal,
+                            notKosher: next ? true : it.notKosher,
                           });
                         }}
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                           it.containsPork
                             ? "bg-sky-800 text-white"
                             : "bg-white text-zinc-900 hover:bg-zinc-100",
@@ -435,7 +443,7 @@ export function MenuEditor({
                           })
                         }
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                           it.containsMeat
                             ? "bg-emerald-800 text-white"
                             : "bg-white text-zinc-900 hover:bg-zinc-100",
@@ -452,7 +460,7 @@ export function MenuEditor({
                           })
                         }
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                           it.containsBeef
                             ? "bg-orange-800 text-white"
                             : "bg-white text-zinc-900 hover:bg-zinc-100",
@@ -466,13 +474,41 @@ export function MenuEditor({
                           update(idx, { containsFish: !it.containsFish })
                         }
                         className={[
-                          "rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
                           it.containsFish
                             ? "bg-cyan-800 text-white"
                             : "bg-white text-zinc-900 hover:bg-zinc-100",
                         ].join(" ")}
                       >
                         Contient du poisson
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          update(idx, { notHalal: !it.notHalal })
+                        }
+                        className={[
+                          "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          it.notHalal
+                            ? "bg-teal-800 text-white"
+                            : "bg-white text-zinc-900 hover:bg-zinc-100",
+                        ].join(" ")}
+                      >
+                        Non halal
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          update(idx, { notKosher: !it.notKosher })
+                        }
+                        className={[
+                          "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
+                          it.notKosher
+                            ? "bg-indigo-800 text-white"
+                            : "bg-white text-zinc-900 hover:bg-zinc-100",
+                        ].join(" ")}
+                      >
+                        Non casher
                       </button>
                     </div>
                   </div>
