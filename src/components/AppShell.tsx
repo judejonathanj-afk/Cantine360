@@ -225,7 +225,7 @@ export function AppShell({
     >
       <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
         <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-3 sm:px-4 sm:py-2.5">
+          <div className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-3 sm:px-4 sm:py-2.5">
             <Link
               href={homeHref}
               className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-2.5"
@@ -247,7 +247,12 @@ export function AppShell({
 
             <nav
               aria-label="Navigation principale"
-              className="hidden min-w-0 items-center justify-start gap-0.5 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:flex xl:gap-1.5"
+              className={cn(
+                "hidden items-center gap-0.5 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:flex xl:gap-1.5",
+                shellRole === "ADMIN"
+                  ? "min-w-0 justify-start"
+                  : "absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 justify-center",
+              )}
             >
               {barNavItems.map((item) => {
                 const Icon = item.icon;
