@@ -4,13 +4,16 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
+  BarChart3,
   CalendarDays,
   Download,
+  Eye,
   Flame,
   Lightbulb,
   Recycle,
   Scale,
   Target,
+  Trash2,
   Utensils,
 } from "lucide-react";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
@@ -158,6 +161,57 @@ function applyRiskyDishLevel(
       return [row];
     })
     .sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
+}
+
+const DISH_PHOTO_FALLBACK = "/login-buffet-salade.jpg";
+
+const DISH_PHOTOS: { keys: string[]; src: string }[] = [
+  {
+    keys: ["lasagne", "lasagna"],
+    src: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?auto=format&fit=crop&w=480&h=360&q=80",
+  },
+  {
+    keys: ["pâte", "pate", "spaghetti", "tagliatelle", "penne"],
+    src: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=480&h=360&q=80",
+  },
+  {
+    keys: ["poulet", "volaille"],
+    src: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?auto=format&fit=crop&w=480&h=360&q=80",
+  },
+  {
+    keys: ["poisson", "cabillaud", "saumon", "colin"],
+    src: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=480&h=360&q=80",
+  },
+  {
+    keys: ["salade"],
+    src: "/login-buffet-salade.jpg",
+  },
+  {
+    keys: ["gratin", "hachis", "parmentier"],
+    src: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=480&h=360&q=80",
+  },
+];
+
+function dishPhotoSrc(label: string) {
+  const n = label
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const hit = DISH_PHOTOS.find((p) => p.keys.some((k) => n.includes(k)));
+  return hit?.src ?? DISH_PHOTO_FALLBACK;
+}
+
+function RiskyLeafDecor({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 160 120" className={className} aria-hidden>
+      <ellipse cx="118" cy="38" rx="42" ry="28" fill="#ddd6fe" />
+      <ellipse cx="148" cy="18" rx="28" ry="20" fill="#c4b5fd" />
+      <path
+        d="M22 108c18-28 48-38 72-22-8 22-32 34-56 28-8-2-14-4-16-6Z"
+        fill="#ede9fe"
+      />
+    </svg>
+  );
 }
 
 function CyclePill({ level }: { level: "MATERNELLE" | "PRIMAIRE" }) {
@@ -545,12 +599,22 @@ export function AntiWastePanels({
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="px-1 text-base font-semibold leading-snug text-violet-950 sm:text-lg">
-                {riskyDishesVisible.length} plat
-                {riskyDishesVisible.length > 1 ? "s" : ""} classé
-                {riskyDishesVisible.length > 1 ? "s" : ""} : le n°1 est celui
-                à regarder en premier pour demain.
-              </p>
+              <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-[#6d28d9] px-4 py-2.5 text-white shadow-sm">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                  <Trash2 className="size-4" strokeWidth={2.3} aria-hidden />
+                </span>
+                <span className="hidden h-6 w-px bg-white/35 sm:block" aria-hidden />
+                <p className="min-w-0 flex-1 text-sm font-extrabold leading-snug sm:text-base">
+                  {riskyDishesVisible.length} plat
+                  {riskyDishesVisible.length > 1 ? "s" : ""} classé
+                  {riskyDishesVisible.length > 1 ? "s" : ""} : le n°1 est celui
+                  à regarder en premier pour demain.
+                </p>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.06em]">
+                  <CalendarDays className="size-3.5" aria-hidden />
+                  À surveiller dès demain
+                </span>
+              </div>
             <ul className="flex flex-col gap-3">
               {riskyDishesVisible.map((d, i) => {
                 const pct = Math.max((d.avgWasteGPer100 / maxRiskG) * 100, 3);
@@ -565,115 +629,137 @@ export function AntiWastePanels({
                 return (
                   <li
                     key={`${d.label}-${i}`}
-                    className={cn(
-                      "overflow-hidden rounded-2xl border-2 p-3 shadow-sm sm:p-3.5",
-                      rank === 1
-                        ? "border-violet-400 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50"
-                        : rank === 2
-                          ? "border-violet-300 bg-gradient-to-br from-violet-50/80 to-white"
-                          : "border-violet-200 bg-white",
-                    )}
+                    className="overflow-hidden rounded-[1.6rem] border border-violet-100 bg-white p-3 shadow-[0_10px_28px_-18px_rgba(91,33,182,0.35)] sm:p-3.5"
                   >
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div className="flex min-w-0 flex-1 items-start gap-3">
-                        <span
-                          className={cn(
-                            "flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-extrabold text-white shadow-sm",
-                            rank === 1
-                              ? "bg-violet-700"
-                              : rank === 2
-                                ? "bg-violet-500"
-                                : "bg-violet-400",
-                          )}
-                        >
-                          {rank}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-violet-700">
-                            {rankLabel}
-                          </p>
-                          <p className="mt-0.5 text-lg font-extrabold leading-tight tracking-tight text-zinc-950 capitalize sm:text-xl">
-                            {d.label}
-                          </p>
-                          <p className="mt-1.5 text-sm font-medium leading-snug text-zinc-700 sm:text-base">
-                            {d.serviceCount === 1
-                              ? "Vu sur 1 service de la période."
-                              : `Vu sur ${d.serviceCount} services de la période.`}
-                          </p>
+                    <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
+                      <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+                        <div className="relative h-[5.75rem] w-[7.5rem] shrink-0 overflow-hidden rounded-2xl bg-violet-100 sm:h-28 sm:w-40">
+                          <img
+                            src={dishPhotoSrc(d.label)}
+                            alt=""
+                            className="size-full object-cover"
+                            onError={(event) => {
+                              event.currentTarget.src = DISH_PHOTO_FALLBACK;
+                            }}
+                          />
+                        </div>
+                        <div className="flex min-w-0 items-start gap-3">
+                          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#6d28d9] text-sm font-extrabold text-white shadow-sm">
+                            {rank}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#6d28d9]">
+                              {rankLabel}
+                            </p>
+                            <p className="mt-0.5 text-xl font-extrabold leading-tight tracking-tight text-zinc-950 capitalize sm:text-2xl">
+                              {d.label}
+                            </p>
+                            <p className="mt-1 text-sm font-medium leading-snug text-zinc-500 sm:text-base">
+                              {d.serviceCount === 1
+                                ? "Vu sur 1 service de la période."
+                                : `Vu sur ${d.serviceCount} services de la période.`}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      <div className="shrink-0 rounded-2xl bg-white px-3 py-2 text-right shadow-sm ring-1 ring-violet-200">
-                        <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-black">
-                          Moyenne
-                        </p>
-                        <p className="mt-0.5 font-display text-xl font-extrabold tracking-tight text-violet-800 sm:text-2xl">
-                          {grams}
-                          <span className="ml-1 text-sm font-bold text-zinc-700">
-                            g
+                      <div className="relative min-w-[13.5rem] overflow-hidden rounded-[1.35rem] bg-[#f5f3ff] px-4 py-3 sm:min-w-[15rem]">
+                        <RiskyLeafDecor className="pointer-events-none absolute -right-3 -top-4 h-20 w-28 opacity-80" />
+                        <div className="relative flex items-start gap-3">
+                          <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[#6d28d9] shadow-sm">
+                            <Trash2 className="size-5" strokeWidth={2.2} aria-hidden />
                           </span>
-                        </p>
-                        <p className="mt-0.5 text-sm font-semibold leading-snug text-zinc-700">
-                          de déchets pour 100 assiettes
-                        </p>
-                        <span
-                          className={cn(
-                            "mt-2 inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-extrabold uppercase tracking-wide",
-                            d.vsTarget === "above"
-                              ? "bg-rose-100 text-rose-800"
-                              : d.vsTarget === "ok"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-violet-100 text-violet-800",
-                          )}
-                        >
-                          {d.vsTarget === "above"
-                            ? "Au-dessus de l’objectif"
-                            : d.vsTarget === "ok"
-                              ? "Sous l’objectif"
-                              : "Objectif non défini"}
-                        </span>
+                          <div>
+                            <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#6d28d9]">
+                              Moyenne
+                            </p>
+                            <p className="mt-0.5 font-display text-[1.85rem] font-extrabold leading-none tracking-tight text-[#5b21b6]">
+                              {grams}
+                              <span className="ml-1 text-lg font-bold">g</span>
+                            </p>
+                            <p className="mt-1 text-xs font-semibold leading-snug text-zinc-500">
+                              de déchets pour 100 assiettes
+                            </p>
+                            <span
+                              className={cn(
+                                "mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide",
+                                d.vsTarget === "above"
+                                  ? "bg-rose-100 text-rose-800"
+                                  : d.vsTarget === "ok"
+                                    ? "bg-emerald-100 text-emerald-800"
+                                    : "bg-white text-[#6d28d9]",
+                              )}
+                            >
+                              <Target className="size-3" aria-hidden />
+                              {d.vsTarget === "above"
+                                ? "Au-dessus de l’objectif"
+                                : d.vsTarget === "ok"
+                                  ? "Sous l’objectif"
+                                  : "Objectif non défini"}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-3 grid gap-2.5 border-t border-violet-200/80 pt-3 sm:grid-cols-2">
-                      <div className="rounded-2xl bg-white/80 px-3.5 py-3 ring-1 ring-violet-100">
-                        <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
-                          Par cycle
-                        </p>
-                        <p className="mt-2.5 text-base font-medium leading-relaxed text-zinc-900">
+                    <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
+                      <div className="relative overflow-hidden rounded-[1.35rem] bg-[#faf8ff] px-4 py-3.5 ring-1 ring-violet-100">
+                        <div className="flex items-center gap-2">
+                          <span className="flex size-8 items-center justify-center rounded-full bg-white text-[#6d28d9] shadow-sm">
+                            <Recycle className="size-4" strokeWidth={2.3} aria-hidden />
+                          </span>
+                          <p className="text-base font-extrabold text-zinc-950">
+                            Par cycle
+                          </p>
+                        </div>
+                        <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-800 sm:text-base">
                           En <CyclePill level="MATERNELLE" />{" "}
                           {d.maternelleGPer100 != null
                             ? `${fmt(Math.round(d.maternelleGPer100))} g de déchets pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
-                        <p className="mt-2 text-base font-medium leading-relaxed text-zinc-900">
+                        <p className="mt-2 text-sm font-medium leading-relaxed text-zinc-800 sm:text-base">
                           En <CyclePill level="PRIMAIRE" />{" "}
                           {d.primaireGPer100 != null
                             ? `${fmt(Math.round(d.primaireGPer100))} g de déchets pour 100 assiettes.`
                             : "pas encore de pesée sur la période."}
                         </p>
+                        <BarChart3
+                          className="mt-3 size-4 text-violet-300"
+                          aria-hidden
+                        />
                       </div>
-                      <div className="rounded-2xl bg-white/80 px-3.5 py-3 ring-1 ring-violet-100">
-                        <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-black">
-                          Classes à surveiller
-                        </p>
+                      <div className="rounded-[1.35rem] bg-[#faf8ff] px-4 py-3.5 ring-1 ring-violet-100">
+                        <div className="flex items-center gap-2">
+                          <span className="flex size-8 items-center justify-center rounded-full bg-white text-[#6d28d9] shadow-sm">
+                            <Eye className="size-4" strokeWidth={2.3} aria-hidden />
+                          </span>
+                          <p className="text-base font-extrabold text-zinc-950">
+                            Classes à surveiller
+                          </p>
+                        </div>
                         {(d.topClasses ?? []).length === 0 ? (
-                          <p className="mt-2.5 text-base font-medium leading-relaxed text-zinc-600">
+                          <p className="mt-3 text-sm font-medium leading-relaxed text-zinc-600">
                             Pas encore de détail par classe pour ce plat.
                           </p>
                         ) : (
-                          <ul className="mt-2.5 space-y-2">
+                          <ul className="mt-3 space-y-1.5">
                             {(d.topClasses ?? []).map((c) => (
                               <li
                                 key={`${d.label}-${c.label}`}
-                                className="flex items-center justify-between gap-3 rounded-xl bg-violet-50/70 px-2.5 py-1.5 text-base text-zinc-800"
+                                className="flex items-center justify-between gap-3 px-1 py-1 text-sm text-zinc-800 sm:text-base"
                               >
                                 <span className="min-w-0 font-medium">
                                   {c.label}
-                                  <span className="ml-1.5">
+                                  <span className="ml-2">
                                     <CyclePill level={c.level} />
                                   </span>
                                 </span>
-                                <span className="shrink-0 font-bold tabular-nums text-zinc-950">
+                                <span className="inline-flex shrink-0 items-center gap-2 font-bold tabular-nums text-zinc-950">
                                   {fmt(Math.round(c.wasteG))} g de déchets
+                                  <Trash2
+                                    className="size-4 text-[#6d28d9]"
+                                    strokeWidth={2.2}
+                                    aria-hidden
+                                  />
                                 </span>
                               </li>
                             ))}
