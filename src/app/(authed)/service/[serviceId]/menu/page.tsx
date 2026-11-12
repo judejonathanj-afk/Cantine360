@@ -59,13 +59,15 @@ export default async function ServiceMenuPage({
         containsFish: Boolean(
           "containsFish" in i && (i as { containsFish?: boolean }).containsFish,
         ),
-        notHalal: Boolean(
-          ("notHalal" in i && (i as { notHalal?: boolean }).notHalal) ||
-            ("containsPork" in i && (i as { containsPork?: boolean }).containsPork),
+        isHalal: Boolean(
+          "isHalal" in i &&
+            (i as { isHalal?: boolean }).isHalal &&
+            !("containsPork" in i && (i as { containsPork?: boolean }).containsPork),
         ),
-        notKosher: Boolean(
-          ("notKosher" in i && (i as { notKosher?: boolean }).notKosher) ||
-            ("containsPork" in i && (i as { containsPork?: boolean }).containsPork),
+        isKosher: Boolean(
+          "isKosher" in i &&
+            (i as { isKosher?: boolean }).isKosher &&
+            !("containsPork" in i && (i as { containsPork?: boolean }).containsPork),
         ),
       }));
 

@@ -88,8 +88,8 @@ const menuItemDietSelect = {
   containsMeat: true,
   containsBeef: true,
   containsFish: true,
-  notHalal: true,
-  notKosher: true,
+  isHalal: true,
+  isKosher: true,
 } as const;
 
 const menuItemMinSelect = {
@@ -120,8 +120,8 @@ function withMenuDietDefaults<T extends { allergens: string[] }>(item: T) {
     containsMeat?: boolean;
     containsBeef?: boolean;
     containsFish?: boolean;
-    notHalal?: boolean;
-    notKosher?: boolean;
+    isHalal?: boolean;
+    isKosher?: boolean;
   };
   return {
     ...item,
@@ -129,8 +129,8 @@ function withMenuDietDefaults<T extends { allergens: string[] }>(item: T) {
     containsMeat: Boolean(rec.containsMeat),
     containsBeef: Boolean(rec.containsBeef),
     containsFish: Boolean(rec.containsFish),
-    notHalal: Boolean(rec.notHalal) || Boolean(rec.containsPork),
-    notKosher: Boolean(rec.notKosher) || Boolean(rec.containsPork),
+    isHalal: Boolean(rec.isHalal) && !Boolean(rec.containsPork),
+    isKosher: Boolean(rec.isKosher) && !Boolean(rec.containsPork),
   };
 }
 

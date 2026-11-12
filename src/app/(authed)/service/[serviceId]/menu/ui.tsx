@@ -17,8 +17,8 @@ type Item = {
   containsMeat: boolean;
   containsBeef: boolean;
   containsFish: boolean;
-  notHalal: boolean;
-  notKosher: boolean;
+  isHalal: boolean;
+  isKosher: boolean;
 };
 
 const CATEGORY_LABEL: Record<Category, string> = {
@@ -69,8 +69,8 @@ function emptyItem(category: Category): Item {
     containsMeat: false,
     containsBeef: false,
     containsFish: false,
-    notHalal: false,
-    notKosher: false,
+    isHalal: false,
+    isKosher: false,
   };
 }
 
@@ -84,8 +84,8 @@ function initializeMenuItems(initialItems: Item[]): Item[] {
     containsMeat: Boolean(item.containsMeat) || Boolean(item.containsPork) || Boolean(item.containsBeef),
     containsBeef: Boolean(item.containsBeef),
     containsFish: Boolean(item.containsFish),
-    notHalal: Boolean(item.notHalal) || Boolean(item.containsPork),
-    notKosher: Boolean(item.notKosher) || Boolean(item.containsPork),
+    isHalal: Boolean(item.isHalal) && !Boolean(item.containsPork),
+    isKosher: Boolean(item.isKosher) && !Boolean(item.containsPork),
   }));
   if (withFlags.length === 0) {
     return DEFAULT_CATEGORIES.map((category) => emptyItem(category));
@@ -419,8 +419,8 @@ export function MenuEditor({
                           update(idx, {
                             containsPork: next,
                             containsMeat: next ? true : it.containsMeat,
-                            notHalal: next ? true : it.notHalal,
-                            notKosher: next ? true : it.notKosher,
+                            isHalal: next ? false : it.isHalal,
+                            isKosher: next ? false : it.isKosher,
                           });
                         }}
                         className={[
@@ -484,31 +484,39 @@ export function MenuEditor({
                       </button>
                       <button
                         type="button"
-                        onClick={() =>
-                          update(idx, { notHalal: !it.notHalal })
-                        }
+                        onClick={() => {
+                          const next = !it.isHalal;
+                          update(idx, {
+                            isHalal: next,
+                            containsPork: next ? false : it.containsPork,
+                          });
+                        }}
                         className={[
                           "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
-                          it.notHalal
+                          it.isHalal
                             ? "bg-teal-800 text-white"
                             : "bg-white text-zinc-900 hover:bg-zinc-100",
                         ].join(" ")}
                       >
-                        Non halal
+                        Halal
                       </button>
                       <button
                         type="button"
-                        onClick={() =>
-                          update(idx, { notKosher: !it.notKosher })
-                        }
+                        onClick={() => {
+                          const next = !it.isKosher;
+                          update(idx, {
+                            isKosher: next,
+                            containsPork: next ? false : it.containsPork,
+                          });
+                        }}
                         className={[
                           "whitespace-nowrap rounded-full border-2 border-zinc-900 px-4 py-2 text-sm font-bold shadow-sm",
-                          it.notKosher
+                          it.isKosher
                             ? "bg-indigo-800 text-white"
                             : "bg-white text-zinc-900 hover:bg-zinc-100",
                         ].join(" ")}
                       >
-                        Non casher
+                        Casher
                       </button>
                     </div>
                   </div>

@@ -75,19 +75,24 @@ describe("dietaryRegime", () => {
     expect(
       dietConflictsWithMenu({ halal: true }, [
         { label: "Saucisse", containsPork: true, containsMeat: true },
-        { label: "Poulet", containsPork: false, containsMeat: true },
+        { label: "Poulet", containsPork: false, containsMeat: true, isHalal: true },
       ]).dishes,
     ).toEqual(["Saucisse"]);
     expect(
       dietConflictsWithMenu({ halal: true }, [
-        { label: "Poulet", containsPork: false, containsMeat: true, notHalal: true },
+        { label: "Poulet", containsPork: false, containsMeat: true },
       ]).dishes,
     ).toEqual(["Poulet"]);
     expect(
       dietConflictsWithMenu({ kosher: true }, [
-        { label: "Hachis", containsPork: false, containsMeat: true, notKosher: true },
+        { label: "Hachis", containsPork: false, containsMeat: true },
       ]).dishes,
     ).toEqual(["Hachis"]);
+    expect(
+      dietConflictsWithMenu({ kosher: true }, [
+        { label: "Hachis", containsPork: false, containsMeat: true, isKosher: true },
+      ]).dishes,
+    ).toEqual([]);
   });
 
   it("CSV sans_porc / vegetarien", () => {

@@ -202,10 +202,10 @@ model MenuItem {
   containsMeat Boolean @default(false)
   containsBeef Boolean @default(false)
   containsFish Boolean @default(false)
-  /** Plat non adapté à un régime halal (viande non certifiée, alcool, etc.). */
-  notHalal Boolean @default(false)
-  /** Plat non adapté à un régime casher. */
-  notKosher Boolean @default(false)
+  /** Plat marqué halal (à presser si le plat est halal). */
+  isHalal Boolean @default(false)
+  /** Plat marqué casher (à presser si le plat est casher). */
+  isKosher Boolean @default(false)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 

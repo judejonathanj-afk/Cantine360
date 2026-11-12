@@ -55,7 +55,7 @@ export function ServiceDietBanner({
     >
       {!summary.hasMenu ? (
         <p>
-          Complétez le menu (porc, viande, bœuf, poisson, non halal, non casher) pour voir
+          Complétez le menu (porc, viande, bœuf, poisson, halal, casher) pour voir
           les adaptations.
         </p>
       ) : classesTouched.length > 0 ? (
