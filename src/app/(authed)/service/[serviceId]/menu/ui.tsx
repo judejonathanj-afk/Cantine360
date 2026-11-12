@@ -349,17 +349,17 @@ export function MenuEditor({
                           onClick={() =>
                             update(idx, { grammageG: suggestion.grams })
                           }
-                          className="flex min-w-[11rem] flex-col justify-center rounded-xl border border-zinc-500 bg-zinc-800/90 px-3 py-2 text-left transition hover:border-zinc-400 hover:bg-zinc-800"
+                          className="flex min-w-[11rem] flex-col justify-center rounded-xl border border-[#9ed12a] bg-[#c8f24a] px-3 py-2 text-left shadow-sm transition hover:bg-[#bce83f]"
                         >
-                          <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-green-500">
-                            <Recycle className="h-3.5 w-3.5 text-green-500" aria-hidden />
+                          <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-zinc-950">
+                            <Recycle className="h-3.5 w-3.5 text-zinc-950" aria-hidden />
                             Antigaspillage propose
                           </span>
-                          <span className="mt-0.5 text-xl font-bold tabular-nums text-white">
+                          <span className="mt-0.5 text-xl font-bold tabular-nums text-zinc-950">
                             {suggestion.grams}{" "}
-                            <span className="text-sm font-semibold text-zinc-200">g</span>
+                            <span className="text-sm font-semibold text-zinc-800">g</span>
                           </span>
-                          <span className="text-[11px] leading-snug text-zinc-300">
+                          <span className="text-[11px] leading-snug text-zinc-800">
                             {suggestion.sourceLabel} — cliquer pour appliquer
                           </span>
                         </button>
