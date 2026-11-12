@@ -213,10 +213,10 @@ export function AppShell({
     >
       <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between gap-3 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-4 sm:px-5 sm:py-2.5">
+          <div className="flex items-center justify-between gap-3 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-5 sm:px-5 sm:py-2.5 lg:gap-8">
             <Link
               href={homeHref}
-              className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3"
+              className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3 lg:mr-2"
               onClick={() => setMenuOpen(false)}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black sm:h-11 sm:w-11 sm:rounded-[14px]">
@@ -235,7 +235,7 @@ export function AppShell({
 
             <nav
               aria-label="Navigation principale"
-              className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:gap-2 lg:flex"
+              className="hidden min-w-0 flex-1 items-center justify-start gap-1 pl-2 lg:flex xl:gap-2 xl:pl-4"
             >
               {navItems.map((item) => {
                 const Icon = item.icon;
