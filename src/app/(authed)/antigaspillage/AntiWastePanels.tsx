@@ -452,8 +452,8 @@ export function AntiWastePanels({
       </section>
 
       <div className="anti-waste-dash-fade space-y-6">
-        <div className="grid gap-px overflow-hidden rounded-3xl border border-border bg-border shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)] lg:grid-cols-[1.05fr_1.35fr]">
-          <div className="flex flex-col items-center justify-center gap-5 bg-card px-6 py-10">
+        <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)]">
+          <div className="flex flex-col items-center justify-center gap-5 px-6 py-10">
             <AntiWasteGauge
               value={gaugeValue}
               objective={targetGPer100}
@@ -493,15 +493,6 @@ export function AntiWastePanels({
               </span>
             </p>
           </div>
-
-          <div className="bg-card px-6 py-8 sm:px-8">
-            <AntiWasteModeToggle
-              initialEnabled={modeEnabled}
-              initialTargetGPer100={targetGPer100}
-              schemaReady={schemaReady}
-              compact
-            />
-          </div>
         </div>
 
       {streakAboveTarget >= 3 ? (
@@ -517,6 +508,28 @@ export function AntiWastePanels({
       ) : null}
 
       <div className="grid gap-6">
+        <DashboardFoldOverlay
+          kicker="Objectif"
+          openLabel="Ouvrir Objectif à ne pas dépasser"
+          overlayTitle="Objectif à ne pas dépasser"
+          foldTone="forest"
+          subtitle="Fixez le plafond de déchets pour 100 assiettes servies, et activez ou désactivez le mode."
+          hint={
+            targetGPer100 != null && targetGPer100 > 0
+              ? `En cours : ${fmt(Math.round(targetGPer100))} g / 100. Saisissez, enregistrez.`
+              : "Ex. 80 = pas plus de 0,8 kg jetés pour 100 repas. Saisissez, enregistrez."
+          }
+          icon={Target}
+          labelledBy="anti-waste-target-overlay-title"
+          closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        >
+          <AntiWasteModeToggle
+            initialEnabled={modeEnabled}
+            initialTargetGPer100={targetGPer100}
+            schemaReady={schemaReady}
+            embedded
+          />
+        </DashboardFoldOverlay>
         <DashboardFoldOverlay
           kicker="Plats à risque"
           openLabel="Ouvrir Plats à risque"

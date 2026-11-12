@@ -12,12 +12,15 @@ export function AntiWasteModeToggle({
   initialTargetGPer100,
   schemaReady = true,
   compact = false,
+  embedded = false,
 }: {
   initialEnabled: boolean;
   initialTargetGPer100: number | null;
   schemaReady?: boolean;
   /** Sans carte externe (déjà dans la grille hero). */
   compact?: boolean;
+  /** Dans une fenêtre overlay : pas de cadre jaune. */
+  embedded?: boolean;
 }) {
   const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -286,6 +289,14 @@ export function AntiWasteModeToggle({
       ) : null}
     </>
   );
+
+  if (embedded) {
+    return (
+      <div id="anti-waste" className="flex scroll-mt-8 flex-col gap-5">
+        {body}
+      </div>
+    );
+  }
 
   if (compact) {
     return (
