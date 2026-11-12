@@ -201,8 +201,20 @@ export function AppShell({
   const serviceShellClass = isServiceArea ? "bg-white" : null;
 
   const homeHref = shellRole === "ADMIN" ? "/admin/dashboard" : "/service";
+  const exportsItem = navItems.find((item) => item.href === "/exports") ?? null;
+  const barNavItems = navItems.filter((item) => item.href !== "/exports");
 
   useNavSwipe(navItems, pathname);
+
+  function navChipClass(active: boolean, pinned = false) {
+    return cn(
+      "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full py-1.5 font-extrabold uppercase tracking-[0.06em] transition-colors",
+      pinned
+        ? "gap-1.5 px-3 text-[12px] xl:text-[13px]"
+        : "px-2 text-[11px] xl:gap-1.5 xl:px-3 xl:text-[13px]",
+      active ? "bg-black text-white" : "text-black hover:bg-black/[0.06]",
+    );
+  }
 
   return (
     <div
@@ -213,10 +225,10 @@ export function AppShell({
     >
       <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between gap-2 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-3 sm:px-4 sm:py-2.5">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-3 sm:px-4 sm:py-2.5">
             <Link
               href={homeHref}
-              className="flex min-w-0 shrink items-center gap-2 sm:gap-2.5"
+              className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-2.5"
               onClick={() => setMenuOpen(false)}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black sm:h-11 sm:w-11 sm:rounded-[14px]">
@@ -235,21 +247,16 @@ export function AppShell({
 
             <nav
               aria-label="Navigation principale"
-              className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 lg:flex xl:justify-center xl:gap-1.5"
+              className="hidden min-w-0 items-center justify-start gap-0.5 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:flex xl:gap-1.5"
             >
-              {navItems.map((item) => {
+              {barNavItems.map((item) => {
                 const Icon = item.icon;
                 const active = isNavActive(item, pathname);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={cn(
-                      "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] transition-colors xl:gap-1.5 xl:px-3 xl:text-[13px]",
-                      active
-                        ? "bg-black text-white"
-                        : "text-black hover:bg-black/[0.06]",
-                    )}
+                    className={navChipClass(active)}
                   >
                     <Icon className="h-4 w-4 shrink-0" strokeWidth={2.25} />
                     {item.label}
@@ -258,7 +265,19 @@ export function AppShell({
               })}
             </nav>
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="relative z-20 flex shrink-0 items-center gap-1.5 sm:gap-2">
+              {exportsItem ? (
+                <Link
+                  href={exportsItem.href}
+                  className={cn(
+                    "hidden lg:inline-flex",
+                    navChipClass(isNavActive(exportsItem, pathname), true),
+                  )}
+                >
+                  <FileDown className="h-4 w-4 shrink-0" strokeWidth={2.25} />
+                  {exportsItem.label}
+                </Link>
+              ) : null}
               {showEndServiceButton ? (
                 <EndServiceButton capsule />
               ) : (
@@ -269,11 +288,11 @@ export function AppShell({
                     disabled={busy}
                     className="group hidden items-stretch overflow-hidden rounded-full bg-red-600 hover:bg-red-700 disabled:opacity-60 sm:flex"
                   >
-                    <span className="flex items-center px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:px-5 sm:text-[11px]">
+                    <span className="flex items-center px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-white sm:px-4 sm:text-[11px]">
                       {busy ? "..." : "Déconnexion"}
                     </span>
                     <span
-                      className="flex w-11 items-center justify-center transition-transform group-hover:scale-105 sm:w-12"
+                      className="flex w-10 items-center justify-center transition-transform group-hover:scale-105 sm:w-11"
                       style={{ backgroundColor: LIME }}
                     >
                       <LogOut size={16} strokeWidth={2.5} className="text-black" />
