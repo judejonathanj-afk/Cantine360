@@ -213,16 +213,16 @@ export function AppShell({
     >
       <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
         <div className="mx-auto max-w-7xl">
-          <div className="flex items-center justify-between gap-3 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-5 sm:px-5 sm:py-2.5 lg:gap-8">
+          <div className="flex items-center justify-between gap-2 rounded-full border border-black/[0.06] bg-white px-3 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)] sm:gap-3 sm:px-4 sm:py-2.5">
             <Link
               href={homeHref}
-              className="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3 lg:mr-2"
+              className="flex min-w-0 shrink items-center gap-2 sm:gap-2.5"
               onClick={() => setMenuOpen(false)}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black sm:h-11 sm:w-11 sm:rounded-[14px]">
                 <ChefHat className="h-5 w-5 text-[#d1f18d]" strokeWidth={2} />
               </span>
-              <span className="min-w-0">
+              <span className="min-w-0 max-w-[7.5rem] xl:max-w-[12rem]">
                 <span className="block truncate text-[17px] font-extrabold uppercase tracking-[-0.04em] text-black sm:text-[19px]">
                   Cantine360
                 </span>
@@ -235,7 +235,7 @@ export function AppShell({
 
             <nav
               aria-label="Navigation principale"
-              className="hidden min-w-0 flex-1 items-center justify-start gap-1 pl-2 lg:flex xl:gap-2 xl:pl-4"
+              className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 lg:flex xl:justify-center xl:gap-1.5"
             >
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -245,7 +245,7 @@ export function AppShell({
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-[12px] font-extrabold uppercase tracking-[0.08em] transition-colors xl:px-3.5 xl:text-[13px]",
+                      "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-2 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] transition-colors xl:gap-1.5 xl:px-3 xl:text-[13px]",
                       active
                         ? "bg-black text-white"
                         : "text-black hover:bg-black/[0.06]",
