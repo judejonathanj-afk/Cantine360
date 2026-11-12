@@ -138,13 +138,13 @@ function WeekWasteChart({
     <div className="rounded-[1.5rem] bg-white px-3 py-3 sm:px-4 sm:py-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="inline-flex rounded-full bg-orange-100 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-orange-500">
+          <p className="inline-flex rounded-full bg-orange-100 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-orange-600">
             Évolution
           </p>
           <p className="mt-1.5 text-base font-extrabold tracking-tight text-zinc-950 sm:text-lg">
             Vos déchets cette semaine
           </p>
-          <p className="mt-0.5 text-xs font-medium text-zinc-400">
+          <p className="mt-0.5 text-xs font-semibold text-zinc-600">
             Pesées de l’établissement {periodLabel}
           </p>
         </div>
@@ -156,7 +156,7 @@ function WeekWasteChart({
             <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950 sm:text-[1.7rem]">
               {fmt(periodTotal)} g
             </p>
-            <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-medium text-zinc-500">
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 text-xs font-bold text-zinc-700">
               vs semaine d’avant
               {deltaPct != null ? (
                 <span
@@ -289,7 +289,7 @@ function WasteDetailPanel({
             <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
               Déchets (poids)
             </DialogTitle>
-            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+            <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
               {totalWasteWeightG > 0
                 ? `${fmt(totalWasteWeightG)} g pesés sur ${days} jours · ${levelNote}.`
                 : `Pas encore de pesée sur ${days} jours · ${levelNote}.`}
@@ -329,7 +329,7 @@ function WasteDetailPanel({
                 </p>
               </div>
             ) : (
-              <p className="mt-2 text-xs font-medium leading-snug text-zinc-500">
+              <p className="mt-2 text-xs font-bold leading-snug text-zinc-700">
                 Indiquez maternelle et primaire à la pesée de fin de service.
               </p>
             )}
@@ -340,13 +340,13 @@ function WasteDetailPanel({
               <Recycle className="size-5" strokeWidth={2.2} aria-hidden />
             </span>
             <div>
-              <p className="text-xs font-medium text-zinc-500">Soit</p>
+              <p className="text-xs font-extrabold uppercase tracking-wide text-[#047857]">Soit</p>
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {wasteGramsPer100Served != null
                   ? `${fmt(wasteGramsPer100Served)} g`
                   : "—"}
               </p>
-              <p className="mt-1 text-xs font-medium leading-snug text-zinc-500">
+              <p className="mt-1 text-xs font-bold leading-snug text-zinc-700">
                 de déchets pour
                 <span className="block">100 assiettes servies</span>
               </p>
@@ -358,12 +358,12 @@ function WasteDetailPanel({
               <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
             </span>
             <div>
-              <p className="text-xs font-medium text-zinc-500">Jour le plus lourd</p>
-              <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+              <p className="text-xs font-extrabold uppercase tracking-wide text-[#047857]">Jour le plus lourd</p>
+              <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-[1.05rem]">
                 {peakLabel ?? "Pas encore de jour de pointe"}
               </p>
               {peakWaste && peakWaste.wasteWeightG > 0 ? (
-                <p className="mt-0.5 text-xs font-semibold text-zinc-500">
+                <p className="mt-0.5 text-xs font-bold text-zinc-800">
                   — {fmt(peakWaste.wasteWeightG)} g
                   {peakWaste.wasteGramsPer100 != null
                     ? ` (${peakWaste.wasteGramsPer100.toLocaleString("fr-FR", { maximumFractionDigits: 0 })} g / 100)`
@@ -381,8 +381,8 @@ function WasteDetailPanel({
               <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
             </span>
             <div>
-              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
-              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+              <p className="text-base font-extrabold text-[#047857]">À retenir</p>
+              <p className="mt-0.5 text-sm font-bold leading-snug text-[#052e16]">
                 {recap}
               </p>
             </div>
@@ -436,7 +436,7 @@ function RefusalRateDonut({
         ) : null}
       </svg>
       <div className="pointer-events-none absolute inset-[16%] flex flex-col items-center justify-center text-center">
-        <p className="text-[11px] font-semibold text-zinc-500">Taux</p>
+        <p className="text-[11px] font-extrabold uppercase tracking-wide text-zinc-700">Taux</p>
         <p className="text-[1.65rem] font-extrabold tabular-nums leading-none text-zinc-950">
           {rateLabel} %
         </p>
@@ -503,7 +503,7 @@ function RabDetailPanel({
             <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
               RAB
             </DialogTitle>
-            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+            <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
               {fmt(rabCount)} RAB · {rabRatePct} des assiettes servies.
             </DialogDescription>
           </div>
@@ -520,7 +520,7 @@ function RabDetailPanel({
               <p className="font-display text-3xl font-extrabold leading-none tabular-nums tracking-tight text-[#0b3d24]">
                 {rabRatePct}
               </p>
-              <p className="mt-1 text-sm font-medium text-[#3d7a5c]">
+              <p className="mt-1 text-sm font-bold text-[#14532d]">
                 des assiettes sont des RAB
               </p>
             </div>
@@ -531,7 +531,7 @@ function RabDetailPanel({
               <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
             </span>
             <div>
-              <p className="text-sm font-medium text-[#3d7a5c]">
+              <p className="text-sm font-bold text-[#14532d]">
                 Jour le plus de RAB
               </p>
               <p className="mt-0.5 text-sm font-extrabold leading-snug text-[#0b3d24]">
@@ -545,9 +545,9 @@ function RabDetailPanel({
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-600">
             <Info className="size-4" strokeWidth={2.4} aria-hidden />
           </span>
-          <p className="text-sm font-semibold leading-snug text-zinc-800">
+          <p className="text-sm font-bold leading-snug text-zinc-950">
             RAB = assiettes adaptées ou resservies
-            <span className="mt-0.5 block font-medium text-zinc-500">
+            <span className="mt-0.5 block font-semibold text-zinc-700">
               (petite faim, deuxième service, etc.).
             </span>
           </p>
@@ -557,9 +557,9 @@ function RabDetailPanel({
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
             <Lightbulb className="size-4" strokeWidth={2.4} aria-hidden />
           </span>
-          <p className="text-sm font-semibold leading-snug text-zinc-800">
+          <p className="text-sm font-bold leading-snug text-zinc-950">
             Un RAB régulier aide à limiter les restes,
-            <span className="mt-0.5 block font-medium text-zinc-600">
+            <span className="mt-0.5 block font-semibold text-zinc-800">
               sans remplacer la pesée des déchets.
             </span>
           </p>
@@ -572,8 +572,8 @@ function RabDetailPanel({
               <Leaf className="size-4" strokeWidth={2.3} aria-hidden />
             </span>
             <div>
-              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
-              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+              <p className="text-base font-extrabold text-[#047857]">À retenir</p>
+              <p className="mt-0.5 text-sm font-bold leading-snug text-[#052e16]">
                 {peakLabel
                   ? `Jour le plus de RAB : ${peakLabel.charAt(0).toLowerCase()}${peakLabel.slice(1)}.`
                   : "Saisissez les RAB pour voir le jour le plus marqué."}
@@ -624,7 +624,7 @@ function ServedDetailPanel({
             <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
               Assiettes servies
             </DialogTitle>
-            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+            <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
               {fmt(served)} assiettes servies · {servedVsPresentPct} des présents.
             </DialogDescription>
           </div>
@@ -642,11 +642,11 @@ function ServedDetailPanel({
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#0b3d24]">
                 {servedVsPresentPct}
               </p>
-              <p className="mt-1 text-xs font-medium text-[#3d7a5c]">des présents</p>
+              <p className="mt-1 text-xs font-bold text-[#14532d]">des présents</p>
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f3ff] px-3.5 py-3.5">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-500 shadow-sm">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-600 shadow-sm">
               <UtensilsCrossed className="size-5" strokeWidth={2.2} aria-hidden />
             </span>
             <span className="h-10 w-px bg-sky-200" aria-hidden />
@@ -654,7 +654,7 @@ function ServedDetailPanel({
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {fmt(served)}
               </p>
-              <p className="mt-1 text-xs font-medium text-sky-700">assiettes servies</p>
+              <p className="mt-1 text-xs font-bold text-sky-800">assiettes servies</p>
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#fff6ea] px-3.5 py-3.5">
@@ -666,7 +666,7 @@ function ServedDetailPanel({
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#9a3412]">
                 {fmt(leftover)}
               </p>
-              <p className="mt-1 text-xs font-medium leading-snug text-[#b45309]">
+              <p className="mt-1 text-xs font-bold leading-snug text-[#9a3412]">
                 présents non comptés
                 <span className="block">(écart présents / servis)</span>
               </p>
@@ -675,7 +675,7 @@ function ServedDetailPanel({
         </div>
 
         <div>
-          <p className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#e7f8ef] px-3 py-1 text-xs font-extrabold text-[#0f9f4f]">
+          <p className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#e7f8ef] px-3 py-1 text-xs font-extrabold text-[#047857]">
             <BarChart3 className="size-3.5" aria-hidden />
             Détails par service
           </p>
@@ -685,11 +685,11 @@ function ServedDetailPanel({
                 <Sun className="size-5" strokeWidth={2.2} aria-hidden />
               </span>
               <div>
-                <p className="text-sm font-medium text-zinc-500">Moyenne</p>
+                <p className="text-sm font-bold text-zinc-700">Moyenne</p>
                 <p className="text-lg font-extrabold leading-tight text-zinc-950">
                   {daysServed > 0 ? `${fmt(avgServed)} assiettes` : "—"}
                 </p>
-                <p className="text-xs font-medium text-zinc-500">par jour de service</p>
+                <p className="text-xs font-bold text-zinc-700">par jour de service</p>
               </div>
             </div>
             <span className="hidden h-12 w-px bg-zinc-200 sm:block" aria-hidden />
@@ -698,8 +698,8 @@ function ServedDetailPanel({
                 <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
               </span>
               <div>
-                <p className="text-sm font-medium text-zinc-500">Jour le plus servi</p>
-                <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+                <p className="text-sm font-bold text-zinc-700">Jour le plus servi</p>
+                <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-[1.05rem]">
                   {peakShort ?? "Pas encore de jour de pointe"}
                 </p>
               </div>
@@ -714,8 +714,8 @@ function ServedDetailPanel({
               <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
             </span>
             <div>
-              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
-              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+              <p className="text-base font-extrabold text-[#047857]">À retenir</p>
+              <p className="mt-0.5 text-sm font-bold leading-snug text-[#052e16]">
                 {recap}
               </p>
             </div>
@@ -762,7 +762,7 @@ function PresentDetailPanel({
             <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
               Élèves présents
             </DialogTitle>
-            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+            <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
               {fmt(present)} présents sur {days} jours · {levelNote}.
             </DialogDescription>
           </div>
@@ -780,14 +780,14 @@ function PresentDetailPanel({
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#0b3d24]">
                 {fmt(present)}
               </p>
-              <p className="mt-1 text-xs font-medium leading-snug text-[#3d7a5c]">
+              <p className="mt-1 text-xs font-bold leading-snug text-[#14532d]">
                 élèves présents
                 <span className="block">sur {days} jours</span>
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-[1.25rem] bg-[#e7f3ff] px-3.5 py-3.5">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-500 shadow-sm">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-600 shadow-sm">
               <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
             </span>
             <span className="h-10 w-px bg-sky-200" aria-hidden />
@@ -795,7 +795,7 @@ function PresentDetailPanel({
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {daysPresent > 0 ? fmt(avgPresent) : "—"}
               </p>
-              <p className="mt-1 text-xs font-medium leading-snug text-sky-700">
+              <p className="mt-1 text-xs font-bold leading-snug text-sky-800">
                 par jour
                 <span className="block">en moyenne</span>
               </p>
@@ -810,7 +810,7 @@ function PresentDetailPanel({
               <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-[#9a3412]">
                 {peakCount > 0 ? fmt(peakCount) : "—"}
               </p>
-              <p className="mt-1 text-xs font-medium leading-snug text-[#b45309]">
+              <p className="mt-1 text-xs font-bold leading-snug text-[#9a3412]">
                 le jour le plus chargé
                 {peakMeal ? (
                   <span className="block">({peakMeal})</span>
@@ -825,8 +825,8 @@ function PresentDetailPanel({
             <CalendarDays className="size-5" strokeWidth={2.2} aria-hidden />
           </span>
           <div>
-            <p className="text-sm font-medium text-zinc-500">Moyenne</p>
-            <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+            <p className="text-sm font-bold text-zinc-700">Moyenne</p>
+            <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-[1.05rem]">
               {daysPresent > 0
                 ? `${fmt(avgPresent)} présents par jour de service (${daysPresent} jour${daysPresent > 1 ? "s" : ""}).`
                 : "Aucun présent saisi sur la période."}
@@ -839,8 +839,8 @@ function PresentDetailPanel({
             <UtensilsCrossed className="size-5" strokeWidth={2.2} aria-hidden />
           </span>
           <div>
-            <p className="text-sm font-medium text-zinc-500">Jour le plus chargé</p>
-            <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-base">
+            <p className="text-sm font-bold text-zinc-700">Jour le plus chargé</p>
+            <p className="text-sm font-extrabold leading-snug text-zinc-950 sm:text-[1.05rem]">
               {peakShort ?? "Pas encore de jour de pointe."}
             </p>
           </div>
@@ -853,8 +853,8 @@ function PresentDetailPanel({
               <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
             </span>
             <div>
-              <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
-              <p className="mt-0.5 text-sm font-semibold leading-snug text-[#0b3d24]">
+              <p className="text-base font-extrabold text-[#047857]">À retenir</p>
+              <p className="mt-0.5 text-sm font-bold leading-snug text-[#052e16]">
                 Ce chiffre vient des compteurs cuisine par classe, le jour du
                 service.
               </p>
@@ -895,7 +895,7 @@ function RefusedDetailPanel({
             <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
               Refus
             </DialogTitle>
-            <DialogDescription className="mt-1.5 text-sm font-medium text-zinc-600 sm:text-base">
+            <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
               {fmt(refused)} refus · taux {refusalRatePct}.
             </DialogDescription>
           </div>
@@ -914,11 +914,11 @@ function RefusedDetailPanel({
                 <X className="size-4" strokeWidth={2.6} aria-hidden />
               </span>
               <div className="min-w-0">
-                <p className="text-xs font-medium text-[#e11d48]">Refus</p>
+                <p className="text-xs font-extrabold text-[#be123c]">Refus</p>
                 <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                   {fmt(refused)}
                 </p>
-                <p className="mt-0.5 text-xs font-medium text-zinc-500">
+                <p className="mt-0.5 text-xs font-bold text-zinc-700">
                   soit {refusalRatePct} du total
                 </p>
               </div>
@@ -928,13 +928,13 @@ function RefusedDetailPanel({
                 <UtensilsCrossed className="size-4" strokeWidth={2.4} aria-hidden />
               </span>
               <div className="min-w-0">
-                <p className="text-xs font-medium text-[#3d7a5c]">
+                <p className="text-xs font-extrabold text-[#14532d]">
                   Autres assiettes
                 </p>
                 <p className="font-display text-2xl font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                   {restLabel} %
                 </p>
-                <p className="mt-0.5 text-xs font-medium text-zinc-500">
+                <p className="mt-0.5 text-xs font-bold text-zinc-700">
                   du total
                 </p>
               </div>
@@ -947,8 +947,8 @@ function RefusedDetailPanel({
                 <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-extrabold text-[#0f9f4f]">À retenir</p>
-                <p className="mt-1 text-sm font-semibold leading-relaxed text-[#0b3d24]">
+                <p className="text-base font-extrabold text-[#047857]">À retenir</p>
+                <p className="mt-1 text-sm font-bold leading-relaxed text-[#052e16]">
                   Un refus, c’est un élève qui n’a pas pris (ou a rendu) le plat
                   ce jour-là.
                 </p>
@@ -959,10 +959,10 @@ function RefusedDetailPanel({
                 <CalendarDays className="size-4" strokeWidth={2.3} aria-hidden />
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-extrabold text-[#0f9f4f]">
+                <p className="text-sm font-extrabold text-[#047857]">
                   Jour le plus de refus
                 </p>
-                <p className="mt-0.5 text-sm font-semibold leading-relaxed text-[#0b3d24]">
+                <p className="mt-0.5 text-sm font-bold leading-relaxed text-[#052e16]">
                   {peakLabel ?? "Aucun refus saisi sur la période."}
                 </p>
               </div>
@@ -976,7 +976,7 @@ function RefusedDetailPanel({
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
               <TrendingUp className="size-4" strokeWidth={2.4} aria-hidden />
             </span>
-            <p className="text-sm font-semibold leading-relaxed text-[#0b3d24]">
+            <p className="text-sm font-bold leading-relaxed text-[#052e16]">
               Utile pour{" "}
               <span className="font-extrabold">ajuster le menu</span> du
               lendemain, surtout si le même plat revient.
