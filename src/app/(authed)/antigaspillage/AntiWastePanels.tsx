@@ -17,9 +17,11 @@ import {
 } from "lucide-react";
 import type { WastePerDayRowInput } from "@/lib/buildWasteEvolutionSeries";
 import { antiWasteStatus } from "@/lib/antiWasteStatus";
-import type { RiskyDishRow } from "@/lib/antiWasteRiskyDishes";
+import {
+  applyRiskyDishLevel,
+  type RiskyDishRow,
+} from "@/lib/antiWasteRiskyDishes";
 import { unparseCsvSemicolon } from "@/lib/csvExport";
-import type { SchoolLevel } from "@/lib/schoolLevel";
 import {
   useScopedLevelFilter,
   type LevelFilterValue,
@@ -124,26 +126,6 @@ function AntigaspillageOverlayFilters({
       </button>
     </div>
   );
-}
-
-function applyRiskyDishLevel(
-  dishes: RiskyDishRow[],
-  level: "all" | SchoolLevel,
-): RiskyDishRow[] {
-  if (level === "all") return dishes;
-  const next: RiskyDishRow[] = [];
-  for (const dish of dishes) {
-    const avg =
-      level === "MATERNELLE" ? dish.maternelleGPer100 : dish.primaireGPer100;
-    if (avg == null || !(avg > 0)) continue;
-    next.push({
-      ...dish,
-      avgWasteGPer100: avg,
-      topClasses: (dish.topClasses ?? []).filter((row) => row.level === level),
-    });
-  }
-  next.sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
-  return next;
 }
 
 function RiskyLeafDecor({ className }: { className?: string }) {

@@ -1,4 +1,5 @@
 import { normalizeDishLabel } from "@/lib/antiWasteKitchenAdvice";
+import type { SchoolLevel } from "@/lib/schoolLevel";
 
 export type RiskyDishClassInput = {
   label: string;
@@ -212,4 +213,32 @@ export function buildTodayRiskyDishAlert(
     };
   }
   return null;
+}
+
+export function applyRiskyDishLevel(
+  dishes: RiskyDishRow[],
+  level: "all" | SchoolLevel,
+): RiskyDishRow[] {
+  if (level === "all") return dishes;
+
+  const next: RiskyDishRow[] = [];
+  for (let i = 0; i < dishes.length; i++) {
+    const dish = dishes[i];
+    if (!dish) continue;
+    const avg: number | null | undefined =
+      level === "MATERNELLE" ? dish.maternelleGPer100 : dish.primaireGPer100;
+    if (typeof avg !== "number" || avg <= 0) continue;
+    const row: RiskyDishRow = {
+      label: dish.label,
+      avgWasteGPer100: avg,
+      serviceCount: dish.serviceCount,
+      vsTarget: dish.vsTarget,
+      maternelleGPer100: dish.maternelleGPer100,
+      primaireGPer100: dish.primaireGPer100,
+      topClasses: (dish.topClasses ?? []).filter((cls) => cls.level === level),
+    };
+    next.push(row);
+  }
+  next.sort((a, b) => b.avgWasteGPer100 - a.avgWasteGPer100);
+  return next;
 }
