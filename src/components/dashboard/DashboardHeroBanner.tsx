@@ -1,4 +1,4 @@
-import { Building2, Leaf } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 
@@ -76,9 +76,8 @@ export function DashboardHeroBanner({
               {schoolNames.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#fff6ea] px-3 py-1 text-xs font-semibold text-[#9a4b12] shadow-sm"
+                  className="inline-flex items-center rounded-full bg-[#fff6ea] px-3.5 py-1.5 text-sm font-extrabold tracking-tight text-[#7a3a0c] shadow-sm"
                 >
-                  <Leaf className="size-3.5 text-emerald-600" aria-hidden />
                   {s}
                 </span>
               ))}
