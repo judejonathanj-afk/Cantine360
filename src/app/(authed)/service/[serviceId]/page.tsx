@@ -30,7 +30,12 @@ export default async function ServicePage({
       serviceId,
     }),
     getEstablishmentAntiWasteSettings(db, session.establishmentId),
-    getServiceAllergenSummary(db, session.establishmentId, serviceId),
+    getServiceAllergenSummary(db, session.establishmentId, serviceId).catch(
+      (e) => {
+        console.error("[service] allergen summary", e);
+        return null;
+      },
+    ),
   ]);
   if (!service) notFound();
 
@@ -92,6 +97,9 @@ export default async function ServicePage({
           level: c.level,
         })),
         targetGPer100: antiWaste.antiWasteTargetGPer100,
+      }).catch((e) => {
+        console.error("[service] kitchen advice", e);
+        return null;
       })
     : null;
 

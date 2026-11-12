@@ -1,5 +1,6 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 import { Prisma } from "@/generated/prisma/client";
+import { readServiceScreen } from "@/server/serviceScreenRead";
 import { formatGroupLabel } from "@/lib/groupLabel";
 import {
   countStudentsAffectedByDish,
@@ -161,17 +162,7 @@ async function loadServiceAllergenSummary(
   establishmentId: string,
   serviceId: string,
 ): Promise<ServiceAllergenSummary | null> {
-  const service = await db.service.findFirst({
-    where: { id: serviceId, establishmentId },
-    include: {
-      menu: { include: { items: true } },
-      metrics: {
-        include: {
-          group: { include: { school: true } },
-        },
-      },
-    },
-  });
+  const service = await readServiceScreen(db, { establishmentId, serviceId });
   if (!service) return null;
 
   const groupIds = service.metrics.map((m) => m.groupId);
@@ -263,8 +254,8 @@ async function loadServiceAllergenSummary(
 
   const groups: GroupAllergenSummary[] = service.metrics.map((m) => {
     const classStudents = studentsByGroup.get(m.groupId) ?? [];
-    const schoolName = m.group.school.name;
-    const className = m.group.name;
+    const schoolName = m.group?.school?.name ?? "";
+    const className = m.group?.name ?? "Classe";
     const groupLabel = formatGroupLabel(schoolName, className);
 
     const studentRows: StudentAllergenRow[] = classStudents.map((s) => {

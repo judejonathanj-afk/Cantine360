@@ -24,7 +24,12 @@ export default async function ServiceMenuPage({
       establishmentId: session.establishmentId,
       serviceId,
     }),
-    getServiceAllergenSummary(db, session.establishmentId, serviceId),
+    getServiceAllergenSummary(db, session.establishmentId, serviceId).catch(
+      (e) => {
+        console.error("[service/menu] allergen summary", e);
+        return null;
+      },
+    ),
     getEstablishmentAntiWasteSettings(db, session.establishmentId),
   ]);
   if (!service) notFound();
@@ -62,7 +67,10 @@ export default async function ServiceMenuPage({
         session.establishmentId,
         serviceId,
         service.mealType,
-      )
+      ).catch((e) => {
+        console.error("[service/menu] dish waste history", e);
+        return {};
+      })
     : {};
 
   const dishImpact = new Map(

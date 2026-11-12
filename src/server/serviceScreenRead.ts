@@ -1,5 +1,13 @@
 import type { PrismaClient } from "@/generated/prisma/client";
 
+function isMissingDbColumn(e: unknown) {
+  if (typeof e === "object" && e !== null && "code" in e) {
+    if (String((e as { code: unknown }).code) === "P2022") return true;
+  }
+  const msg = e instanceof Error ? e.message : String(e);
+  return /P2022|does not exist|colonne/i.test(msg);
+}
+
 const cache = new Map<string, NonNullable<Awaited<ReturnType<typeof loadService>>>>();
 const MAX_ENTRIES = 24;
 
@@ -64,17 +72,116 @@ async function dataStamp(db: PrismaClient, establishmentId: string, serviceId: s
   ].join("|");
 }
 
+const metricsOrderBy = [
+  { group: { school: { name: "asc" as const } } },
+  { group: { name: "asc" as const } },
+];
+
+const menuItemDietSelect = {
+  id: true,
+  category: true,
+  label: true,
+  grammageG: true,
+  allergens: true,
+  createdAt: true,
+  containsPork: true,
+  containsMeat: true,
+  containsBeef: true,
+  containsFish: true,
+} as const;
+
+const menuItemMinSelect = {
+  id: true,
+  category: true,
+  label: true,
+  grammageG: true,
+  allergens: true,
+  createdAt: true,
+} as const;
+
+const groupKitchenSelect = {
+  id: true,
+  name: true,
+  level: true,
+  school: { select: { name: true } },
+} as const;
+
+const groupKitchenMinSelect = {
+  id: true,
+  name: true,
+  school: { select: { name: true } },
+} as const;
+
+function withMenuDietDefaults<T extends { allergens: string[] }>(item: T) {
+  const rec = item as T & {
+    containsPork?: boolean;
+    containsMeat?: boolean;
+    containsBeef?: boolean;
+    containsFish?: boolean;
+  };
+  return {
+    ...item,
+    containsPork: Boolean(rec.containsPork),
+    containsMeat: Boolean(rec.containsMeat),
+    containsBeef: Boolean(rec.containsBeef),
+    containsFish: Boolean(rec.containsFish),
+  };
+}
+
 async function loadService(db: PrismaClient, establishmentId: string, serviceId: string) {
-  return db.service.findFirst({
-    where: { id: serviceId, establishmentId },
+  const where = { id: serviceId, establishmentId };
+
+  try {
+    const row = await db.service.findFirst({
+      where,
+      include: {
+        menu: { select: { id: true, items: { select: menuItemDietSelect } } },
+        metrics: {
+          include: { group: { select: groupKitchenSelect } },
+          orderBy: metricsOrderBy,
+        },
+      },
+    });
+    if (!row) return null;
+    return {
+      ...row,
+      menu: row.menu
+        ? {
+            ...row.menu,
+            items: row.menu.items.map((item) => withMenuDietDefaults(item)),
+          }
+        : null,
+    };
+  } catch (e) {
+    if (!isMissingDbColumn(e)) throw e;
+  }
+
+  const row = await db.service.findFirst({
+    where,
     include: {
-      menu: { include: { items: true } },
+      menu: { select: { id: true, items: { select: menuItemMinSelect } } },
       metrics: {
-        include: { group: { include: { school: true } } },
-        orderBy: [{ group: { school: { name: "asc" } } }, { group: { name: "asc" } }],
+        include: { group: { select: groupKitchenMinSelect } },
+        orderBy: metricsOrderBy,
       },
     },
   });
+  if (!row) return null;
+  return {
+    ...row,
+    menu: row.menu
+      ? {
+          ...row.menu,
+          items: row.menu.items.map((item) => withMenuDietDefaults(item)),
+        }
+      : null,
+    metrics: row.metrics.map((m) => ({
+      ...m,
+      group: m.group
+        ? { ...m.group, level: "PRIMAIRE" as const }
+        : m.group,
+    })),
+  };
 }
 
 /** Une lecture de l’écran service. Rejouée si le menu, une pesée ou les compteurs enregistrés changent. */
