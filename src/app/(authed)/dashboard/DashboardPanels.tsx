@@ -948,7 +948,7 @@ export default function DashboardPanels({
                       {suiviLevel === "all" ? (
                         <>
                           <td className="px-3 py-2.5">
-                            {row.wasteWeightMaternelleG > 0}
+                            {row.wasteWeightMaternelleG > 0
                               ? row.wasteWeightMaternelleG.toLocaleString("fr-FR")
                               : "—"}
                           </td>
