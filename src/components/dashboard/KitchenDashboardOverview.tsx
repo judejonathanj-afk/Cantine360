@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { GraduationCap, Recycle, Sprout } from "lucide-react";
+import { Recycle, Scale, Target } from "lucide-react";
 import {
   ChartContainer,
   ChartLegend,
@@ -124,9 +124,9 @@ export function KitchenDashboardOverview({
             Moins de gaspillage alimentaire, plus de plaisir dans l&apos;assiette&nbsp;!
           </p>
           <ul className="mt-4 space-y-3">
-            <EngagementItem icon={Sprout} label="Produits frais et locaux" />
-            <EngagementItem icon={GraduationCap} label="Éducation au goût" />
-            <EngagementItem icon={Recycle} label="Une cantine plus durable" />
+            <EngagementItem icon={Recycle} label="Réduire le gaspillage" />
+            <EngagementItem icon={Scale} label="Adapter les portions" />
+            <EngagementItem icon={Target} label="Mesurer pour progresser" />
           </ul>
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -144,7 +144,7 @@ function EngagementItem({
   icon: Icon,
   label,
 }: {
-  icon: typeof Sprout;
+  icon: typeof Recycle;
   label: string;
 }) {
   return (
