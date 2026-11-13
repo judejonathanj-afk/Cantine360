@@ -131,9 +131,9 @@ export function KitchenDashboardOverview({
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/login-buffet-salade.jpg"
+          src="/cantine-hero.png"
           alt=""
-          className="pointer-events-none absolute -bottom-6 -right-8 h-[78%] w-auto max-w-[58%] rounded-[24px] object-cover shadow-md ring-4 ring-white/70"
+          className="pointer-events-none absolute inset-y-3 right-0 h-[calc(100%-1.5rem)] w-[48%] rounded-[22px] object-cover object-[center_28%] shadow-md ring-4 ring-white/80"
         />
       </section>
     </div>
