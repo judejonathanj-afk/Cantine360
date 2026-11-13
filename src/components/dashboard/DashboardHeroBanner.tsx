@@ -1,9 +1,12 @@
-import { Building2, ChefHat, LayoutDashboard, Leaf } from "lucide-react";
+import { Building2 } from "lucide-react";
+import { DashboardProfileAvatar } from "@/components/dashboard/DashboardProfileAvatar";
+import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 
 export function DashboardHeroBanner({
   schoolNames,
   days,
   isKitchen,
+  establishmentId,
   establishmentLabel = "",
 }: {
   schoolNames: string[];
@@ -12,38 +15,50 @@ export function DashboardHeroBanner({
   establishmentId: string;
   establishmentLabel?: string;
 }) {
-  const title = isKitchen
-    ? "Vue cuisine"
-    : establishmentLabel
-      ? `Bienvenue, espace admin — ${establishmentLabel}`
-      : "Bienvenue sur votre espace admin";
-  const kicker = isKitchen ? "Tableau de bord cuisine" : "Tableau de bord admin";
+  const adminWelcomeTitle = establishmentLabel
+    ? `Bienvenue, espace admin — ${establishmentLabel}`
+    : "Bienvenue sur votre espace admin";
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-white text-zinc-900 shadow-[0_18px_40px_-18px_rgba(24,24,27,0.16)] ring-1 ring-white">
-      <div className="grid min-h-[11.5rem] lg:grid-cols-[minmax(0,1.15fr)_minmax(14rem,0.85fr)]">
-        <div className="relative z-10 px-6 py-5 sm:px-7 sm:py-6">
-          <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
-            <LayoutDashboard className="size-3.5" aria-hidden />
-            {kicker}
-          </p>
+    <section className="relative overflow-hidden rounded-[28px] bg-white text-zinc-900 shadow-[0_18px_40px_-18px_rgba(24,24,27,0.18)] ring-1 ring-zinc-200">
+      <svg
+        className="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-[min(48%,32rem)]"
+        viewBox="0 0 480 240"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        <path
+          fill="#86efac"
+          d="M170 0C100 42 210 72 130 118C55 158 200 182 120 222C90 238 150 240 110 240H480V0H170Z"
+        />
+        <path
+          fill="#16a34a"
+          d="M250 0C175 48 290 78 200 128C125 170 275 196 190 228C165 240 210 240 180 240H480V0H250Z"
+        />
+      </svg>
+
+      <div className="relative z-10 px-6 py-6 sm:px-8 sm:py-7">
+        <div className="min-w-0 max-w-xl lg:max-w-3xl">
+          <div className="mb-3">
+            <MenusCantineColorTitle
+              text="CANTINE360"
+              className="justify-start text-base tracking-wide md:text-lg lg:text-xl"
+            />
+          </div>
 
           <div className="flex items-center gap-4">
-            <span
-              className="flex size-[4.25rem] shrink-0 items-center justify-center rounded-full border-[3px] border-[#f3d7a0] bg-white text-emerald-700 shadow-sm"
-              aria-hidden
-            >
-              {isKitchen ? (
-                <ChefHat className="size-8" />
-              ) : (
-                <Building2 className="size-8" />
-              )}
-            </span>
+            {isKitchen ? (
+              <DashboardProfileAvatar establishmentId={establishmentId} variant="banner" />
+            ) : (
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-zinc-200 bg-white text-emerald-600 shadow-sm">
+                <Building2 className="size-8" aria-hidden />
+              </span>
+            )}
             <div className="min-w-0">
-              <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight text-zinc-950 sm:text-4xl">
-                {title}
+              <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
+                {isKitchen ? "Vue cuisine" : adminWelcomeTitle}
               </h1>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-500 sm:text-base">
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base">
                 {isKitchen
                   ? `Aperçu du jour et évolution des déchets sur les ${days} derniers jours.`
                   : `Chiffres clés du déjeuner, note Cantine+ et évolution des déchets sur ${days} jours.`}
@@ -53,35 +68,21 @@ export function DashboardHeroBanner({
 
           {schoolNames.length > 0 ? (
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
                 <Building2 className="size-3.5" aria-hidden />
                 Écoles suivies
               </span>
-              <span className="mx-1 hidden h-4 w-px bg-zinc-200 sm:inline-block" aria-hidden />
+              <span className="mx-1 hidden h-4 w-px bg-zinc-300 sm:inline-block" aria-hidden />
               {schoolNames.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#fff6ea] px-3 py-1.5 text-sm font-bold tracking-tight text-[#7a3a0c]"
+                  className="inline-flex items-center rounded-full bg-[#fff6ea] px-3.5 py-1.5 text-sm font-extrabold tracking-tight text-[#7a3a0c] shadow-sm"
                 >
-                  <Leaf className="size-3.5 text-emerald-600" aria-hidden />
-                  {s.startsWith("École") ? s : `École ${s}`}
+                  {s}
                 </span>
               ))}
             </div>
           ) : null}
-        </div>
-
-        <div className="relative hidden min-h-[11.5rem] lg:block">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/dashboard/banner-cuisine-droite.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-[70%_center]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-white/20" />
-          <p className="absolute bottom-4 right-5 max-w-[11rem] text-right text-sm font-bold leading-snug text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)]">
-            Moins de gaspillage, plus d&apos;avenir.
-          </p>
         </div>
       </div>
     </section>
