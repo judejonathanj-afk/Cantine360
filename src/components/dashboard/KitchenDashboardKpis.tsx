@@ -1246,30 +1246,38 @@ export function KitchenDashboardKpis({
               type="button"
               onClick={() => setOpen(card.id)}
               className={cn(
-                "group relative z-0 cursor-pointer rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:scale-100",
+                "group relative z-0 cursor-pointer overflow-hidden rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.22)] ring-1 ring-black/[0.03] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:scale-100",
                 card.accent,
               )}
             >
               <span
+                className="pointer-events-none absolute -bottom-10 -right-8 size-28 rounded-full bg-white/45"
+                aria-hidden
+              />
+              <span
+                className="pointer-events-none absolute -bottom-4 right-10 size-16 rounded-full bg-white/35"
+                aria-hidden
+              />
+              <span
                 className={cn(
-                  "flex size-10 items-center justify-center rounded-full transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
+                  "relative flex size-10 items-center justify-center rounded-full transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
                   card.iconWrap,
                 )}
               >
                 <Icon className="size-5" aria-hidden />
               </span>
-              <p className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
+              <p className="relative mt-3 text-[11px] font-extrabold uppercase tracking-[0.08em] text-zinc-950">
                 {card.label}
               </p>
-              <p className="mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
+              <p className="relative mt-1 font-display text-[2rem] font-extrabold leading-none tabular-nums tracking-tight text-zinc-950">
                 {card.value}
               </p>
-              <p className="mt-2 text-sm font-medium leading-snug text-zinc-600">
+              <p className="relative mt-2 text-sm font-medium leading-snug text-zinc-600">
                 {card.sub}
               </p>
               <p
                 className={cn(
-                  "mt-4 inline-flex items-center gap-1 text-xs font-bold",
+                  "relative mt-4 inline-flex items-center gap-1 text-xs font-bold",
                   card.link,
                 )}
               >

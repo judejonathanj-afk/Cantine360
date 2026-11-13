@@ -4,15 +4,20 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
+  Baby,
+  CalendarDays,
   ClipboardList,
   Download,
   FileSpreadsheet,
   GitCompareArrows,
+  Home,
   Layers,
   Table as TableIcon,
   Trash2,
+  Users,
   Utensils,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
@@ -23,6 +28,7 @@ import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
 import { DashboardHeroBanner } from "@/components/dashboard/DashboardHeroBanner";
 import { KitchenDashboardKpis } from "@/components/dashboard/KitchenDashboardKpis";
+import { KitchenDashboardOverview } from "@/components/dashboard/KitchenDashboardOverview";
 import { DashboardInsightCard } from "@/components/dashboard/DashboardDesignShell";
 import {
   buildWasteEvolutionSeries,
@@ -135,22 +141,25 @@ function FilterSegmentLink({
   href,
   active,
   children,
+  icon: Icon,
 }: {
   href: string;
   active: boolean;
   children: ReactNode;
+  icon?: LucideIcon;
 }) {
   return (
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "rounded-full px-3.5 py-1.5 text-sm font-bold transition-all",
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-bold transition-all",
         active
           ? "bg-[#0d7a45] text-white shadow-sm"
-          : "text-zinc-900 hover:bg-zinc-100",
+          : "text-zinc-700 hover:bg-zinc-100",
       )}
     >
+      {Icon ? <Icon className="size-3.5" aria-hidden /> : null}
       {children}
     </Link>
   );
@@ -376,7 +385,8 @@ export default function DashboardPanels({
   return (
     <div
       className={cn(
-        "dashboard-v2 dashboard-v2--admin space-y-8",
+        "dashboard-v2 space-y-6",
+        isKitchen ? "dashboard-v2--kitchen" : "dashboard-v2--admin",
       )}
     >
       <DashboardHeroBanner
@@ -391,12 +401,12 @@ export default function DashboardPanels({
         <div
           role="group"
           aria-label="Période"
-          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+          className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
         >
-          <FilterSegmentLink href={daysHref(7)} active={days === 7}>
+          <FilterSegmentLink href={daysHref(7)} active={days === 7} icon={CalendarDays}>
             7 jours
           </FilterSegmentLink>
-          <FilterSegmentLink href={daysHref(30)} active={days === 30}>
+          <FilterSegmentLink href={daysHref(30)} active={days === 30} icon={CalendarDays}>
             30 jours
           </FilterSegmentLink>
         </div>
@@ -404,20 +414,22 @@ export default function DashboardPanels({
         <div
           role="group"
           aria-label="Niveau"
-          className="inline-flex items-center rounded-full bg-white p-1 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+          className="inline-flex items-center rounded-full bg-white p-1 shadow-sm"
         >
-          <FilterSegmentLink href={levelHref("all")} active={levelFilter === "all"}>
+          <FilterSegmentLink href={levelHref("all")} active={levelFilter === "all"} icon={Users}>
             Tous niveaux
           </FilterSegmentLink>
           <FilterSegmentLink
             href={levelHref("MATERNELLE")}
             active={levelFilter === "MATERNELLE"}
+            icon={Baby}
           >
             Maternelle
           </FilterSegmentLink>
           <FilterSegmentLink
             href={levelHref("PRIMAIRE")}
             active={levelFilter === "PRIMAIRE"}
+            icon={Home}
           >
             Primaire
           </FilterSegmentLink>
@@ -428,7 +440,7 @@ export default function DashboardPanels({
             <a
               href={`/api/exports/commission-bilan?year=${exportYear}`}
               download
-              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-colors hover:bg-zinc-50"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-sm transition-colors hover:bg-zinc-50"
             >
               <FileSpreadsheet className="size-4 text-[#0d7a45]" />
               Bilan commission
@@ -445,22 +457,15 @@ export default function DashboardPanels({
                 isKitchen,
               })
             }
-            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-zinc-900 shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex size-11 items-center justify-center rounded-full bg-[#0d3b2e] text-white shadow-sm transition hover:bg-[#0a2f24] disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Télécharger le PDF"
           >
             <Download className="size-4" />
-            PDF
           </button>
         </div>
       </div>
 
-      <div className="dashboard-v2-fade space-y-8">
-      <div
-        className={cn(
-          !isKitchen &&
-            "lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:items-start lg:gap-5",
-        )}
-      >
-      <div className="min-w-0">
+      <div className="dashboard-v2-fade space-y-5">
       <KitchenDashboardKpis
         days={days}
         levelFilter={levelFilter}
@@ -475,16 +480,16 @@ export default function DashboardPanels({
         servicesWithWaste={servicesWithWaste}
         perDayRows={perDayRows}
       />
-      </div>
+
+      <KitchenDashboardOverview days={days} perDayRows={perDayRows} />
 
       {!isKitchen ? (
-      <aside className="mt-8 flex min-w-0 flex-col gap-3 overflow-visible lg:mt-0">
+      <div className="flex flex-col gap-3">
       {!hideCantinePlus ? (
-        <CantinePlusFold compact onOpen={() => setCantinePlusFold(true)} />
+        <CantinePlusFold onOpen={() => setCantinePlusFold(true)} />
       ) : null}
 
       <DashboardFoldOverlay
-        compact
         kicker="Flux du repas"
         openLabel="Ouvrir Flux du repas"
         overlayTitle="Flux du repas"
@@ -573,7 +578,6 @@ export default function DashboardPanels({
       </DashboardFoldOverlay>
 
         <DashboardFoldOverlay
-          compact
           kicker="Taux du cycle"
           openLabel="Ouvrir Taux du cycle"
           overlayTitle="Taux du cycle"
@@ -671,7 +675,6 @@ export default function DashboardPanels({
         </DashboardFoldOverlay>
 
       <DashboardFoldOverlay
-        compact
         kicker="Évolution des déchets"
         openLabel="Ouvrir Évolution des déchets"
         overlayTitle="Évolution des déchets"
@@ -765,7 +768,6 @@ export default function DashboardPanels({
       </DashboardFoldOverlay>
 
       <DashboardFoldOverlay
-        compact
         kicker="Contexte du service"
         openLabel="Ouvrir Contexte du service"
         overlayTitle="Contexte du service"
@@ -866,11 +868,7 @@ export default function DashboardPanels({
           )}
         </div>
       </DashboardFoldOverlay>
-      </aside>
-      ) : null}
-      </div>
 
-      {!isKitchen ? (
       <DashboardFoldOverlay
         kicker="Suivi jour par jour"
         openLabel="Ouvrir Suivi jour par jour"
@@ -982,6 +980,7 @@ export default function DashboardPanels({
           )}
         </div>
       </DashboardFoldOverlay>
+      </div>
       ) : null}
 
       {!isKitchen ? (
