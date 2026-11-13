@@ -55,7 +55,13 @@ export function DashboardHeroBanner({
               </span>
             )}
             <div className="min-w-0">
-              <h1 className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl">
+              <h1
+                className={
+                  isKitchen
+                    ? "font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl"
+                    : "font-display text-3xl font-extrabold leading-none tracking-tight text-[#0d3b2e] sm:text-4xl"
+                }
+              >
                 {isKitchen ? "Vue cuisine" : adminWelcomeTitle}
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-zinc-600 sm:text-base">
