@@ -115,12 +115,12 @@ export function KitchenDashboardOverview({
         )}
       </section>
 
-      <section className="relative overflow-hidden rounded-[28px] bg-[#e7f8ee] p-5 shadow-[0_12px_28px_-18px_rgba(24,24,27,0.18)] min-h-[220px]">
+      <section className="relative min-h-[220px] overflow-hidden rounded-[28px] bg-[#c8f24a] p-5 shadow-[0_12px_28px_-18px_rgba(24,24,27,0.18)]">
         <div className="relative z-10 max-w-[16rem] sm:max-w-[58%]">
-          <h2 className="font-display text-lg font-extrabold tracking-tight text-emerald-800">
+          <h2 className="font-display text-lg font-extrabold tracking-tight text-[#0d3b2e]">
             Nos engagements
           </h2>
-          <p className="mt-1 text-sm font-semibold leading-snug text-emerald-900/80">
+          <p className="mt-1 text-sm font-semibold leading-snug text-[#0d3b2e]/80">
             Moins de gaspillage alimentaire, plus de plaisir dans l&apos;assiette&nbsp;!
           </p>
           <ul className="mt-4 space-y-3">
@@ -148,10 +148,10 @@ function EngagementItem({
   label: string;
 }) {
   return (
-    <li className="flex items-center gap-2.5 text-sm font-bold text-emerald-950">
+    <li className="flex items-center gap-2.5 text-sm font-bold text-[#0d3b2e]">
       <span
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-emerald-700 shadow-sm",
+          "flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0d3b2e] shadow-sm",
         )}
       >
         <Icon className="size-4" aria-hidden />
