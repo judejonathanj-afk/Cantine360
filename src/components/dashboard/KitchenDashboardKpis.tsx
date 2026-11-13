@@ -1237,7 +1237,7 @@ export function KitchenDashboardKpis({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 overflow-visible lg:grid-cols-5">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
@@ -1246,13 +1246,13 @@ export function KitchenDashboardKpis({
               type="button"
               onClick={() => setOpen(card.id)}
               className={cn(
-                "group rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.28)] transition hover:-translate-y-0.5 hover:shadow-md",
+                "group relative z-0 cursor-pointer rounded-[26px] p-4 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:scale-100",
                 card.accent,
               )}
             >
               <span
                 className={cn(
-                  "flex size-10 items-center justify-center rounded-full",
+                  "flex size-10 items-center justify-center rounded-full transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
                   card.iconWrap,
                 )}
               >
@@ -1274,7 +1274,10 @@ export function KitchenDashboardKpis({
                 )}
               >
                 Voir le détail
-                <ArrowRight className="size-3.5" aria-hidden />
+                <ArrowRight
+                  className="size-3.5 transition-transform duration-200 ease-out group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                  aria-hidden
+                />
               </p>
             </button>
           );
