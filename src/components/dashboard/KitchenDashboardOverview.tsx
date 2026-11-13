@@ -94,7 +94,18 @@ export function KitchenDashboardOverview({
                 tick={{ fontSize: 11, fill: "#71717a" }}
                 allowDecimals={false}
               />
-              <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartTooltip
+                content={(tooltipProps) => (
+                  <ChartTooltipContent
+                    active={tooltipProps.active}
+                    payload={tooltipProps.payload}
+                    label={tooltipProps.label}
+                    coordinate={tooltipProps.coordinate}
+                    accessibilityLayer={tooltipProps.accessibilityLayer}
+                    activeIndex={tooltipProps.activeIndex}
+                  />
+                )}
+              />
               <ChartLegend content={<ChartLegendContent />} />
               <Bar dataKey="wasteKg" fill="var(--color-wasteKg)" radius={[6, 6, 0, 0]} maxBarSize={14} />
               <Bar dataKey="rab" fill="var(--color-rab)" radius={[6, 6, 0, 0]} maxBarSize={14} />
