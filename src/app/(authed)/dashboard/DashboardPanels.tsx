@@ -454,6 +454,13 @@ export default function DashboardPanels({
       </div>
 
       <div className="dashboard-v2-fade space-y-8">
+      <div
+        className={cn(
+          !isKitchen &&
+            "lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:items-start lg:gap-5",
+        )}
+      >
+      <div className="min-w-0">
       <KitchenDashboardKpis
         days={days}
         levelFilter={levelFilter}
@@ -468,13 +475,16 @@ export default function DashboardPanels({
         servicesWithWaste={servicesWithWaste}
         perDayRows={perDayRows}
       />
-
-      {!hideCantinePlus ? (
-        <CantinePlusFold onOpen={() => setCantinePlusFold(true)} />
-      ) : null}
+      </div>
 
       {!isKitchen ? (
+      <aside className="mt-8 flex min-w-0 flex-col gap-3 overflow-visible lg:mt-0">
+      {!hideCantinePlus ? (
+        <CantinePlusFold compact onOpen={() => setCantinePlusFold(true)} />
+      ) : null}
+
       <DashboardFoldOverlay
+        compact
         kicker="Flux du repas"
         openLabel="Ouvrir Flux du repas"
         overlayTitle="Flux du repas"
@@ -561,10 +571,9 @@ export default function DashboardPanels({
           </div>
         </div>
       </DashboardFoldOverlay>
-      ) : null}
 
-      {!isKitchen ? (
         <DashboardFoldOverlay
+          compact
           kicker="Taux du cycle"
           openLabel="Ouvrir Taux du cycle"
           overlayTitle="Taux du cycle"
@@ -660,10 +669,9 @@ export default function DashboardPanels({
             </div>
           </div>
         </DashboardFoldOverlay>
-      ) : null}
 
-      {!isKitchen ? (
       <DashboardFoldOverlay
+        compact
         kicker="Évolution des déchets"
         openLabel="Ouvrir Évolution des déchets"
         overlayTitle="Évolution des déchets"
@@ -755,11 +763,9 @@ export default function DashboardPanels({
           </div>
         </div>
       </DashboardFoldOverlay>
-      ) : null}
 
-      {!isKitchen ? (
-      <>
       <DashboardFoldOverlay
+        compact
         kicker="Contexte du service"
         openLabel="Ouvrir Contexte du service"
         overlayTitle="Contexte du service"
@@ -860,7 +866,11 @@ export default function DashboardPanels({
           )}
         </div>
       </DashboardFoldOverlay>
+      </aside>
+      ) : null}
+      </div>
 
+      {!isKitchen ? (
       <DashboardFoldOverlay
         kicker="Suivi jour par jour"
         openLabel="Ouvrir Suivi jour par jour"
@@ -972,7 +982,6 @@ export default function DashboardPanels({
           )}
         </div>
       </DashboardFoldOverlay>
-      </>
       ) : null}
 
       {!isKitchen ? (

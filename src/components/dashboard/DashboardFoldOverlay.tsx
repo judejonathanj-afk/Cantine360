@@ -24,6 +24,7 @@ export function DashboardFoldOverlay({
   iconTileClassName,
   labelledBy,
   tight = false,
+  compact = false,
   fullPage = false,
   children,
 }: {
@@ -43,6 +44,7 @@ export function DashboardFoldOverlay({
   iconTileClassName?: string;
   labelledBy: string;
   tight?: boolean;
+  compact?: boolean;
   fullPage?: boolean;
   children: ReactNode;
 }) {
@@ -93,17 +95,28 @@ export function DashboardFoldOverlay({
           onClick={() => setFoldOpen(true)}
           aria-expanded={open}
           className={cn(
-            "flex w-full items-center gap-3 px-4 py-3.5 text-left transition sm:px-5 sm:py-4",
+            "flex w-full items-center text-left transition",
+            compact
+              ? "gap-2.5 px-3 py-2.5 sm:px-3.5 sm:py-3"
+              : "gap-3 px-4 py-3.5 sm:px-5 sm:py-4",
             yellowFold ? "hover:bg-black/[0.04]" : "hover:bg-white/5",
           )}
         >
           <span
-            className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
+            className={cn(
+              "flex shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)]",
+              compact
+                ? "size-11 sm:size-12"
+                : "size-14 sm:size-[3.75rem]",
+            )}
             aria-hidden
           >
             <span
               className={cn(
-                "flex size-11 items-center justify-center rounded-[14px] sm:size-12 sm:rounded-2xl",
+                "flex items-center justify-center rounded-[14px]",
+                compact
+                  ? "size-8 sm:size-9 sm:rounded-xl"
+                  : "size-11 sm:size-12 sm:rounded-2xl",
                 iconTileClassName
                   ? iconTileClassName
                   : yellowFold
@@ -115,7 +128,10 @@ export function DashboardFoldOverlay({
                         : "bg-[#d8f48a] text-[#0d3b2e]",
               )}
             >
-              <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
+              <Icon
+                className={compact ? "h-4 w-4 sm:h-5 sm:w-5" : "h-5 w-5 sm:h-6 sm:w-6"}
+                strokeWidth={2.25}
+              />
             </span>
           </span>
           <span className="min-w-0 flex-1">
@@ -129,7 +145,8 @@ export function DashboardFoldOverlay({
             </span>
             <span
               className={cn(
-                "block text-base font-extrabold tracking-tight sm:text-lg",
+                "block font-extrabold tracking-tight",
+                compact ? "text-sm sm:text-base" : "text-base sm:text-lg",
                 yellowFold ? "text-zinc-950" : "text-white",
               )}
             >
@@ -137,7 +154,8 @@ export function DashboardFoldOverlay({
             </span>
             <span
               className={cn(
-                "mt-0.5 block text-sm leading-snug",
+                "mt-0.5 block leading-snug",
+                compact ? "line-clamp-2 text-xs" : "text-sm",
                 yellowFold ? "text-zinc-800" : "text-white/80",
               )}
             >
