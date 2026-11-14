@@ -119,10 +119,10 @@ export function AntiWasteHeroBanner({
           <img
             src="/images/anti-gaspillage-hero.jpg"
             alt=""
-            width={388}
-            height={728}
+            width={2400}
+            height={1350}
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-[58%_42%]"
+            className="absolute inset-0 h-full w-full object-cover object-[center_48%]"
           />
           <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent" />
           <div className="absolute right-4 top-1/2 z-10 flex size-[6.25rem] -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center shadow-[0_10px_28px_-12px_rgba(13,59,46,0.35)] ring-1 ring-emerald-100 sm:right-6 sm:size-[6.75rem]">
