@@ -434,8 +434,8 @@ export function AntiWastePanels({
       </section>
 
       <div className="anti-waste-dash-fade space-y-6">
-        <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)]">
-          <div className="flex flex-col items-center justify-center gap-5 px-6 py-10">
+        <div className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl border border-border bg-card shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)]">
+          <div className="flex flex-col items-center justify-center gap-3 px-5 py-5 sm:px-6 sm:py-6">
             <AntiWasteGauge
               value={gaugeValue}
               objective={targetGPer100}
@@ -455,7 +455,7 @@ export function AntiWastePanels({
                   ? "Sans objectif"
                   : gaugeStatusLabel[gaugeStatus]}
             </div>
-            <p className="max-w-sm text-balance text-center text-base font-medium leading-relaxed text-zinc-950">
+            <p className="max-w-xs text-balance text-center text-sm font-medium leading-relaxed text-zinc-950">
               {wasteGramsPer100Served != null && wasteGramsPer100Served > 0 ? (
                 <>
                   Pour 100 repas servis, environ{" "}

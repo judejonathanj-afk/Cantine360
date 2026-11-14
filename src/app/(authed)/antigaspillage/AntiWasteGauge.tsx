@@ -53,7 +53,7 @@ export function AntiWasteGauge({
   const color = COLOR[status];
 
   return (
-    <div className="relative w-full max-w-[280px]">
+    <div className="relative w-full max-w-[200px]">
       <svg
         viewBox="0 0 280 172"
         className="w-full"
@@ -107,7 +107,7 @@ export function AntiWasteGauge({
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center">
         <span
-          className="font-display text-4xl font-bold leading-none tracking-tight"
+          className="font-display text-3xl font-bold leading-none tracking-tight"
           style={{ color }}
         >
           {showEmpty ? emptyLabel : fmt1(numericValue)}
