@@ -117,12 +117,12 @@ export function AntiWasteHeroBanner({
         <div className="relative min-h-[9.5rem] sm:min-h-[10.5rem]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/anti-gaspillage-hero.png"
+            src="/images/anti-gaspillage-hero.jpg"
             alt=""
-            width={1600}
-            height={1154}
+            width={2400}
+            height={1218}
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover object-[58%_48%]"
+            className="absolute inset-0 h-full w-full object-cover object-[62%_42%]"
           />
           <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent" />
           <div className="absolute right-4 top-1/2 z-10 flex size-[6.25rem] -translate-y-1/2 flex-col items-center justify-center rounded-full bg-white text-center shadow-[0_10px_28px_-12px_rgba(13,59,46,0.35)] ring-1 ring-emerald-100 sm:right-6 sm:size-[6.75rem]">
