@@ -29,14 +29,11 @@ import {
 import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
-import { AntiWasteGauge } from "./AntiWasteGauge";
 import { AntiWasteHeroBanner } from "./AntiWasteHeroBanner";
 import {
   fmt,
   formatDayLabelFr,
-  formatPeriodEstimateFr,
   gaugeStatusFromTone,
-  gaugeStatusLabel,
 } from "./antiWasteFormat";
 
 type DayRow = {
@@ -57,13 +54,6 @@ export type MissingWeighServiceRow = {
   menuSummary: string;
   servedCount: number;
 };
-
-const STATUS_STYLES = {
-  green: "bg-primary/12 text-primary",
-  amber: "bg-[color:var(--aw-amber)]/25 text-[color:var(--aw-amber-fg)]",
-  red: "bg-[color:var(--aw-coral)]/15 text-[color:var(--aw-coral)]",
-  none: "bg-muted text-muted-foreground",
-} as const;
 
 function overlayChipClass(active: boolean) {
   return cn(
@@ -425,49 +415,6 @@ export function AntiWastePanels({
       </section>
 
       <div className="anti-waste-dash-fade space-y-6">
-        <div className="mx-auto w-full max-w-lg overflow-hidden rounded-3xl border border-border bg-card shadow-[0_24px_60px_-30px_rgb(20_60_40/0.35)]">
-          <div className="flex flex-col items-center justify-center gap-3 px-5 py-5 sm:px-6 sm:py-6">
-            <AntiWasteGauge
-              value={gaugeValue}
-              objective={targetGPer100}
-              status={gaugeStatus}
-              emptyLabel="—"
-            />
-            <div
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold",
-                STATUS_STYLES[gaugeStatus],
-              )}
-            >
-              <span className="size-2 rounded-full bg-current" aria-hidden />
-              {wasteGramsPer100Served == null || wasteGramsPer100Served <= 0
-                ? "Pas encore de pesée"
-                : targetGPer100 == null || targetGPer100 <= 0
-                  ? "Sans objectif"
-                  : gaugeStatusLabel[gaugeStatus]}
-            </div>
-            <p className="max-w-xs text-balance text-center text-sm font-medium leading-relaxed text-zinc-950">
-              {wasteGramsPer100Served != null && wasteGramsPer100Served > 0 ? (
-                <>
-                  Pour 100 repas servis, environ{" "}
-                  <span className="font-bold text-zinc-950">
-                    {(wasteGramsPer100Served / 1000).toLocaleString("fr-FR", {
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    kg
-                  </span>{" "}
-                  de nourriture ont été jetés sur la période.
-                </>
-              ) : (
-                status.detail
-              )}
-              <span className="mt-2 block text-sm font-semibold text-zinc-700">
-                {formatPeriodEstimateFr(days)}
-              </span>
-            </p>
-          </div>
-        </div>
-
       {streakAboveTarget >= 3 ? (
         <div className="aw-reveal flex items-center gap-3 rounded-2xl border-2 border-rose-500 bg-rose-50 px-5 py-4">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-rose-600 text-white">
