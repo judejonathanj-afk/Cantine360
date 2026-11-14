@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Recycle, Scale, Target } from "lucide-react";
+import { NosEngagementsCard } from "@/components/dashboard/NosEngagementsCard";
 import {
   ChartContainer,
   ChartLegend,
@@ -18,7 +18,6 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
-import { cn } from "@/lib/utils";
 
 const chartConfig = {
   wasteKg: { label: "Déchets (kg)", color: "#f4c44a" },
@@ -115,48 +114,8 @@ export function KitchenDashboardOverview({
         )}
       </section>
 
-      <section className="relative min-h-[220px] overflow-hidden rounded-[28px] bg-[#c8f24a] p-5 shadow-[0_12px_28px_-18px_rgba(24,24,27,0.18)]">
-        <div className="relative z-10 max-w-[16rem] sm:max-w-[58%]">
-          <h2 className="font-display text-lg font-extrabold tracking-tight text-[#0d3b2e]">
-            Nos engagements
-          </h2>
-          <p className="mt-1 text-sm font-semibold leading-snug text-[#0d3b2e]/80">
-            Moins de gaspillage alimentaire, plus de plaisir dans l&apos;assiette&nbsp;!
-          </p>
-          <ul className="mt-4 space-y-3">
-            <EngagementItem icon={Recycle} label="Réduire le gaspillage" />
-            <EngagementItem icon={Scale} label="Adapter les portions" />
-            <EngagementItem icon={Target} label="Mesurer pour progresser" />
-          </ul>
-        </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/cantine-hero.png"
-          alt=""
-          className="pointer-events-none absolute inset-y-3 right-0 h-[calc(100%-1.5rem)] w-[48%] rounded-[22px] object-cover object-[center_28%] shadow-md ring-4 ring-white/80"
-        />
-      </section>
+      <NosEngagementsCard />
     </div>
   );
 }
 
-function EngagementItem({
-  icon: Icon,
-  label,
-}: {
-  icon: typeof Recycle;
-  label: string;
-}) {
-  return (
-    <li className="flex items-center gap-2.5 text-sm font-bold text-[#0d3b2e]">
-      <span
-        className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-[#0d3b2e] shadow-sm",
-        )}
-      >
-        <Icon className="size-4" aria-hidden />
-      </span>
-      {label}
-    </li>
-  );
-}
