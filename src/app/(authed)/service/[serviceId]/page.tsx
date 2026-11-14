@@ -19,32 +19,46 @@ export const dynamic = "force-dynamic";
 
 export default async function ServicePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ serviceId: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const session = await getEstablishmentSessionForRole("KITCHEN");
   if (!session) return redirectToEstablishmentLogin("/service");
 
   const { serviceId } = await params;
-  const [service, antiWaste, allergenSummary] = await Promise.all([
-    readServiceScreen(db, {
-      establishmentId: session.establishmentId,
-      serviceId,
-    }),
-    getEstablishmentAntiWasteSettings(db, session.establishmentId),
-    getServiceAllergenSummary(db, session.establishmentId, serviceId).catch(
-      (e) => {
-        console.error("[service] allergen summary", e);
-        return null;
-      },
-    ),
-  ]);
+  const { from } = await searchParams;
+  const [service, antiWaste, allergenSummary, filledMenuCount] =
+    await Promise.all([
+      readServiceScreen(db, {
+        establishmentId: session.establishmentId,
+        serviceId,
+      }),
+      getEstablishmentAntiWasteSettings(db, session.establishmentId),
+      getServiceAllergenSummary(db, session.establishmentId, serviceId).catch(
+        (e) => {
+          console.error("[service] allergen summary", e);
+          return null;
+        },
+      ),
+      db.menuItem.count({
+        where: {
+          menu: {
+            serviceId,
+            service: { establishmentId: session.establishmentId },
+          },
+          NOT: { label: "" },
+        },
+      }),
+    ]);
   if (!service) notFound();
 
-  const hasFilledMenu = (service.menu?.items ?? []).some(
-    (item) => item.label.trim().length > 0,
-  );
-  if (!hasFilledMenu) {
+  const hasFilledMenu =
+    filledMenuCount > 0 ||
+    (service.menu?.items ?? []).some((item) => item.label.trim().length > 0);
+  // Après « Enregistrer le menu », ne pas renvoyer sur /menu (cache Next / lecture périmée).
+  if (!hasFilledMenu && from !== "menu") {
     redirect(`/service/${serviceId}/menu`);
   }
   const summaryByGroup = new Map(

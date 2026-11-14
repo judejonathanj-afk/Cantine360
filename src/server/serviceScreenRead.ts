@@ -24,6 +24,16 @@ function remember(
   }
 }
 
+export function invalidateServiceScreenCache(
+  establishmentId: string,
+  serviceId: string,
+) {
+  const prefix = `${establishmentId}|${serviceId}|`;
+  for (const key of [...cache.keys()]) {
+    if (key.startsWith(prefix)) cache.delete(key);
+  }
+}
+
 function stampPart(max: Date | null, count: number) {
   return `${max?.getTime() ?? 0}:${count}`;
 }

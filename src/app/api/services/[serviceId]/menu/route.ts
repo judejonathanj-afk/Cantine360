@@ -6,6 +6,7 @@ import { getServerSession } from "@/server/auth";
 import { MenuCategory } from "@/generated/prisma/client";
 import { withDietFlags } from "@/lib/dietaryRegime";
 import { runDbWrite } from "@/server/runDbWrite";
+import { invalidateServiceScreenCache } from "@/server/serviceScreenRead";
 
 const ItemSchema = z.object({
   id: z.string().optional(),
@@ -145,6 +146,7 @@ export async function PUT(
     menu = await runDbWrite(() => replaceMenu(false));
   }
   if (!menu) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  invalidateServiceScreenCache(establishmentId, serviceId);
   revalidatePath(`/service/${serviceId}`);
   revalidatePath(`/service/${serviceId}/menu`);
   revalidatePath("/service", "layout");

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Check, ChevronDown, Recycle } from "lucide-react";
 import { EU14_ALLERGENS, allergenButtonLabel } from "@/lib/allergens";
 import { resolveGrammageSuggestion } from "@/lib/antiWasteGrammageSuggestion";
@@ -115,7 +114,6 @@ export function MenuEditor({
   dishWasteHistoryByLabel?: Record<string, DishWasteHistory>;
   targetGPer100?: number | null;
 }) {
-  const router = useRouter();
   const [items, setItems] = useState<Item[]>(() => initializeMenuItems(initialItems));
   const [openCategories, setOpenCategories] = useState<Record<Category, boolean>>({
     STARTER: false,
@@ -183,6 +181,7 @@ export function MenuEditor({
       const send = () =>
         fetch(`/api/services/${serviceId}/menu`, {
           method: "PUT",
+          credentials: "same-origin",
           headers: { "content-type": "application/json" },
           body: payload,
         });
@@ -197,8 +196,7 @@ export function MenuEditor({
         return;
       }
       setStatus("Sauvegardé. Ouverture de la fiche service…");
-      router.refresh();
-      window.location.assign(`/service/${serviceId}`);
+      window.location.replace(`/service/${serviceId}?from=menu`);
     } catch {
       setStatus("Erreur de sauvegarde.");
       window.setTimeout(() => setStatus(null), 4000);
