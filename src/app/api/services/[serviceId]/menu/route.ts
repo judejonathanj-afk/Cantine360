@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/server/db";
@@ -78,7 +79,7 @@ export async function PUT(
       const menu = await tx.menu.upsert({
         where: { serviceId },
         create: { serviceId },
-        update: {},
+        update: { updatedAt: new Date() },
         select: { id: true, serviceId: true },
       });
       await tx.menuItem.deleteMany({ where: { menuId: menu.id } });
@@ -144,6 +145,9 @@ export async function PUT(
     menu = await runDbWrite(() => replaceMenu(false));
   }
   if (!menu) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  revalidatePath(`/service/${serviceId}`);
+  revalidatePath(`/service/${serviceId}/menu`);
+  revalidatePath("/service", "layout");
   return NextResponse.json({ menu });
 }
 

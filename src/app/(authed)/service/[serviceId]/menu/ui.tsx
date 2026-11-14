@@ -153,17 +153,31 @@ export function MenuEditor({
   }
 
   async function save() {
+    if (busy) return;
     setBusy(true);
     setStatus(null);
     try {
       const cleaned = items
-        .map((i) => ({
-          ...i,
-          label: i.label.trim(),
-          allergens: i.allergens.filter(Boolean),
-          grammageG: i.grammageG,
-        }))
+        .map((i) => {
+          const g = i.grammageG;
+          const grammageG =
+            typeof g === "number" && Number.isFinite(g)
+              ? Math.min(5000, Math.max(1, Math.round(g)))
+              : null;
+          return {
+            ...i,
+            label: i.label.trim(),
+            allergens: i.allergens.filter(Boolean),
+            grammageG,
+          };
+        })
         .filter((i) => i.label.length > 0);
+
+      if (cleaned.length === 0) {
+        setStatus("Ajoutez au moins un intitulé avant d’enregistrer.");
+        window.setTimeout(() => setStatus(null), 4000);
+        return;
+      }
 
       const payload = JSON.stringify({ items: cleaned });
       const send = () =>
@@ -182,10 +196,12 @@ export function MenuEditor({
         window.setTimeout(() => setStatus(null), 4000);
         return;
       }
-      setStatus("Sauvegardé. Retour à la fiche service…");
-      window.setTimeout(() => {
-        router.push(`/service/${serviceId}`);
-      }, 600);
+      setStatus("Sauvegardé. Ouverture de la fiche service…");
+      router.refresh();
+      window.location.assign(`/service/${serviceId}`);
+    } catch {
+      setStatus("Erreur de sauvegarde.");
+      window.setTimeout(() => setStatus(null), 4000);
     } finally {
       setBusy(false);
     }

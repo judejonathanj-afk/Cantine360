@@ -15,6 +15,8 @@ import { getEstablishmentAntiWasteSettings } from "@/server/establishmentAntiWas
 import { getAntiWasteKitchenAdvice } from "@/server/getAntiWasteKitchenAdvice";
 import { readServiceScreen } from "@/server/serviceScreenRead";
 
+export const dynamic = "force-dynamic";
+
 export default async function ServicePage({
   params,
 }: {
