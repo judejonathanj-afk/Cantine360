@@ -383,6 +383,7 @@ export function AntiWastePanels({
           days={days}
           gramsPer100={gaugeValue}
           gaugeStatus={gaugeStatus}
+          targetGPer100={targetGPer100}
         />
 
         <div className="flex flex-wrap items-center justify-between gap-3">

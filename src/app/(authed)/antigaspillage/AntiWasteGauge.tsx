@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { fmt1, type GaugeStatus } from "./antiWasteFormat";
 
 const COLOR: Record<GaugeStatus, string> = {
@@ -15,12 +15,14 @@ export function AntiWasteGauge({
   objective,
   status,
   emptyLabel = "—",
+  size = "md",
 }: {
   value: number | null;
   objective: number | null;
   status: GaugeStatus;
   /** Affiché au centre quand aucune pesée sur la période. */
   emptyLabel?: string;
+  size?: "sm" | "md";
 }) {
   const numericValue = value ?? 0;
   const showEmpty = value == null || value <= 0;
@@ -44,6 +46,7 @@ export function AntiWasteGauge({
   const objPoint = objFrac != null ? point(objFrac) : null;
 
   const [mounted, setMounted] = useState(false);
+  const gradId = `awGaugeGrad-${useId().replace(/:/g, "")}`;
   useEffect(() => {
     const t = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(t);
@@ -51,9 +54,11 @@ export function AntiWasteGauge({
 
   const arcPath = `M ${cx - r},${cy} A ${r},${r} 0 0 1 ${cx + r},${cy}`;
   const color = COLOR[status];
+  const compact = size === "sm";
+  const stroke = compact ? 16 : 18;
 
   return (
-    <div className="relative w-full max-w-[200px]">
+    <div className={compact ? "relative w-[7.25rem]" : "relative w-full max-w-[200px]"}>
       <svg
         viewBox="0 0 280 172"
         className="w-full"
@@ -65,7 +70,7 @@ export function AntiWasteGauge({
         }
       >
         <defs>
-          <linearGradient id="awGaugeGrad" x1="0" y1="0" x2="1" y2="0">
+          <linearGradient id={gradId} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor={color} stopOpacity="0.55" />
             <stop offset="100%" stopColor={color} />
           </linearGradient>
@@ -75,15 +80,15 @@ export function AntiWasteGauge({
           d={arcPath}
           fill="none"
           stroke="var(--muted)"
-          strokeWidth="18"
+          strokeWidth={stroke}
           strokeLinecap="round"
         />
 
         <path
           d={arcPath}
           fill="none"
-          stroke="url(#awGaugeGrad)"
-          strokeWidth="18"
+          stroke={`url(#${gradId})`}
+          strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={len}
           strokeDashoffset={mounted ? len * (1 - frac) : len}
@@ -94,11 +99,11 @@ export function AntiWasteGauge({
 
         {objPoint ? (
           <g>
-            <circle cx={objPoint.x} cy={objPoint.y} r="10" fill="var(--card)" />
+            <circle cx={objPoint.x} cy={objPoint.y} r={compact ? 8 : 10} fill="var(--card)" />
             <circle
               cx={objPoint.x}
               cy={objPoint.y}
-              r="6"
+              r={compact ? 5 : 6}
               fill="var(--foreground)"
             />
           </g>
@@ -107,13 +112,23 @@ export function AntiWasteGauge({
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center">
         <span
-          className="font-display text-3xl font-bold leading-none tracking-tight"
+          className={
+            compact
+              ? "font-display text-lg font-bold leading-none tracking-tight"
+              : "font-display text-3xl font-bold leading-none tracking-tight"
+          }
           style={{ color }}
         >
           {showEmpty ? emptyLabel : fmt1(numericValue)}
         </span>
-        <span className="mt-1 text-sm font-bold uppercase tracking-wider text-zinc-950">
-          {showEmpty ? "en attente de pesée" : "g / 100 assiettes"}
+        <span
+          className={
+            compact
+              ? "mt-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-700"
+              : "mt-1 text-sm font-bold uppercase tracking-wider text-zinc-950"
+          }
+        >
+          {showEmpty ? (compact ? "g / 100" : "en attente de pesée") : compact ? "g / 100" : "g / 100 assiettes"}
         </span>
       </div>
     </div>

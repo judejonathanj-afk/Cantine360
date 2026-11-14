@@ -1,7 +1,7 @@
-import { CalendarDays, Check, Leaf, Scale, Target } from "lucide-react";
+import { CalendarDays, Check, Leaf, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AntiWasteGauge } from "./AntiWasteGauge";
 import {
-  fmt1,
   formatPeriodEstimateFr,
   type GaugeStatus,
 } from "./antiWasteFormat";
@@ -29,10 +29,12 @@ export function AntiWasteHeroBanner({
   days,
   gramsPer100,
   gaugeStatus,
+  targetGPer100,
 }: {
   days: 7 | 30;
   gramsPer100: number | null;
   gaugeStatus: GaugeStatus;
+  targetGPer100: number | null;
 }) {
   const hasWeighing = gramsPer100 != null && gramsPer100 > 0;
   const objective = hasWeighing
@@ -65,18 +67,14 @@ export function AntiWasteHeroBanner({
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-2.5 rounded-2xl bg-[#f3fbf6] px-3 py-2 sm:px-3.5">
-              <span className="flex size-9 items-center justify-center rounded-full bg-white text-[#0d7a45] shadow-sm">
-                <Scale className="size-5" aria-hidden />
-              </span>
-              <div>
-                <p className="font-display text-xl font-extrabold leading-none tabular-nums text-[#0d3b2e] sm:text-2xl">
-                  {hasWeighing ? `${fmt1(gramsPer100!)} g` : "—"}
-                </p>
-                <p className="mt-0.5 text-[11px] font-semibold text-zinc-500">
-                  / 100 assiettes
-                </p>
-              </div>
+            <div className="flex items-center rounded-2xl bg-[#f3fbf6] px-2 py-1 sm:px-2.5">
+              <AntiWasteGauge
+                size="sm"
+                value={gramsPer100}
+                objective={targetGPer100}
+                status={gaugeStatus}
+                emptyLabel="—"
+              />
             </div>
 
             <span className="hidden h-10 w-px bg-zinc-200 sm:block" aria-hidden />
