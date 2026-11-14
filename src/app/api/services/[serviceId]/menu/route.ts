@@ -3,10 +3,26 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/server/db";
 import { getServerSession } from "@/server/auth";
-import { MenuCategory } from "@/generated/prisma/client";
+import { MenuCategory, Prisma } from "@/generated/prisma/client";
 import { withDietFlags } from "@/lib/dietaryRegime";
 import { runDbWrite } from "@/server/runDbWrite";
 import { invalidateServiceScreenCache } from "@/server/serviceScreenRead";
+
+function isMissingMenuDietColumn(e: unknown) {
+  const code =
+    typeof e === "object" && e !== null && "code" in e
+      ? String((e as { code: unknown }).code)
+      : "";
+  if (code === "P2022") return true;
+  const meta =
+    typeof e === "object" && e !== null && "meta" in e
+      ? JSON.stringify((e as { meta: unknown }).meta)
+      : "";
+  const msg = e instanceof Error ? e.message : String(e);
+  return /P2022|ColumnNotFound|does not exist|containsPork|containsMeat|containsBeef|containsFish|isHalal|isKosher|notHalal|notKosher/i.test(
+    `${msg} ${meta}`,
+  );
+}
 
 const ItemSchema = z.object({
   id: z.string().optional(),
@@ -85,27 +101,51 @@ export async function PUT(
       });
       await tx.menuItem.deleteMany({ where: { menuId: menu.id } });
       if (baseItems.length > 0) {
-        await tx.menuItem.createMany({
-          data: baseItems.map((item) => {
-            const row = {
-              menuId: menu.id,
-              category: item.category,
-              label: item.label,
-              allergens: item.allergens,
-              grammageG: item.grammageG,
-            };
-            return withDiet
-              ? withDietFlags(row, {
-                  containsPork: item.containsPork,
-                  containsMeat: item.containsMeat,
-                  containsBeef: item.containsBeef,
-                  containsFish: item.containsFish,
-                  isHalal: item.isHalal,
-                  isKosher: item.isKosher,
-                })
-              : row;
-          }),
-        });
+        if (withDiet) {
+          await tx.menuItem.createMany({
+            data: baseItems.map((item) => {
+              const row = {
+                menuId: menu.id,
+                category: item.category,
+                label: item.label,
+                allergens: item.allergens,
+                grammageG: item.grammageG,
+              };
+              return withDietFlags(row, {
+                containsPork: item.containsPork,
+                containsMeat: item.containsMeat,
+                containsBeef: item.containsBeef,
+                containsFish: item.containsFish,
+                isHalal: item.isHalal,
+                isKosher: item.isKosher,
+              });
+            }),
+          });
+        } else {
+          // Prisma envoie quand même les colonnes régimes (défauts schéma) :
+          // insert SQL sans ces colonnes si la prod n’est pas migrée.
+          for (const item of baseItems) {
+            const allergensSql =
+              item.allergens.length === 0
+                ? Prisma.sql`'{}'::text[]`
+                : Prisma.sql`ARRAY[${Prisma.join(item.allergens)}]::text[]`;
+            await tx.$executeRaw(
+              Prisma.sql`
+                INSERT INTO "MenuItem" ("id","menuId","category","label","allergens","grammageG","createdAt","updatedAt")
+                VALUES (
+                  ${crypto.randomUUID()},
+                  ${menu.id},
+                  CAST(${item.category} AS "MenuCategory"),
+                  ${item.label},
+                  ${allergensSql},
+                  ${item.grammageG},
+                  NOW(),
+                  NOW()
+                )
+              `,
+            );
+          }
+        }
       }
       return {
         id: menu.id,
@@ -128,22 +168,15 @@ export async function PUT(
 
   let menu;
   try {
-    menu = await runDbWrite(() => replaceMenu(true));
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "";
-    if (
-      !msg.includes("containsPork") &&
-      !msg.includes("containsMeat") &&
-      !msg.includes("containsBeef") &&
-      !msg.includes("containsFish") &&
-      !msg.includes("isHalal") &&
-      !msg.includes("isKosher") &&
-      !msg.includes("notHalal") &&
-      !msg.includes("notKosher")
-    ) {
-      throw e;
+    try {
+      menu = await runDbWrite(() => replaceMenu(true));
+    } catch (e) {
+      if (!isMissingMenuDietColumn(e)) throw e;
+      menu = await runDbWrite(() => replaceMenu(false));
     }
-    menu = await runDbWrite(() => replaceMenu(false));
+  } catch (e) {
+    console.error("[menu PUT]", e);
+    return NextResponse.json({ error: "Save failed" }, { status: 500 });
   }
   if (!menu) return NextResponse.json({ error: "Not found" }, { status: 404 });
   invalidateServiceScreenCache(establishmentId, serviceId);
