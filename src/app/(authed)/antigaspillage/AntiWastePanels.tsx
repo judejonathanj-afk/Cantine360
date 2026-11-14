@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
 import { DashboardFoldOverlay } from "@/components/dashboard/DashboardFoldOverlay";
 import { AntiWasteGauge } from "./AntiWasteGauge";
+import { AntiWasteHeroBanner } from "./AntiWasteHeroBanner";
 import {
   fmt,
   formatDayLabelFr,
@@ -377,23 +378,12 @@ export function AntiWastePanels({
 
   return (
     <div className="anti-waste-dash relative space-y-6">
-      <section className="aw-reveal space-y-6">
-        <div className="flex flex-col items-center text-center">
-          <div className="w-full">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              Cantine 360
-            </p>
-            <h1 className="mt-2 inline-block rounded-2xl bg-white px-5 py-2 font-display text-2xl font-bold tracking-tight text-black sm:text-3xl">
-              Mode anti-gaspillage
-            </h1>
-            <p className="mt-3 w-full text-lg leading-relaxed text-black sm:text-xl">
-              Le mode anti-gaspillage aide la cuisine et la commission à réduire
-              les restes : fixez un objectif en grammes pour 100 assiettes, puis
-              activez le mode ci-dessous pour afficher la synthèse et les plats
-              à risque.
-            </p>
-          </div>
-        </div>
+      <section className="aw-reveal space-y-5">
+        <AntiWasteHeroBanner
+          days={days}
+          gramsPer100={gaugeValue}
+          gaugeStatus={gaugeStatus}
+        />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div
