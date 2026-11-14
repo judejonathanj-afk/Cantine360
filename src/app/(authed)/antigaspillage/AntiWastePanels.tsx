@@ -456,6 +456,7 @@ export function AntiWastePanels({
           overlayTitle="Plats à risque"
           titleClassName="text-violet-100"
           foldTone="forest"
+          fullPage
           subtitle="Repérez les plats qui pèsent le plus sur le gaspillage, pour ajuster portions et menu dès demain."
           hint={`Classés du plus gourmand au plus léger · ${days} jours. Lisez, comparez, téléchargez.`}
           icon={Flame}
