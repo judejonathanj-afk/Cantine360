@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { NosEngagementsCard } from "@/components/dashboard/NosEngagementsCard";
+import { AvisDuSuiviCard } from "@/components/dashboard/AvisDuSuiviCard";
 import {
   ChartContainer,
   ChartLegend,
@@ -37,9 +37,13 @@ function formatDayLabel(iso: string) {
 export function KitchenDashboardOverview({
   days,
   perDayRows,
+  wasteGramsPer100,
+  targetGPer100,
 }: {
   days: 7 | 30;
   perDayRows: DashboardDayDetailRow[];
+  wasteGramsPer100: number | null;
+  targetGPer100: number | null;
 }) {
   const series = useMemo(
     () =>
@@ -114,7 +118,12 @@ export function KitchenDashboardOverview({
         )}
       </section>
 
-      <NosEngagementsCard />
+      <AvisDuSuiviCard
+        days={days}
+        perDayRows={perDayRows}
+        wasteGramsPer100={wasteGramsPer100}
+        targetGPer100={targetGPer100}
+      />
     </div>
   );
 }

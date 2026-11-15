@@ -481,7 +481,12 @@ export default function DashboardPanels({
         perDayRows={perDayRows}
       />
 
-      <KitchenDashboardOverview days={days} perDayRows={perDayRows} />
+      <KitchenDashboardOverview
+        days={days}
+        perDayRows={perDayRows}
+        wasteGramsPer100={wasteGramsPer100Served}
+        targetGPer100={antiWasteTargetGPer100}
+      />
 
       {!isKitchen ? (
       <div className="flex flex-col gap-3">
