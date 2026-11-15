@@ -60,7 +60,7 @@ export function KitchenDashboardOverview({
   );
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(17rem,0.85fr)]">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
       <section className="rounded-[28px] bg-white p-5 shadow-[0_12px_28px_-18px_rgba(24,24,27,0.22)] ring-1 ring-zinc-100">
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
           <div>
