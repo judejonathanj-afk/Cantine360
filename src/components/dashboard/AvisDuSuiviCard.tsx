@@ -85,6 +85,9 @@ export function AvisDuSuiviCard({
               {advice.badge}
             </p>
             <h2 id="avis-suivi-title" className="avis-suivi__title">
+              <span className={cn("avis-suivi__title-icon", iconWrap)}>
+                <Lightbulb className="size-4" strokeWidth={2.4} aria-hidden />
+              </span>
               Avis du suivi
             </h2>
           </div>
