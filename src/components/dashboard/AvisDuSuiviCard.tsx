@@ -6,11 +6,17 @@ import {
   Recycle,
   Scale,
   TrendingUp,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { buildDashboardFollowUpAdvice } from "@/lib/buildDashboardFollowUpAdvice";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
-import { ServiceSaisieOverlay } from "@/components/service/ServiceSaisieOverlay";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import "./AvisDuSuiviCard.css";
 
@@ -19,6 +25,23 @@ const ITEM_ICONS: Record<string, LucideIcon> = {
   service: Scale,
   trend: TrendingUp,
 };
+
+function LeafDecor({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 160 120" className={className} aria-hidden>
+      <ellipse cx="118" cy="38" rx="42" ry="28" fill="#bbf7d0" />
+      <ellipse cx="148" cy="18" rx="28" ry="20" fill="#86efac" />
+      <path
+        d="M22 108c18-28 48-38 72-22-8 22-32 34-56 28-8-2-14-4-16-6Z"
+        fill="#bbf7d0"
+      />
+      <path
+        d="M88 92c16-10 34-8 46 4-12 12-30 14-44 8-2-2-2-8-2-12Z"
+        fill="#86efac"
+      />
+    </svg>
+  );
+}
 
 export function AvisDuSuiviCard({
   days,
@@ -38,6 +61,13 @@ export function AvisDuSuiviCard({
     wasteGramsPer100,
     targetGPer100,
   });
+
+  const iconWrap =
+    advice.tone === "alert"
+      ? "bg-rose-500"
+      : advice.tone === "watch"
+        ? "bg-orange-400"
+        : "bg-[#0f9f4f]";
 
   return (
     <>
@@ -81,103 +111,101 @@ export function AvisDuSuiviCard({
         </ul>
       </button>
 
-      <ServiceSaisieOverlay
-        open={open}
-        onClose={() => setOpen(false)}
-        labelledBy="avis-suivi-overlay-title"
-        className="h-full min-h-0 rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]"
-        chrome={
-          <div className="min-w-0">
-            <h2
-              id="avis-suivi-overlay-title"
-              className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
-            >
-              <Lightbulb className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-              Avis du suivi
-            </h2>
-            <p className="mt-1 text-base font-semibold leading-snug text-white sm:text-lg">
-              Lecture en direct des pesées, du dernier service et de la tendance.
-            </p>
-            <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
-              Détail sur {days} jours — {advice.badge.toLowerCase()}.
-            </p>
-          </div>
-        }
-        footer={
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="shrink-0 rounded-2xl bg-[#00c46a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:scale-105 hover:bg-[#00b05f] active:scale-[0.98] motion-reduce:hover:scale-100"
-            >
-              Fermer
-            </button>
-          </div>
-        }
-      >
-        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-3 sm:p-4">
-          <div
-            className={cn(
-              "rounded-2xl border p-4 sm:p-5",
-              advice.tone === "ok"
-                ? "border-emerald-200 bg-emerald-50"
-                : advice.tone === "watch"
-                  ? "border-amber-200 bg-amber-50"
-                  : advice.tone === "alert"
-                    ? "border-rose-200 bg-rose-50"
-                    : "border-zinc-200 bg-zinc-50",
-            )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          showCloseButton={false}
+          overlayClassName="z-[100]"
+          className="z-[100] max-w-3xl gap-0 overflow-hidden rounded-3xl border-0 p-0 shadow-[0_24px_60px_-24px_rgba(15,60,40,0.45)] sm:max-w-3xl"
+        >
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="absolute right-4 top-4 z-30 flex size-8 items-center justify-center rounded-full bg-white text-zinc-500 shadow-sm ring-1 ring-zinc-200 transition hover:bg-zinc-50 hover:text-zinc-800"
+            aria-label="Fermer"
           >
-            <p
-              className={cn(
-                "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
-                advice.tone === "ok"
-                  ? "bg-emerald-600"
-                  : advice.tone === "watch"
-                    ? "bg-amber-500"
-                    : advice.tone === "alert"
-                      ? "bg-rose-600"
-                      : "bg-zinc-600",
-              )}
-            >
-              {advice.badge}
-            </p>
-            <p className="mt-3 font-display text-lg font-bold leading-snug text-zinc-950 sm:text-xl">
-              {advice.lead}
-            </p>
-            <p className="mt-2 text-base font-medium leading-relaxed text-zinc-800">
-              {advice.detail}
-            </p>
-            <p className="mt-3 text-base font-semibold leading-relaxed text-zinc-950">
-              {advice.hint}
-            </p>
-          </div>
+            <X className="size-4" />
+          </button>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            {advice.facts.map((fact) => (
-              <div
-                key={fact.key}
-                className={cn(
-                  "rounded-2xl border px-4 py-4",
-                  fact.key === "alerte"
-                    ? "border-rose-200 bg-rose-50"
-                    : "border-zinc-200 bg-zinc-50",
-                )}
-              >
-                <p className="inline-flex rounded-full bg-zinc-950 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
-                  {fact.pill}
+          <div className="relative overflow-hidden">
+            <div className="relative px-5 pb-2 pt-5 sm:px-6">
+              <LeafDecor className="pointer-events-none absolute -right-4 -top-6 h-28 w-40" />
+              <div className="relative flex items-start gap-3 pr-10">
+                <span
+                  className={cn(
+                    "flex size-12 shrink-0 items-center justify-center rounded-full text-white shadow-sm",
+                    iconWrap,
+                  )}
+                >
+                  <Lightbulb className="size-6" strokeWidth={2.4} aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
+                    Avis du suivi
+                  </DialogTitle>
+                  <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
+                    {advice.lead} · {days} jours.
+                  </DialogDescription>
+                </div>
+              </div>
+            </div>
+
+            <div className="max-h-[min(70vh,36rem)] space-y-3 overflow-y-auto px-5 pb-5 pt-3 sm:px-6">
+              <div className="rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+                <p className="text-xs font-extrabold uppercase tracking-wide text-[#047857]">
+                  {advice.badge}
                 </p>
-                <p className="mt-3 text-base font-bold leading-snug text-zinc-950">
-                  {fact.title}
-                </p>
-                <p className="mt-1 text-sm font-medium leading-relaxed text-zinc-700">
-                  {fact.text}
+                <p className="mt-1 text-sm font-bold leading-relaxed text-[#052e16]">
+                  {advice.detail}
                 </p>
               </div>
-            ))}
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                {advice.facts.map((fact) => (
+                  <div
+                    key={fact.key}
+                    className={cn(
+                      "rounded-[1.25rem] px-4 py-3.5",
+                      fact.key === "alerte" ? "bg-rose-50" : "bg-[#e7f8ef]",
+                    )}
+                  >
+                    <p
+                      className={cn(
+                        "text-xs font-extrabold uppercase tracking-wide",
+                        fact.key === "alerte" ? "text-rose-700" : "text-[#047857]",
+                      )}
+                    >
+                      {fact.pill}
+                    </p>
+                    <p className="mt-1 text-sm font-extrabold leading-snug text-zinc-950">
+                      {fact.title}
+                    </p>
+                    <p className="mt-1 text-xs font-bold leading-snug text-zinc-700">
+                      {fact.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+                <LeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
+                <div className="relative flex items-start gap-3">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
+                    <Lightbulb className="size-4" strokeWidth={2.3} aria-hidden />
+                  </span>
+                  <div>
+                    <p className="text-base font-extrabold text-[#047857]">
+                      À retenir
+                    </p>
+                    <p className="mt-0.5 text-sm font-bold leading-snug text-[#052e16]">
+                      {advice.hint}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </ServiceSaisieOverlay>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
