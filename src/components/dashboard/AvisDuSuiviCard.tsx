@@ -150,7 +150,7 @@ export function AvisDuSuiviCard({
             </div>
 
             <div className="max-h-[min(70vh,36rem)] space-y-3 overflow-y-auto px-5 pb-5 pt-3 sm:px-6">
-              <div className="rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+              <div className="rounded-[1.25rem] bg-[#FAF6EE] px-4 py-3.5">
                 <p className="text-xs font-extrabold uppercase tracking-wide text-[#047857]">
                   {advice.badge}
                 </p>
@@ -165,7 +165,7 @@ export function AvisDuSuiviCard({
                     key={fact.key}
                     className={cn(
                       "rounded-[1.25rem] px-4 py-3.5",
-                      fact.key === "alerte" ? "bg-rose-50" : "bg-[#e7f8ef]",
+                      fact.key === "alerte" ? "bg-rose-50" : "bg-[#FAF6EE]",
                     )}
                   >
                     <p
@@ -186,7 +186,7 @@ export function AvisDuSuiviCard({
                 ))}
               </div>
 
-              <div className="relative overflow-hidden rounded-[1.25rem] bg-[#e7f8ef] px-4 py-3.5">
+              <div className="relative overflow-hidden rounded-[1.25rem] bg-[#FAF6EE] px-4 py-3.5">
                 <LeafDecor className="pointer-events-none absolute -bottom-6 -right-4 h-20 w-28 opacity-80" />
                 <div className="relative flex items-start gap-3">
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#0f9f4f] shadow-sm">
