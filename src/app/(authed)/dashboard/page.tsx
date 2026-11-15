@@ -203,7 +203,6 @@ async function renderDashboard({
   let schoolNames: string[] = [];
   let antiWasteModeEnabled = false;
   let antiWasteTargetGPer100: number | null = null;
-  let antiWasteSchemaReady = true;
   let establishmentLabel = "";
 
   try {
@@ -241,7 +240,6 @@ async function renderDashboard({
       "";
     antiWasteModeEnabled = antiWaste.antiWasteModeEnabled;
     antiWasteTargetGPer100 = antiWaste.antiWasteTargetGPer100;
-    antiWasteSchemaReady = antiWaste.schemaReady;
     establishment = est;
     activeGroupsList = agList;
     schoolNames = schoolsList.filter((s) => s.active).map((s) => s.name);
@@ -667,7 +665,7 @@ async function renderDashboard({
       levelComparisonTotals={levelComparisonTotals}
       antiWasteModeEnabled={antiWasteModeEnabled}
       antiWasteTargetGPer100={antiWasteTargetGPer100}
-      antiWasteSchemaReady={antiWasteSchemaReady}
+      establishmentEco={establishment}
     />
   );
 }

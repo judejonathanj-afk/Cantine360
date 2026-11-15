@@ -13,13 +13,12 @@ import {
   Home,
   Layers,
   Table as TableIcon,
-  Target,
   Trash2,
   Users,
   Utensils,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { AntiWasteModeToggle } from "@/components/admin/AntiWasteModeToggle";
+import { SchoolsClassesFold } from "@/components/admin/SchoolsClassesBoard";
 import { CantinePulseCard } from "@/components/CantinePulseCard";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { CantinePlusFold } from "@/components/dashboard/CantinePlusSection";
@@ -65,6 +64,7 @@ import {
   type LevelFilterValue,
 } from "@/lib/scopedLevelFilter";
 import type { ReactNode } from "react";
+import type { EstablishmentEcoSettings } from "@/server/establishmentEco";
 
 type Totals = {
   present: number;
@@ -184,6 +184,14 @@ export type DashboardEcoPayload = {
 
 const CANTINE_PLUS_OPEN_KEY = "cantine360-cantine-plus-open";
 
+const DEFAULT_ECO: EstablishmentEcoSettings = {
+  ecoRestesServisTargetPct: null,
+  ecoReductionTargetPct: null,
+  ecoPeriodKind: "CALENDAR_YEAR",
+  ecoSchoolYearStartMonth: 9,
+  ecoSchoolYearStartDay: 1,
+};
+
 export default function DashboardPanels({
   days,
   schoolNames,
@@ -212,7 +220,7 @@ export default function DashboardPanels({
   levelComparisonTotals,
   antiWasteModeEnabled = false,
   antiWasteTargetGPer100 = null,
-  antiWasteSchemaReady = true,
+  establishmentEco = null,
 }: {
   days: 7 | 30;
   schoolNames: string[];
@@ -242,7 +250,7 @@ export default function DashboardPanels({
   levelComparisonTotals: Record<SchoolLevel, LevelMealTotals>;
   antiWasteModeEnabled?: boolean;
   antiWasteTargetGPer100?: number | null;
-  antiWasteSchemaReady?: boolean;
+  establishmentEco?: EstablishmentEcoSettings | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -498,28 +506,7 @@ export default function DashboardPanels({
         <CantinePlusFold onOpen={() => setCantinePlusFold(true)} />
       ) : null}
 
-      <DashboardFoldOverlay
-        kicker="Objectif"
-        openLabel="Ouvrir Objectif à ne pas dépasser"
-        overlayTitle="Objectif à ne pas dépasser"
-        foldTone="forest"
-        subtitle="Fixez le plafond de déchets pour 100 assiettes servies, et activez ou désactivez le mode."
-        hint={
-          antiWasteTargetGPer100 != null && antiWasteTargetGPer100 > 0
-            ? `En cours : ${Math.round(antiWasteTargetGPer100).toLocaleString("fr-FR")} g / 100. Saisissez, enregistrez.`
-            : "Ex. 80 = pas plus de 0,8 kg jetés pour 100 repas. Saisissez, enregistrez."
-        }
-        icon={Target}
-        labelledBy="dashboard-anti-waste-target-overlay-title"
-        closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
-      >
-        <AntiWasteModeToggle
-          initialEnabled={antiWasteModeEnabled}
-          initialTargetGPer100={antiWasteTargetGPer100}
-          schemaReady={antiWasteSchemaReady}
-          embedded
-        />
-      </DashboardFoldOverlay>
+      <SchoolsClassesFold establishmentEco={establishmentEco ?? DEFAULT_ECO} />
 
       <DashboardFoldOverlay
         kicker="Flux du repas"
