@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import {
-  ChevronDown,
   Plus,
   Trash2,
   Upload,
@@ -313,6 +312,7 @@ export function AdminStudentsClient({
         </p>
       </div>
 
+      <div className="flex flex-wrap items-start justify-center gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-8">
       <DashboardFoldOverlay
         kicker="Élèves"
         openLabel="Ouvrir Importer ou ajouter un élève"
@@ -321,6 +321,7 @@ export function AdminStudentsClient({
         hint="Les classes doivent déjà exister. Ces données alimentent le service cantine."
         icon={UserPlus}
         labelledBy="admin-students-import-overlay"
+        foldShape="ball"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
       >
         <div className="grid gap-6 p-1 lg:grid-cols-2 sm:p-2">
@@ -464,38 +465,34 @@ export function AdminStudentsClient({
       </DashboardFoldOverlay>
 
       {error ? (
-        <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="w-full rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
-      <section className="overflow-hidden rounded-[28px] bg-[#0d3b2e] shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100">
+      <div className="flex w-[10.5rem] shrink-0 flex-col items-center sm:w-[11.25rem]">
         <button
           type="button"
           onClick={() => setListOpen(true)}
           aria-expanded={false}
-          className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-white/5 sm:px-5 sm:py-4"
+          aria-label="Ouvrir Élèves et allergènes"
+          className="flex size-[10.5rem] flex-col items-center justify-center gap-2 overflow-hidden rounded-full bg-[#0d3b2e] px-3 py-4 text-center shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:bg-[#0a2f24] motion-reduce:transition-none motion-reduce:hover:scale-100 sm:size-[11.25rem]"
         >
           <span
-            className="flex size-14 shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-[3.75rem]"
+            className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-14"
             aria-hidden
           >
-            <span className="flex size-11 items-center justify-center rounded-[14px] bg-[#d8f48a] text-[#0d3b2e] sm:size-12 sm:rounded-2xl">
+            <span className="flex size-8 items-center justify-center rounded-full bg-[#d8f48a] text-[#0d3b2e] sm:size-10">
               <Users className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
             </span>
           </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
-              Liste
-            </span>
-            <span className="block text-base font-extrabold tracking-tight text-white sm:text-lg">
-              Ouvrir Élèves et allergènes
-            </span>
-            <span className="mt-0.5 block text-sm leading-snug text-white/80">
-              Parcourez les élèves par classe — dans cette page.
-            </span>
+          <span className="line-clamp-3 max-w-[8.75rem] text-sm font-extrabold leading-tight tracking-tight text-white sm:text-base">
+            Élèves et allergènes
           </span>
-          <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
         </button>
-      </section>
+        <p className="mt-2.5 max-w-[11.25rem] text-center text-sm font-semibold leading-snug text-zinc-800 sm:text-[15px]">
+          Parcourez les élèves par classe — dans cette page.
+        </p>
+      </div>
+      </div>
       </>
       ) : (
       <>
