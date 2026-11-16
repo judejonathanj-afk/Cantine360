@@ -160,25 +160,25 @@ function ConclusionBanner({
   const PillIcon =
     tone === "alert" || tone === "watch" ? AlertTriangle : Check;
   return (
-    <div className="relative overflow-hidden rounded-[1.35rem] bg-[#e8f8ee] px-4 py-4 pr-14 text-left sm:pr-16">
-      <span className={cn("absolute left-0 top-0 h-full w-1.5", bar)} aria-hidden />
+    <div className="relative min-h-[13.5rem] flex-1 overflow-hidden rounded-[1.5rem] bg-[#e8f8ee] px-5 py-5 pr-16 text-left sm:min-h-[15rem] sm:px-6 sm:py-6 sm:pr-20">
+      <span className={cn("absolute left-0 top-0 h-full w-2", bar)} aria-hidden />
       <p
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+          "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-[0.12em] text-white sm:text-sm",
           bar,
         )}
       >
-        <PillIcon className="size-3.5" strokeWidth={2.6} aria-hidden />
+        <PillIcon className="size-4" strokeWidth={2.6} aria-hidden />
         {kicker}
       </p>
-      <p className="mt-2.5 text-lg font-extrabold leading-snug text-zinc-950 sm:text-xl">
+      <p className="mt-3.5 text-xl font-extrabold leading-snug text-zinc-950 sm:text-2xl">
         {headline}
       </p>
-      <p className="mt-1.5 text-sm font-semibold leading-relaxed text-zinc-600">
+      <p className="mt-2.5 text-base font-semibold leading-relaxed text-zinc-600 sm:text-lg">
         {subline}
       </p>
-      <span className="pointer-events-none absolute bottom-3 right-3 flex size-11 items-center justify-center rounded-2xl bg-white/70 shadow-sm">
-        <BarChart3 className="size-5 text-emerald-500" strokeWidth={2} aria-hidden />
+      <span className="pointer-events-none absolute bottom-4 right-4 flex size-12 items-center justify-center rounded-2xl bg-white/80 shadow-sm sm:size-14">
+        <BarChart3 className="size-6 text-emerald-500 sm:size-7" strokeWidth={2} aria-hidden />
       </span>
     </div>
   );
@@ -253,7 +253,7 @@ export function AvisDuSuiviCard({
           <p className="avis-suivi__period">Sur {days} jours</p>
         </header>
 
-        <div className="mt-4">
+        <div className="mt-4 flex min-h-0 flex-1 flex-col">
           <ConclusionBanner
             tone={verdict.tone}
             kicker={verdict.kicker}
