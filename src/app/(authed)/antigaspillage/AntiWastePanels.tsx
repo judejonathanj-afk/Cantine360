@@ -719,9 +719,9 @@ export function AntiWastePanels({
         ) : null}
 
         <DashboardFoldOverlay
-          kicker="Avis du suivi"
-          openLabel="Ouvrir Avis du suivi du mode anti-gaspillage"
-          overlayTitle="Avis du suivi du mode anti-gaspillage"
+          kicker="Point gaspillage"
+          openLabel="Ouvrir Point gaspillage"
+          overlayTitle="Point gaspillage"
           titleClassName="text-amber-100"
           subtitle="Lecture des pesées de cet établissement : objectif, tendance, plats et services."
           hint={`Ce que les pesées indiquent sur ${days} jours.`}

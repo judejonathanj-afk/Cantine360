@@ -88,7 +88,7 @@ export function AvisDuSuiviCard({
               <span className={cn("avis-suivi__title-icon", iconWrap)}>
                 <Lightbulb className="size-4" strokeWidth={2.4} aria-hidden />
               </span>
-              Avis du suivi
+              Point gaspillage
             </h2>
           </div>
           <p className="avis-suivi__period">Sur {days} jours</p>
@@ -143,7 +143,7 @@ export function AvisDuSuiviCard({
                 </span>
                 <div className="min-w-0">
                   <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
-                    Avis du suivi
+                    Point gaspillage
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
                     {advice.lead} · {days} jours.
