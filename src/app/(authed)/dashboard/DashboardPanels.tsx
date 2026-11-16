@@ -908,7 +908,7 @@ export default function DashboardPanels({
         icon={TableIcon}
         iconTileClassName="bg-[#d8f48a] text-[#0d3b2e]"
         labelledBy="day-tracking-overlay-title"
-        panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
+        panelClassName="min-h-0 gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         foldShape="ball"
         headerAction={
@@ -929,11 +929,11 @@ export default function DashboardPanels({
           />
         }
       >
-        <div className="overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card">
+        <div className="h-fit w-full overflow-hidden rounded-2xl border-[3px] border-[#0ea5e9] bg-card">
           {perDayRowsByLevel[suiviLevel].length === 0 ? (
             <p className="p-4 text-base font-medium text-black">Pas de données.</p>
           ) : (
-            <div className="max-h-[28rem] overflow-auto rounded-xl [scrollbar-gutter:stable] sm:max-h-[32rem]">
+            <div className="overflow-x-auto rounded-xl">
               <table className="min-w-full text-base">
                 <thead className="sticky top-0 z-10 border-b-[3px] border-[#0ea5e9] bg-card text-left text-sm font-bold text-black">
                   <tr>
