@@ -12,6 +12,26 @@ import {
 } from "@/components/ui/dialog";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
+import { schoolLevelLabelFr, type SchoolLevel } from "@/lib/schoolLevel";
+import { cn } from "@/lib/utils";
+import type { LevelFilterValue } from "@/lib/scopedLevelFilter";
+
+function LevelBadge({ level }: { level: LevelFilterValue }) {
+  const isMaternelle = level === "MATERNELLE";
+  const isPrimaire = level === "PRIMAIRE";
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold",
+        isMaternelle && "bg-[#d7eef8] text-[#0b4a66]",
+        isPrimaire && "bg-[#d8f5e5] text-[#0d3b2e]",
+        !isMaternelle && !isPrimaire && "bg-zinc-100 text-zinc-600",
+      )}
+    >
+      {level === "all" ? "Tous niveaux" : schoolLevelLabelFr(level as SchoolLevel)}
+    </span>
+  );
+}
 
 function formatDayLabel(iso: string) {
   const d = new Date(`${iso}T12:00:00`);
@@ -32,23 +52,22 @@ function formatChartDayLabel(iso: string) {
 
 export function KitchenDashboardOverview({
   days,
+  levelFilter,
   perDayRows,
   wasteGramsPer100,
   targetGPer100,
-  onOpenCantinePlus,
   pulseRows = [],
   pulseWasteRows = [],
 }: {
   days: 7 | 30;
+  levelFilter: LevelFilterValue;
   perDayRows: DashboardDayDetailRow[];
   wasteGramsPer100: number | null;
   targetGPer100: number | null;
-  onOpenCantinePlus?: () => void;
   pulseRows?: CantineServiceRow[];
   pulseWasteRows?: CantineWasteDayRow[];
 }) {
   const [open, setOpen] = useState(false);
-  const opensCantinePlus = Boolean(onOpenCantinePlus);
   const series = useMemo(
     () =>
       perDayRows.map((row) => ({
@@ -80,17 +99,10 @@ export function KitchenDashboardOverview({
     <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
       <button
         type="button"
-        onClick={() => {
-          if (onOpenCantinePlus) onOpenCantinePlus();
-          else setOpen(true);
-        }}
-        aria-expanded={opensCantinePlus ? undefined : open}
-        aria-haspopup={opensCantinePlus ? undefined : "dialog"}
-        aria-label={
-          opensCantinePlus
-            ? "Ouvrir Cantine+"
-            : "Évolution des assiettes servies et des déchets"
-        }
+        onClick={() => setOpen(true)}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-label="Évolution des assiettes servies et des déchets"
         className="rounded-[28px] bg-white p-5 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.22)] ring-1 ring-zinc-100 transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.03] hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:scale-100"
       >
         <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
@@ -107,9 +119,7 @@ export function KitchenDashboardOverview({
               Portions servies, poids des déchets et g / 100 assiettes — {days} jours
             </p>
           </div>
-          <span className="inline-flex shrink-0 items-center rounded-full bg-[#ece7fa] px-3 py-1 text-xs font-semibold text-[#7c6bb0]">
-            Cantine+
-          </span>
+          <LevelBadge level={levelFilter} />
         </div>
         {!hasData ? (
           <p className="py-10 text-sm font-medium text-zinc-500">
@@ -154,8 +164,12 @@ export function KitchenDashboardOverview({
                     Évolution des assiettes servies et des déchets
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
-                    Portions servies, poids des déchets et g / 100 assiettes — {days} jours.
+                    Portions servies, poids des déchets et g / 100 assiettes — {days}{" "}
+                    jours.
                   </DialogDescription>
+                  <div className="mt-2">
+                    <LevelBadge level={levelFilter} />
+                  </div>
                 </div>
               </div>
             </div>

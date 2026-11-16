@@ -496,14 +496,12 @@ export default function DashboardPanels({
 
       <KitchenDashboardOverview
         days={days}
+        levelFilter={levelFilter}
         perDayRows={perDayRows}
         wasteGramsPer100={wasteGramsPer100Served}
         targetGPer100={antiWasteTargetGPer100}
         pulseRows={pulseRows}
         pulseWasteRows={pulseWasteRows}
-        onOpenCantinePlus={
-          hideCantinePlus ? undefined : () => setCantinePlusFold(true)
-        }
       />
 
       {!isKitchen ? (
