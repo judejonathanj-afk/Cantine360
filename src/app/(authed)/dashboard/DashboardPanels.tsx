@@ -498,6 +498,9 @@ export default function DashboardPanels({
         perDayRows={perDayRows}
         wasteGramsPer100={wasteGramsPer100Served}
         targetGPer100={antiWasteTargetGPer100}
+        onOpenCantinePlus={
+          hideCantinePlus ? undefined : () => setCantinePlusFold(true)
+        }
       />
 
       {!isKitchen ? (

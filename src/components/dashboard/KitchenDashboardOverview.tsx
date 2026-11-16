@@ -26,13 +26,16 @@ export function KitchenDashboardOverview({
   perDayRows,
   wasteGramsPer100,
   targetGPer100,
+  onOpenCantinePlus,
 }: {
   days: 7 | 30;
   perDayRows: DashboardDayDetailRow[];
   wasteGramsPer100: number | null;
   targetGPer100: number | null;
+  onOpenCantinePlus?: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const opensCantinePlus = Boolean(onOpenCantinePlus);
   const wasteRows = useMemo(
     () =>
       perDayRows.map((row) => ({
@@ -63,9 +66,13 @@ export function KitchenDashboardOverview({
     <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        aria-expanded={open}
-        aria-haspopup="dialog"
+        onClick={() => {
+          if (onOpenCantinePlus) onOpenCantinePlus();
+          else setOpen(true);
+        }}
+        aria-expanded={opensCantinePlus ? undefined : open}
+        aria-haspopup={opensCantinePlus ? undefined : "dialog"}
+        aria-label={opensCantinePlus ? "Ouvrir Cantine+" : "Évolution des déchets"}
         className="rounded-[28px] bg-white p-5 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.22)] ring-1 ring-zinc-100 transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.03] hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:scale-100"
       >
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
@@ -77,7 +84,9 @@ export function KitchenDashboardOverview({
               Évolution des déchets
             </h2>
             <p className="mt-1 text-sm font-medium text-zinc-500">
-              Poids des déchets et g / 100 assiettes · {days} jours
+              {opensCantinePlus
+                ? `Appuyez pour ouvrir Cantine+ · ${days} jours`
+                : `Poids des déchets et g / 100 assiettes · ${days} jours`}
             </p>
           </div>
         </div>
