@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { CantinePlusBadge } from "@/components/dashboard/CantinePlusSection";
 import {
   buildWasteEvolutionSeries,
   type WastePerDayRowInput,
@@ -50,6 +51,8 @@ type Props = {
   perDayRows: WastePerDayRowInput[];
   level?: SchoolLevel;
   embedded?: boolean;
+  plotClassName?: string;
+  showBadge?: boolean;
 };
 
 export function WasteEvolutionChart({
@@ -57,6 +60,8 @@ export function WasteEvolutionChart({
   perDayRows,
   level,
   embedded = false,
+  plotClassName,
+  showBadge = true,
 }: Props) {
   const series = useMemo(
     () => buildWasteEvolutionSeries(perDayRows),
@@ -80,6 +85,7 @@ export function WasteEvolutionChart({
           cantinePlusChartPlotClass,
           "overflow-visible",
           embedded && "aspect-auto h-[200px] w-full px-1",
+          plotClassName,
         )}
       >
         <ComposedChart
@@ -160,7 +166,16 @@ export function WasteEvolutionChart({
       </ChartContainer>
     );
 
-  if (embedded) return plot;
+  const withBadge = showBadge ? (
+    <div className="relative pt-8">
+      <CantinePlusBadge className="absolute right-1 top-0 z-10 sm:right-2" />
+      {plot}
+    </div>
+  ) : (
+    plot
+  );
+
+  if (embedded) return withBadge;
 
   return (
     <Card
@@ -228,7 +243,7 @@ export function WasteEvolutionChart({
             </div>
           </div>
         </header>
-        {plot}
+        {withBadge}
       </CardContent>
     </Card>
   );

@@ -1,23 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { BarChart3, CalendarDays, Recycle, Scale, Trash2, X } from "lucide-react";
 import { AvisDuSuiviCard } from "@/components/dashboard/AvisDuSuiviCard";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
 import {
   Dialog,
   DialogContent,
@@ -25,13 +11,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
-import { cn } from "@/lib/utils";
-
-const chartConfig = {
-  wasteKg: { label: "Déchets (kg)", color: "#f4c44a" },
-  rab: { label: "RAB", color: "#3d9a5f" },
-  refused: { label: "Refus", color: "#f0a04a" },
-} satisfies ChartConfig;
 
 function formatDayLabel(iso: string) {
   const d = new Date(`${iso}T12:00:00`);
@@ -40,52 +19,6 @@ function formatDayLabel(iso: string) {
     day: "2-digit",
     month: "2-digit",
   }).format(d);
-}
-
-function WasteEvolutionChart({
-  series,
-  heightClass,
-}: {
-  series: { label: string; wasteKg: number; rab: number; refused: number }[];
-  heightClass: string;
-}) {
-  return (
-    <ChartContainer config={chartConfig} className={cn("aspect-auto w-full", heightClass)}>
-      <BarChart data={series} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="#eef2f0" />
-        <XAxis
-          dataKey="label"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          tick={{ fontSize: 11, fill: "#71717a" }}
-        />
-        <YAxis
-          tickLine={false}
-          axisLine={false}
-          width={36}
-          tick={{ fontSize: 11, fill: "#71717a" }}
-          allowDecimals={false}
-        />
-        <ChartTooltip
-          content={(tooltipProps) => (
-            <ChartTooltipContent
-              active={tooltipProps.active}
-              payload={tooltipProps.payload}
-              label={tooltipProps.label}
-              coordinate={tooltipProps.coordinate}
-              accessibilityLayer={tooltipProps.accessibilityLayer}
-              activeIndex={tooltipProps.activeIndex}
-            />
-          )}
-        />
-        <ChartLegend content={<ChartLegendContent />} />
-        <Bar dataKey="wasteKg" fill="var(--color-wasteKg)" radius={[6, 6, 0, 0]} maxBarSize={14} />
-        <Bar dataKey="rab" fill="var(--color-rab)" radius={[6, 6, 0, 0]} maxBarSize={14} />
-        <Bar dataKey="refused" fill="var(--color-refused)" radius={[6, 6, 0, 0]} maxBarSize={14} />
-      </BarChart>
-    </ChartContainer>
-  );
 }
 
 export function KitchenDashboardOverview({
@@ -100,19 +33,16 @@ export function KitchenDashboardOverview({
   targetGPer100: number | null;
 }) {
   const [open, setOpen] = useState(false);
-  const series = useMemo(
+  const wasteRows = useMemo(
     () =>
       perDayRows.map((row) => ({
-        label: formatDayLabel(row.date),
-        wasteKg: Math.round((row.wasteWeightG / 1000) * 10) / 10,
-        rab: row.rab,
-        refused: row.refused,
+        date: row.date,
+        wasteWeightG: row.wasteWeightG,
+        served: row.served,
       })),
     [perDayRows],
   );
-  const hasData = series.some(
-    (row) => row.wasteKg > 0 || row.rab > 0 || row.refused > 0,
-  );
+  const hasData = wasteRows.some((row) => row.wasteWeightG > 0);
   const totals = useMemo(() => {
     return perDayRows.reduce(
       (acc, row) => {
@@ -147,16 +77,21 @@ export function KitchenDashboardOverview({
               Évolution des déchets
             </h2>
             <p className="mt-1 text-sm font-medium text-zinc-500">
-              Sur les {days} derniers jours
+              Poids des déchets et g / 100 assiettes · {days} jours
             </p>
           </div>
         </div>
         {!hasData ? (
           <p className="py-10 text-sm font-medium text-zinc-500">
-            Pas encore de pesée ni de RAB / refus sur la période.
+            Pas encore de pesée sur la période.
           </p>
         ) : (
-          <WasteEvolutionChart series={series} heightClass="h-[220px]" />
+          <WasteEvolutionChart
+            days={days}
+            perDayRows={wasteRows}
+            embedded
+            plotClassName="h-[220px]"
+          />
         )}
       </button>
 
@@ -192,7 +127,7 @@ export function KitchenDashboardOverview({
                     Évolution des déchets
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
-                    RAB, refus et kilos pesés sur {days} jours.
+                    Poids des déchets et grammes pour 100 assiettes · {days} jours.
                   </DialogDescription>
                 </div>
               </div>
@@ -202,10 +137,15 @@ export function KitchenDashboardOverview({
               <div className="rounded-[1.5rem] bg-white px-2 py-2 sm:px-3">
                 {!hasData ? (
                   <p className="py-8 text-center text-sm font-medium text-zinc-500">
-                    Pas encore de pesée ni de RAB / refus sur la période.
+                    Pas encore de pesée sur la période.
                   </p>
                 ) : (
-                  <WasteEvolutionChart series={series} heightClass="h-[280px]" />
+                  <WasteEvolutionChart
+                    days={days}
+                    perDayRows={wasteRows}
+                    embedded
+                    plotClassName="h-[280px]"
+                  />
                 )}
               </div>
 
