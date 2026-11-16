@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { BarChart3, CalendarDays, Recycle, Scale, Trash2, X } from "lucide-react";
 import { AvisDuSuiviCard } from "@/components/dashboard/AvisDuSuiviCard";
-import { WasteEvolutionChart } from "@/components/dashboard/WasteEvolutionChart";
+import { ServedWasteEvolutionChart } from "@/components/dashboard/ServedWasteEvolutionChart";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,14 @@ function formatDayLabel(iso: string) {
     weekday: "short",
     day: "2-digit",
     month: "2-digit",
+  }).format(d);
+}
+
+function formatChartDayLabel(iso: string) {
+  const d = new Date(`${iso}T12:00:00`);
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday: "short",
+    day: "numeric",
   }).format(d);
 }
 
@@ -36,16 +44,17 @@ export function KitchenDashboardOverview({
 }) {
   const [open, setOpen] = useState(false);
   const opensCantinePlus = Boolean(onOpenCantinePlus);
-  const wasteRows = useMemo(
+  const series = useMemo(
     () =>
       perDayRows.map((row) => ({
-        date: row.date,
-        wasteWeightG: row.wasteWeightG,
+        label: formatChartDayLabel(row.date),
         served: row.served,
+        wasteWeightG: row.wasteWeightG,
+        gramsPer100Waste: row.wasteGramsPer100,
       })),
     [perDayRows],
   );
-  const hasData = wasteRows.some((row) => row.wasteWeightG > 0);
+  const hasData = series.some((row) => row.served > 0 || row.wasteWeightG > 0);
   const totals = useMemo(() => {
     return perDayRows.reduce(
       (acc, row) => {
@@ -72,35 +81,37 @@ export function KitchenDashboardOverview({
         }}
         aria-expanded={opensCantinePlus ? undefined : open}
         aria-haspopup={opensCantinePlus ? undefined : "dialog"}
-        aria-label={opensCantinePlus ? "Ouvrir Cantine+" : "Évolution des déchets"}
+        aria-label={
+          opensCantinePlus
+            ? "Ouvrir Cantine+"
+            : "Évolution des assiettes servies et des déchets"
+        }
         className="rounded-[28px] bg-white p-5 text-left shadow-[0_12px_28px_-18px_rgba(24,24,27,0.22)] ring-1 ring-zinc-100 transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.03] hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:scale-100"
       >
-        <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <h2 className="flex items-center gap-2 font-display text-lg font-extrabold tracking-tight text-zinc-950">
-              <span className="flex size-8 items-center justify-center rounded-full bg-orange-400 text-white">
-                <BarChart3 className="size-4" strokeWidth={2.4} aria-hidden />
-              </span>
-              Évolution des déchets
+        <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="flex items-start gap-2.5 font-display text-lg font-extrabold tracking-tight text-zinc-950 sm:text-xl">
+              <BarChart3
+                className="mt-0.5 size-6 shrink-0 text-[#5b21b6]"
+                strokeWidth={2.25}
+                aria-hidden
+              />
+              Évolution des assiettes servies et des déchets
             </h2>
-            <p className="mt-1 text-sm font-medium text-zinc-500">
-              {opensCantinePlus
-                ? `Appuyez pour ouvrir Cantine+ · ${days} jours`
-                : `Poids des déchets et g / 100 assiettes · ${days} jours`}
+            <p className="mt-1 text-sm font-medium text-zinc-400">
+              Portions servies, poids des déchets et g / 100 assiettes — {days} jours
             </p>
           </div>
+          <span className="inline-flex shrink-0 items-center rounded-full bg-[#ece7fa] px-3 py-1 text-xs font-semibold text-[#7c6bb0]">
+            Cantine+
+          </span>
         </div>
         {!hasData ? (
           <p className="py-10 text-sm font-medium text-zinc-500">
-            Pas encore de pesée sur la période.
+            Pas encore de données sur la période pour tracer le graphique.
           </p>
         ) : (
-          <WasteEvolutionChart
-            days={days}
-            perDayRows={wasteRows}
-            embedded
-            plotClassName="h-[220px]"
-          />
+          <ServedWasteEvolutionChart series={series} className="h-[220px] min-h-[220px]" />
         )}
       </button>
 
@@ -128,15 +139,15 @@ export function KitchenDashboardOverview({
           <div className="relative overflow-hidden">
             <div className="relative px-5 pb-2 pt-5 sm:px-6">
               <div className="relative flex items-start gap-3 pr-10">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-orange-400 text-white shadow-sm">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#ece7fa] text-[#5b21b6] shadow-sm">
                   <BarChart3 className="size-6" strokeWidth={2.4} aria-hidden />
                 </span>
                 <div className="min-w-0">
                   <DialogTitle className="text-[1.75rem] font-extrabold leading-none tracking-tight text-zinc-950">
-                    Évolution des déchets
+                    Évolution des assiettes servies et des déchets
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
-                    Poids des déchets et grammes pour 100 assiettes · {days} jours.
+                    Portions servies, poids des déchets et g / 100 assiettes — {days} jours.
                   </DialogDescription>
                 </div>
               </div>
@@ -146,14 +157,12 @@ export function KitchenDashboardOverview({
               <div className="rounded-[1.5rem] bg-white px-2 py-2 sm:px-3">
                 {!hasData ? (
                   <p className="py-8 text-center text-sm font-medium text-zinc-500">
-                    Pas encore de pesée sur la période.
+                    Pas encore de données sur la période pour tracer le graphique.
                   </p>
                 ) : (
-                  <WasteEvolutionChart
-                    days={days}
-                    perDayRows={wasteRows}
-                    embedded
-                    plotClassName="h-[280px]"
+                  <ServedWasteEvolutionChart
+                    series={series}
+                    className="h-[280px] min-h-[280px]"
                   />
                 )}
               </div>
