@@ -81,12 +81,12 @@ export function DashboardFoldOverlay({
   const isBall = foldShape === "ball";
 
   return (
-    <div className={isBall ? "shrink-0" : undefined}>
+    <div className={isBall ? "flex w-[10.5rem] shrink-0 flex-col items-center sm:w-[11.25rem]" : undefined}>
       <section
         className={cn(
           "overflow-hidden transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] motion-reduce:transition-none motion-reduce:hover:scale-100",
           isBall
-            ? "size-[12.25rem] rounded-full sm:size-[13.25rem]"
+            ? "size-[10.5rem] rounded-full sm:size-[11.25rem]"
             : "rounded-[28px]",
           yellowFold
             ? "bg-[#fbe961] shadow-[0_12px_32px_rgba(234,179,8,0.38)]"
@@ -116,7 +116,7 @@ export function DashboardFoldOverlay({
             className={cn(
               "flex shrink-0 items-center justify-center bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)]",
               isBall
-                ? "size-10 rounded-full sm:size-11"
+                ? "size-12 rounded-full sm:size-14"
                 : compact
                   ? "size-11 rounded-[20px] sm:size-12"
                   : "size-14 rounded-[20px] sm:size-[3.75rem]",
@@ -127,7 +127,7 @@ export function DashboardFoldOverlay({
               className={cn(
                 "flex items-center justify-center",
                 isBall
-                  ? "size-7 rounded-full sm:size-8"
+                  ? "size-8 rounded-full sm:size-10"
                   : compact
                     ? "size-8 rounded-[14px] sm:size-9 sm:rounded-xl"
                     : "size-11 rounded-[14px] sm:size-12 sm:rounded-2xl",
@@ -145,7 +145,7 @@ export function DashboardFoldOverlay({
               <Icon
                 className={
                   isBall
-                    ? "h-4 w-4 sm:h-5 sm:w-5"
+                    ? "h-5 w-5 sm:h-6 sm:w-6"
                     : compact
                       ? "h-4 w-4 sm:h-5 sm:w-5"
                       : "h-5 w-5 sm:h-6 sm:w-6"
@@ -155,25 +155,14 @@ export function DashboardFoldOverlay({
             </span>
           </span>
           {isBall ? (
-            <span className="flex max-w-[10.5rem] flex-col items-center">
-              <span
-                className={cn(
-                  "line-clamp-2 font-extrabold leading-tight tracking-tight",
-                  "text-[13px] sm:text-sm",
-                  yellowFold ? "text-zinc-950" : "text-white",
-                )}
-              >
-                {overlayTitle}
-              </span>
-              <span
-                className={cn(
-                  "mt-1 line-clamp-4 text-[10px] font-medium leading-snug sm:text-[11px]",
-                  yellowFold ? "text-zinc-800" : "text-white/80",
-                )}
-                title={hint}
-              >
-                {hint}
-              </span>
+            <span
+              className={cn(
+                "line-clamp-3 max-w-[8.75rem] text-center font-extrabold leading-tight tracking-tight",
+                "text-sm sm:text-base",
+                yellowFold ? "text-zinc-950" : "text-white",
+              )}
+            >
+              {overlayTitle}
             </span>
           ) : (
             <>
@@ -216,6 +205,11 @@ export function DashboardFoldOverlay({
           )}
         </button>
       </section>
+      {isBall ? (
+        <p className="mt-2.5 max-w-[11.25rem] text-center text-sm font-semibold leading-snug text-zinc-800 sm:text-[15px]">
+          {hint}
+        </p>
+      ) : null}
 
       <ServiceSaisieOverlay
         open={open}

@@ -506,7 +506,7 @@ export default function DashboardPanels({
       />
 
       {!isKitchen ? (
-      <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
+      <div className="flex flex-wrap items-start justify-center gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-8">
       {!hideCantinePlus ? (
         <CantinePlusFold onOpen={() => setCantinePlusFold(true)} />
       ) : null}
