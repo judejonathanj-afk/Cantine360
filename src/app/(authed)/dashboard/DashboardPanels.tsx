@@ -29,6 +29,7 @@ import { MealFlowChart } from "@/components/dashboard/MealFlowChart";
 import { LevelComparisonChart } from "@/components/dashboard/LevelComparisonChart";
 import { DashboardHeroBanner } from "@/components/dashboard/DashboardHeroBanner";
 import { KitchenDashboardKpis } from "@/components/dashboard/KitchenDashboardKpis";
+import { DashboardExploreIntro } from "@/components/dashboard/DashboardExploreIntro";
 import { KitchenDashboardOverview } from "@/components/dashboard/KitchenDashboardOverview";
 import { DashboardInsightCard } from "@/components/dashboard/DashboardDesignShell";
 import {
@@ -506,6 +507,8 @@ export default function DashboardPanels({
       />
 
       {!isKitchen ? (
+      <>
+      <DashboardExploreIntro hideCantinePlus={hideCantinePlus} />
       <div className="mx-auto grid w-full max-w-5xl grid-cols-2 justify-items-center gap-x-8 gap-y-10 sm:gap-x-10 sm:gap-y-12 md:grid-cols-4 md:gap-x-12 md:gap-y-14">
       {!hideCantinePlus ? (
         <CantinePlusFold onOpen={() => setCantinePlusFold(true)} />
@@ -1010,6 +1013,7 @@ export default function DashboardPanels({
         </div>
       </DashboardFoldOverlay>
       </div>
+      </>
       ) : null}
 
       {!isKitchen ? (
