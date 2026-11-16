@@ -155,6 +155,7 @@ export default function ExportsPage() {
         </p>
       </div>
 
+      <div className="flex flex-wrap items-start justify-center gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-8">
       <DashboardFoldOverlay
         kicker="CSV"
         openLabel="Ouvrir Exports"
@@ -163,6 +164,7 @@ export default function ExportsPage() {
         hint="Choisissez une période, puis téléchargez les services (métriques + déchets) ou les menus allergènes."
         icon={Download}
         labelledBy="exports-overlay-title"
+        foldShape="ball"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
       >
@@ -289,6 +291,7 @@ export default function ExportsPage() {
         </Card>
       </div>
       </DashboardFoldOverlay>
+      </div>
     </div>
   );
 }
