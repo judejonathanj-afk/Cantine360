@@ -22,20 +22,28 @@ export function CantinePlusFold({
       className={cn(
         "flex shrink-0 flex-col items-center justify-center overflow-hidden rounded-full bg-[#0d3b2e] text-center shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:bg-[#0a2f24] motion-reduce:transition-none motion-reduce:hover:scale-100",
         compact
-          ? "size-[9.75rem] gap-1.5 px-3 py-3"
-          : "size-[9.75rem] gap-2 px-3 py-4 sm:size-[10.75rem]",
+          ? "size-[12.25rem] gap-1.5 px-3.5 py-3"
+          : "size-[12.25rem] gap-1.5 px-3.5 py-4 sm:size-[13.25rem]",
       )}
     >
       <span
-        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-14"
+        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-11"
         aria-hidden
       >
-        <span className="flex size-8 items-center justify-center rounded-full bg-[#d8f48a] text-[#0d3b2e] sm:size-10">
-          <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
+        <span className="flex size-7 items-center justify-center rounded-full bg-[#d8f48a] text-[#0d3b2e] sm:size-8">
+          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2.25} />
         </span>
       </span>
-      <span className="line-clamp-3 max-w-[8.5rem] text-[13px] font-extrabold leading-tight tracking-tight text-white sm:text-sm">
-        Cantine+
+      <span className="flex max-w-[10.5rem] flex-col items-center">
+        <span className="line-clamp-2 text-[13px] font-extrabold leading-tight tracking-tight text-white sm:text-sm">
+          Cantine+
+        </span>
+        <span
+          className="mt-1 line-clamp-4 text-[10px] font-medium leading-snug text-white/80 sm:text-[11px]"
+          title="Lecture globale graphique / chiffres — dans cette page."
+        >
+          Lecture globale graphique / chiffres — dans cette page.
+        </span>
       </span>
     </button>
   );
