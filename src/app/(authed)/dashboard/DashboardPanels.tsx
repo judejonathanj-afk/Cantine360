@@ -498,13 +498,15 @@ export default function DashboardPanels({
         perDayRows={perDayRows}
         wasteGramsPer100={wasteGramsPer100Served}
         targetGPer100={antiWasteTargetGPer100}
+        pulseRows={pulseRows}
+        pulseWasteRows={pulseWasteRows}
         onOpenCantinePlus={
           hideCantinePlus ? undefined : () => setCantinePlusFold(true)
         }
       />
 
       {!isKitchen ? (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
       {!hideCantinePlus ? (
         <CantinePlusFold onOpen={() => setCantinePlusFold(true)} />
       ) : null}
@@ -522,6 +524,7 @@ export default function DashboardPanels({
         labelledBy="meal-flow-overlay-title"
         tight
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        foldShape="ball"
         headerAction={
           <OverlayTableToolbar
             days={days}
@@ -610,6 +613,7 @@ export default function DashboardPanels({
           labelledBy="cycle-rates-overlay-title"
           tight
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        foldShape="ball"
           headerAction={
             <OverlayTableToolbar
               days={days}
@@ -707,6 +711,7 @@ export default function DashboardPanels({
         labelledBy="waste-evolution-overlay-title"
         tight
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        foldShape="ball"
         headerAction={
           <OverlayTableToolbar
             days={days}
@@ -805,6 +810,7 @@ export default function DashboardPanels({
         labelledBy="service-context-overlay-title"
         panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        foldShape="ball"
         headerAction={
           <OverlayTableToolbar
             days={days}
@@ -903,6 +909,7 @@ export default function DashboardPanels({
         labelledBy="day-tracking-overlay-title"
         panelClassName="gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
+        foldShape="ball"
         headerAction={
           <OverlayTableToolbar
             days={days}

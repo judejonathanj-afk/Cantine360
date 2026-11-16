@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { MenusCantineColorTitle } from "@/components/MenusCantineColorTitle";
 import { cantinePlusShellClass } from "@/lib/cantinePlusTheme";
 import { cn } from "@/lib/utils";
@@ -18,56 +18,25 @@ export function CantinePlusFold({
       type="button"
       id="cantine-plus"
       onClick={onOpen}
+      aria-label="Ouvrir Cantine+"
       className={cn(
-        "flex w-full items-center overflow-hidden rounded-[28px] bg-[#0d3b2e] text-left shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] hover:bg-[#0a2f24] motion-reduce:transition-none motion-reduce:hover:scale-100",
+        "flex shrink-0 flex-col items-center justify-center overflow-hidden rounded-full bg-[#0d3b2e] text-center shadow-[0_12px_32px_rgba(13,59,46,0.28)] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] hover:bg-[#0a2f24] motion-reduce:transition-none motion-reduce:hover:scale-100",
         compact
-          ? "gap-2.5 px-3 py-2.5 sm:px-3.5 sm:py-3"
-          : "gap-3 px-4 py-3.5 sm:px-5 sm:py-4",
+          ? "size-[9.75rem] gap-1.5 px-3 py-3"
+          : "size-[9.75rem] gap-2 px-3 py-4 sm:size-[10.75rem]",
       )}
     >
       <span
-        className={cn(
-          "flex shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)]",
-          compact ? "size-11 sm:size-12" : "size-14 sm:size-[3.75rem]",
-        )}
+        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)] sm:size-14"
         aria-hidden
       >
-        <span
-          className={cn(
-            "flex items-center justify-center bg-[#d8f48a] text-[#0d3b2e]",
-            compact
-              ? "size-8 rounded-[14px] sm:size-9 sm:rounded-xl"
-              : "size-11 rounded-[14px] sm:size-12 sm:rounded-2xl",
-          )}
-        >
-          <Sparkles
-            className={compact ? "h-4 w-4 sm:h-5 sm:w-5" : "h-5 w-5 sm:h-6 sm:w-6"}
-            strokeWidth={2.25}
-          />
+        <span className="flex size-8 items-center justify-center rounded-full bg-[#d8f48a] text-[#0d3b2e] sm:size-10">
+          <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2.25} />
         </span>
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/50">
-          Cantine+
-        </span>
-        <span
-          className={cn(
-            "block font-extrabold tracking-tight text-white",
-            compact ? "text-sm sm:text-base" : "text-base sm:text-lg",
-          )}
-        >
-          Ouvrir Cantine+
-        </span>
-        <span
-          className={cn(
-            "mt-0.5 block leading-snug text-white/80",
-            compact ? "line-clamp-2 text-xs" : "text-sm",
-          )}
-        >
-          Lecture globale graphique / chiffres — dans cette page.
-        </span>
+      <span className="line-clamp-3 max-w-[8.5rem] text-[13px] font-extrabold leading-tight tracking-tight text-white sm:text-sm">
+        Cantine+
       </span>
-      <ChevronDown className="h-5 w-5 shrink-0 text-white/70" aria-hidden />
     </button>
   );
 }

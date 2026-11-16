@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
+import type { CantineServiceRow, CantineWasteDayRow } from "@/lib/cantinePulse";
 
 function formatDayLabel(iso: string) {
   const d = new Date(`${iso}T12:00:00`);
@@ -35,12 +36,16 @@ export function KitchenDashboardOverview({
   wasteGramsPer100,
   targetGPer100,
   onOpenCantinePlus,
+  pulseRows = [],
+  pulseWasteRows = [],
 }: {
   days: 7 | 30;
   perDayRows: DashboardDayDetailRow[];
   wasteGramsPer100: number | null;
   targetGPer100: number | null;
   onOpenCantinePlus?: () => void;
+  pulseRows?: CantineServiceRow[];
+  pulseWasteRows?: CantineWasteDayRow[];
 }) {
   const [open, setOpen] = useState(false);
   const opensCantinePlus = Boolean(onOpenCantinePlus);
@@ -120,6 +125,8 @@ export function KitchenDashboardOverview({
         perDayRows={perDayRows}
         wasteGramsPer100={wasteGramsPer100}
         targetGPer100={targetGPer100}
+        pulseRows={pulseRows}
+        pulseWasteRows={pulseWasteRows}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>

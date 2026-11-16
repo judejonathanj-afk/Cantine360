@@ -26,6 +26,7 @@ export function DashboardFoldOverlay({
   tight = false,
   compact = false,
   fullPage = false,
+  foldShape = "bar",
   children,
 }: {
   kicker: string;
@@ -46,6 +47,8 @@ export function DashboardFoldOverlay({
   tight?: boolean;
   compact?: boolean;
   fullPage?: boolean;
+  /** `ball` = bouton rond (boule) au lieu du bandeau. */
+  foldShape?: "bar" | "ball";
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -75,12 +78,16 @@ export function DashboardFoldOverlay({
   const yellowFold = foldTone === "yellow";
   const violetFold = foldTone === "violet";
   const roseFold = foldTone === "rose";
+  const isBall = foldShape === "ball";
 
   return (
-    <div>
+    <div className={isBall ? "shrink-0" : undefined}>
       <section
         className={cn(
-          "overflow-hidden rounded-[28px] transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100",
+          "overflow-hidden transition-transform duration-200 ease-out hover:z-10 hover:scale-[1.04] motion-reduce:transition-none motion-reduce:hover:scale-100",
+          isBall
+            ? "size-[9.75rem] rounded-full sm:size-[10.75rem]"
+            : "rounded-[28px]",
           yellowFold
             ? "bg-[#fbe961] shadow-[0_12px_32px_rgba(234,179,8,0.38)]"
             : violetFold
@@ -94,29 +101,36 @@ export function DashboardFoldOverlay({
           type="button"
           onClick={() => setFoldOpen(true)}
           aria-expanded={open}
+          aria-label={openLabel}
           className={cn(
-            "flex w-full items-center text-left transition",
-            compact
-              ? "gap-2.5 px-3 py-2.5 sm:px-3.5 sm:py-3"
-              : "gap-3 px-4 py-3.5 sm:px-5 sm:py-4",
+            "flex text-left transition",
+            isBall
+              ? "size-full flex-col items-center justify-center gap-2 px-3 py-4 text-center"
+              : compact
+                ? "w-full items-center gap-2.5 px-3 py-2.5 sm:px-3.5 sm:py-3"
+                : "w-full items-center gap-3 px-4 py-3.5 sm:px-5 sm:py-4",
             yellowFold ? "hover:bg-black/[0.04]" : "hover:bg-white/5",
           )}
         >
           <span
             className={cn(
-              "flex shrink-0 items-center justify-center rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)]",
-              compact
-                ? "size-11 sm:size-12"
-                : "size-14 sm:size-[3.75rem]",
+              "flex shrink-0 items-center justify-center bg-white shadow-[0_4px_12px_rgba(0,0,0,0.12)]",
+              isBall
+                ? "size-12 rounded-full sm:size-14"
+                : compact
+                  ? "size-11 rounded-[20px] sm:size-12"
+                  : "size-14 rounded-[20px] sm:size-[3.75rem]",
             )}
             aria-hidden
           >
             <span
               className={cn(
-                "flex items-center justify-center rounded-[14px]",
-                compact
-                  ? "size-8 sm:size-9 sm:rounded-xl"
-                  : "size-11 sm:size-12 sm:rounded-2xl",
+                "flex items-center justify-center",
+                isBall
+                  ? "size-8 rounded-full sm:size-10"
+                  : compact
+                    ? "size-8 rounded-[14px] sm:size-9 sm:rounded-xl"
+                    : "size-11 rounded-[14px] sm:size-12 sm:rounded-2xl",
                 iconTileClassName
                   ? iconTileClassName
                   : yellowFold
@@ -129,11 +143,29 @@ export function DashboardFoldOverlay({
               )}
             >
               <Icon
-                className={compact ? "h-4 w-4 sm:h-5 sm:w-5" : "h-5 w-5 sm:h-6 sm:w-6"}
+                className={
+                  isBall
+                    ? "h-5 w-5 sm:h-6 sm:w-6"
+                    : compact
+                      ? "h-4 w-4 sm:h-5 sm:w-5"
+                      : "h-5 w-5 sm:h-6 sm:w-6"
+                }
                 strokeWidth={2.25}
               />
             </span>
           </span>
+          {isBall ? (
+            <span
+              className={cn(
+                "line-clamp-3 max-w-[8.5rem] font-extrabold leading-tight tracking-tight",
+                "text-[13px] sm:text-sm",
+                yellowFold ? "text-zinc-950" : "text-white",
+              )}
+            >
+              {overlayTitle}
+            </span>
+          ) : (
+            <>
           <span className="min-w-0 flex-1">
             <span
               className={cn(
@@ -169,6 +201,8 @@ export function DashboardFoldOverlay({
             )}
             aria-hidden
           />
+            </>
+          )}
         </button>
       </section>
 

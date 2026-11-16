@@ -1,16 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
+  BarChart3,
+  Check,
   Lightbulb,
-  Recycle,
-  Scale,
-  TrendingUp,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { buildDashboardFollowUpAdvice } from "@/lib/buildDashboardFollowUpAdvice";
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
+import {
+  computeCantinePulse,
+  type CantineServiceRow,
+  type CantineWasteDayRow,
+} from "@/lib/cantinePulse";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +22,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import "./AvisDuSuiviCard.css";
-
-const ITEM_ICONS: Record<string, LucideIcon> = {
-  waste: Recycle,
-  service: Scale,
-  trend: TrendingUp,
-};
 
 function LeafDecor({ className }: { className?: string }) {
   return (
@@ -43,16 +40,47 @@ function LeafDecor({ className }: { className?: string }) {
   );
 }
 
+function ConclusionBanner({
+  headline,
+  subline,
+}: {
+  headline: string;
+  subline: string;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-[1.35rem] bg-[#e8f8ee] px-4 py-4 pr-14 text-left sm:pr-16">
+      <span className="absolute left-0 top-0 h-full w-1.5 bg-emerald-500" aria-hidden />
+      <p className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
+        <Check className="size-3.5" strokeWidth={2.6} aria-hidden />
+        Conclusion
+      </p>
+      <p className="mt-2.5 text-lg font-extrabold leading-snug text-zinc-950 sm:text-xl">
+        {headline}
+      </p>
+      <p className="mt-1.5 text-sm font-semibold leading-relaxed text-zinc-600">
+        {subline}
+      </p>
+      <span className="pointer-events-none absolute bottom-3 right-3 flex size-11 items-center justify-center rounded-2xl bg-white/70 shadow-sm">
+        <BarChart3 className="size-5 text-emerald-500" strokeWidth={2} aria-hidden />
+      </span>
+    </div>
+  );
+}
+
 export function AvisDuSuiviCard({
   days,
   perDayRows,
   wasteGramsPer100,
   targetGPer100,
+  pulseRows = [],
+  pulseWasteRows = [],
 }: {
   days: 7 | 30;
   perDayRows: DashboardDayDetailRow[];
   wasteGramsPer100: number | null;
   targetGPer100: number | null;
+  pulseRows?: CantineServiceRow[];
+  pulseWasteRows?: CantineWasteDayRow[];
 }) {
   const [open, setOpen] = useState(false);
   const advice = buildDashboardFollowUpAdvice({
@@ -61,11 +89,28 @@ export function AvisDuSuiviCard({
     wasteGramsPer100,
     targetGPer100,
   });
+  const pulse = useMemo(
+    () =>
+      computeCantinePulse(pulseRows, "LUNCH", {
+        windowDays: days,
+        wasteRows: pulseWasteRows,
+      }),
+    [pulseRows, pulseWasteRows, days],
+  );
+
+  const cardTone =
+    pulse.mood === "great"
+      ? "ok"
+      : pulse.mood === "attention"
+        ? "alert"
+        : pulse.mood === "pending"
+          ? "none"
+          : "watch";
 
   const iconWrap =
-    advice.tone === "alert"
+    cardTone === "alert"
       ? "bg-rose-500"
-      : advice.tone === "watch"
+      : cardTone === "watch"
         ? "bg-orange-400"
         : "bg-[#0f9f4f]";
 
@@ -76,13 +121,13 @@ export function AvisDuSuiviCard({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className={`avis-suivi avis-suivi--${advice.tone}`}
+        className={`avis-suivi avis-suivi--${cardTone}`}
       >
         <header className="avis-suivi__header">
           <div>
             <p className="avis-suivi__kicker">
               <span className="avis-suivi__dot" aria-hidden />
-              {advice.badge}
+              Conclusion
             </p>
             <h2 id="avis-suivi-title" className="avis-suivi__title">
               <span className={cn("avis-suivi__title-icon", iconWrap)}>
@@ -94,24 +139,9 @@ export function AvisDuSuiviCard({
           <p className="avis-suivi__period">Sur {days} jours</p>
         </header>
 
-        <p className="avis-suivi__lead">{advice.lead}</p>
-
-        <ul className="avis-suivi__list">
-          {advice.items.map((item) => {
-            const Icon = ITEM_ICONS[item.key] ?? Recycle;
-            return (
-              <li key={item.key} className="avis-suivi__item">
-                <span className="avis-suivi__icon">
-                  <Icon className="size-4" strokeWidth={2.25} aria-hidden />
-                </span>
-                <span className="avis-suivi__item-copy">
-                  <span className="avis-suivi__item-label">{item.label}</span>
-                  <span className="avis-suivi__item-hint">{item.hint}</span>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="mt-4">
+          <ConclusionBanner headline={pulse.headline} subline={pulse.subline} />
+        </div>
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -146,21 +176,14 @@ export function AvisDuSuiviCard({
                     Point gaspillage
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
-                    {advice.lead} · {days} jours.
+                    {pulse.headline} · {days} jours.
                   </DialogDescription>
                 </div>
               </div>
             </div>
 
             <div className="max-h-[min(70vh,36rem)] space-y-3 overflow-y-auto px-5 pb-5 pt-3 sm:px-6">
-              <div className="rounded-[1.25rem] bg-[#FAF6EE] px-4 py-3.5">
-                <p className="text-xs font-extrabold uppercase tracking-wide text-[#047857]">
-                  {advice.badge}
-                </p>
-                <p className="mt-1 text-sm font-bold leading-relaxed text-[#052e16]">
-                  {advice.detail}
-                </p>
-              </div>
+              <ConclusionBanner headline={pulse.headline} subline={pulse.subline} />
 
               <div className="grid gap-2 sm:grid-cols-2">
                 {advice.facts.map((fact) => (
