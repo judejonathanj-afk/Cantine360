@@ -256,7 +256,7 @@ export function AdminGroupsClient({
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="flex flex-wrap items-start justify-center gap-x-4 gap-y-6 sm:gap-x-5 sm:gap-y-8">
         <DashboardFoldOverlay
           kicker="Import CSV"
           openLabel="Ouvrir Importer vos classes"
@@ -265,6 +265,7 @@ export function AdminGroupsClient({
           hint="Colonnes attendues : ecole, classe, niveau. Téléchargez un exemple, puis importez."
           icon={Upload}
           labelledBy="admin-groups-import-overlay"
+          foldShape="ball"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         >
           <CsvImportZone
@@ -292,6 +293,7 @@ export function AdminGroupsClient({
           hint="Les deux saisies sont sur la même page : école à gauche, classe à droite."
           icon={School}
           labelledBy="admin-groups-manual-overlay"
+          foldShape="ball"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         >
           <div className="grid gap-6 p-1 lg:grid-cols-2 sm:p-2">
@@ -385,6 +387,7 @@ export function AdminGroupsClient({
           hint="Choisissez une période, enregistrez, puis affinez une classe avec le bouton Objectifs sur sa carte."
           icon={Target}
           labelledBy="admin-groups-eco-defaults-overlay"
+          foldShape="ball"
           closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         >
           <EstablishmentEcoObjectivesForm
@@ -396,10 +399,9 @@ export function AdminGroupsClient({
             initialSchoolDay={establishmentEco.ecoSchoolYearStartDay}
           />
         </DashboardFoldOverlay>
-      </div>
 
       {error ? (
-        <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p className="w-full rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
       <DashboardFoldOverlay
@@ -410,6 +412,7 @@ export function AdminGroupsClient({
         hint={`${schools.length} école${schools.length > 1 ? "s" : ""} · ${activeCount} classe${activeCount > 1 ? "s" : ""} active${activeCount > 1 ? "s" : ""}. Vert = primaire, bleu = maternelle.`}
         icon={GraduationCap}
         labelledBy="admin-groups-list-overlay"
+        foldShape="ball"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
       >
@@ -547,6 +550,7 @@ export function AdminGroupsClient({
         </div>
       )}
       </DashboardFoldOverlay>
+      </div>
 
       <GroupEcoObjectivesDialog
         group={ecoGroup}
