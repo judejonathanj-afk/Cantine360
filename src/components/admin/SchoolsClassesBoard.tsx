@@ -144,6 +144,7 @@ export function SchoolsClassesFold({
         icon={GraduationCap}
         labelledBy={labelledBy}
         foldShape="ball"
+        fullPage
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         bodyClassName="overflow-y-scroll pr-1.5 [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100"
       >
