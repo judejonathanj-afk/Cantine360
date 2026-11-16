@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
+  AlertTriangle,
   BarChart3,
   Check,
   Lightbulb,
@@ -11,6 +12,7 @@ import { buildDashboardFollowUpAdvice } from "@/lib/buildDashboardFollowUpAdvice
 import type { DashboardDayDetailRow } from "@/lib/buildDashboardDayDetailRows";
 import {
   computeCantinePulse,
+  type CantinePulseResult,
   type CantineServiceRow,
   type CantineWasteDayRow,
 } from "@/lib/cantinePulse";
@@ -40,19 +42,134 @@ function LeafDecor({ className }: { className?: string }) {
   );
 }
 
+function fmtG(n: number) {
+  return n.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+}
+
+function buildPointVerdict(
+  pulse: CantinePulseResult,
+  targetGPer100: number | null,
+  days: 7 | 30,
+): {
+  tone: "ok" | "watch" | "alert" | "none";
+  kicker: string;
+  headline: string;
+  subline: string;
+} {
+  const curr = pulse.meta.curr;
+  const g = curr.wasteGramsPer100Served;
+  const period = days === 30 ? "30 jours" : "7 jours";
+  const rabLine =
+    curr.rab > 0
+      ? ` RAB : ${Math.round(curr.rab)} assiette${curr.rab > 1 ? "s" : ""} (${(curr.rabRate * 100).toFixed(1)} % des servis).`
+      : "";
+  const hasPrev = pulse.meta.weeksWithServed.previous;
+  const dWaste = pulse.meta.deltas.wasteGramsPct;
+  const target =
+    targetGPer100 != null && targetGPer100 > 0 ? targetGPer100 : null;
+
+  if (curr.wasteWeightG <= 0) {
+    return {
+      tone: "none",
+      kicker: "À saisir",
+      headline: "Pas encore de verdict : pesée manquante.",
+      subline:
+        pulse.subline ||
+        `Renseignez le poids des déchets en fin de service pour savoir si c’est bien joué ou trop de gaspillage.`,
+    };
+  }
+
+  const figures = `${fmtG(g)} g / 100 assiettes servies sur ${period}.${rabLine}`;
+
+  if (target != null) {
+    if (g <= target) {
+      return {
+        tone: "ok",
+        kicker: "Bien joué",
+        headline: "Bien joué : le gaspillage est sous contrôle.",
+        subline: `${figures} Objectif : ${fmtG(target)} g / 100.`,
+      };
+    }
+    if (g <= target * 1.25) {
+      return {
+        tone: "watch",
+        kicker: "À surveiller",
+        headline: "Un peu trop de gaspillage : au-dessus de l’objectif.",
+        subline: `${figures} Objectif : ${fmtG(target)} g / 100.`,
+      };
+    }
+    return {
+      tone: "alert",
+      kicker: "Trop de gaspillage",
+      headline: "Trop de gaspillage : vous dépassez nettement l’objectif.",
+      subline: `${figures} Objectif : ${fmtG(target)} g / 100.`,
+    };
+  }
+
+  if (hasPrev && dWaste <= -12 && curr.wasteWeightG < pulse.meta.prev.wasteWeightG) {
+    return {
+      tone: "ok",
+      kicker: "Bien joué",
+      headline: "Bien joué : moins de déchets qu’avant.",
+      subline: figures,
+    };
+  }
+  if (hasPrev && dWaste >= 15) {
+    return {
+      tone: "alert",
+      kicker: "Trop de gaspillage",
+      headline: "Trop de gaspillage : plus de déchets qu’avant.",
+      subline: figures,
+    };
+  }
+  if (g <= 1500) {
+    return {
+      tone: "ok",
+      kicker: "Bien joué",
+      headline: "Bien joué : peu de déchets pour 100 assiettes.",
+      subline: figures,
+    };
+  }
+  return {
+    tone: "alert",
+    kicker: "Trop de gaspillage",
+    headline: "Trop de gaspillage : trop de déchets pour 100 assiettes.",
+    subline: figures,
+  };
+}
+
 function ConclusionBanner({
+  tone,
+  kicker,
   headline,
   subline,
 }: {
+  tone: "ok" | "watch" | "alert" | "none";
+  kicker: string;
   headline: string;
   subline: string;
 }) {
+  const bar =
+    tone === "alert"
+      ? "bg-rose-500"
+      : tone === "watch"
+        ? "bg-orange-400"
+        : tone === "none"
+          ? "bg-zinc-400"
+          : "bg-emerald-500";
+  const PillIcon =
+    tone === "alert" || tone === "watch" ? AlertTriangle : Check;
   return (
     <div className="relative overflow-hidden rounded-[1.35rem] bg-[#e8f8ee] px-4 py-4 pr-14 text-left sm:pr-16">
-      <span className="absolute left-0 top-0 h-full w-1.5 bg-emerald-500" aria-hidden />
-      <p className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white">
-        <Check className="size-3.5" strokeWidth={2.6} aria-hidden />
-        Conclusion
+      <span className={cn("absolute left-0 top-0 h-full w-1.5", bar)} aria-hidden />
+      <p
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+          bar,
+        )}
+      >
+        <PillIcon className="size-3.5" strokeWidth={2.6} aria-hidden />
+        {kicker}
       </p>
       <p className="mt-2.5 text-lg font-extrabold leading-snug text-zinc-950 sm:text-xl">
         {headline}
@@ -97,15 +214,12 @@ export function AvisDuSuiviCard({
       }),
     [pulseRows, pulseWasteRows, days],
   );
+  const verdict = useMemo(
+    () => buildPointVerdict(pulse, targetGPer100, days),
+    [pulse, targetGPer100, days],
+  );
 
-  const cardTone =
-    pulse.mood === "great"
-      ? "ok"
-      : pulse.mood === "attention"
-        ? "alert"
-        : pulse.mood === "pending"
-          ? "none"
-          : "watch";
+  const cardTone = verdict.tone;
 
   const iconWrap =
     cardTone === "alert"
@@ -127,7 +241,7 @@ export function AvisDuSuiviCard({
           <div>
             <p className="avis-suivi__kicker">
               <span className="avis-suivi__dot" aria-hidden />
-              Conclusion
+              {verdict.kicker}
             </p>
             <h2 id="avis-suivi-title" className="avis-suivi__title">
               <span className={cn("avis-suivi__title-icon", iconWrap)}>
@@ -140,7 +254,12 @@ export function AvisDuSuiviCard({
         </header>
 
         <div className="mt-4">
-          <ConclusionBanner headline={pulse.headline} subline={pulse.subline} />
+          <ConclusionBanner
+            tone={verdict.tone}
+            kicker={verdict.kicker}
+            headline={verdict.headline}
+            subline={verdict.subline}
+          />
         </div>
       </button>
 
@@ -176,14 +295,19 @@ export function AvisDuSuiviCard({
                     Point gaspillage
                   </DialogTitle>
                   <DialogDescription className="mt-1.5 text-sm font-semibold text-zinc-800 sm:text-base">
-                    {pulse.headline} · {days} jours.
+                    {verdict.headline}
                   </DialogDescription>
                 </div>
               </div>
             </div>
 
             <div className="max-h-[min(70vh,36rem)] space-y-3 overflow-y-auto px-5 pb-5 pt-3 sm:px-6">
-              <ConclusionBanner headline={pulse.headline} subline={pulse.subline} />
+              <ConclusionBanner
+                tone={verdict.tone}
+                kicker={verdict.kicker}
+                headline={verdict.headline}
+                subline={verdict.subline}
+              />
 
               <div className="grid gap-2 sm:grid-cols-2">
                 {advice.facts.map((fact) => (
