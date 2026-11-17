@@ -98,7 +98,7 @@ export function ServiceSaisieOverlay({
           <div
             className={cn(
               "flex min-h-0 flex-col overflow-hidden overscroll-contain",
-              fitContent ? "h-auto max-h-[min(100%,calc(100vh-9rem))]" : "h-full flex-1",
+              fitContent ? "h-fit max-h-[calc(100vh-9rem)]" : "h-full flex-1",
               className,
             )}
           >
