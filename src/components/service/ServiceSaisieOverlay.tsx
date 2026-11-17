@@ -11,6 +11,7 @@ export function ServiceSaisieOverlay({
   className,
   fillViewport = false,
   fullPage = false,
+  fitContent = false,
   chrome,
   footer,
   children,
@@ -23,6 +24,8 @@ export function ServiceSaisieOverlay({
   fillViewport?: boolean;
   /** Fenêtre presque pleine page (titre au-dessus, fermer en bas). */
   fullPage?: boolean;
+  /** Hauteur collée au contenu, sans bandeau blanc en bas. */
+  fitContent?: boolean;
   /** Titre, textes et boutons au-dessus de la fenêtre. */
   chrome?: ReactNode;
   /** Bouton fermer sous la fenêtre. */
@@ -57,7 +60,7 @@ export function ServiceSaisieOverlay({
     <div
       className={cn(
         "fixed inset-0 z-[80] flex justify-center overflow-hidden",
-        fillViewport ? "items-stretch p-0" : "items-stretch",
+        fillViewport ? "items-stretch p-0" : fitContent ? "items-start" : "items-stretch",
       )}
     >
       <button
@@ -84,7 +87,8 @@ export function ServiceSaisieOverlay({
           aria-modal="true"
           aria-labelledby={labelledBy}
           className={cn(
-            "relative z-10 flex h-full min-h-0 flex-col pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:pb-4 sm:pt-4",
+            "relative z-10 flex min-h-0 flex-col pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:pb-4 sm:pt-4",
+            fitContent ? "h-auto max-h-full" : "h-full",
             fullPage
               ? "w-[calc(100vw-1.25rem)] max-w-none sm:w-[calc(100vw-2rem)]"
               : "w-[88vw] max-w-[88vw]",
@@ -93,7 +97,8 @@ export function ServiceSaisieOverlay({
           {chrome ? <div className="mb-2 shrink-0">{chrome}</div> : null}
           <div
             className={cn(
-              "flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain",
+              "flex min-h-0 flex-col overflow-hidden overscroll-contain",
+              fitContent ? "h-auto max-h-[min(100%,calc(100vh-9rem))]" : "h-full flex-1",
               className,
             )}
           >

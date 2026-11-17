@@ -26,6 +26,7 @@ export function DashboardFoldOverlay({
   tight = false,
   compact = false,
   fullPage = false,
+  fitContent = false,
   foldShape = "bar",
   children,
 }: {
@@ -47,6 +48,8 @@ export function DashboardFoldOverlay({
   tight?: boolean;
   compact?: boolean;
   fullPage?: boolean;
+  /** Fenêtre à la hauteur du contenu, sans grand vide blanc. */
+  fitContent?: boolean;
   /** `ball` = bouton rond (boule) au lieu du bandeau. */
   foldShape?: "bar" | "ball";
   children: ReactNode;
@@ -216,8 +219,10 @@ export function DashboardFoldOverlay({
         onClose={() => setFoldOpen(false)}
         labelledBy={labelledBy}
         fullPage={fullPage}
+        fitContent={fitContent}
         className={cn(
-          "h-full min-h-0 rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]",
+          "min-h-0 rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]",
+          fitContent ? "h-auto" : "h-full",
           dialogClassName,
         )}
         chrome={
@@ -266,7 +271,8 @@ export function DashboardFoldOverlay({
       >
         <div
           className={cn(
-            "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100/60",
+            "min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-3 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-400 [&::-webkit-scrollbar-track]:bg-zinc-100/60",
+            fitContent ? "flex-none" : "flex-1",
             bodyClassName,
           )}
         >

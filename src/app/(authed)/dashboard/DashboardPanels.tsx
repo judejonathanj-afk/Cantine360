@@ -812,6 +812,7 @@ export default function DashboardPanels({
         panelClassName="min-h-0 gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         foldShape="ball"
+        fitContent
         headerAction={
           <OverlayTableToolbar
             days={days}
@@ -911,6 +912,7 @@ export default function DashboardPanels({
         panelClassName="min-h-0 gap-1.5 rounded-[20px] p-1 sm:p-1"
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         foldShape="ball"
+        fitContent
         headerAction={
           <OverlayTableToolbar
             days={days}
