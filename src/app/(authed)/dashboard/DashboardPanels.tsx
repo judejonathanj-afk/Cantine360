@@ -711,6 +711,7 @@ export default function DashboardPanels({
         iconTileClassName="bg-[#f6c9d6] text-[#7a2d45]"
         labelledBy="waste-evolution-overlay-title"
         tight
+        fullPage
         closeButtonClassName="bg-[#37784a] hover:bg-[#2f6840]"
         foldShape="ball"
         headerAction={
