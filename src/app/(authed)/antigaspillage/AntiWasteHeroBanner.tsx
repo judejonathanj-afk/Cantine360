@@ -67,19 +67,6 @@ export function AntiWasteHeroBanner({
 
   return (
     <section className="ecologie-banner shadow-[0_18px_44px_-24px_rgba(13,59,46,0.35)]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/images/terre-ecologie.png"
-        alt=""
-        width={952}
-        height={429}
-        decoding="async"
-        className="pointer-events-none absolute right-[-2%] top-1/2 h-[78%] w-[34%] max-w-[16.5rem] -translate-y-1/2 object-contain object-right sm:w-[32%]"
-      />
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 w-[62%] bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.94)_48%,rgba(232,246,236,0.28)_82%,transparent_100%)]"
-        aria-hidden
-      />
       <div className="relative flex flex-col justify-between px-4 py-3.5 sm:px-5 sm:py-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 max-w-2xl items-center gap-2.5 sm:gap-3">

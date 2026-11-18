@@ -379,10 +379,6 @@
   background-color: #e8f6ec;
 }
 
-.ecologie-banner img {
-  filter: contrast(1.18) saturate(1.22) brightness(1.06);
-}
-
 /* Anti-gaspillage — thème isolé (design anti-gaspillage-dashboard) */
 .anti-waste-dash {
   --background: oklch(0.982 0.01 140);
