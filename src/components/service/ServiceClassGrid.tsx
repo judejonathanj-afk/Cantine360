@@ -118,24 +118,38 @@ export function ServiceClassGrid({
         open={open}
         onClose={() => onOpenChange(false)}
         labelledBy="classes-overlay-title"
-        className="max-w-[84rem]"
-      >
-        <div className="mb-2 flex flex-wrap items-start justify-between gap-3 px-1">
-          <div className="min-w-0">
-            <h2
-              id="classes-overlay-title"
-              className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
-            >
-              <GraduationCap className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
-              Les classes
-            </h2>
-            <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
-              Saisissez les compteurs sur chaque carte, puis Enregistrer.
-            </p>
+        fullPage
+        className="min-h-0 rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]"
+        chrome={
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2
+                id="classes-overlay-title"
+                className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-white sm:text-2xl"
+              >
+                <GraduationCap className="h-7 w-7 shrink-0" strokeWidth={2.25} aria-hidden />
+                Les classes
+              </h2>
+              <p className="mt-1 text-sm font-medium leading-snug text-white/85 sm:text-base">
+                Saisissez les compteurs sur chaque carte, puis Enregistrer.
+              </p>
+            </div>
+            {headerFilter}
           </div>
-          {headerFilter}
-        </div>
-        <div className="flex h-[86vh] min-h-0 w-full flex-col gap-1 rounded-2xl border border-zinc-200/80 bg-white p-1 shadow-[0_24px_60px_rgba(24,24,27,0.28)]">
+        }
+        footer={
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="rounded-2xl bg-[#37784a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#2f6840] active:scale-[0.98] active:bg-[#275636] motion-reduce:hover:scale-100"
+            >
+              Enregistrer
+            </button>
+          </div>
+        }
+      >
+        <div className="flex h-full min-h-0 w-full flex-col gap-1 p-1">
           <div className="shrink-0 px-1 pt-0.5">{toolbar}</div>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {cards.length === 0 ? (
@@ -210,16 +224,6 @@ export function ServiceClassGrid({
             </div>
             </div>
           )}
-          </div>
-
-          <div className="flex shrink-0 justify-end">
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="rounded-2xl bg-[#37784a] px-8 py-2.5 text-sm font-bold text-white shadow-sm transition duration-200 hover:z-10 hover:scale-105 hover:bg-[#2f6840] active:scale-[0.98] active:bg-[#275636] motion-reduce:hover:scale-100"
-            >
-              Enregistrer
-            </button>
           </div>
         </div>
       </ServiceSaisieOverlay>
