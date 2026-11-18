@@ -376,7 +376,7 @@
   min-height: 0;
   overflow: hidden;
   border-radius: 22px;
-  background-color: #e8f6ec;
+  background-color: #c8dc3a;
 }
 
 .ecologie-banner img {
@@ -409,7 +409,7 @@
   --font-display: var(--font-bricolage), var(--font-fredoka), ui-sans-serif, system-ui,
     sans-serif;
   color: var(--foreground);
-  background-color: #a0edb2;
+  background-color: #d7e85c;
   background-image: none;
   border-radius: 1.5rem;
   overflow: hidden;

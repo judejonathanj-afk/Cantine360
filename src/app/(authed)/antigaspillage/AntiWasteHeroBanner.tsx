@@ -74,13 +74,20 @@ export function AntiWasteHeroBanner({
         width={952}
         height={429}
         decoding="async"
-        className="pointer-events-none absolute right-[-2%] top-1/2 h-[78%] w-[34%] max-w-[16.5rem] -translate-y-1/2 object-contain object-right sm:w-[32%]"
+        className="pointer-events-none absolute right-[-1%] bottom-[18%] h-[70%] w-[30%] max-w-[14.5rem] object-contain object-right sm:w-[28%]"
       />
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 w-[62%] bg-[linear-gradient(90deg,#ffffff_0%,rgba(255,255,255,0.94)_48%,rgba(232,246,236,0.28)_82%,transparent_100%)]"
+      <svg
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[4.25rem] w-full sm:h-[4.75rem]"
+        viewBox="0 0 1440 120"
+        preserveAspectRatio="none"
         aria-hidden
-      />
-      <div className="relative flex flex-col justify-between px-4 py-3.5 sm:px-5 sm:py-4">
+      >
+        <path
+          fill="#fffdf6"
+          d="M0 78c165 36 330-46 495-28 165 18 248 72 420 58 172-14 281-62 365-48 84 14 128 42 160 28V120H0Z"
+        />
+      </svg>
+      <div className="relative flex flex-col justify-between px-4 pb-8 pt-3.5 sm:px-5 sm:pb-9 sm:pt-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 max-w-2xl items-center gap-2.5 sm:gap-3">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-[#1f8a4d] shadow-[0_10px_24px_-8px_rgba(13,59,46,0.4)] ring-1 ring-emerald-100 sm:size-12">
