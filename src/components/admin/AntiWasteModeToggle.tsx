@@ -13,6 +13,7 @@ export function AntiWasteModeToggle({
   schemaReady = true,
   compact = false,
   embedded = false,
+  inline = false,
 }: {
   initialEnabled: boolean;
   initialTargetGPer100: number | null;
@@ -21,6 +22,8 @@ export function AntiWasteModeToggle({
   compact?: boolean;
   /** Dans une fenêtre overlay : pas de cadre jaune. */
   embedded?: boolean;
+  /** Pastille + interrupteur sous le bandeau. */
+  inline?: boolean;
 }) {
   const router = useRouter();
   const [enabled, setEnabled] = useState(initialEnabled);
@@ -124,6 +127,52 @@ export function AntiWasteModeToggle({
     }
   }
 
+  const switchBtn = (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={enabled}
+      aria-label="Activation du mode anti-gaspillage"
+      disabled={busy || !schemaReady}
+      onClick={() => void save(!enabled)}
+      className={cn(
+        "relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60",
+        enabled ? "bg-primary" : "bg-zinc-900/25",
+      )}
+    >
+      <span
+        className={cn(
+          "absolute top-1 size-5 rounded-full bg-white shadow-sm transition-all",
+          enabled ? "left-6" : "left-1",
+        )}
+      />
+    </button>
+  );
+
+  if (inline) {
+    return (
+      <div
+        id="anti-waste-mode"
+        className="flex flex-wrap items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_10px_28px_-18px_rgba(13,59,46,0.28)] ring-1 ring-emerald-100/80"
+      >
+        <p
+          className={cn(
+            "inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white",
+            enabled ? "bg-emerald-600" : "bg-zinc-600",
+          )}
+        >
+          {enabled ? "Mode activé" : "Activation du mode"}
+        </p>
+        <p className="min-w-0 flex-1 text-sm font-medium leading-snug text-zinc-800">
+          {enabled
+            ? "Activé pour cet établissement — reste actif jusqu’à désactivation manuelle."
+            : "Désactivé. Activez pour suivre le gaspillage de cet établissement."}
+        </p>
+        {switchBtn}
+      </div>
+    );
+  }
+
   const body = (
     <>
       {!schemaReady ? (
@@ -153,25 +202,7 @@ export function AntiWasteModeToggle({
             Réglage indépendant : n’affecte pas les autres établissements.
           </p>
         </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={enabled}
-          aria-label="Activation du mode anti-gaspillage"
-          disabled={busy || !schemaReady}
-          onClick={() => void save(!enabled)}
-          className={cn(
-            "relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60",
-            enabled ? "bg-primary" : "bg-zinc-900/25",
-          )}
-        >
-          <span
-            className={cn(
-              "absolute top-1 size-5 rounded-full bg-white shadow-sm transition-all",
-              enabled ? "left-6" : "left-1",
-            )}
-          />
-        </button>
+        {switchBtn}
       </div>
 
       {msg ? (
