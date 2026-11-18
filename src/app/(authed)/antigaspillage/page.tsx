@@ -53,7 +53,7 @@ function formatMissingWeighDate(date: Date): string {
 
 function AntiWasteOffHeader() {
   return (
-    <div className="anti-waste-dash flex flex-col items-center text-center">
+    <div className="flex flex-col items-center text-center">
       <div className="w-full">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Cantine 360
@@ -87,17 +87,14 @@ export default async function AntiWastePage({
 
   if (!antiWaste.antiWasteModeEnabled) {
     return (
-      <div className="space-y-6">
+      <div className="anti-waste-dash space-y-5">
         <AntiWasteOffHeader />
-        <div className="flex justify-start">
-          <div className="w-full max-w-sm">
-            <AntiWasteModeToggle
-              initialEnabled={antiWaste.antiWasteModeEnabled}
-              initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
-              schemaReady={antiWaste.schemaReady}
-            />
-          </div>
-        </div>
+        <AntiWasteModeToggle
+          initialEnabled={antiWaste.antiWasteModeEnabled}
+          initialTargetGPer100={antiWaste.antiWasteTargetGPer100}
+          schemaReady={antiWaste.schemaReady}
+          inline
+        />
       </div>
     );
   }
