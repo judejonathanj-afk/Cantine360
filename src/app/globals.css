@@ -373,22 +373,14 @@
 .ecologie-banner {
   position: relative;
   width: 100%;
-  min-height: 300px;
+  min-height: 0;
   overflow: hidden;
-  border-radius: 25px;
+  border-radius: 22px;
   background-color: #e8f6ec;
 }
 
 .ecologie-banner img {
   filter: contrast(1.18) saturate(1.22) brightness(1.06);
-  transform: scale(1.04);
-  transform-origin: right center;
-}
-
-@media (max-width: 767px) {
-  .ecologie-banner {
-    min-height: 0;
-  }
 }
 
 /* Anti-gaspillage — thème isolé (design anti-gaspillage-dashboard) */
