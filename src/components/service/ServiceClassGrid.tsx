@@ -118,8 +118,8 @@ export function ServiceClassGrid({
         open={open}
         onClose={() => onOpenChange(false)}
         labelledBy="classes-overlay-title"
-        fullPage
-        className="min-h-0 rounded-2xl bg-white shadow-[0_18px_50px_rgba(0,0,0,0.16)]"
+        fillViewport
+        className="min-h-0 rounded-none bg-white sm:rounded-none"
         chrome={
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">

@@ -74,12 +74,22 @@ export function ServiceSaisieOverlay({
           role="dialog"
           aria-modal="true"
           aria-labelledby={labelledBy}
-          className={cn(
-            "relative z-10 flex h-auto min-h-0 w-full flex-col overflow-hidden overscroll-contain absolute inset-0",
-            className,
-          )}
+          className="absolute inset-0 z-10 flex h-full min-h-0 w-full flex-col overflow-hidden overscroll-contain pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]"
         >
-          {children}
+          {chrome ? (
+            <div className="shrink-0 px-3 sm:px-4">{chrome}</div>
+          ) : null}
+          <div
+            className={cn(
+              "relative z-10 mt-2 flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain",
+              className,
+            )}
+          >
+            {children}
+          </div>
+          {footer ? (
+            <div className="mt-2 shrink-0 px-3 sm:px-4">{footer}</div>
+          ) : null}
         </div>
       ) : (
         <div
